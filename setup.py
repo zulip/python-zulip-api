@@ -72,6 +72,8 @@ setuptools_info = dict(
                       'typing>=3.5.2.2',
                       'flask>=0.12.2',
                       'mock>=2.0.0',
+                      # for pep8 linter
+                      'pycodestyle==2.3.1',
                       ],
 )
 
