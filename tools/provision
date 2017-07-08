@@ -1,0 +1,15 @@
+#! /usr/bin/env bash
+
+echo "Setup: Setting up Virtual Env"
+
+BASEDIR=`dirname $0`/..
+
+if [ ! -d "$BASEDIR/env" ]; then
+    virtualenv $BASEDIR/env --no-site-packages
+    echo "Virtualenv created."
+fi
+
+source $BASEDIR/env/bin/activate
+python $BASEDIR/zulip_bots/setup.py install
+python $BASEDIR/zulip_api/setup.py install
+echo "Provisioning Complete."
