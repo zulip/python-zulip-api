@@ -2,11 +2,6 @@ language: python
 python:
   - "2.7"
 install:
-  - pip install pycodestyle==2.3.1
-  - pip install ./zulip
-  - pip install ./zulip_bots
-  - pip install ./zulip_botserver
+  - tools/provision
 script:
-  - tools/lint
-  - python -m unittest discover -v zulip_botserver
-  - tools/test-bots
+  - tools/test-all

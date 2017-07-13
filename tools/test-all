@@ -1,0 +1,7 @@
+#! /usr/bin/env bash
+
+BASEDIR=`dirname $0`/..
+
+$BASEDIR/tools/lint
+$BASEDIR/tools/test-bots
+python -m unittest discover -v $BASEDIR/zulip_botserver

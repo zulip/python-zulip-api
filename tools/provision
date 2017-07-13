@@ -1,15 +1,25 @@
 #! /usr/bin/env bash
 
-echo "Setup: Setting up Virtual Env"
-
 BASEDIR=`dirname $0`/..
 
-if [ ! -d "$BASEDIR/env" ]; then
-    virtualenv $BASEDIR/env --no-site-packages
-    echo "Virtualenv created."
+if [ "$TRAVIS" = true ]; then
+	# Do Travis specific operations here
+	echo "provision: Provisioning Travis Environment"
+else
+	# Do local environment specific operations here
+	echo "provision: Provisioning Local Environment"
+	if [ ! -d "$BASEDIR/env" ]; then
+	    virtualenv $BASEDIR/env --no-site-packages
+	    echo "provision: Virtualenv created."
+	fi
+	source $BASEDIR/env/bin/activate
 fi
 
-source $BASEDIR/env/bin/activate
-python $BASEDIR/zulip_bots/setup.py install
-python $BASEDIR/zulip_api/setup.py install
-echo "Provisioning Complete."
+echo "provision: Installing packages."
+
+pip install pycodestyle==2.3.1
+pip install $BASEDIR/zulip
+pip install $BASEDIR/zulip_bots
+pip install $BASEDIR/zulip_botserver
+
+echo "provision: Provisioning Complete."
