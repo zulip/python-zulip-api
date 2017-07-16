@@ -34,20 +34,29 @@ def load_lib_modules():
     # type: () -> None
     for bot in available_bots:
         try:
-            module_name = 'zulip_bots.{bot}.{bot}'.format(bot=bot)
-            bots_lib_module[bot] = import_module(module_name)
+            module_name = 'zulip_bots.bots.{bot}.{bot}'.format(bot=bot)
+            lib_module = import_module(module_name)
+            bots_lib_module[bot] = lib_module
         except ImportError:
             print("\n Import Error: Bot \"{}\" doesn't exists. Please make sure you have set up the flaskbotrc "
                   "file correctly.\n".format(bot))
-            sys.exit(1)
+
+def get_bot_lib_module(bot):
+    # type: (str) -> Any
+    if bot in bots_lib_module.keys():
+        return bots_lib_module[bot]
+    return None
 
 app = Flask(__name__)
 
 @app.route('/bots/<bot>', methods=['POST'])
 def handle_bot(bot):
     # type: (str) -> Union[str, BadRequest]
-    if bot not in available_bots:
-        return BadRequest("requested bot service {} not supported".format(bot))
+    lib_module = get_bot_lib_module(bot)
+    if lib_module is None:
+        return BadRequest("Can't find the configuration or Bot Handler code for bot {}. "
+                          "Make sure that the `zulip_bots` package is installed!".format(bot))
+
     client = Client(email=bots_config[bot]["email"],
                     api_key=bots_config[bot]["key"],
                     site=bots_config[bot]["site"])
@@ -58,7 +67,8 @@ def handle_bot(bot):
     except SystemExit:
         return BadRequest("Cannot fetch user profile for bot {}, make sure you have set up the flaskbotrc "
                           "file correctly.".format(bot))
-    message_handler = bots_lib_module[bot].handler_class()
+
+    message_handler = lib_module.handler_class()
 
     # TODO: Handle stateful bots properly.
     state_handler = StateHandler()
@@ -67,7 +77,7 @@ def handle_bot(bot):
     message_handler.handle_message(message=event["message"],
                                    bot_handler=restricted_client,
                                    state_handler=state_handler)
-    return "Success!"
+    return json.dumps("")
 
 def parse_args():
     # type: () -> Tuple[Any, Any]
@@ -110,8 +120,7 @@ def main():
     global available_bots
     available_bots = list(bots_config.keys())
     load_lib_modules()
-
-    app.run(host=options.hostname, port=options.port, debug=True)
+    app.run(host=options.hostname, port=int(options.port), debug=True)
 
 if __name__ == '__main__':
     main()
