@@ -35,10 +35,9 @@ class BotServerTests(BotServerTestCase):
                                         check_success=True)
         assert mock_ExternalBotHandler.called
 
-    def test_bot_not_supported(self):
+    def test_bot_module_not_exists(self):
         # type: () -> None
-        available_bots = ['testbot']
-        self.assert_bot_server_response(available_bots=available_bots,
+        self.assert_bot_server_response(bots_lib_module={},
                                         payload_url="/bots/not_supported_bot",
                                         check_success=False)
 
