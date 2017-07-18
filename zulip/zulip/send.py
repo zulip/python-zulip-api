@@ -23,13 +23,10 @@
 # THE SOFTWARE.
 
 import sys
-import os
 import optparse
 import logging
 
 from typing import Any, Dict, List, Optional
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 import zulip
 

@@ -9,7 +9,7 @@ from typing import cast, Callable, Dict, Iterator, List
 
 EXCLUDED_FILES = [
     # This is an external file that doesn't comply with our codestyle
-    'integrations/perforce/git_p4.py',
+    'zulip/integrations/perforce/git_p4.py',
 ]
 
 def lint_all(args, options):

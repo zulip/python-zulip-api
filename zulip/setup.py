@@ -59,10 +59,8 @@ package_info = dict(
     entry_points={
         'console_scripts': [
             'zulip-send=zulip.send:main',
-            'zulip-bot-server=zulip.bot_server:main',
         ],
     },
-    test_suite='tests',
 )  # type: Dict[str, Any]
 
 setuptools_info = dict(
@@ -70,17 +68,13 @@ setuptools_info = dict(
                       'simplejson',
                       'six',
                       'typing>=3.5.2.2',
-                      'flask>=0.12.2',
-                      'mock>=2.0.0',
-                      # for pep8 linter
-                      'pycodestyle==2.3.1',
                       ],
 )
 
 try:
     from setuptools import setup, find_packages
     package_info.update(setuptools_info)
-    package_info['packages'] = find_packages(exclude=["tests"])
+    package_info['packages'] = find_packages()
 
 except ImportError:
     from distutils.core import setup
@@ -98,12 +92,7 @@ except ImportError:
         print("requests >=0.12.1 is not installed", file=sys.stderr)
         sys.exit(1)
 
-    package_list = ['zulip', 'bots_api', 'bots']
-    bots_dirs = os.listdir('bots')
-    for bot in bots_dirs:
-        if os.path.isdir(os.path.join('bots', bot)):
-            package_list.append('bots.' + bot)
-    package_info['packages'] = package_list
+    package_info['packages'] = ['zulip']
 
 
 setup(**package_info)
