@@ -285,6 +285,30 @@ class Client(object):
         self.client_cert = client_cert
         self.client_cert_key = client_cert_key
 
+        self.session = None  # type: Union[None, requests.Session]
+
+    def ensure_session(self):
+        # type: () -> None
+
+        # Check if the session has been created already, and return
+        # immediately if so.
+        if self.session:
+            return
+
+        # Build a client cert object for requests
+        if self.client_cert_key is not None:
+            client_cert = (self.client_cert, self.client_cert_key)  # type: Union[str, Tuple[str, str]]
+        else:
+            client_cert = self.client_cert
+
+        # Actually construct the session
+        session = requests.Session()
+        session.auth = requests.auth.HTTPBasicAuth(self.email, self.api_key)  # type: ignore # https://github.com/python/typeshed/pull/1504
+        session.verify = self.tls_verification  # type: ignore # https://github.com/python/typeshed/pull/1504
+        session.cert = client_cert
+        session.headers = {"User-agent": self.get_user_agent()}
+        self.session = session
+
     def get_user_agent(self):
         # type: () -> str
         vendor = ''
@@ -326,6 +350,8 @@ class Client(object):
 
         for f in files:
             req_files.append((f.name, f))
+
+        self.ensure_session()
 
         query_state = {
             'had_error_retry': False,
@@ -370,21 +396,10 @@ class Client(object):
                 if files:
                     kwargs['files'] = req_files
 
-                # Build a client cert object for requests
-                if self.client_cert_key is not None:
-                    client_cert = (self.client_cert, self.client_cert_key)  # type: Union[str, Tuple[str, str]]
-                else:
-                    client_cert = self.client_cert
-
-                res = requests.request(
+                res = self.session.request(
                     method,
                     urllib.parse.urljoin(self.base_url, url),
-                    auth=requests.auth.HTTPBasicAuth(self.email,
-                                                     self.api_key),
-                    verify=self.tls_verification,
-                    cert=client_cert,
                     timeout=90,
-                    headers={"User-agent": self.get_user_agent()},
                     **kwargs)
 
                 # On 50x errors, try again after a short sleep
