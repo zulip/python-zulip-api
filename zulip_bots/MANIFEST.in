@@ -1,0 +1,5 @@
+include zulip_bots/bots/giphy/fixtures/test_1.json
+include zulip_bots/bots/github_detail/fixtures/test_404.json
+include zulip_bots/bots/github_detail/fixtures/test_issue.json
+include zulip_bots/bots/github_detail/fixtures/test_pull.json
+
