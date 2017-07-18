@@ -2,7 +2,7 @@ from __future__ import absolute_import
 import mock
 import unittest
 from typing import Any
-from .bot_server_test_lib import BotServerTestCase
+from .server_test_lib import BotServerTestCase
 
 class BotServerTests(BotServerTestCase):
     class MockMessageHandler(object):
@@ -15,7 +15,7 @@ class BotServerTests(BotServerTestCase):
             # type: () -> Any
             return BotServerTests.MockMessageHandler()
 
-    @mock.patch('zulip.bot_server.ExternalBotHandler')
+    @mock.patch('zulip_botserver.server.ExternalBotHandler')
     def test_successful_request(self, mock_ExternalBotHandler):
         # type: (mock.Mock) -> None
         available_bots = ['testbot']

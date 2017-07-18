@@ -11,7 +11,7 @@ from werkzeug.exceptions import BadRequest
 from six.moves.configparser import SafeConfigParser
 
 from zulip import Client
-from bots_api.bot_lib import ExternalBotHandler, StateHandler
+from zulip_bots.lib import ExternalBotHandler, StateHandler
 
 bots_config = {}  # type: Dict[str, Mapping[str, str]]
 available_bots = []  # type: List[str]
@@ -33,7 +33,7 @@ def load_lib_modules():
     # type: () -> None
     for bot in available_bots:
         try:
-            module_name = 'bots.{bot}.{bot}'.format(bot=bot)
+            module_name = 'zulip_bots.{bot}.{bot}'.format(bot=bot)
             bots_lib_module[bot] = import_module(module_name)
         except ImportError:
             print("\n Import Error: Bot \"{}\" doesn't exists. Please make sure you have set up the flaskbotrc "
