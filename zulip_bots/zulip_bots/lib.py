@@ -44,23 +44,6 @@ class RateLimit(object):
         logging.error(self.error_message)
         sys.exit(1)
 
-def send_reply(message, response, email, send_message):
-    # type: (Dict[str, Any], str, str, Any) -> Dict[str, Any]
-    if message['type'] == 'private':
-        return send_message(dict(
-            type='private',
-            to=[x['email'] for x in message['display_recipient'] if email != x['email']],
-            content=response,
-        ))
-    else:
-        return send_message(dict(
-            type='stream',
-            to=message['display_recipient'],
-            subject=message['subject'],
-            content=response,
-        ))
-
-
 class ExternalBotHandler(object):
     def __init__(self, client):
         # type: (Client) -> None
@@ -85,7 +68,19 @@ class ExternalBotHandler(object):
 
     def send_reply(self, message, response):
         # type: (Dict[str, Any], str) -> Dict[str, Any]
-        return send_reply(message, response, self.email, self.send_message)
+        if message['type'] == 'private':
+            return self.send_message(dict(
+                type='private',
+                to=[x['email'] for x in message['display_recipient'] if self.email != x['email']],
+                content=response,
+            ))
+        else:
+            return self.send_message(dict(
+                type='stream',
+                to=message['display_recipient'],
+                subject=message['subject'],
+                content=response,
+            ))
 
     def update_message(self, message):
         # type: (Dict[str, Any]) -> Dict[str, Any]
