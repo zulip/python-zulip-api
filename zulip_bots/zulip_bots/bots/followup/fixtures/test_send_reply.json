@@ -1,0 +1,8 @@
+{
+    "expectations":[
+        {
+            "request":"",
+            "response":"Please specify the message you want to send to followup stream after @mention-bot"
+        }
+    ]
+}
