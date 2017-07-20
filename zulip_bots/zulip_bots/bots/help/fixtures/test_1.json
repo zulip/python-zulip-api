@@ -1,0 +1,16 @@
+{
+    "expectations":[
+        {
+            "request":"",
+            "response":"Info on Zulip can be found here:\nhttps://github.com/zulip/zulip"
+        },
+        {
+            "request":"Hi, my name is abc",
+            "response":"Info on Zulip can be found here:\nhttps://github.com/zulip/zulip"
+        },
+        {
+            "request":"help",
+            "response":"Info on Zulip can be found here:\nhttps://github.com/zulip/zulip"
+        }
+    ]
+}

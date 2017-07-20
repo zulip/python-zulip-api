@@ -2,4 +2,15 @@ include zulip_bots/bots/giphy/fixtures/test_1.json
 include zulip_bots/bots/github_detail/fixtures/test_404.json
 include zulip_bots/bots/github_detail/fixtures/test_issue.json
 include zulip_bots/bots/github_detail/fixtures/test_pull.json
+include zulip_bots/bots/virtual_fs/fixtures/test_1.json
+include zulip_bots/bots/followup/fixtures/test_send_message.json
+include zulip_bots/bots/followup/fixtures/test_send_reply.json
+include zulip_bots/bots/xkcd/fixtures/test_1.json
+include zulip_bots/bots/converter/fixtures/test_1.json
+include zulip_bots/bots/encrypt/fixtures/test_1.json
+include zulip_bots/bots/define/fixtures/test_1.json
+include zulip_bots/bots/thesaurus/fixtures/test_1.json
+include zulip_bots/bots/wikipedia/fixtures/test_1.json
+include zulip_bots/bots/helloworld/fixtures/test_1.json
+include zulip_bots/bots/help/fixtures/test_1.json
 

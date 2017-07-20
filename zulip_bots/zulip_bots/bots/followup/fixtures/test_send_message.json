@@ -1,0 +1,22 @@
+{
+    "expectations":[
+        {
+            "request":"foo",
+            "response":{
+                "type":"stream",
+                "to":"followup",
+                "subject":"foo_sender@zulip.com",
+                "content":"from foo_sender@zulip.com: foo"
+            }
+        },
+        {
+            "request":"I have completed my task",
+            "response":{
+                "type":"stream",
+                "to":"followup",
+                "subject":"foo_sender@zulip.com",
+                "content":"from foo_sender@zulip.com: I have completed my task"
+            }
+        }
+    ]
+}

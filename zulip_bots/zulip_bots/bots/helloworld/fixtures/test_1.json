@@ -1,0 +1,16 @@
+{
+    "expectations":[
+        {
+            "request":"",
+            "response":"beep boop"
+        },
+        {
+            "request":"Hi, my name is abc",
+            "response":"beep boop"
+        },
+        {
+            "request":"foo",
+            "response":"beep boop"
+        }
+    ]
+}

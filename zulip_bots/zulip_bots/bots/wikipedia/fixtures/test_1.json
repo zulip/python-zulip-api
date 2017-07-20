@@ -1,0 +1,24 @@
+{
+    "expectations":[
+        {
+            "request":"",
+            "response":"Please enter your message after @mention-bot"
+        },
+        {
+            "request":"sssssss kkkkk",
+            "response":"I am sorry. The search term you provided is not found :slightly_frowning_face:"
+        },
+        {
+            "request":"foo",
+            "response":"For search term \"foo\", https://en.wikipedia.org/wiki/Foobar"
+        },
+        {
+            "request":"123",
+            "response":"For search term \"123\", https://en.wikipedia.org/wiki/123"
+        },
+        {
+            "request":"laugh",
+            "response":"For search term \"laugh\", https://en.wikipedia.org/wiki/Laughter"
+        }
+    ]
+}

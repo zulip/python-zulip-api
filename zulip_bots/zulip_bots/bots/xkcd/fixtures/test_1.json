@@ -1,0 +1,32 @@
+{
+    "expectations":[
+        {
+            "request":"",
+            "response":"xkcd bot only supports these commands:\n* `@xkcd help` to show this help message.\n* `@xkcd latest` to fetch the latest comic strip from xkcd.\n* `@xkcd random` to fetch a random comic strip from xkcd.\n* `@xkcd <comic id>` to fetch a comic strip based on `<comic id>` e.g `@xkcd 1234`."
+        },
+        {
+            "request":"help",
+            "response":"xkcd bot supports these commands:\n* `@xkcd help` to show this help message.\n* `@xkcd latest` to fetch the latest comic strip from xkcd.\n* `@xkcd random` to fetch a random comic strip from xkcd.\n* `@xkcd <comic id>` to fetch a comic strip based on `<comic id>` e.g `@xkcd 1234`."
+        },
+        {
+            "request":"x",
+            "response":"xkcd bot only supports these commands:\n* `@xkcd help` to show this help message.\n* `@xkcd latest` to fetch the latest comic strip from xkcd.\n* `@xkcd random` to fetch a random comic strip from xkcd.\n* `@xkcd <comic id>` to fetch a comic strip based on `<comic id>` e.g `@xkcd 1234`."
+        },
+        {
+            "request":"0",
+            "response":"Sorry, there is likely no xkcd comic strip with id: #0"
+        },
+        {
+            "request":"1",
+            "response":"#1: **Barrel - Part 1**\n[Don't we all.](https://imgs.xkcd.com/comics/barrel_cropped_(1).jpg)"
+        },
+        {
+            "request":"1800",
+            "response":"#1800: **Chess Notation**\n[I've decided to score all my conversations using chess win-loss notation. (??)](https://imgs.xkcd.com/comics/chess_notation.png)"
+        },
+        {
+            "request":"999999999",
+            "response":"Sorry, there is likely no xkcd comic strip with id: #999999999"
+        }
+    ]
+}

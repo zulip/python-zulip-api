@@ -1,0 +1,24 @@
+{
+    "expectations":[
+        {
+            "request":"",
+            "response":"Encrypted/Decrypted text: "
+        },
+        {
+            "request":"Let\\'s Do It",
+            "response":"Encrypted/Decrypted text: Yrg\\'f Qb Vg"
+        },
+        {
+            "request":"me&mom together..!!",
+            "response":"Encrypted/Decrypted text: zr&zbz gbtrgure..!!"
+        },
+        {
+            "request":"foo bar",
+            "response":"Encrypted/Decrypted text: sbb one"
+        },
+        {
+            "request":"Please encrypt this",
+            "response":"Encrypted/Decrypted text: Cyrnfr rapelcg guvf"
+        }
+    ]
+}

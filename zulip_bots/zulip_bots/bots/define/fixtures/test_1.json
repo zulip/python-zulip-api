@@ -1,0 +1,16 @@
+{
+    "expectations":[
+        {
+            "request":"",
+            "response":"Please enter a word to define."
+        },
+        {
+            "request":"foo",
+            "response":"**foo**:\nDefinition not available."
+        },
+        {
+            "request":"cat",
+            "response":"**cat**:\n\n* (**noun**) a small domesticated carnivorous mammal with soft fur, a short snout, and retractile claws. It is widely kept as a pet or for catching mice, and many breeds have been developed.\n&nbsp;&nbsp;their pet cat\n\n"
+        }
+    ]
+}
