@@ -59,47 +59,28 @@ class BotTestCase(TestCase):
         file_path = os.path.join(base_path, '{}.json'.format(test_file_name))
         return file_path
 
-    def check_expected_responses(self, expectations=None, expected_method='send_reply',
+    def check_expected_responses(self, test_file_name, expected_method='send_reply',
                                  email="foo_sender@zulip.com", recipient="foo", subject="foo",
-                                 sender_id=0, sender_full_name="Foo Bar", type="all", test_file_name=None):
+                                 sender_id=0, sender_full_name="Foo Bar", type="all"):
         # type: (Dict[str, Any], str, str, str, str, int, str, str) -> None
         # To test send_message, Any would be a Dict type,
         # to test send_reply, Any would be a str type.
         if type not in ["private", "stream", "all"]:
             logging.exception("check_expected_response expects type to be 'private', 'stream' or 'all'")
 
-        if test_file_name is not None:
-            file_path = self.read_json_file(test_file_name)
-            with open(file_path, 'r') as data_file:
-                file_data = json.load(data_file)
-                for test_case in file_data['expectations']:
-                    response = {'content': test_case['response']} if expected_method == 'send_reply' else test_case['response']
-                    if type != "stream":
-                        message = {'content': test_case['request'], 'type': "private", 'display_recipient': recipient,
-                                   'sender_email': email, 'sender_id': sender_id,
-                                   'sender_full_name': sender_full_name}
-                        self.assert_bot_response(message=message, response=response, expected_method=expected_method)
-                    if type != "private":
-                        message = {'content': test_case['request'], 'type': "stream", 'display_recipient': recipient,
-                                   'subject': subject, 'sender_email': email, 'sender_id': sender_id,
-                                   'sender_full_name': sender_full_name}
-                        self.assert_bot_response(message=message, response=response, expected_method=expected_method)
-        # This elif block is the duplicate of the code above, this will be removed as soon as test fixture
-        # files for all the bots are added. To avoid code from breaking, this code is kept untill all bots
-        # are adapted to this new structure.
-        elif expectations is not None:
-            for m, r in expectations.items():
-                # For calls with send_reply, r is a string (the content of a message),
-                # so we need to add it to a Dict as the value of 'content'.
-                # For calls with send_message, r is already a Dict.
-                response = {'content': r} if expected_method == 'send_reply' else r
+        assert test_file_name is not None
+        file_path = self.read_json_file(test_file_name)
+        with open(file_path, 'r') as data_file:
+            file_data = json.load(data_file)
+            for test_case in file_data['expectations']:
+                response = {'content': test_case['response']} if expected_method == 'send_reply' else test_case['response']
                 if type != "stream":
-                    message = {'content': m, 'type': "private", 'display_recipient': recipient,
+                    message = {'content': test_case['request'], 'type': "private", 'display_recipient': recipient,
                                'sender_email': email, 'sender_id': sender_id,
                                'sender_full_name': sender_full_name}
                     self.assert_bot_response(message=message, response=response, expected_method=expected_method)
                 if type != "private":
-                    message = {'content': m, 'type': "stream", 'display_recipient': recipient,
+                    message = {'content': test_case['request'], 'type': "stream", 'display_recipient': recipient,
                                'subject': subject, 'sender_email': email, 'sender_id': sender_id,
                                'sender_full_name': sender_full_name}
                     self.assert_bot_response(message=message, response=response, expected_method=expected_method)
