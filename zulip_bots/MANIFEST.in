@@ -11,4 +11,5 @@ include zulip_bots/bots/encrypt/fixtures/test_1.json
 include zulip_bots/bots/define/fixtures/test_1.json
 include zulip_bots/bots/thesaurus/fixtures/test_1.json
 include zulip_bots/bots/wikipedia/fixtures/test_1.json
+include zulip_bots/bots/helloworld/fixtures/test_1.json
 
