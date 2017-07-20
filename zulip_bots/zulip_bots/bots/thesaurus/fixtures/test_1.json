@@ -1,0 +1,28 @@
+{
+    "expectations":[
+        {
+            "request":"synonym good",
+            "response":"great, satisfying, exceptional, positive, acceptable"
+        },
+        {
+            "request":"synonym nice",
+            "response":"cordial, kind, good, okay, fair"
+        },
+        {
+            "request":"synonym foo",
+            "response":"bar, thud, X, baz, corge"
+        },
+        {
+            "request":"antonym dirty",
+            "response":"ordered, sterile, spotless, moral, clean"
+        },
+        {
+            "request":"antonym bar",
+            "response":"loss, whole, advantage, aid, failure"
+        },
+        {
+            "request":"",
+            "response":"To use this bot, start messages with either @mention-bot synonym (to get the synonyms of a given word) or @mention-bot antonym (to get the antonyms of a given word). Phrases are not accepted so only use single words to search. For example you could search '@mention-bot synonym hello' or '@mention-bot antonym goodbye'."
+        }
+    ]
+}
