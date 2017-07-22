@@ -1,0 +1,22 @@
+{
+    "request": {
+        "api_url":"https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=123&format=json"
+    },
+    "response": {
+        "data": {
+            "status_code":200
+        },
+        "query": {
+            "search": [
+                {
+                    "title":"123"
+                }
+            ]
+        }
+    },
+    "response-headers":{
+        "status":200,
+        "ok":true,
+        "content-type":"application/json; charset=utf-8"
+    }
+}

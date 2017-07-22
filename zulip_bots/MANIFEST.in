@@ -5,4 +5,8 @@ include zulip_bots/bots/github_detail/fixtures/test_pull.json
 include zulip_bots/bots/define/fixtures/test_single_type_word.json
 include zulip_bots/bots/define/fixtures/test_multi_type_word.json
 include zulip_bots/bots/define/fixtures/test_incorrect_word.json
+include zulip_bots/bots/wikipedia/fixtures/test_single_word.json
+include zulip_bots/bots/wikipedia/fixtures/test_multi_word.json
+include zulip_bots/bots/wikipedia/fixtures/test_incorrect_query.json
+include zulip_bots/bots/wikipedia/fixtures/test_number_query.json
 
