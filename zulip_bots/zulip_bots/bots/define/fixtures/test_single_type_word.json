@@ -1,0 +1,17 @@
+{
+    "request":{
+        "api_url":"https://owlbot.info/api/v1/dictionary/cat?format=json"
+    },
+    "response":[
+        {
+            "type":"noun",
+            "defenition":"a small domesticated carnivorous mammal with soft fur, a short snout, and retractile claws. It is widely kept as a pet or for catching mice, and many breeds have been developed.",
+            "example":"their pet cat"
+        }
+    ],
+    "response-headers":{
+        "status":200,
+        "ok":true,
+        "content-type":"application/json; charset=utf-8"
+    }
+}

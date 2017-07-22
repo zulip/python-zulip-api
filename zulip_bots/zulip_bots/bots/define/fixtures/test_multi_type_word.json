@@ -1,0 +1,37 @@
+{
+    "request":{
+        "api_url":"https://owlbot.info/api/v1/dictionary/help?format=json"
+    },
+    "response":[
+        {
+            "type":"verb",
+            "defenition":"make it easier or possible for (someone) to do something by offering them one's services or resources.",
+            "example":"they helped her with domestic chores"
+        },
+        {
+            "type":"verb",
+            "defenition":"serve someone with (food or drink).",
+            "example":"may I help you to some more meat?"
+        },
+        {
+            "type":"verb",
+            "defenition":"cannot or could not avoid.",
+            "example":"he couldn't help laughing"
+        },
+        {
+            "type":"noun",
+            "defenition":"the action of helping someone to do something.",
+            "example":"I asked for help from my neighbours"
+        },
+        {
+            "type":"exclamation",
+            "defenition":"used as an appeal for urgent assistance.",
+            "example":"Help! I'm drowning!"
+        }
+    ],
+    "response-headers":{
+        "status":200,
+        "ok":true,
+        "content-type":"application/json; charset=utf-8"
+    }
+}
