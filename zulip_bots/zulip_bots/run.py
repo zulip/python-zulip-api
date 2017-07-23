@@ -5,6 +5,7 @@ from __future__ import absolute_import
 import logging
 import argparse
 import sys
+import os
 from types import ModuleType
 from importlib import import_module
 from os.path import basename, splitext
@@ -12,6 +13,7 @@ from os.path import basename, splitext
 import six
 
 from zulip_bots.lib import run_message_handler_for_bot
+from zulip_bots.provision import provision_bot
 
 
 def import_module_from_source(path, name=None):
@@ -65,6 +67,10 @@ def parse_args():
     parser.add_argument('--force',
                         action='store_true',
                         help='Try running the bot even if dependencies install fails.')
+
+    parser.add_argument('--provision',
+                        action='store_true',
+                        help='Install dependencies for the bot.')
     options = parser.parse_args()
 
     if not options.name and not options.path_to_bot:
@@ -83,8 +89,15 @@ def main():
     options = parse_args()
 
     if options.path_to_bot:
+        if options.provision:
+            bot_dir = os.path.dirname(os.path.abspath(options.path_to_bot))
+            provision_bot(bot_dir, options.force)
         lib_module = import_module_from_source(options.path_to_bot, name=options.name)
-    else:
+    elif options.name:
+        if options.provision:
+            bots_parent_dir = os.path.abspath("bots")
+            bot_dir = os.path.join(bots_parent_dir, options.name)
+            provision_bot(bot_dir, options.force)
         lib_module = import_module('zulip_bots.bots.{bot}.{bot}'.format(bot=options.name))
 
     if not options.quiet:
