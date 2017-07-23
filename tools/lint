@@ -2,7 +2,7 @@
 
 from pep8 import check_pep8
 from custom_check import build_custom_checkers
-from server_lib import lister
+from zerver_lib import lister
 
 import sys
 import optparse

@@ -5,7 +5,7 @@ import os
 import re
 import traceback
 
-from server_lib.printer import print_err, colors
+from zerver_lib.printer import print_err, colors
 
 from typing import cast, Any, Callable, Dict, List, Optional, Tuple
 
@@ -224,7 +224,7 @@ def build_custom_checkers(by_lang):
 
         markdown_docs_length_exclude = {
             "zulip_bots/zulip_bots/bots/converter/readme.md",
-            "tools/server_lib/README.md",
+            "tools/zerver_lib/README.md",
         }
         for fn in by_lang['md']:
             max_length = None
