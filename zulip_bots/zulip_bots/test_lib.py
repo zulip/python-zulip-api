@@ -54,8 +54,9 @@ class BotTestCase(TestCase):
 
     def check_expected_responses(self, expectations, expected_method='send_reply',
                                  email="foo_sender@zulip.com", recipient="foo", subject="foo",
-                                 sender_id=0, sender_full_name="Foo Bar", type="all"):
-        # type: (Dict[str, Any], str, str, str, str, int, str, str) -> None
+                                 sender_id=0, sender_full_name="Foo Bar", type="all",
+                                 state_handler=None):
+        # type: (Dict[str, Any], str, str, str, str, int, str, str, Optional[StateHandler]) -> None
         # To test send_message, Any would be a Dict type,
         # to test send_reply, Any would be a str type.
         if type not in ["private", "stream", "all"]:
@@ -69,17 +70,21 @@ class BotTestCase(TestCase):
                 message = {'content': m, 'type': "private", 'display_recipient': recipient,
                            'sender_email': email, 'sender_id': sender_id,
                            'sender_full_name': sender_full_name}
-                self.assert_bot_response(message=message, response=response, expected_method=expected_method)
+                self.assert_bot_response(message=message, response=response,
+                                         expected_method=expected_method, state_handler=state_handler)
             if type != "private":
                 message = {'content': m, 'type': "stream", 'display_recipient': recipient,
                            'subject': subject, 'sender_email': email, 'sender_id': sender_id,
                            'sender_full_name': sender_full_name}
-                self.assert_bot_response(message=message, response=response, expected_method=expected_method)
+                self.assert_bot_response(message=message, response=response,
+                                         expected_method=expected_method, state_handler=state_handler)
 
-    def call_request(self, message, expected_method, response):
-        # type: (Dict[str, Any], str, Dict[str, Any]) -> None
+    def call_request(self, message, expected_method, response, state_handler):
+        # type: (Dict[str, Any], str, Dict[str, Any], Optional[StateHandler]) -> None
+        if state_handler is None:
+            state_handler = StateHandler()
         # Send message to the concerned bot
-        self.message_handler.handle_message(message, self.MockClass(), StateHandler())
+        self.message_handler.handle_message(message, self.MockClass(), state_handler)
 
         # Check if the bot is sending a message via `send_message` function.
         # Where response is a dictionary here.
@@ -127,8 +132,8 @@ class BotTestCase(TestCase):
                 else:
                     mock_get.assert_called_with(http_request['api_url'], params=params)
 
-    def assert_bot_response(self, message, response, expected_method):
-        # type: (Dict[str, Any], Dict[str, Any], str) -> None
+    def assert_bot_response(self, message, response, expected_method, state_handler = None):
+        # type: (Dict[str, Any], Dict[str, Any], str, Optional[StateHandler]) -> None
         # Strictly speaking, this function is not needed anymore,
         # kept for now for legacy reasons.
-        self.call_request(message, expected_method, response)
+        self.call_request(message, expected_method, response, state_handler)
