@@ -3,7 +3,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 
 import logging
-import optparse
+import argparse
 import sys
 from types import ModuleType
 from importlib import import_module
@@ -43,25 +43,31 @@ def parse_args():
         See lib/readme.md for more context.
         '''
 
-    parser = optparse.OptionParser(usage=usage)
-    parser.add_option('--quiet', '-q',
-                      action='store_true',
-                      help='Turn off logging output.')
+    parser = argparse.ArgumentParser(usage=usage)
+    parser.add_argument('name',
+                        action='store',
+                        nargs='?',
+                        default=None,
+                        help='the name of an existing bot to run')
 
-    parser.add_option('--config-file',
-                      action='store',
-                      help='(alternate config file to ~/.zuliprc)')
+    parser.add_argument('--quiet', '-q',
+                        action='store_true',
+                        help='Turn off logging output.')
 
-    parser.add_option('--path-to-bot',
-                      action='store',
-                      help='path to the file with the bot handler class')
+    parser.add_argument('--config-file',
+                        action='store',
+                        help='(alternate config file to ~/.zuliprc)')
 
-    parser.add_option('--force',
-                      action='store_true',
-                      help='Try running the bot even if dependencies install fails.')
-    (options, args) = parser.parse_args()
+    parser.add_argument('--path-to-bot',
+                        action='store',
+                        help='path to the file with the bot handler class')
 
-    if not args and not options.path_to_bot:
+    parser.add_argument('--force',
+                        action='store_true',
+                        help='Try running the bot even if dependencies install fails.')
+    options = parser.parse_args()
+
+    if not options.name and not options.path_to_bot:
         error_message = """
 You must either specify the name of an existing bot or
 specify a path to the file (--path-to-bot) that contains
@@ -69,21 +75,17 @@ the bot handler class.
 """
         parser.error(error_message)
 
-    return (options, args)
+    return options
 
 
 def main():
     # type: () -> None
-    (options, args) = parse_args()
-
-    bot_name = None
-    if args:
-        bot_name = args[0]
+    options = parse_args()
 
     if options.path_to_bot:
-        lib_module = import_module_from_source(options.path_to_bot, name=bot_name)
+        lib_module = import_module_from_source(options.path_to_bot, name=options.name)
     else:
-        lib_module = import_module('zulip_bots.bots.{bot}.{bot}'.format(bot=bot_name))
+        lib_module = import_module('zulip_bots.bots.{bot}.{bot}'.format(bot=options.name))
 
     if not options.quiet:
         logging.basicConfig(stream=sys.stdout, level=logging.INFO)
