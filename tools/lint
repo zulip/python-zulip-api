@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
 from pep8 import check_pep8
+from custom_check import build_custom_checkers
 from server_lib import lister
 
 import sys
@@ -19,8 +20,10 @@ def lint_all(args, options):
                                      ftypes=['py', 'sh', 'js', 'pp', 'css', 'handlebars',
                                              'html', 'json', 'md', 'txt', 'text', 'yaml'],
                                      use_shebang=True, group_by_ftype=True, exclude=EXCLUDED_FILES))
-    failed = check_pep8(by_lang['py'])
-    return failed
+    check_custom_checks_py, check_custom_checks_nonpy = build_custom_checkers(by_lang)
+    return all([check_pep8(by_lang['py']),
+                check_custom_checks_py(),
+                check_custom_checks_nonpy()])
 
 def run():
     # type: () -> None
