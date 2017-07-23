@@ -1,0 +1,64 @@
+{
+    "request":{
+        "api_url":"http://api.openweathermap.org/data/2.5/weather?q=New York&APPID=123456"
+    },
+    "response":{
+        "coord":{
+                "lon":-74.01,
+                "lat":40.71
+        },
+        "weather":[
+            {
+                "id":701,
+                "main":"Mist",
+                "description":"mist",
+                "icon":"50d"
+            },
+            {
+                "id":721,
+                "main":"Haze",
+                "description":"haze",
+                "icon":"50d"
+            },
+            {
+                "id":500,
+                "main":"Rain",
+                "description":"light rain",
+                "icon":"10d"
+            }
+        ],
+        "base":"stations",
+        "main":{
+            "temp":295.6,
+            "pressure":1008,
+            "humidity":94,
+            "temp_min":294.15,
+            "temp_max":297.15
+        },
+        "visibility":12874,
+        "wind":{
+            "speed":2.56,
+            "deg":56.5027
+        },
+        "clouds":{
+            "all":90
+        },
+        "dt":1500810900,
+        "sys":{
+            "type":1,
+            "id":1975,
+            "message":0.0161,
+            "country":"US",
+            "sunrise":1500803105,
+            "sunset":1500855570
+        },
+        "id":5128581,
+        "name":"New York",
+        "cod":200
+    },
+    "response-headers":{
+        "status":200,
+        "ok":true,
+        "content-type":"application/json; charset=utf-8"
+    }
+}

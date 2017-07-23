@@ -1,0 +1,14 @@
+{
+    "request":{
+        "api_url":"http://api.openweathermap.org/data/2.5/weather?q=fghjklasdfgh&APPID=123456"
+    },
+    "response":{
+        "cod":"404",
+        "message":"city not found"
+    },
+    "response-headers":{
+        "status":200,
+        "ok":true,
+        "content-type":"application/json; charset=utf-8"
+    }
+}

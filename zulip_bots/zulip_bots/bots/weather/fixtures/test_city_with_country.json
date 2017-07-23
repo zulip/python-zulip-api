@@ -1,0 +1,52 @@
+{
+    "request":{
+        "api_url":"http://api.openweathermap.org/data/2.5/weather?q=New Delhi, India&APPID=123456"
+    },
+    "response":{
+        "coord":{
+            "lon":77.23,
+            "lat":28.61
+        },
+        "weather":[
+            {
+                "id":701,
+                "main":"Mist",
+                "description":"mist",
+                "icon":"50n"
+            }
+        ],
+        "base":"stations",
+        "main":{
+            "temp":300.15,
+            "pressure":998,
+            "humidity":100,
+            "temp_min":300.15,
+            "temp_max":300.15
+        },
+        "visibility":2500,
+        "wind":{
+            "speed":3.1,
+            "deg":90
+        },
+        "clouds":{
+            "all":90
+        },
+        "dt":1500822000,
+        "sys":{
+            "type":1,
+            "id":7809,
+            "message":0.0159,
+            "country":"IN",
+            "sunrise":1500768469,
+            "sunset":1500817624
+        },
+        "id":1261481,
+        "name":"New Delhi",
+        "cod":200
+    },
+    "response-headers":{
+        "status":200,
+        "ok":true,
+        "content-type":"application/json; charset=utf-8"
+    }
+}

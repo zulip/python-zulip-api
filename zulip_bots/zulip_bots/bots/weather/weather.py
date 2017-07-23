@@ -29,16 +29,16 @@ class WeatherHandler(object):
         else:
             url = 'http://api.openweathermap.org/data/2.5/weather?q=' + message['content'] + '&APPID='
             r = requests.get(url + self.api_key)
-            if "city not found" in r.text:
+            if r.json()['cod'] == "404":
                 response = "Sorry, city not found"
             else:
-                response = format_response(r.text, message['content'], self.response_pattern)
+                response = format_response(r, message['content'], self.response_pattern)
 
         bot_handler.send_reply(message, response)
 
 
 def format_response(text, city, response_pattern):
-    j = json.loads(text)
+    j = text.json()
     city = j['name']
     country = j['sys']['country']
     fahrenheit = to_fahrenheit(j['main']['temp'])

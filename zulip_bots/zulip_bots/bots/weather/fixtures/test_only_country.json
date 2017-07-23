@@ -1,0 +1,56 @@
+{
+    "request":{
+        "api_url":"http://api.openweathermap.org/data/2.5/weather?q=United Kingdom&APPID=123456"
+    },
+    "response":{
+        "coord":{
+            "lon":77.23,
+            "lat":28.61
+        },
+        "coord":{
+            "lon":-0.13,
+            "lat":51.51
+        },
+        "weather":[
+            {
+                "id":521,
+                "main":"Rain",
+                "description":"shower rain",
+                "icon":"09n"
+            }
+        ],
+        "base":"stations",
+        "main":{
+            "temp":288.85,
+            "pressure":1011,
+            "humidity":82,
+            "temp_min":287.15,
+            "temp_max":290.15
+        },
+        "visibility":10000,
+        "wind":{
+            "speed":4.1,
+            "deg":240
+        },
+        "clouds":{
+            "all":20
+        },
+        "dt":1500841200,
+        "sys":{
+            "type":1,
+            "id":5091,
+            "message":0.0097,
+            "country":"GB",
+            "sunrise":1500783154,
+            "sunset":1500840036
+        },
+        "id":2643743,
+        "name":"London",
+        "cod":200
+    },
+    "response-headers":{
+        "status":200,
+        "ok":true,
+        "content-type":"application/json; charset=utf-8"
+    }
+}
