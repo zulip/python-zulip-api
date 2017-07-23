@@ -1,0 +1,15 @@
+{
+    "request": {
+        "api_url":"https://xkcd.com/0/info.0.json"
+    },
+    "response": {
+        "data": {
+            "status_code":404
+        }
+    },
+    "response-headers":{
+        "status":404,
+        "ok":true,
+        "content-type":"application/json; charset=utf-8"
+    }
+}

@@ -9,4 +9,9 @@ include zulip_bots/bots/wikipedia/fixtures/test_single_word.json
 include zulip_bots/bots/wikipedia/fixtures/test_multi_word.json
 include zulip_bots/bots/wikipedia/fixtures/test_incorrect_query.json
 include zulip_bots/bots/wikipedia/fixtures/test_number_query.json
+include zulip_bots/bots/xkcd/fixtures/test_latest.json
+include zulip_bots/bots/xkcd/fixtures/test_random.json
+include zulip_bots/bots/xkcd/fixtures/test_specific_id.json
+include zulip_bots/bots/xkcd/fixtures/test_not_existing_id.json
+include zulip_bots/bots/xkcd/fixtures/test_not_existing_id_2.json
 

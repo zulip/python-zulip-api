@@ -1,0 +1,27 @@
+{
+    "request": {
+        "api_url":"https://xkcd.com/info.0.json"
+    },
+    "response": {
+        "data": {
+            "status_code":200
+        },
+        "month":"7",
+        "num":1866,
+        "link":"",
+        "year":"2017",
+        "news":"",
+        "safe_title":"Russell's Teapot",
+        "transcript":"",
+        "alt":"Unfortunately, NASA regulations state that Bertrand Russell-related payloads can only be launched within launch vehicles which do not launch themselves.",
+        "img":"https://imgs.xkcd.com/comics/russells_teapot.png",
+        "title":"Russell's Teapot",
+        "day":"21"
+
+    },
+    "response-headers":{
+        "status":200,
+        "ok":true,
+        "content-type":"application/json; charset=utf-8"
+    }
+}

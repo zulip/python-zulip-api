@@ -1,0 +1,26 @@
+{
+    "request": {
+        "api_url":"https://xkcd.com/1800/info.0.json"
+    },
+    "response": {
+        "data": {
+            "status_code":200
+        },
+        "month":"2",
+        "num":1800,
+        "link":"",
+        "year":"2017",
+        "news":"",
+        "safe_title":"Chess Notation",
+        "transcript":"",
+        "alt":"I've decided to score all my conversations using chess win-loss notation. (??)",
+        "img":"https://imgs.xkcd.com/comics/chess_notation.png",
+        "title":"Chess Notation",
+        "day":"17"
+    },
+    "response-headers":{
+        "status":200,
+        "ok":true,
+        "content-type":"application/json; charset=utf-8"
+    }
+}

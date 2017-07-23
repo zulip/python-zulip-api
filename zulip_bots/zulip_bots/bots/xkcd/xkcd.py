@@ -1,4 +1,4 @@
-from random import randint
+import random
 
 import logging
 import requests
@@ -89,7 +89,7 @@ def fetch_xkcd_query(mode, comic_id=None):
                 raise XkcdServerError()
 
             latest_id = latest.json()['num']
-            random_id = randint(1, latest_id)
+            random_id = random.randint(1, latest_id)
             url = XKCD_TEMPLATE_URL % (str(random_id))
 
         elif mode == XkcdBotCommand.COMIC_ID:  # Fetch specific comic strip by id number.
