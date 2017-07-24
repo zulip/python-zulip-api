@@ -1,72 +1,80 @@
 #!/usr/bin/env python
 
-from __future__ import absolute_import
-from __future__ import print_function
-
+from os.path import dirname, basename
+from importlib import import_module
 import argparse
 import os
-import sys
+import glob
 import unittest
 import logging
-from unittest import TestCase
 
-def dir_join(dir1, dir2):
-    # type: (str, str) -> str
-    return os.path.abspath(os.path.join(dir1, dir2))
+
+def load_tests_from_modules(names, template):
+    loader = unittest.defaultTestLoader
+    test_suites = []
+
+    for name in names:
+        module = import_module(template.format(name=name))
+        test_suites.append(loader.loadTestsFromModule(module))
+
+    return test_suites
+
+
+def parse_args(available_bots):
+    description = """
+Script to run test_<bot_name>.py files in the
+zulip_bot/zulip_bots/bots/<bot_name> directories.
+
+Running tests for all bots:
+
+./test-bots
+
+Running tests for specific bots:
+
+./test-bots define thesaurus
+
+Running tests for all bots excluding certain bots (the
+following command would run tests for all bots except
+the tests for xkcd and wikipedia bots):
+
+./test-bots --exclude xkcd wikipedia
+"""
+    parser = argparse.ArgumentParser(description=description)
+
+    parser.add_argument('bots_to_test',
+                        metavar='bot',
+                        nargs='*',
+                        default=available_bots,
+                        help='specific bots to test (default is all)')
+
+    parser.add_argument('--exclude',
+                        metavar='bot',
+                        nargs='*',
+                        default=[],
+                        help='bot(s) to exclude')
+    return parser.parse_args()
+
+
+def main():
+    glob_pattern = os.path.abspath('../zulip_bots/zulip_bots/bots/*/test_*.py')
+    test_modules = glob.glob(glob_pattern)
+
+    # get only the names of bots that have tests
+    available_bots = map(lambda path: basename(dirname(path)), test_modules)
+
+    options = parse_args(available_bots)
+
+    bots_to_test = filter(lambda bot: bot not in options.exclude,
+                          options.bots_to_test)
+    test_suites = load_tests_from_modules(
+        bots_to_test,
+        template='zulip_bots.bots.{name}.test_{name}'
+    )
+
+    suite = unittest.TestSuite(test_suites)
+    runner = unittest.TextTestRunner(verbosity=2)
+    runner.run(suite)
 
 
 if __name__ == '__main__':
-
-    tools_dir = os.path.dirname(os.path.abspath(__file__))
-    bots_dir = os.path.join(tools_dir, '..', 'zulip_bots', 'zulip_bots')
-    bots_test_dir = dir_join(bots_dir, 'bots')
-
-    sys.path.insert(0, bots_dir)
-    sys.path.insert(0, bots_test_dir)
-
-    btd = bots_test_dir
-    available_bots = [b for b in os.listdir(btd) if os.path.isdir(dir_join(btd, b))]
-
-    description = 'Script to run test_<bot>.py files in api/bots/<bot> directories'
-    parser = argparse.ArgumentParser(description=description)
-    parser.add_argument('bots_to_test', metavar='bot', nargs='*', default=available_bots,
-                        help='specific bots to test (default is all)')
-    parser.add_argument('--exclude', metavar='bot', action='append', default=[],
-                        help='specific bot to exclude (can be used multiple times)')
-    args = parser.parse_args()
-
-    failed = False
-    if args.bots_to_test != available_bots and len(args.bots_to_test) > 0:
-        for n in args.bots_to_test:
-            if n not in available_bots:
-                logging.warning("Bot with name '%s' is unavailable for testing." % (n))
-                args.bots_to_test.remove(n)
-                failed = True
-
-    for to_exclude in args.exclude:
-        if to_exclude in args.bots_to_test:
-            args.bots_to_test.remove(to_exclude)
-
-    # mypy doesn't recognize the TestLoader attribute, even though the code
-    # is executable
-    loader = unittest.TestLoader()  # type: ignore
-
-    suites = []
-    for bot_to_test in args.bots_to_test:
-        dep_path = os.path.join(bots_test_dir, bot_to_test, 'bot_dependencies')
-        sys.path.insert(0, dep_path)
-        try:
-            suites.append(loader.discover(start_dir = dir_join(bots_test_dir, bot_to_test),
-                                          top_level_dir = bots_dir))
-        except ImportError:
-            logging.error("Bot %s requires __init__.py to be added" % (bot_to_test))
-            failed = True
-
-    suite = unittest.TestSuite(suites)
-    runner = unittest.TextTestRunner(verbosity=2)
-    # same issue as for TestLoader
-    result = runner.run(suite)  # type: ignore
-    if result.errors or result.failures:
-        raise Exception('Test failed!')
-
-    sys.exit(failed)
+    main()
