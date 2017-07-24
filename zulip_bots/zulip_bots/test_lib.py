@@ -11,7 +11,7 @@ import mock
 import requests
 import unittest
 
-from mock import MagicMock, patch
+from mock import MagicMock, patch, call
 
 from zulip_bots.lib import StateHandler
 import zulip_bots.lib
@@ -95,20 +95,42 @@ class BotTestCaseBase(TestCase):
                 # For calls with send_message, r is already a Dict.
                 message = dict(message_template, content = m)
                 response = {'content': r} if expected_method == 'send_reply' else r
-                self.assert_bot_response(message=message, response=response,
-                                         expected_method=expected_method)
+                self.assert_bot_responses(message, (response, expected_method))
 
-    def call_request(self, message, expected_method, response):
-        # type: (Dict[str, Any], str, Dict[str, Any]) -> None
-        # Send message to the concerned bot
-        self.message_handler.handle_message(message, self.mock_bot_handler)
+    def call_request(self, message, *responses):
+        # type: (Dict[str, Any], *Tuple[Dict[str, Any], str]) -> None
 
-        # Check if the bot is sending a message via `send_message` function.
-        # Where response is a dictionary here.
-        if expected_method == "send_message":
-            self.mock_bot_handler.send_message.assert_called_with(response)
-        else:
-            self.mock_bot_handler.send_reply.assert_called_with(message, response['content'])
+        # Mock BotHandler; get instance
+        instance = self.MockClass.return_value
+
+        # Send message to the bot
+        try:
+            self.message_handler.handle_message(message, self.mock_bot_handler)
+        except KeyError as key_err:
+            raise Exception("Message tested likely required key {}.".format(key_err))
+
+        # Determine which messaging functions are expected
+        send_messages = [call(r[0]) for r in responses if r[1] == 'send_message']
+        send_replies = [call(message, r[0]['content']) for r in responses if r[1] == 'send_reply']
+
+        # Test that call were matching in quantity, and then in details
+        fail_template = "\nMESSAGE:\n{}\nACTUAL CALLS:\n{}\nEXPECTED:\n{}\n"
+        functions_to_test = (('send_message', instance.send_message, send_messages),
+                             ('send_reply', instance.send_reply, send_replies))
+        for version, actual, expected in functions_to_test:
+            assert len(expected) == actual.call_count, (
+                "Numbers of '{}' called do not match those expected ({} calls, {} expected)" +
+                fail_template).format(version, actual.call_count, len(expected),
+                                      message, actual.call_args_list, expected)
+            if len(expected) > 0:
+                try:
+                    actual.assert_has_calls(expected)
+                except AssertionError:
+                    raise AssertionError(
+                        ("Calls to '{}' do not match those expected" +
+                         fail_template).format(version,
+                                               message, actual.call_args_list, expected))
+                actual.reset_mock()  # Ensure the call details are reset
 
     @contextmanager
     def mock_config_info(self, config_info):
@@ -154,7 +176,11 @@ class BotTestCaseBase(TestCase):
         # type: (Dict[str, Any], Dict[str, Any], str) -> None
         # Strictly speaking, this function is not needed anymore,
         # kept for now for legacy reasons.
-        self.call_request(message, expected_method, response)
+        self.call_request(message, (response, expected_method))
+
+    def assert_bot_responses(self, message, *response_list):
+        # type: (Dict[str, Any], *Tuple[Dict[str, Any], str]) -> None
+        self.call_request(message, *response_list)
 
 class BotTestCase(BotTestCaseBase):
     """Test class extending BotTestCaseBase to add common default tests
