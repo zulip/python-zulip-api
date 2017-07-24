@@ -1,7 +1,7 @@
 # See readme.md for instructions on running this code.
 from __future__ import print_function
 import logging
-import http.bot_handler
+import http.client
 from six.moves.urllib.request import urlopen
 
 # Uses the Google search engine bindings
@@ -26,7 +26,7 @@ def get_google_result(search_keywords):
         try:
             urls = search(search_keywords, stop=20)
             urlopen('http://216.58.192.142', timeout=1)
-        except http.bot_handler.RemoteDisconnected as er:
+        except http.client.RemoteDisconnected as er:
             logging.exception(er)
             return 'Error: No internet connection. {}.'.format(er)
         except Exception as e:
@@ -85,7 +85,7 @@ def test():
         urlopen('http://216.58.192.142', timeout=1)
         print('Success')
         return True
-    except http.bot_handler.RemoteDisconnected as e:
+    except http.client.RemoteDisconnected as e:
         print('Error: {}'.format(e))
         return False
 
