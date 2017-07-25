@@ -39,7 +39,7 @@ class TestXkcdBot(BotTestCase):
                         "notation. (??)](https://imgs.xkcd.com/comics/chess_notation.png)")
         with self.mock_http_conversation('test_random'):
             # Mock randint function.
-            with patch('bots.xkcd.xkcd.random.randint') as randint:
+            with patch('zulip_bots.bots.xkcd.xkcd.random.randint') as randint:
                 mock_rand_value = mock.MagicMock()
                 mock_rand_value.return_value = 1800
                 randint.return_value = mock_rand_value.return_value
