@@ -121,7 +121,7 @@ class StateHandler(object):
 
     @contextmanager
     def state(self, default):
-        #type: (Any) -> Any
+        # type: (Any) -> Any
         new_state = self.get_state() or default
         yield new_state
         self.set_state(new_state)
