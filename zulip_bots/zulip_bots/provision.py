@@ -70,8 +70,9 @@ Example: ./provision.py helloworld xkcd wikipedia
 
 def main():
     # type: () -> None
-    bots_dir = os.path.abspath("bots")
-    bots_subdirs = map(os.path.abspath, glob.glob("bots/*"))
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    bots_dir = os.path.join(current_dir, "bots")
+    bots_subdirs = map(os.path.abspath, glob.glob(bots_dir + '/*'))
     available_bots = filter(lambda d: os.path.isdir(d), bots_subdirs)
 
     options = parse_args(available_bots)
