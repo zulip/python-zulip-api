@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
+import os
 import sys
 import json
 import optparse
@@ -47,12 +48,13 @@ def handle_bot(bot):
     # type: (str) -> Union[str, BadRequest]
     if bot not in available_bots:
         return BadRequest("requested bot service {} not supported".format(bot))
-
     client = Client(email=bots_config[bot]["email"],
                     api_key=bots_config[bot]["key"],
                     site=bots_config[bot]["site"])
     try:
-        restricted_client = ExternalBotHandler(client)
+        bot_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                               'bots', bot)
+        restricted_client = ExternalBotHandler(client, bot_dir)
     except SystemExit:
         return BadRequest("Cannot fetch user profile for bot {}, make sure you have set up the flaskbotrc "
                           "file correctly.".format(bot))

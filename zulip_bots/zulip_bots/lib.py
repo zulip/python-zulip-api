@@ -47,12 +47,13 @@ class RateLimit(object):
         sys.exit(1)
 
 class ExternalBotHandler(object):
-    def __init__(self, client):
-        # type: (Client) -> None
+    def __init__(self, client, root_dir):
+        # type: (Client, string) -> None
         # Only expose a subset of our Client's functionality
         user_profile = client.get_profile()
         self._rate_limit = RateLimit(20, 5)
         self._client = client
+        self._root_dir = root_dir
         try:
             self.full_name = user_profile['full_name']
             self.email = user_profile['email']
@@ -106,6 +107,16 @@ class ExternalBotHandler(object):
             raise
         return dict(config.items(section))
 
+    def open(self, filepath):
+        # type: (str) -> None
+        filepath = os.path.normpath(filepath)
+        abs_filepath = os.path.join(self._root_dir, filepath)
+        if abs_filepath.startswith(self._root_dir):
+            return open(abs_filepath)
+        else:
+            raise PermissionError("Cannot open file \"{}\". Bots may only access "
+                                  "files in their local directory.".format(abs_filepath))
+
 class StateHandler(object):
     def __init__(self):
         # type: () -> None
@@ -136,7 +147,8 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
     #
     # Make sure you set up your ~/.zuliprc
     client = Client(config_file=config_file, client="Zulip{}Bot".format(bot_name.capitalize()))
-    restricted_client = ExternalBotHandler(client)
+    bot_dir = os.path.dirname(lib_module.__file__)
+    restricted_client = ExternalBotHandler(client, bot_dir)
 
     message_handler = lib_module.handler_class()
     if hasattr(message_handler, 'initialize'):
