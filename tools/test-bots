@@ -56,7 +56,9 @@ the tests for xkcd and wikipedia bots):
 
 
 def main():
-    glob_pattern = os.path.abspath('../zulip_bots/zulip_bots/bots/*/test_*.py')
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    bots_dir = os.path.join(current_dir, '..', 'zulip_bots/zulip_bots/bots')
+    glob_pattern = bots_dir + '/*/test_*.py'
     test_modules = glob.glob(glob_pattern)
 
     # get only the names of bots that have tests
