@@ -101,11 +101,11 @@ class JohnHandler(object):
         self.bot.train(
             "chatterbot.corpus.english"
         )
-        self.bota = create_chat_bot(True)
+        self.chatterbot = create_chat_bot(True)
 
     def handle_message(self, message, bot_handler, state_handler):
         original_content = message['content']
-        bot_response = str(self.bota.get_response(original_content))
+        bot_response = str(self.chatterbot.get_response(original_content))
         bot_handler.send_reply(message, bot_response)
 
 handler_class = JohnHandler
