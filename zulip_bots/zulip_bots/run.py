@@ -55,7 +55,8 @@ def main():
     run_message_handler_for_bot(
         lib_module=lib_module,
         config_file=options.config_file,
-        quiet=options.quiet
+        quiet=options.quiet,
+        bot_name=bot_name
     )
 
 if __name__ == '__main__':

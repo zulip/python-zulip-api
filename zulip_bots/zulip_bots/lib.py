@@ -117,7 +117,7 @@ class StateHandler(object):
         # type: () -> Any
         return self.state
 
-def run_message_handler_for_bot(lib_module, quiet, config_file):
+def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
     # type: (Any, bool, str) -> Any
     #
     # lib_module is of type Any, since it can contain any bot's
@@ -126,7 +126,7 @@ def run_message_handler_for_bot(lib_module, quiet, config_file):
     # function.
     #
     # Make sure you set up your ~/.zuliprc
-    client = Client(config_file=config_file)
+    client = Client(config_file=config_file, client="Zulip{}Bot".format(bot_name.capitalize()))
     restricted_client = ExternalBotHandler(client)
 
     message_handler = lib_module.handler_class()
