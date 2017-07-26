@@ -87,19 +87,19 @@ the bot handler class.
 def main():
     # type: () -> None
     options = parse_args()
-
+    bot_name = options.name
     if options.path_to_bot:
         if options.provision:
             bot_dir = os.path.dirname(os.path.abspath(options.path_to_bot))
             provision_bot(bot_dir, options.force)
-        lib_module = import_module_from_source(options.path_to_bot, name=options.name)
+        lib_module = import_module_from_source(options.path_to_bot, name=bot_name)
     elif options.name:
         if options.provision:
             current_dir = os.path.dirname(os.path.abspath(__file__))
             bots_parent_dir = os.path.join(current_dir, "bots")
             bot_dir = os.path.join(bots_parent_dir, options.name)
             provision_bot(bot_dir, options.force)
-        lib_module = import_module('zulip_bots.bots.{bot}.{bot}'.format(bot=options.name))
+        lib_module = import_module('zulip_bots.bots.{bot}.{bot}'.format(bot=bot_name))
 
     if not options.quiet:
         logging.basicConfig(stream=sys.stdout, level=logging.INFO)
