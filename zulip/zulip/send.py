@@ -23,7 +23,7 @@
 # THE SOFTWARE.
 
 import sys
-import optparse
+import argparse
 import logging
 
 from typing import Any, Dict, List, Optional
@@ -51,51 +51,48 @@ def do_send_message(client, message_data):
         log.error(response['msg'])
         return False
 
-def main(argv=None):
+def main():
     # type: (Optional[List[str]]) -> int
-    if argv is None:
-        argv = sys.argv
+    usage = """zulip-send [options] [recipient...]
 
-    usage = """%prog [options] [recipient...]
+    Sends a message to specified recipients.
 
-    Sends a message specified recipients.
-
-    Examples: %prog --stream denmark --subject castle -m "Something is rotten in the state of Denmark."
-              %prog hamlet@example.com cordelia@example.com -m "Conscience doth make cowards of us all."
+    Examples: zulip-send --stream denmark --subject castle -m "Something is rotten in the state of Denmark."
+              zulip-send hamlet@example.com cordelia@example.com -m "Conscience doth make cowards of us all."
 
     These examples assume you have a proper '~/.zuliprc'. You may also set your credentials with the
     '--user' and '--api-key' arguments.
     """
 
-    parser = optparse.OptionParser(usage=usage)
+    parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage))
 
-    # Grab parser options from the API common set
-    parser.add_option_group(zulip.generate_option_group(parser))
+    parser.add_argument('recipients',
+                        nargs='*',
+                        help='email addresses of the recipients of the message')
 
-    parser.add_option('-m', '--message',
-                      help='Specifies the message to send, prevents interactive prompting.')
+    parser.add_argument('-m', '--message',
+                        help='Specifies the message to send, prevents interactive prompting.')
 
-    group = optparse.OptionGroup(parser, 'Stream parameters')  # type: ignore # https://github.com/python/typeshed/pull/1248
-    group.add_option('-s', '--stream',
-                     dest='stream',
-                     action='store',
-                     help='Allows the user to specify a stream for the message.')
-    group.add_option('-S', '--subject',
-                     dest='subject',
-                     action='store',
-                     help='Allows the user to specify a subject for the message.')
-    parser.add_option_group(group)
+    group = parser.add_argument_group('Stream parameters')
+    group.add_argument('-s', '--stream',
+                       dest='stream',
+                       action='store',
+                       help='Allows the user to specify a stream for the message.')
+    group.add_argument('-S', '--subject',
+                       dest='subject',
+                       action='store',
+                       help='Allows the user to specify a subject for the message.')
 
-    (options, recipients) = parser.parse_args(argv[1:])
+    options = parser.parse_args()
 
     if options.verbose:
         logging.getLogger().setLevel(logging.INFO)
     # Sanity check user data
-    if len(recipients) != 0 and (options.stream or options.subject):
+    if len(options.recipients) != 0 and (options.stream or options.subject):
         parser.error('You cannot specify both a username and a stream/subject.')
-    if len(recipients) == 0 and (bool(options.stream) != bool(options.subject)):
+    if len(options.recipients) == 0 and (bool(options.stream) != bool(options.subject)):
         parser.error('Stream messages must have a subject')
-    if len(recipients) == 0 and not (options.stream and options.subject):
+    if len(options.recipients) == 0 and not (options.stream and options.subject):
         parser.error('You must specify a stream/subject or at least one recipient.')
 
     client = zulip.init_from_options(options)
@@ -114,7 +111,7 @@ def main(argv=None):
         message_data = {
             'type': 'private',
             'content': options.message,
-            'to': recipients,
+            'to': options.recipients,
         }
 
     if not do_send_message(client, message_data):
