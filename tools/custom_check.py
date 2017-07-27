@@ -166,8 +166,7 @@ def build_custom_checkers(by_lang):
         {'pattern': '(^|\s)open\s*\(',
          'description': 'open() should not be used in Zulip\'s bots. Use functions'
                         ' provided by the bots framework to access the filesystem.',
-         'include_only': set(['zulip_bots/zulip_bots/bots/']),
-         'exclude': set(['zulip_bots/zulip_bots/bots/john/john.py'])},
+         'include_only': set(['zulip_bots/zulip_bots/bots/'])},
     ]) + whitespace_rules
     bash_rules = [
         {'pattern': '#!.*sh [-xe]',
