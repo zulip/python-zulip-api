@@ -53,6 +53,6 @@ def to_celsius(temp_kelvin):
 
 
 def to_fahrenheit(temp_kelvin):
-    return int(temp_kelvin) * 9 / 5 - 459.67
+    return int(temp_kelvin) * (9. / 5.) - 459.67
 
 handler_class = WeatherHandler
