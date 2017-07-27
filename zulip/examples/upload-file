@@ -23,8 +23,8 @@
 
 from __future__ import print_function
 import importlib
-import optparse
 import sys
+import argparse
 
 from six.moves import StringIO as _StringIO
 sys.path.insert(0, './api')
@@ -44,10 +44,9 @@ You can omit --user and --api-key arguments if you have a properly set up ~/.zul
 If no --file-path is specified, a placeholder text file will be used instead.
 """
 
-parser = optparse.OptionParser(usage=usage)
-parser.add_option('--file-path')
-parser.add_option_group(zulip.generate_option_group(parser))
-(options, args) = parser.parse_args()
+parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage))
+parser.add_argument('--file-path')
+options = parser.parse_args()
 
 client = zulip.init_from_options(options)
 
