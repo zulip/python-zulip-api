@@ -30,6 +30,7 @@ import traceback
 import sys
 import os
 import optparse
+import argparse
 import platform
 import random
 from distutils.version import LooseVersion
@@ -103,8 +104,64 @@ def _default_client():
     # type: () -> str
     return "ZulipPython/" + __version__
 
+def add_default_arguments(parser):
+    # type: (argparse.ArgumentParser) ->  argparse.ArgumentParser
+    group = parser.add_argument_group('Zulip API configuration')
+    group.add_argument('--site',
+                       dest="zulip_site",
+                       help="Zulip server URI",
+                       default=None)
+    group.add_argument('--api-key',
+                       dest="zulip_api_key",
+                       action='store')
+    group.add_argument('--user',
+                       dest='zulip_email',
+                       help='Email address of the calling bot or user.')
+    group.add_argument('--config-file',
+                       action='store',
+                       dest="zulip_config_file",
+                       help='''Location of an ini file containing the above
+                            information. (default ~/.zuliprc)''')
+    group.add_argument('-v', '--verbose',
+                       action='store_true',
+                       help='Provide detailed output.')
+    group.add_argument('--client',
+                       action='store',
+                       default=None,
+                       dest="zulip_client",
+                       help=argparse.SUPPRESS)
+    group.add_argument('--insecure',
+                       action='store_true',
+                       dest='insecure',
+                       help='''Do not verify the server certificate.
+                            The https connection will not be secure.''')
+    group.add_argument('--cert-bundle',
+                       action='store',
+                       dest='cert_bundle',
+                       help='''Specify a file containing either the
+                            server certificate, or a set of trusted
+                            CA certificates. This will be used to
+                            verify the server's identity. All
+                            certificates should be PEM encoded.''')
+    group.add_argument('--client-cert',
+                       action='store',
+                       dest='client_cert',
+                       help='''Specify a file containing a client
+                            certificate (not needed for most deployments).''')
+    group.add_argument('--client-cert-key',
+                       action='store',
+                       dest='client_cert_key',
+                       help='''Specify a file containing the client
+                            certificate's key (if it is in a separate
+                            file).''')
+    return parser
+
 def generate_option_group(parser, prefix=''):
     # type: (optparse.OptionParser, str) ->  optparse.OptionGroup
+    logging.warning("""zulip.generate_option_group is based on optparse, which
+                    is now deprecated. We recommend migrating to argparse and
+                    using zulip.add_default_arguments instead.""")
+
     group = optparse.OptionGroup(parser, 'Zulip API configuration')  # type: ignore # https://github.com/python/typeshed/pull/1248
     group.add_option('--%ssite' % (prefix,),
                      dest="zulip_site",
