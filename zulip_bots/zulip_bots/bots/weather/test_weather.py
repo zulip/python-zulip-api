@@ -33,7 +33,7 @@ class TestWeatherBot(BotTestCase):
             )
 
         # Only country query: returns the weather of the capital city
-        bot_response = "Weather in London, GB:\n58.33 F / 14.85 C\nShower Rain"
+        bot_response = "Weather in London, GB:\n58.73 F / 14.85 C\nShower Rain"
         with self.mock_config_info({'key': '123456'}), \
                 self.mock_http_conversation('test_only_country'):
             self.initialize_bot()
