@@ -4,7 +4,7 @@ from __future__ import print_function
 import os
 import sys
 import json
-import optparse
+import argparse
 from flask import Flask, request
 from importlib import import_module
 from typing import Any, Dict, Mapping, Union, List, Tuple
@@ -80,7 +80,7 @@ def handle_bot(bot):
     return json.dumps("")
 
 def parse_args():
-    # type: () -> Tuple[Any, Any]
+    # type: () -> Tuple[Any]
     usage = '''
             zulip-bot-server --config-file <path to flaskbotrc> --hostname <address> --port <port>
             Example: zulip-bot-server --config-file ~/flaskbotrc
@@ -95,27 +95,27 @@ def parse_args():
             See lib/readme.md for more context.
             '''
 
-    parser = optparse.OptionParser(usage=usage)
-    parser.add_option('--config-file',
-                      action='store',
-                      help='(config file for the zulip bot server (flaskbotrc))')
-    parser.add_option('--hostname',
-                      action='store',
-                      default="127.0.0.1",
-                      help='(address on which you want to run the server)')
-    parser.add_option('--port',
-                      action='store',
-                      default=5002,
-                      help='(port on which you want to run the server)')
-    (options, args) = parser.parse_args()
+    parser = argparse.ArgumentParser(usage=usage)
+    parser.add_argument('--config-file',
+                        action='store',
+                        help='(config file for the zulip bot server (flaskbotrc))')
+    parser.add_argument('--hostname',
+                        action='store',
+                        default="127.0.0.1",
+                        help='(address on which you want to run the server)')
+    parser.add_argument('--port',
+                        action='store',
+                        default=5002,
+                        help='(port on which you want to run the server)')
+    options = parser.parse_args()
     if not options.config_file:  # if flaskbotrc is not given
         parser.error('Flaskbotrc not given')
-    return (options, args)
+    return options
 
 
 def main():
     # type: () -> None
-    (options, args) = parse_args()
+    options = parse_args()
     read_config_file(options.config_file)
     global available_bots
     available_bots = list(bots_config.keys())
