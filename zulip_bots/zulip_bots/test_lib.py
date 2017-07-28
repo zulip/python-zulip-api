@@ -56,12 +56,16 @@ class BotTestCase(TestCase):
                                  email="foo_sender@zulip.com", recipient="foo", subject="foo",
                                  sender_id=0, sender_full_name="Foo Bar", type="all",
                                  state_handler=None):
-        # type: (Dict[str, Any], str, str, str, str, int, str, str, Optional[StateHandler]) -> None
+        # type: (Union[Sequence[Tuple[str, Any]], Dict[str, Any]], str, str, str, str, int, str, str, Optional[StateHandler]) -> None
         # To test send_message, Any would be a Dict type,
         # to test send_reply, Any would be a str type.
         if type not in ["private", "stream", "all"]:
             logging.exception("check_expected_response expects type to be 'private', 'stream' or 'all'")
-        for m, r in expectations.items():
+        if isinstance(expectations, dict):
+            expected = [(k, v) for k, v in expectations.items()]
+        else:
+            expected = expectations
+        for m, r in expected:
             # For calls with send_reply, r is a string (the content of a message),
             # so we need to add it to a Dict as the value of 'content'.
             # For calls with send_message, r is already a Dict.
