@@ -24,6 +24,7 @@ from unittest import TestCase
 from typing import List, Dict, Any, Optional, Callable
 from types import ModuleType
 
+from copy import deepcopy
 
 class BotTestCase(TestCase):
     bot_name = ''  # type: str
@@ -59,29 +60,37 @@ class BotTestCase(TestCase):
         # type: (Union[Sequence[Tuple[str, Any]], Dict[str, Any]], str, str, str, str, int, str, str, Optional[StateHandler]) -> None
         # To test send_message, Any would be a Dict type,
         # to test send_reply, Any would be a str type.
-        if type not in ["private", "stream", "all"]:
-            logging.exception("check_expected_response expects type to be 'private', 'stream' or 'all'")
         if isinstance(expectations, dict):
             expected = [(k, v) for k, v in expectations.items()]
         else:
             expected = expectations
-        for m, r in expected:
-            # For calls with send_reply, r is a string (the content of a message),
-            # so we need to add it to a Dict as the value of 'content'.
-            # For calls with send_message, r is already a Dict.
-            response = {'content': r} if expected_method == 'send_reply' else r
-            if type != "stream":
-                message = {'content': m, 'type': "private", 'display_recipient': recipient,
-                           'sender_email': email, 'sender_id': sender_id,
-                           'sender_full_name': sender_full_name}
+
+        if type not in ["private", "stream", "all"]:
+            logging.exception("check_expected_response expects type to be 'private', 'stream' or 'all'")
+        private = {'type': "private", 'display_recipient': recipient,
+                   'sender_email': email, 'sender_id': sender_id,
+                   'sender_full_name': sender_full_name}
+        stream = {'type': "stream", 'display_recipient': recipient,
+                   'subject': subject, 'sender_email': email, 'sender_id': sender_id,
+                   'sender_full_name': sender_full_name}
+        sources = []
+        if type != "stream":
+            sources.append(private)
+        if type != "private":
+            sources.append(stream)
+
+        for source in sources:
+            # A new (copy of) the state_handler is used for each source message.
+            # This avoids type="all" failing if state is created in the first iteration.
+            state_h = None if state_handler is None else deepcopy(state_handler)
+            for m, r in expected:
+                # For calls with send_reply, r is a string (the content of a message),
+                # so we need to add it to a Dict as the value of 'content'.
+                # For calls with send_message, r is already a Dict.
+                message = dict(source, content = m)
+                response = {'content': r} if expected_method == 'send_reply' else r
                 self.assert_bot_response(message=message, response=response,
-                                         expected_method=expected_method, state_handler=state_handler)
-            if type != "private":
-                message = {'content': m, 'type': "stream", 'display_recipient': recipient,
-                           'subject': subject, 'sender_email': email, 'sender_id': sender_id,
-                           'sender_full_name': sender_full_name}
-                self.assert_bot_response(message=message, response=response,
-                                         expected_method=expected_method, state_handler=state_handler)
+                                         expected_method=expected_method, state_handler=state_h)
 
     def call_request(self, message, expected_method, response, state_handler):
         # type: (Dict[str, Any], str, Dict[str, Any], Optional[StateHandler]) -> None
