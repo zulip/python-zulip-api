@@ -22,8 +22,6 @@
 # THE SOFTWARE.
 
 from __future__ import print_function
-import sys
-import os
 import json
 import argparse
 
@@ -35,7 +33,7 @@ Example: recent-messages --count=101 --user=username@example.com --api-key=a0b1c
 
 You can omit --user and --api-key arguments if you have a properly set up ~/.zuliprc
 """
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
 import zulip
 
 parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage))

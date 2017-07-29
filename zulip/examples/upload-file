@@ -22,12 +22,9 @@
 # THE SOFTWARE.
 
 from __future__ import print_function
-import importlib
-import sys
 import argparse
 
 from six.moves import StringIO as _StringIO
-sys.path.insert(0, './api')
 from typing import IO
 import zulip
 

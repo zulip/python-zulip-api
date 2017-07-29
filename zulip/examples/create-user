@@ -22,8 +22,6 @@
 # THE SOFTWARE.
 
 from __future__ import print_function
-import sys
-from os import path
 import argparse
 
 usage = """create-user --new-email=<email address> --new-password=<password> --new-full-name=<full name> --new-short-name=<short name> [options]
@@ -34,7 +32,6 @@ will be created in your realm.
 Example: create-user --site=http://localhost:9991 --user=rwbarton@example.com --new-email=jarthur@example.com --new-password=random17 --new-full-name 'J. Arthur Random' --new-short-name='jarthur'
 """
 
-sys.path.append(path.join(path.dirname(__file__), '..'))
 import zulip
 
 parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage))

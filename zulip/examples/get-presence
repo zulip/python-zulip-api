@@ -22,8 +22,6 @@
 # THE SOFTWARE.
 
 from __future__ import print_function
-import sys
-from os import path
 import argparse
 
 usage = """get-presence --email=<email address> [options]
@@ -31,7 +29,6 @@ usage = """get-presence --email=<email address> [options]
 Get presence data for another user.
 """
 
-sys.path.append(path.join(path.dirname(__file__), '..'))
 import zulip
 
 parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage))

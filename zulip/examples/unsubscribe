@@ -23,7 +23,6 @@
 
 from __future__ import print_function
 import sys
-import os
 import argparse
 
 usage = """unsubscribe  --user=<bot's email address> --api-key=<bot's api key> [options] --streams=<streams>
@@ -35,7 +34,7 @@ Examples: unsubscribe --user=username@example.com --api-key=a0b1c2d3e4f5a6b7c8d9
 
 You can omit --user and --api-key arguments if you have a properly set up ~/.zuliprc
 """
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
 import zulip
 
 parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage))
