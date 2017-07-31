@@ -8,7 +8,7 @@ import sys
 # We should be installable with either setuptools or distutils.
 package_info = dict(
     name='zulip_bots',
-    version='0.3.1',
+    version='0.3.2',
     description='Zulip\'s Bot framework',
     author='Zulip Open Source Project',
     author_email='zulip-devel@googlegroups.com',
