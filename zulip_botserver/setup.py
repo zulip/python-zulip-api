@@ -8,7 +8,7 @@ import sys
 # We should be installable with either setuptools or distutils.
 package_info = dict(
     name='zulip_botserver',
-    version='0.3.1',
+    version='0.3.2',
     description='Zulip\'s Flask server for running bots',
     author='Zulip Open Source Project',
     author_email='zulip-devel@googlegroups.com',
