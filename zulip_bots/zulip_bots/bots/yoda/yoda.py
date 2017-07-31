@@ -27,6 +27,9 @@ HELP_MESSAGE = '''
 class ApiKeyError(Exception):
     '''raise this when there is an error with the Mashape Api Key'''
 
+class ServiceUnavailableError(Exception):
+    '''raise this when the service is unavailable.'''
+
 
 class YodaSpeakHandler(object):
     '''
@@ -67,6 +70,8 @@ class YodaSpeakHandler(object):
             return response.text
         if response.status_code == 403:
             raise ApiKeyError
+        if response.status_code == 503:
+            raise ServiceUnavailableError
         else:
             error_message = response.text['message']
             logging.error(error_message)
