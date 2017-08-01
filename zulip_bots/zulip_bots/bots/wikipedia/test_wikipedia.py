@@ -56,7 +56,7 @@ class TestWikipediaBot(BotTestCase):
             )
 
         # Empty query, no request made to the Internet.
-        bot_response = "Please enter your message after @mention-bot"
+        bot_response = "Please enter your message after @**test bot**"
         self.assert_bot_response(
             message = {'content': ''},
             response = {'content': bot_response},
