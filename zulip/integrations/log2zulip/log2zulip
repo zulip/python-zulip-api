@@ -88,7 +88,7 @@ def process_logs():
             # a log file ends up at the same line length as before
             # immediately after rotation, this tool won't notice.
             file_data["last"] = 1
-        new_lines = subprocess.check_output(["tail", "-n+%s" % (file_data["last"],), log_file]).split('\n')[:-1]
+        new_lines = subprocess.check_output(["tail", "-n+%s" % (file_data["last"],), log_file]).decode('utf-8', errors='replace').split('\n')[:-1]
         if len(new_lines) > 0:
             process_lines(new_lines, filename)
             file_data["last"] += len(new_lines)
