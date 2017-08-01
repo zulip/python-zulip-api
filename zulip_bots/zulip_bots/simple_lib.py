@@ -1,6 +1,8 @@
 import configparser
 import sys
 
+from zulip_bots.lib import BotIdentity
+
 class SimpleStorage:
     def __init__(self):
         self.data = dict()
@@ -35,6 +37,9 @@ class TerminalBotHandler:
         self.bot_config_file = bot_config_file
         self.storage = SimpleStorage()
         self.message_server = SimpleMessageServer()
+
+    def identity(self):
+        return BotIdentity("bot name", "bot-email@domain")
 
     def send_message(self, message):
         if message['type'] == 'stream':

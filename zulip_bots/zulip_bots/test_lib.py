@@ -21,6 +21,7 @@ from zulip_bots.test_file_utils import (
     read_bot_fixture_data,
 )
 
+from zulip_bots.lib import BotIdentity
 
 class StubBotHandler:
     def __init__(self) -> None:
@@ -32,6 +33,9 @@ class StubBotHandler:
 
     def reset_transcript(self) -> None:
         self.transcript = []  # type: List[Tuple[str, Dict[str, Any]]]
+
+    def identity(self) -> BotIdentity:
+        return BotIdentity(self.full_name, self.email)
 
     def send_message(self, message: Dict[str, Any]) -> Dict[str, Any]:
         self.transcript.append(('send_message', message))

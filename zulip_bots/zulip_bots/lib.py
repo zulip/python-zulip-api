@@ -80,6 +80,11 @@ class StateHandler(object):
     def contains(self, key: Text) -> bool:
         return key in self.state_
 
+class BotIdentity(object):
+    def __init__(self, name: str, email: str) -> None:
+        self.name = name
+        self.email = email
+        self.mention = '@**' + name + '**'
 
 class ExternalBotHandler(object):
     def __init__(
@@ -128,6 +133,9 @@ class ExternalBotHandler(object):
     @property
     def storage(self) -> StateHandler:
         return self._storage
+
+    def identity(self) -> BotIdentity:
+        return BotIdentity(self.full_name, self.email)
 
     def send_message(self, message: (Dict[str, Any])) -> Dict[str, Any]:
         if not self._rate_limit.is_legal():
