@@ -12,9 +12,11 @@ from six.moves import configparser
 
 from contextlib import contextmanager
 
+from collections import namedtuple
+
 if False:
     from mypy_extensions import NoReturn
-from typing import Any, Optional, List, Dict, IO, Text
+from typing import Any, Optional, List, Dict, IO, Text, NamedTuple
 from types import ModuleType
 
 from zulip import Client
@@ -88,6 +90,15 @@ class ExternalBotHandler(object):
             logging.error('Cannot fetch user profile, make sure you have set'
                           ' up the zuliprc file correctly.')
             sys.exit(1)
+
+    BotIdentity = namedtuple('BotIdentity', ['name', 'quoted_name', 'email'])
+
+    def identity(self):
+        # type: () -> NamedTuple
+        pad = '**' if ' ' in self.full_name else ''
+        return BotIdentity(self.full_name,
+                           "{0}{1}{0}".format(pad, self.full_name),
+                           self.email)
 
     def send_message(self, message):
         # type: (Dict[str, Any]) -> Dict[str, Any]
