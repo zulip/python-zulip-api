@@ -11,7 +11,7 @@ import irc.bot
 import irc.strings
 from irc.client import ip_numstr_to_quad, ip_quad_to_numstr, Event, ServerConnection
 import zulip
-import optparse
+import argparse
 
 if False:
     from typing import Any, Dict
@@ -122,13 +122,13 @@ Also note that at present you need to edit this code to do the Zulip => IRC side
 
 
 if __name__ == "__main__":
-    parser = optparse.OptionParser(usage=usage)
-    parser.add_option('--irc-server', default=None)
-    parser.add_option('--port', default=6667)
-    parser.add_option('--nick-prefix', default=None)
-    parser.add_option('--channel', default=None)
-    parser.add_option_group(zulip.generate_option_group(parser))
-    (options, args) = parser.parse_args()
+    parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage))
+    parser.add_argument('--irc-server', default=None)
+    parser.add_argument('--port', default=6667)
+    parser.add_argument('--nick-prefix', default=None)
+    parser.add_argument('--channel', default=None)
+
+    options = parser.parse_args()
 
     if options.irc_server is None or options.nick_prefix is None or options.channel is None:
         parser.error("Missing required argument")
