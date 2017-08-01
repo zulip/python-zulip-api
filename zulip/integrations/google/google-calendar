@@ -8,7 +8,7 @@ import dateutil.parser
 import httplib2
 import itertools
 import logging
-import optparse
+import argparse
 import os
 import pytz
 from six.moves import urllib
@@ -40,9 +40,9 @@ sent = set()  # type: Set[Tuple[int, datetime.datetime]]
 
 sys.path.append(os.path.dirname(__file__))
 
-parser = optparse.OptionParser(r"""
+parser = zulip.add_default_arguments(argparse.ArgumentParser(r"""
 
-%prog \
+google-calendar \
     --user foo@zulip.com \
     --calendar calendarID@example.calendar.google.com
 
@@ -55,27 +55,25 @@ parser = optparse.OptionParser(r"""
     revealed to local users through the command line.
 
     Depends on: google-api-python-client
-""")
+"""))
 
 
-parser.add_option('--interval',
-                  dest='interval',
-                  default=30,
-                  type=int,
-                  action='store',
-                  help='Minutes before event for reminder [default: 30]',
-                  metavar='MINUTES')
+parser.add_argument('--interval',
+                    dest='interval',
+                    default=30,
+                    type=int,
+                    action='store',
+                    help='Minutes before event for reminder [default: 30]',
+                    metavar='MINUTES')
 
-parser.add_option('--calendar',
-                  dest = 'calendarID',
-                  default = 'primary',
-                  type = str,
-                  action = 'store',
-                  help = 'Calendar ID for the calendar you want to receive reminders from.')
+parser.add_argument('--calendar',
+                    dest = 'calendarID',
+                    default = 'primary',
+                    type = str,
+                    action = 'store',
+                    help = 'Calendar ID for the calendar you want to receive reminders from.')
 
-parser.add_option_group(zulip.generate_option_group(parser))
-
-(options, args) = parser.parse_args()
+options = parser.parse_args()
 
 if not (options.zulip_email):
     parser.error('You must specify --user')
