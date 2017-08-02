@@ -29,7 +29,7 @@ import errno
 import hashlib
 from six.moves.html_parser import HTMLParser
 import logging
-import optparse
+import argparse
 import os
 import re
 import sys
@@ -67,34 +67,34 @@ stream every 5 minutes is:
 
 */5 * * * * /usr/local/share/zulip/integrations/rss/rss-bot"""
 
-parser = optparse.OptionParser(usage)  # type: optparse.OptionParser
-parser.add_option('--stream',
-                  dest='stream',
-                  help='The stream to which to send RSS messages.',
-                  default="rss",
-                  action='store')
-parser.add_option('--data-dir',
-                  dest='data_dir',
-                  help='The directory where feed metadata is stored',
-                  default=os.path.join(RSS_DATA_DIR),
-                  action='store')
-parser.add_option('--feed-file',
-                  dest='feed_file',
-                  help='The file containing a list of RSS feed URLs to follow, one URL per line',
-                  default=os.path.join(RSS_DATA_DIR, "rss-feeds"),
-                  action='store')
-parser.add_option('--unwrap',
-                  dest='unwrap',
-                  action='store_true',
-                  help='Convert word-wrapped paragraphs into single lines',
-                  default=False)
-parser.add_option('--math',
-                  dest='math',
-                  action='store_true',
-                  help='Convert $ to $$ (for KaTeX processing)',
-                  default=False)
-parser.add_option_group(zulip.generate_option_group(parser))
-(opts, args) = parser.parse_args()  # type: Tuple[Any, List[str]]
+parser = zulip.add_default_arguments(argparse.ArgumentParser(usage))  # type: argparse.ArgumentParser
+parser.add_argument('--stream',
+                    dest='stream',
+                    help='The stream to which to send RSS messages.',
+                    default="rss",
+                    action='store')
+parser.add_argument('--data-dir',
+                    dest='data_dir',
+                    help='The directory where feed metadata is stored',
+                    default=os.path.join(RSS_DATA_DIR),
+                    action='store')
+parser.add_argument('--feed-file',
+                    dest='feed_file',
+                    help='The file containing a list of RSS feed URLs to follow, one URL per line',
+                    default=os.path.join(RSS_DATA_DIR, "rss-feeds"),
+                    action='store')
+parser.add_argument('--unwrap',
+                    dest='unwrap',
+                    action='store_true',
+                    help='Convert word-wrapped paragraphs into single lines',
+                    default=False)
+parser.add_argument('--math',
+                    dest='math',
+                    action='store_true',
+                    help='Convert $ to $$ (for KaTeX processing)',
+                    default=False)
+
+opts = parser.parse_args()  # type: Any
 
 def mkdir_p(path):
     # type: (str) -> None
