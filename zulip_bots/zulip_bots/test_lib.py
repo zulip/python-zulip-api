@@ -122,15 +122,20 @@ class BotTestCase(TestCase):
             with patch('requests.get') as mock_get:
                 mock_result = mock.MagicMock()
                 mock_result.json.return_value = http_response
+                if 'text' in http_response:
+                    mock_result.text = http_response.get('text', None)
                 mock_result.status_code = http_headers.get('status', 200)
                 mock_result.ok.return_value = http_headers.get('ok', True)
                 mock_get.return_value = mock_result
                 yield
-                params = http_request.get('params', None)
-                if params is None:
-                    mock_get.assert_called_with(http_request['api_url'])
-                else:
+                if 'params' in http_request:
+                    params = http_request.get('params', None)
                     mock_get.assert_called_with(http_request['api_url'], params=params)
+                elif 'headers' in http_request:
+                    headers = http_request.get('headers', None)
+                    mock_get.assert_called_with(http_request['api_url'], headers=headers)
+                else:
+                    mock_get.assert_called_with(http_request['api_url'])
 
     def assert_bot_response(self, message, response, expected_method, state_handler = None):
         # type: (Dict[str, Any], Dict[str, Any], str, Optional[StateHandler]) -> None
