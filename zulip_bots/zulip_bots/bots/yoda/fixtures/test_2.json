@@ -1,0 +1,14 @@
+{
+  "request": {
+    "api_url": "https://yoda.p.mashape.com/yoda?sentence=you+still+have+much+to+learn",
+    "headers": {
+      "X-Mashape-Key": "12345678",
+      "Accept": "text/plain"
+    }
+  },
+  "response": {"text": "Much to learn, you still have."},
+  "response-headers": {
+    "status": 200,
+    "content-type": "text/html; charset=utf-8"
+  }
+}
