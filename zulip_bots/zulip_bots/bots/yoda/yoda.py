@@ -91,13 +91,17 @@ class YodaSpeakHandler(object):
     def handle_input(self, message, bot_handler):
 
         original_content = message['content']
-        if self.is_help(original_content):
+
+        if self.is_help(original_content) or (original_content == ""):
             bot_handler.send_reply(message, HELP_MESSAGE)
 
         else:
             sentence = self.format_input(original_content)
             try:
                 reply_message = self.send_to_yoda_api(sentence)
+
+                if len(reply_message) == 0:
+                    reply_message = 'Invalid input, please check the sentence you have entered.'
 
             except ssl.SSLError or TypeError:
                 reply_message = 'The service is temporarily unavailable, please try again.'

@@ -1,0 +1,14 @@
+{
+  "request": {
+    "api_url": "https://yoda.p.mashape.com/yoda?sentence=@#$%^&*",
+    "headers": {
+      "X-Mashape-Key": "12345678",
+      "Accept": "text/plain"
+    }
+  },
+  "response": {"text": ""},
+  "response-headers": {
+    "status": 200,
+    "content-type": "text/html; charset=utf-8"
+  }
+}
