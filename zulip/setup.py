@@ -64,10 +64,12 @@ package_info = dict(
 )  # type: Dict[str, Any]
 
 setuptools_info = dict(
-    install_requires=['requests>=0.12.1',
-                      'simplejson',
-                      'six',
-                      'typing>=3.5.2.2',
+    install_requires=['requests==2.18.1',
+                      'idna==2.5',
+                      'urllib3==1.21.1',
+                      'simplejson==3.10.0',
+                      'six==1.10.0',
+                      'typing==3.6.1',
                       ],
 )
 
