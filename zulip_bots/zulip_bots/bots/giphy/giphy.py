@@ -1,5 +1,5 @@
 # To use this plugin, you need to set up the Giphy API key for this bot in
-# ~/.giphy_config
+# giphy.conf in this (zulip_bots/bots/giphy/giphy/) directory.
 
 from __future__ import absolute_import
 from __future__ import print_function
