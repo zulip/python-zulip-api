@@ -69,7 +69,7 @@ def get_bot_converter_response(message, bot_handler):
             exponent = 0
 
             if not is_float(number):
-                results.append(number + ' is not a valid number. ' + utils.QUICK_HELP)
+                results.append('`' + number + '` is not a valid number. ' + utils.QUICK_HELP)
                 continue
 
             number = float(number)
@@ -87,16 +87,16 @@ def get_bot_converter_response(message, bot_handler):
             ut_to_std = utils.UNITS.get(unit_to, False)
 
             if uf_to_std is False:
-                results.append(unit_from + ' is not a valid unit. ' + utils.QUICK_HELP)
+                results.append('`' + unit_from + '` is not a valid unit. ' + utils.QUICK_HELP)
             if ut_to_std is False:
-                results.append(unit_to + ' is not a valid unit.' + utils.QUICK_HELP)
+                results.append('`' + unit_to + '` is not a valid unit.' + utils.QUICK_HELP)
             if uf_to_std is False or ut_to_std is False:
                 continue
 
             base_unit = uf_to_std[2]
             if uf_to_std[2] != ut_to_std[2]:
                 unit_from = unit_from.capitalize() if uf_to_std[2] == 'kelvin' else unit_from
-                results.append(unit_to.capitalize() + ' and ' + unit_from +
+                results.append('`' + unit_to.capitalize() + '` and `' + unit_from + '`' +
                                ' are not from the same category. ' + utils.QUICK_HELP)
                 continue
 
