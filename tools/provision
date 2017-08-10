@@ -7,7 +7,15 @@ if [ ! -d "$BASEDIR/zulip-api-py2-venv" ]; then
     echo "Virtualenv created."
 fi
 
-source $BASEDIR/zulip-api-py2-venv/bin/activate
+VENVBINDIR="bin"
+if [[ "$OSTYPE" == "cygwin" ]]; then
+    # POSIX compatibility layer and Linux environment emulation for Windows
+    # Virtual uses /Scripts instead of /bin on Windows.
+    # Read https://virtualenv.pypa.io/en/stable/userguide/
+    VENVBINDIR="Scripts"
+fi
+
+source $BASEDIR/zulip-api-py2-venv/$VENVBINDIR/activate
 RVAL=$?
 if [ $RVAL -ne 0 ]; then
     echo "Failed to activate virtualenv."
