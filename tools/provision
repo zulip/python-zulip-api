@@ -2,15 +2,23 @@
 
 BASEDIR=`dirname $0`/..
 
-if [ ! -d "$BASEDIR/.zulip-api-env" ]; then
-    virtualenv $BASEDIR/.zulip-api-env
+if [ ! -d "$BASEDIR/zulip-api-py2-venv" ]; then
+    virtualenv $BASEDIR/zulip-api-py2-venv
     echo "Virtualenv created."
 fi
 
-source $BASEDIR/.zulip-api-env/bin/activate
+source $BASEDIR/zulip-api-py2-venv/bin/activate
+RVAL=$?
+if [ $RVAL -ne 0 ]; then
+	echo "Failed to activate virtualenv."
+	exit
+fi
 
-if [ ! -f "$BASEDIR/.zulip-api-env/updated" -o $BASEDIR/requirements.txt -nt $BASEDIR/.zulip-api-env/updated ]; then
+# Install python dependencies if needed.
+cmp $BASEDIR/zulip-api-py2-venv/installed-requirements.txt requirements.txt 2>/dev/null
+RVAL=$? # Return value of the comparision. 0 means files are same.
+if [ $RVAL -ne 0 ]; then
     pip install -r $BASEDIR/requirements.txt
-    touch $BASEDIR/.zulip-api-env/updated
+    cp requirements.txt $BASEDIR/zulip-api-py2-venv/installed-requirements.txt
     echo "Requirements installed."
 fi

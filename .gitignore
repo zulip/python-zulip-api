@@ -33,4 +33,4 @@ nosetests.xml
 .pydevproject
 
 # ignore virtualenv created by ./tools/provision
-.zulip-api-env
+zulip-api-py2-venv
