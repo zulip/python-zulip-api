@@ -159,8 +159,55 @@ class StateHandler(object):
         yield new_state
         self.set_state(new_state)
 
-def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
-    # type: (Any, bool, str) -> Any
+def extract_query_without_mention(message, at_mention_bot_name):
+    # type: (Dict[str, Any], str) -> str
+    """
+    If the bot is the first @mention in the message, then this function returns
+    the message with the bot's @mention removed.  Otherwise, it returns None.
+    """
+    bot_mention = r'^@(\*\*{0}\*\*)'.format(at_mention_bot_name)
+    start_with_mention = re.compile(bot_mention).match(message['content'])
+    if start_with_mention is None:
+        return None
+    query_without_mention = message['content'][len(start_with_mention.group()):]
+    return query_without_mention.lstrip()
+
+def is_private(message, at_mention_bot_name):
+    # type: (Dict[str, Any], str) -> bool
+    # bot will not reply if the sender name is the same as the bot name
+    # to prevent infinite loop
+    if message['type'] == 'private':
+        return at_mention_bot_name != message['sender_full_name']
+    return False
+
+def initialize_config_bot(message_handler, bot_handler):
+    # type: (Any) -> None
+    if hasattr(message_handler, 'initialize'):
+        message_handler.initialize(bot_handler=bot_handler)
+
+def get_message_content_if_bot_is_called(message, at_mention_bot_name):
+    # type: (Dict[str, Any], str) -> Any
+    #
+    # is_mentioned is true if the bot is mentioned at ANY position (not necessarily
+    # the first @mention in the message).
+    is_mentioned = message['is_mentioned']
+    is_private_message = is_private(message=message, at_mention_bot_name=at_mention_bot_name)
+
+    # Strip at-mention botname from the message
+    if is_mentioned:
+        # message['content'] will be None when the bot's @-mention is not at the beginning.
+        # In that case, the message shall not be handled.
+        message['content'] = extract_query_without_mention(message=message,
+                                                           at_mention_bot_name=at_mention_bot_name)
+        if message['content'] is None:
+            return
+
+    if (is_private_message or is_mentioned):
+        return message['content']
+    return None
+
+def run_message_handler_for_bot(lib_module, config_file, quiet, bot_name):
+    # type: (Any, str, bool, str) -> Any
     #
     # lib_module is of type Any, since it can contain any bot's
     # handler class. Eventually, we want bot's handler classes to
@@ -173,53 +220,23 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
     restricted_client = ExternalBotHandler(client, bot_dir)
 
     message_handler = lib_module.handler_class()
-    if hasattr(message_handler, 'initialize'):
-        message_handler.initialize(bot_handler=restricted_client)
+    initialize_config_bot(message_handler=message_handler, bot_handler=restricted_client)
 
     state_handler = StateHandler()
 
     if not quiet:
         print(message_handler.usage())
 
-    def extract_query_without_mention(message, client):
-        # type: (Dict[str, Any], ExternalBotHandler) -> str
-        """
-        If the bot is the first @mention in the message, then this function returns
-        the message with the bot's @mention removed.  Otherwise, it returns None.
-        """
-        bot_mention = r'^@(\*\*{0}\*\*)'.format(client.full_name)
-        start_with_mention = re.compile(bot_mention).match(message['content'])
-        if start_with_mention is None:
-            return None
-        query_without_mention = message['content'][len(start_with_mention.group()):]
-        return query_without_mention.lstrip()
-
-    def is_private(message, client):
-        # type: (Dict[str, Any], ExternalBotHandler) -> bool
-        # bot will not reply if the sender name is the same as the bot name
-        # to prevent infinite loop
-        if message['type'] == 'private':
-            return client.full_name != message['sender_full_name']
-        return False
-
     def handle_message(message):
         # type: (Dict[str, Any]) -> None
         logging.info('waiting for next message')
 
-        # is_mentioned is true if the bot is mentioned at ANY position (not necessarily
-        # the first @mention in the message).
-        is_mentioned = message['is_mentioned']
-        is_private_message = is_private(message, restricted_client)
+        message_content_if_bot_is_called = get_message_content_if_bot_is_called(message=message,
+                                                                                at_mention_bot_name=restricted_client.full_name)
 
-        # Strip at-mention botname from the message
-        if is_mentioned:
-            # message['content'] will be None when the bot's @-mention is not at the beginning.
-            # In that case, the message shall not be handled.
-            message['content'] = extract_query_without_mention(message=message, client=restricted_client)
-            if message['content'] is None:
-                return
+        if message_content_if_bot_is_called is not None:
+            message['content'] = message_content_if_bot_is_called
 
-        if is_private_message or is_mentioned:
             message_handler.handle_message(
                 message=message,
                 bot_handler=restricted_client,
