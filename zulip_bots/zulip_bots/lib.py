@@ -164,6 +164,16 @@ def extract_query_without_mention(message, at_mention_bot_name):
     """
     If the bot is the first @mention in the message, then this function returns
     the message with the bot's @mention removed.  Otherwise, it returns None.
+    This function is being leveraged by two systems; external bot system and embedded bot system.
+    This function is being called by:
+    1. 'run_message_handler_for_bot' function (zulip_bots/lib.py file in zulip/python-zulip-api
+        repository) that executes/runs/calls external bots.
+    2. 'consume' function in EmbeddedBotWorker class (zerver/worker/queue_processors.py
+        file in zulip/zulip repository) that executes/runs/calls embedded bots.
+
+    Since, this is a general utility function for any working bot, it is planned to be an independent
+    function for now. Any refactoring should correctly be reflected in all the bot systems using this
+    function.
     """
     bot_mention = r'^@(\*\*{0}\*\*)'.format(at_mention_bot_name)
     start_with_mention = re.compile(bot_mention).match(message['content'])
@@ -174,20 +184,46 @@ def extract_query_without_mention(message, at_mention_bot_name):
 
 def is_private(message, at_mention_bot_name):
     # type: (Dict[str, Any], str) -> bool
-    # bot will not reply if the sender name is the same as the bot name
-    # to prevent infinite loop
+    """
+    This function is to ensure that the bot doesn't go into infinite loop if the sender name is
+    the same as the bot name. This function makes the bot not reply to such a sender.
+
+    This function is being leveraged by two systems; external bot system and embedded bot system,
+    any change/modification in the structure of this should be reflected at other places accordingly.
+    For details read "extract_query_without_mention" function docstring.
+    """
     if message['type'] == 'private':
         return at_mention_bot_name != message['sender_full_name']
     return False
 
 def initialize_config_bot(message_handler, bot_handler):
     # type: (Any) -> None
+    """
+    If a bot has bot-specific configuration settings (both public or private) to be set, then this
+    function calls the 'initialize' function which in turn calls 'get_config_info' for bots.
+
+    This function is being leveraged by two systems; external bot system and embedded bot system,
+    any change/modification in the structure of this should be reflected at other places accordingly.
+    For details read "extract_query_without_mention" function docstring.
+    """
     if hasattr(message_handler, 'initialize'):
         message_handler.initialize(bot_handler=bot_handler)
 
 def get_message_content_if_bot_is_called(message, at_mention_bot_name):
     # type: (Dict[str, Any], str) -> Any
-    #
+    """
+    Check if the bot is called or not; a bot can be called by 2 ways: @mention-botname or private message
+    to the bot. Once it is confirmed if a bot is called or not, then we move to the second part of the
+    function.
+    If the bot is privately messaged, then the message content need not be modified and the bot can directly
+    process the entire message content.
+    If the bot is called by @mention-botname, then we need to remove @mention-botname for the bot to
+    process the rest of the message content.
+
+    This function is being leveraged by two systems; external bot system and embedded bot system,
+    any change/modification in the structure of this should be reflected at other places accordingly.
+    For details read "extract_query_without_mention" function docstring.
+    """
     # is_mentioned is true if the bot is mentioned at ANY position (not necessarily
     # the first @mention in the message).
     is_mentioned = message['is_mentioned']
