@@ -18,6 +18,8 @@ class WikipediaHandler(object):
     kind of external issue tracker as well.
     '''
 
+    ACCEPT_EMPTY_MESSAGES = 1
+
     def usage(self):
         return '''
             This plugin will allow users to directly search
