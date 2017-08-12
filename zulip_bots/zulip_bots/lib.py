@@ -156,6 +156,10 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
 
     state_handler = StateHandler()
 
+    # Look in bot class to see if empty messages will be handled in this function
+    # (use inverted getattr since if handler_class accepts messages, we don't handle here)
+    handle_empty_here = not getattr(lib_module.handler_class, 'ACCEPT_EMPTY_MESSAGES', False)
+
     if not quiet:
         print(message_handler.usage())
 
@@ -196,6 +200,12 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
             message['content'] = extract_query_without_mention(message=message, client=restricted_client)
             if message['content'] is None:
                 return
+
+        # Handle empty message directly if bot (handler_class) does not
+        # explicitly request to do so
+        if not message['content'] and handle_empty_here:
+            restricted_client.send_reply(message, "Oops. Your message was empty.")
+            return
 
         if is_private_message or is_mentioned:
             message_handler.handle_message(
