@@ -18,7 +18,10 @@ class WikipediaHandler(object):
     kind of external issue tracker as well.
     '''
 
-    ACCEPT_EMPTY_MESSAGES = 1
+    META = {'name': 'Wikipedia',
+            'description': 'Searches Wikipedia for a term and returns the top article.',
+            'no_defaults': True,  # Let bot handle all messages
+    }
 
     def usage(self):
         return '''

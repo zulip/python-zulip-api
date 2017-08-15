@@ -6,6 +6,8 @@ import requests
 XKCD_TEMPLATE_URL = 'https://xkcd.com/%s/info.0.json'
 LATEST_XKCD_URL = 'https://xkcd.com/info.0.json'
 
+from collections import OrderedDict
+
 class XkcdHandler(object):
     '''
     This plugin provides several commands that can be used for fetch a comic
@@ -13,6 +15,16 @@ class XkcdHandler(object):
     "@mention-bot" and responds with a message with the comic based on provided
     commands.
     '''
+
+    META = {'name': 'XKCD',
+            'description': 'Fetches comic strips from https://xkcd.com.',
+            'no_defaults': False,
+            'commands': OrderedDict([
+                ('latest', "Show the latest comic strip"),
+                ('random', "Show a random comic strip"),
+                ('<comic id>', "Show a comic strip with a specific 'comic id'"),
+            ])
+    }
 
     def usage(self):
         return '''
