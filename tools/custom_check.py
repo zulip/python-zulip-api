@@ -222,7 +222,7 @@ def build_custom_checkers(by_lang):
                 failed = True
 
         markdown_docs_length_exclude = {
-            "zulip_bots/zulip_bots/bots/converter/readme.md",
+            "zulip_bots/zulip_bots/bots/converter/doc.md",
             "tools/server_lib/README.md",
         }
         for fn in by_lang['md']:
