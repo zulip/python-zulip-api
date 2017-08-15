@@ -73,7 +73,7 @@ def handle_bot(bot):
     # TODO: Handle stateful bots properly.
     state_handler = StateHandler()
 
-    event = json.loads(request.data)
+    event = request.get_json(force=True)
     message_handler.handle_message(message=event["message"],
                                    bot_handler=restricted_client,
                                    state_handler=state_handler)
