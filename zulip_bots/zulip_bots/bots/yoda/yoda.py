@@ -80,14 +80,12 @@ class YodaSpeakHandler(object):
                 ' Did you follow the instructions in the `readme.md` file?'
             return error_message
 
-
     def format_input(self, original_content):
         # gets rid of whitespace around the edges, so that they aren't a problem in the future
         message_content = original_content.strip()
         # replaces all spaces with '+' to be in the format the api requires
         sentence = message_content.replace(' ', '+')
         return sentence
-
 
     def handle_input(self, message, bot_handler):
 
@@ -123,7 +121,6 @@ class YodaSpeakHandler(object):
             subject=subject,
             content=message
         ))
-
 
     def is_help(self, original_content):
         # gets rid of whitespace around the edges, so that they aren't a problem in the future
