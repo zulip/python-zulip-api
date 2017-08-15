@@ -56,8 +56,9 @@ class TestYodaBot(BotTestCase):
 
             Before running this, make sure to get a Mashape Api token.
             Instructions are in the 'readme.md' file.
-            Store it in the 'yoda.config' file.
-            The 'yoda.config' file should be located at '~/yoda.config'.
+            Store it in the 'yoda.conf' file.
+            The 'yoda.conf' file should be located in this bot's (zulip_bots/bots/yoda/yoda)
+            directory.
             Example input:
             @mention-bot You will learn how to speak like me someday.
             '''
@@ -75,8 +76,9 @@ class TestYodaBot(BotTestCase):
 
             Before running this, make sure to get a Mashape Api token.
             Instructions are in the 'readme.md' file.
-            Store it in the 'yoda.config' file.
-            The 'yoda.config' file should be located at '~/yoda.config'.
+            Store it in the 'yoda.conf' file.
+            The 'yoda.conf' file should be located in this bot's (zulip_bots/bots/yoda/yoda)
+            directory.
             Example input:
             @mention-bot You will learn how to speak like me someday.
             '''
