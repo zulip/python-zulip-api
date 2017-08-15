@@ -35,6 +35,11 @@ def get_bot_logo_path(name):
 
     return None
 
+def get_bots_directory_path():
+    # type: () -> str
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(current_dir, 'bots')
+
 class RateLimit(object):
     def __init__(self, message_limit, interval_limit):
         # type: (int, int) -> None
