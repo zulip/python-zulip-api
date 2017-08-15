@@ -24,3 +24,7 @@ include zulip_bots/bots/weather/fixtures/test_only_country.json
 include zulip_bots/bots/weather/fixtures/test_city_with_country.json
 include zulip_bots/bots/weather/fixtures/test_city_not_found.json
 
+include zulip_bots/bots/yoda/fixtures/test_1.json
+include zulip_bots/bots/yoda/fixtures/test_2.json
+include zulip_bots/bots/yoda/fixtures/test_invalid_input.json
+include zulip_bots/bots/yoda/fixtures/test_only_numbers.json
