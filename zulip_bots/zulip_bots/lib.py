@@ -40,6 +40,10 @@ def get_bots_directory_path():
     current_dir = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(current_dir, 'bots')
 
+def get_bot_doc_path(name):
+    # type: (str) -> str
+    return os.path.join(get_bots_directory_path(), '{}/doc.md'.format(name))
+
 class RateLimit(object):
     def __init__(self, message_limit, interval_limit):
         # type: (int, int) -> None
