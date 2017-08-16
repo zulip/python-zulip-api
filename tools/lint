@@ -21,7 +21,7 @@ def lint_all(args, options):
                                              'html', 'json', 'md', 'txt', 'text', 'yaml'],
                                      use_shebang=True, group_by_ftype=True, exclude=EXCLUDED_FILES))
     check_custom_checks_py, check_custom_checks_nonpy = build_custom_checkers(by_lang)
-    return all([check_pep8(by_lang['py']),
+    return any([check_pep8(by_lang['py']),
                 check_custom_checks_py(),
                 check_custom_checks_nonpy()])
 
