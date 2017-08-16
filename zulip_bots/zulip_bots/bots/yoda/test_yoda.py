@@ -14,7 +14,6 @@ class TestYodaBot(BotTestCase):
 
         # Test normal sentence (1).
         bot_response = "Learn how to speak like me someday, you will. Yes, hmmm."
-
         with self.mock_config_info({'api_key': '12345678'}), \
                 self.mock_http_conversation('test_1'):
             self.initialize_bot()
@@ -26,7 +25,6 @@ class TestYodaBot(BotTestCase):
 
         # Test normal sentence (2).
         bot_response = "Much to learn, you still have."
-
         with self.mock_config_info({'api_key': '12345678'}), \
                 self.mock_http_conversation('test_2'):
             self.initialize_bot()
@@ -38,7 +36,6 @@ class TestYodaBot(BotTestCase):
 
         # Test only numbers.
         bot_response = "23456.  Herh herh herh."
-
         with self.mock_config_info({'api_key': '12345678'}), \
                 self.mock_http_conversation('test_only_numbers'):
             self.initialize_bot()

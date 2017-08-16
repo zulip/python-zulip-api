@@ -6,7 +6,8 @@
       "Accept": "text/plain"
     }
   },
-  "response": {"text": "Learn how to speak like me someday, you will. Yes, hmmm."},
+  "response": {"text": "Learn how to speak like me someday, you will. Yes, hmmm."
+  },
   "response-headers": {
     "status": 200,
     "content-type": "text/html; charset=utf-8"
