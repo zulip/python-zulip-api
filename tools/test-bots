@@ -32,7 +32,7 @@ Running tests for all bots:
 
 Running tests for specific bots:
 
-./test-bots define thesaurus
+./test-bots define xkcd
 
 Running tests for all bots excluding certain bots (the
 following command would run tests for all bots except

@@ -33,7 +33,6 @@ setuptools_info = dict(
         'zulip>=0.3.1',
         'mock>=2.0.0',
         'html2text',  # for bots/define
-        'PyDictionary',  # for bots/thesaurus
     ],
 )
 
