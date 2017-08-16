@@ -1,0 +1,31 @@
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: Zulip
+Upstream-Contact: Zulip Development Discussion <zulip-devel@googlegroups.com>
+Source: https://zulip.org/
+Comment:
+ Unless otherwise noted, the Zulip software is distributed under the Apache
+ License, Version 2.0. The software includes some works released by third
+ parties under other free and open source licenses. Those works are
+ redistributed under the license terms under which the works were received.
+ .
+ While Dropbox has sought to provide complete and accurate licensing
+ information for each FOSS package, Dropbox does not represent or warrant
+ that the licensing information provided herein is correct or error-free.
+ Recipients of the Zulip software should investigate the identified FOSS
+ packages to confirm the accuracy of the licensing information provided.
+ Recipients are also encouraged to notify Dropbox of any inaccurate
+ information or errors found in these notices.
+
+Files: *
+Copyright: 2012-2020 Dropbox, Inc., Kandra Labs, Inc., and contributors
+License: Apache-2
+
+Files: zulip/integrations/perforce/git_p4.py
+Copyright: 2007 Simon Hausmann <simon@lst.de>,
+ 2007 Trolltech ASA
+License: Expat
+Comment: https://raw.github.com/git/git/34022ba/git-p4.py
+
+Files: zulip/integrations/jabber/jabber_mirror_backend.py
+Copyright: 2013 Permabit, Inc., 2013-2014 Dropbox, Inc.
+License: Expat
