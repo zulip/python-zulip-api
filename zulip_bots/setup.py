@@ -5,6 +5,10 @@ from __future__ import print_function
 
 import sys
 
+# Before anything, generate MANIFEST.in
+import generate_manifest
+generate_manifest.main()
+
 # We should be installable with either setuptools or distutils.
 package_info = dict(
     name='zulip_bots',
