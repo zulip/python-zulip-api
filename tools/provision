@@ -1,0 +1,32 @@
+#!/bin/bash
+
+BASEDIR=`dirname $0`/..
+
+if [ ! -d "$BASEDIR/zulip-api-py2-venv" ]; then
+    virtualenv $BASEDIR/zulip-api-py2-venv
+    echo "Virtualenv created."
+fi
+
+VENVBINDIR="bin"
+if [[ "$OSTYPE" == "cygwin" ]]; then
+    # POSIX compatibility layer and Linux environment emulation for Windows
+    # Virtual uses /Scripts instead of /bin on Windows.
+    # Read https://virtualenv.pypa.io/en/stable/userguide/
+    VENVBINDIR="Scripts"
+fi
+
+source $BASEDIR/zulip-api-py2-venv/$VENVBINDIR/activate
+RVAL=$?
+if [ $RVAL -ne 0 ]; then
+	echo "Failed to activate virtualenv."
+	exit
+fi
+
+# Install python dependencies if needed.
+cmp $BASEDIR/zulip-api-py2-venv/installed-requirements.txt requirements.txt 2>/dev/null
+RVAL=$? # Return value of the comparision. 0 means files are same.
+if [ $RVAL -ne 0 ]; then
+    pip install -r $BASEDIR/requirements.txt
+    cp requirements.txt $BASEDIR/zulip-api-py2-venv/installed-requirements.txt
+    echo "Requirements installed."
+fi

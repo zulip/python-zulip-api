@@ -31,3 +31,6 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+
+# ignore virtualenv created by ./tools/provision
+zulip-api-py2-venv
