@@ -1,6 +1,7 @@
 # Server Lib
 
-This directory contains file copied as is from the [zulip server repository](https://github.com/zulip/zulip) as they were on the commit `343cb20d570a8f5c1f5b6e6842058b294a376593`.
+This directory contains file copied as is from the [zulip server repository](https://github.com/zulip/zulip)
+as they were on the commit `343cb20d570a8f5c1f5b6e6842058b294a376593`.
 
 ## List of copied files
 
