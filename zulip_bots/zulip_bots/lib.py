@@ -25,13 +25,15 @@ def exit_gracefully(signum, frame):
 def get_bot_logo_path(name):
     # type: str -> Optional[str]
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    logo_path_png = os.path.join(current_dir, 'bots/{bot_name}/logo.png')
-    logo_path_svg = os.path.join(current_dir, 'bots/{bot_name}/logo.svg')
+    logo_path_png = os.path.join(
+        current_dir, 'bots/{bot_name}/logo.png'.format(bot_name=name))
+    logo_path_svg = os.path.join(
+        current_dir, 'bots/{bot_name}/logo.svg'.format(bot_name=name))
 
     if os.path.isfile(logo_path_png):
-        return logo_path_png.format(bot_name=name)
+        return logo_path_png
     elif os.path.isfile(logo_path_svg):
-        return logo_path_svg.format(bot_name=name)
+        return logo_path_svg
 
     return None
 
