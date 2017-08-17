@@ -161,6 +161,27 @@ class StateHandler(object):
         yield new_state
         self.set_state(new_state)
 
+def extract_query_without_mention(message, client):
+    # type: (Dict[str, Any], ExternalBotHandler) -> str
+    """
+    If the bot is the first @mention in the message, then this function returns
+    the message with the bot's @mention removed.  Otherwise, it returns None.
+    """
+    bot_mention = r'^@(\*\*{0}\*\*)'.format(client.full_name)
+    start_with_mention = re.compile(bot_mention).match(message['content'])
+    if start_with_mention is None:
+        return None
+    query_without_mention = message['content'][len(start_with_mention.group()):]
+    return query_without_mention.lstrip()
+
+def is_private(message, client):
+    # type: (Dict[str, Any], ExternalBotHandler) -> bool
+    # bot will not reply if the sender name is the same as the bot name
+    # to prevent infinite loop
+    if message['type'] == 'private':
+        return client.full_name != message['sender_full_name']
+    return False
+
 def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
     # type: (Any, bool, str) -> Any
     #
@@ -182,27 +203,6 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
 
     if not quiet:
         print(message_handler.usage())
-
-    def extract_query_without_mention(message, client):
-        # type: (Dict[str, Any], ExternalBotHandler) -> str
-        """
-        If the bot is the first @mention in the message, then this function returns
-        the message with the bot's @mention removed.  Otherwise, it returns None.
-        """
-        bot_mention = r'^@(\*\*{0}\*\*)'.format(client.full_name)
-        start_with_mention = re.compile(bot_mention).match(message['content'])
-        if start_with_mention is None:
-            return None
-        query_without_mention = message['content'][len(start_with_mention.group()):]
-        return query_without_mention.lstrip()
-
-    def is_private(message, client):
-        # type: (Dict[str, Any], ExternalBotHandler) -> bool
-        # bot will not reply if the sender name is the same as the bot name
-        # to prevent infinite loop
-        if message['type'] == 'private':
-            return client.full_name != message['sender_full_name']
-        return False
 
     def handle_message(message):
         # type: (Dict[str, Any]) -> None
