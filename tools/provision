@@ -8,7 +8,7 @@ if [ ! -d "$BASEDIR/zulip-api-py2-venv" ]; then
 fi
 
 VENVBINDIR="bin"
-if [[ "$OSTYPE" == "cygwin" ]]; then
+if [[ "$OSTYPE" == "msys" ]]; then
     # POSIX compatibility layer and Linux environment emulation for Windows
     # Virtual uses /Scripts instead of /bin on Windows.
     # Read https://virtualenv.pypa.io/en/stable/userguide/
