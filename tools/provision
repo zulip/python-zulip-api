@@ -27,7 +27,7 @@ cmp "$BASEDIR/zulip-api-py2-venv/installed-requirements.txt" requirements.txt 2>
 RVAL=$? # Return value of the comparision. 0 means files are same.
 if [ "$RVAL" -ne 0 ]; then
     pip install -r "$BASEDIR/requirements.txt"
-    cp requirements.txt "$BASEDIR/zulip-api-py2-venv/installed-requirements.txt"
+    cp -a requirements.txt "$BASEDIR/zulip-api-py2-venv/installed-requirements.txt"
     echo "Requirements installed."
 fi
 echo 'Success!  Run `source' "$BASEDIR/zulip-api-py2-venv/bin/activate"'`' "to activate virtualenv."
