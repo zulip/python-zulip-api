@@ -15,18 +15,18 @@ if [[ "$OSTYPE" == "cygwin" ]]; then
     VENVBINDIR="Scripts"
 fi
 
-source $BASEDIR/zulip-api-py2-venv/$VENVBINDIR/activate
+source "$BASEDIR/zulip-api-py2-venv/$VENVBINDIR/activate"
 RVAL=$?
-if [ $RVAL -ne 0 ]; then
+if [ "$RVAL" -ne 0 ]; then
     echo "Failed to activate virtualenv."
     exit
 fi
 
 # Install python dependencies if needed.
-cmp $BASEDIR/zulip-api-py2-venv/installed-requirements.txt requirements.txt 2>/dev/null
+cmp "$BASEDIR/zulip-api-py2-venv/installed-requirements.txt" requirements.txt 2>/dev/null
 RVAL=$? # Return value of the comparision. 0 means files are same.
-if [ $RVAL -ne 0 ]; then
-    pip install -r $BASEDIR/requirements.txt
-    cp requirements.txt $BASEDIR/zulip-api-py2-venv/installed-requirements.txt
+if [ "$RVAL" -ne 0 ]; then
+    pip install -r "$BASEDIR/requirements.txt"
+    cp requirements.txt "$BASEDIR/zulip-api-py2-venv/installed-requirements.txt"
     echo "Requirements installed."
 fi
