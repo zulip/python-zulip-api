@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BASEDIR=`dirname $0`/..
+BASEDIR=$(dirname `dirname $0`)
 
 if [ ! -d "$BASEDIR/zulip-api-py2-venv" ]; then
     virtualenv $BASEDIR/zulip-api-py2-venv
@@ -30,3 +30,4 @@ if [ "$RVAL" -ne 0 ]; then
     cp requirements.txt "$BASEDIR/zulip-api-py2-venv/installed-requirements.txt"
     echo "Requirements installed."
 fi
+echo 'Success!  Run `source' "$BASEDIR/zulip-api-py2-venv/bin/activate"'`' "to activate virtualenv."
