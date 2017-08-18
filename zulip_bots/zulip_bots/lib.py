@@ -175,12 +175,18 @@ def extract_query_without_mention(message, client):
     query_without_mention = message['content'][len(start_with_mention.group()):]
     return query_without_mention.lstrip()
 
-def is_private(message, client):
-    # type: (Dict[str, Any], ExternalBotHandler) -> bool
-    # bot will not reply if the sender id is the same as the bot id
-    # to prevent infinite loop
+def is_private(message, at_mention_bot_id):
+    # type: (Dict[str, Any], int) -> bool
+    """
+    This function is to ensure that the bot doesn't go into infinite loop if the message sender id is
+    the same as the id of the bot which is called. This function makes the bot not reply to itself.
+
+    This function is being leveraged by two systems; external bot system and embedded bot system,
+    any change/modification in the structure of this should be reflected at other places accordingly.
+    For details read "extract_query_without_mention" function docstring.
+    """
     if message['type'] == 'private':
-        return client.user_id != message['sender_id']
+        return at_mention_bot_id != message['sender_id']
     return False
 
 def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
@@ -212,7 +218,7 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
         # is_mentioned is true if the bot is mentioned at ANY position (not necessarily
         # the first @mention in the message).
         is_mentioned = message['is_mentioned']
-        is_private_message = is_private(message, restricted_client)
+        is_private_message = is_private(message, restricted_client.user_id)
 
         # Strip at-mention botname from the message
         if is_mentioned:
