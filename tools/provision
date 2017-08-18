@@ -1,15 +1,28 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 BASEDIR=$(dirname `dirname $0`)
-VENVDIR="zulip-api-py2-venv"
 VENVEXECDIR="bin"
+PYVERSION=$(python -V | grep -Po '(?<=Python ).+')
+PYCUSTOMPATH_ARG=""
+while getopts "hp:" arg; do
+    case "$arg" in
+        h)
+            echo "USAGE: $0 [-p <path_to_python_version>]"
+            exit
+            ;;
+        p)
+            PYCUSTOMPATH_ARG="-p $OPTARG"
+            PYVERSION=$("$OPTARG" "-V" 2>&1 | grep -Po '(?<=Python ).+')
+            ;;
+    esac
+done
+VENVDIR="zulip-api-py$PYVERSION-venv"
 
 if [ ! -d "$BASEDIR/$VENVDIR" ]; then
-    virtualenv "$BASEDIR/$VENVDIR"
+    virtualenv $PYCUSTOMPATH_ARG "$BASEDIR/$VENVDIR"
     echo "Virtualenv created."
 fi
 
-VENVBINDIR="bin"
 if [[ ! -d "$BASEDIR/$VENVDIR/$VENVEXECDIR" ]]; then
     # POSIX compatibility layer and Linux environment emulation for Windows
     # Virtual uses /Scripts instead of /bin on Windows.

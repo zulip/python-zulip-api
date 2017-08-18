@@ -24,7 +24,12 @@ This repository contains the source code for Zulip's PyPI packages:
 4. Run:
    ```
    ./tools/provision
-   source ./zulip-api-py2-venv/bin/activate
+   ```
+   This sets up a virtual Python environment in `zulip-api-py<your_python_version>-venv`,
+   where `<your_python_version>` is your default version of Python. If you would like to specify
+   a different Python version, run
+   ```
+   ./tools/provision -p <path_to_your_python_version>`
    ```
 
 5. You should now be able to run all the tests within this virtualenv.
