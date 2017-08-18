@@ -175,12 +175,17 @@ def extract_query_without_mention(message, client):
     query_without_mention = message['content'][len(start_with_mention.group()):]
     return query_without_mention.lstrip()
 
-def is_private(message, client):
-    # type: (Dict[str, Any], ExternalBotHandler) -> bool
-    # bot will not reply if the sender id is the same as the bot id
-    # to prevent infinite loop
-    if message['type'] == 'private':
-        return client.user_id != message['sender_id']
+def is_private_message_from_another_user(message_dict, current_user_id):
+    # type: (Dict[str, Any], int) -> bool
+    """
+    Checks whether a message dict represents a PM from another user.
+
+    This function is used by the embedded bot system in the
+    zulip/zulip project, so refactor with care.  See the comments in
+    extract_query_without_mention.
+    """
+    if message_dict['type'] == 'private':
+        return current_user_id != message_dict['sender_id']
     return False
 
 def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
@@ -212,7 +217,7 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
         # is_mentioned is true if the bot is mentioned at ANY position (not necessarily
         # the first @mention in the message).
         is_mentioned = message['is_mentioned']
-        is_private_message = is_private(message, restricted_client)
+        is_private_message = is_private_message_from_another_user(message, restricted_client.user_id)
 
         # Strip at-mention botname from the message
         if is_mentioned:
