@@ -79,6 +79,7 @@ class ExternalBotHandler(object):
         self._client = client
         self._root_dir = root_dir
         try:
+            self.user_id = user_profile['user_id']
             self.full_name = user_profile['full_name']
             self.email = user_profile['email']
         except KeyError:
@@ -176,10 +177,10 @@ def extract_query_without_mention(message, client):
 
 def is_private(message, client):
     # type: (Dict[str, Any], ExternalBotHandler) -> bool
-    # bot will not reply if the sender name is the same as the bot name
+    # bot will not reply if the sender id is the same as the bot id
     # to prevent infinite loop
     if message['type'] == 'private':
-        return client.full_name != message['sender_full_name']
+        return client.user_id != message['sender_id']
     return False
 
 def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
