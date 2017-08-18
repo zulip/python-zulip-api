@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -ev
+
+CURRENT_DIR=$(dirname $(dirname "$0"))
+cd "$CURRENT_DIR"
+
+python -m unittest discover -v zulip_botserver
+tools/test-bots
