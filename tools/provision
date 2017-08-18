@@ -1,21 +1,23 @@
 #!/bin/bash
 
 BASEDIR=$(dirname `dirname $0`)
+VENVDIR="zulip-api-py2-venv"
+VENVEXECDIR="bin"
 
-if [ ! -d "$BASEDIR/zulip-api-py2-venv" ]; then
-    virtualenv $BASEDIR/zulip-api-py2-venv
+if [ ! -d "$BASEDIR/$VENVDIR" ]; then
+    virtualenv "$BASEDIR/$VENVDIR"
     echo "Virtualenv created."
 fi
 
 VENVBINDIR="bin"
-if [[ "$OSTYPE" == "msys" ]]; then
+if [[ ! -d "$BASEDIR/$VENVDIR/$VENVEXECDIR" ]]; then
     # POSIX compatibility layer and Linux environment emulation for Windows
     # Virtual uses /Scripts instead of /bin on Windows.
     # Read https://virtualenv.pypa.io/en/stable/userguide/
-    VENVBINDIR="Scripts"
+    VENVEXECDIR="Scripts"
 fi
 
-source "$BASEDIR/zulip-api-py2-venv/$VENVBINDIR/activate"
+source "$BASEDIR/$VENVDIR/$VENVEXECDIR/activate"
 RVAL=$?
 if [ "$RVAL" -ne 0 ]; then
     echo "Failed to activate virtualenv."
@@ -23,11 +25,11 @@ if [ "$RVAL" -ne 0 ]; then
 fi
 
 # Install python dependencies if needed.
-cmp "$BASEDIR/zulip-api-py2-venv/installed-requirements.txt" requirements.txt 2>/dev/null
+cmp "$BASEDIR/$VENVDIR/installed-requirements.txt" requirements.txt 2>/dev/null
 RVAL=$? # Return value of the comparision. 0 means files are same.
 if [ "$RVAL" -ne 0 ]; then
     pip install -r "$BASEDIR/requirements.txt"
-    cp -a requirements.txt "$BASEDIR/zulip-api-py2-venv/installed-requirements.txt"
+    cp -a requirements.txt "$BASEDIR/$VENVDIR/installed-requirements.txt"
     echo "Requirements installed."
 fi
-echo 'Success!  Run `source' "$BASEDIR/zulip-api-py2-venv/bin/activate"'`' "to activate virtualenv."
+echo 'Success!  Run `source' "$BASEDIR/$VENVDIR/$VENVEXECDIR/activate"'`' "to activate virtualenv."
