@@ -162,13 +162,23 @@ class StateHandler(object):
         yield new_state
         self.set_state(new_state)
 
-def extract_query_without_mention(message, client):
-    # type: (Dict[str, Any], ExternalBotHandler) -> str
+def extract_query_without_mention(message, at_mention_bot_name):
+    # type: (Dict[str, Any], str) -> str
     """
     If the bot is the first @mention in the message, then this function returns
     the message with the bot's @mention removed.  Otherwise, it returns None.
+    This function is being leveraged by two systems; external bot system and embedded bot system.
+    This function is being called by:
+    1. 'run_message_handler_for_bot' function (zulip_bots/lib.py file in zulip/python-zulip-api
+        repository) that executes/runs/calls external bots.
+    2. 'consume' function in EmbeddedBotWorker class (zerver/worker/queue_processors.py
+        file in zulip/zulip repository) that executes/runs/calls embedded bots.
+
+    Since, this is a general utility function for any working bot, it is planned to be an independent
+    function for now. Any refactoring should correctly be reflected in all the bot systems using this
+    function.
     """
-    bot_mention = r'^@(\*\*{0}\*\*)'.format(client.full_name)
+    bot_mention = r'^@(\*\*{0}\*\*)'.format(at_mention_bot_name)
     start_with_mention = re.compile(bot_mention).match(message['content'])
     if start_with_mention is None:
         return None
@@ -224,7 +234,7 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
         if is_mentioned:
             # message['content'] will be None when the bot's @-mention is not at the beginning.
             # In that case, the message shall not be handled.
-            message['content'] = extract_query_without_mention(message=message, client=restricted_client)
+            message['content'] = extract_query_without_mention(message=message, at_mention_bot_name=restricted_client.full_name)
             if message['content'] is None:
                 return
 
