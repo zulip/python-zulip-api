@@ -199,6 +199,39 @@ def is_private(message, at_mention_bot_id):
         return at_mention_bot_id != message['sender_id']
     return False
 
+def get_message_content_if_bot_is_called(message, at_mention_bot_name, at_mention_bot_id):
+    # type: (Dict[str, Any], str) -> Any
+    """
+    Check if the bot is called or not; a bot can be called by 2 ways: @mention-botname or private message
+    to the bot. Once it is confirmed if a bot is called or not, then we move to the second part of the
+    function.
+    If the bot is privately messaged, then the message content need not be modified and the bot can directly
+    process the entire message content.
+    If the bot is called by @mention-botname, then we need to remove @mention-botname for the bot to
+    process the rest of the message content.
+
+    This function is being leveraged by two systems; external bot system and embedded bot system,
+    any change/modification in the structure of this should be reflected at other places accordingly.
+    For details read "extract_query_without_mention" function docstring.
+    """
+    # is_mentioned is true if the bot is mentioned at ANY position (not necessarily
+    # the first @mention in the message).
+    is_mentioned = message['is_mentioned']
+    is_private_message = is_private(message=message, at_mention_bot_id=at_mention_bot_id)
+
+    # Strip at-mention botname from the message
+    if is_mentioned:
+        # message['content'] will be None when the bot's @-mention is not at the beginning.
+        # In that case, the message shall not be handled.
+        message['content'] = extract_query_without_mention(message=message,
+                                                           at_mention_bot_name=at_mention_bot_name)
+        if message['content'] is None:
+            return
+
+    if (is_private_message or is_mentioned):
+        return message['content']
+    return None
+
 def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
     # type: (Any, bool, str) -> Any
     #
@@ -225,20 +258,13 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
         # type: (Dict[str, Any]) -> None
         logging.info('waiting for next message')
 
-        # is_mentioned is true if the bot is mentioned at ANY position (not necessarily
-        # the first @mention in the message).
-        is_mentioned = message['is_mentioned']
-        is_private_message = is_private(message, restricted_client.user_id)
+        message_content_if_bot_is_called = get_message_content_if_bot_is_called(message=message,
+                                                                                at_mention_bot_name=restricted_client.full_name,
+                                                                                at_mention_bot_id=restricted_client.user_id)
 
-        # Strip at-mention botname from the message
-        if is_mentioned:
-            # message['content'] will be None when the bot's @-mention is not at the beginning.
-            # In that case, the message shall not be handled.
-            message['content'] = extract_query_without_mention(message=message, at_mention_bot_name=restricted_client.full_name)
-            if message['content'] is None:
-                return
+        if message_content_if_bot_is_called:
+            message['content'] = message_content_if_bot_is_called
 
-        if is_private_message or is_mentioned:
             message_handler.handle_message(
                 message=message,
                 bot_handler=restricted_client,
