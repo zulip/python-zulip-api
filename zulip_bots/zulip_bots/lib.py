@@ -199,6 +199,19 @@ def is_private(message, at_mention_bot_id):
         return at_mention_bot_id != message['sender_id']
     return False
 
+def initialize_config_bot(message_handler, bot_handler):
+    # type: (Any, Any) -> None
+    """
+    If a bot has bot-specific configuration settings (both public or private) to be set, then this
+    function calls the 'initialize' function which in turn calls 'get_config_info' for bots.
+
+    This function is being leveraged by two systems; external bot system and embedded bot system,
+    any change/modification in the structure of this should be reflected at other places accordingly.
+    For details read "extract_query_without_mention" function docstring.
+    """
+    if hasattr(message_handler, 'initialize'):
+        message_handler.initialize(bot_handler=bot_handler)
+
 def get_message_content_if_bot_is_called(message, at_mention_bot_name, at_mention_bot_id):
     # type: (Dict[str, Any], str) -> Any
     """
@@ -246,8 +259,7 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
     restricted_client = ExternalBotHandler(client, bot_dir)
 
     message_handler = lib_module.handler_class()
-    if hasattr(message_handler, 'initialize'):
-        message_handler.initialize(bot_handler=restricted_client)
+    initialize_config_bot(message_handler=message_handler, bot_handler=restricted_client)
 
     state_handler = StateHandler()
 
