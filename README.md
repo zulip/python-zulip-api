@@ -11,7 +11,7 @@ This repository contains the source code for Zulip's PyPI packages:
 
 ## Development
 
-1. Fork and clone the Git repo:
+1. Fork and clone the Git repo: change
    `git clone https://github.com/<your_username>/python-zulip-api.git`
 
 2. Make sure you have [pip](https://pip.pypa.io/en/stable/installing/)
