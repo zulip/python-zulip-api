@@ -13,13 +13,17 @@ def main():
 
     parser = argparse.ArgumentParser(description="Run tests for the zulip_botserver package.")
     parser.add_argument('--coverage',
-                        action='store_true',
-                        help='compute test coverage')
+                        nargs='?',
+                        const=True,
+                        default=False,
+                        help='compute test coverage (--coverage combine to combine with previous reports)')
     options = parser.parse_args()
 
     if options.coverage:
         import coverage
         cov = coverage.Coverage(config_file="tools/.coveragerc")
+        if options.coverage == 'combine':
+            cov.load()
         cov.start()
 
     test_suites = unittest.defaultTestLoader.discover('zulip_botserver')
@@ -31,8 +35,6 @@ def main():
 
     if not result.failures and options.coverage:
         cov.stop()
-        cov.save()
-        cov.combine()
         cov.data_suffix = False  # Disable suffix so that filename is .coverage
         cov.save()
         cov.html_report()

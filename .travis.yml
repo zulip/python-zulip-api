@@ -10,9 +10,17 @@ matrix:
   - python: "3.6"
     env: TEST_SUITE=lint
 install:
+    # Install codecov, the library for the code coverage reporting tool we use
+  - pip install codecov
+
+    # Install pycodestyle, the library for checking pep8 code conformity.
   - pip install pycodestyle==2.3.1
+
+    # Install all API packages
   - pip install ./zulip
   - pip install ./zulip_bots
   - pip install ./zulip_botserver
 script:
   - tools/$TEST_SUITE
+after_success:
+  - codecov
