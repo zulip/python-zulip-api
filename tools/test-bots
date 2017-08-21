@@ -2,31 +2,32 @@
 
 from os.path import dirname, basename
 from importlib import import_module
-import argparse
+
 import os
 import sys
+import argparse
 import glob
 import unittest
-import logging
-
 
 def load_tests_from_modules(names, template):
     loader = unittest.defaultTestLoader
     test_suites = []
-
     for name in names:
         module = import_module(template.format(name=name))
         test_suites.append(loader.loadTestsFromModule(module))
 
     return test_suites
 
+def load_all_tests():
+    loader = unittest.defaultTestLoader
+    return loader.discover('zulip_bots')
 
 def parse_args(available_bots):
     description = """
 Script to run test_<bot_name>.py files in the
 zulip_bot/zulip_bots/bots/<bot_name> directories.
 
-Running tests for all bots:
+Running all tests:
 
 ./test-bots
 
@@ -34,7 +35,7 @@ Running tests for specific bots:
 
 ./test-bots define xkcd
 
-Running tests for all bots excluding certain bots (the
+Running all tests excluding certain bots (the
 following command would run tests for all bots except
 the tests for xkcd and wikipedia bots):
 
@@ -45,9 +46,13 @@ the tests for xkcd and wikipedia bots):
     parser.add_argument('bots_to_test',
                         metavar='bot',
                         nargs='*',
-                        default=available_bots,
+                        default=[],
                         help='specific bots to test (default is all)')
-
+    parser.add_argument('--coverage',
+                        nargs='?',
+                        const=True,
+                        default=False,
+                        help='compute test coverage (--coverage combine to combine with previous reports)')
     parser.add_argument('--exclude',
                         metavar='bot',
                         nargs='*',
@@ -57,22 +62,32 @@ the tests for xkcd and wikipedia bots):
 
 
 def main():
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    bots_dir = os.path.join(current_dir, '..', 'zulip_bots/zulip_bots/bots')
+    TOOLS_DIR = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(os.path.dirname(TOOLS_DIR))
+    sys.path.insert(0, TOOLS_DIR)
+    bots_dir = os.path.join(TOOLS_DIR, '..', 'zulip_bots/zulip_bots/bots')
     glob_pattern = bots_dir + '/*/test_*.py'
     test_modules = glob.glob(glob_pattern)
 
     # get only the names of bots that have tests
     available_bots = map(lambda path: basename(dirname(path)), test_modules)
-
     options = parse_args(available_bots)
 
-    bots_to_test = filter(lambda bot: bot not in options.exclude,
-                          options.bots_to_test)
-    test_suites = load_tests_from_modules(
-        bots_to_test,
-        template='zulip_bots.bots.{name}.test_{name}'
-    )
+    if options.coverage:
+        import coverage
+        cov = coverage.Coverage(config_file="tools/.coveragerc")
+        if options.coverage == 'combine':
+            cov.load()
+        cov.start()
+
+    if options.bots_to_test:
+        bots_to_test = filter(lambda bot: bot not in options.exclude,
+                              options.bots_to_test)
+        test_suites = load_tests_from_modules(
+            bots_to_test,
+            template='zulip_bots.bots.{name}.test_{name}')
+    else:
+        test_suites = load_all_tests()
 
     suite = unittest.TestSuite(test_suites)
     runner = unittest.TextTestRunner(verbosity=2)
@@ -80,6 +95,12 @@ def main():
     if result.failures or result.errors:
         sys.exit(1)
 
+    if not result.failures and options.coverage:
+        cov.stop()
+        cov.data_suffix = False  # Disable suffix so that filename is .coverage
+        cov.save()
+        cov.html_report()
+        print("HTML report saved under directory 'htmlcov'.")
 
 if __name__ == '__main__':
     main()
