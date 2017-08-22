@@ -1,5 +1,9 @@
 # Zulip API
 
+![Build status](https://travis-ci.org/zulip/python-zulip-api.svg?branch=master)
+[![Coverage status](https://img.shields.io/codecov/c/github/zulip/python-zulip-api/master.svg)](
+https://codecov.io/gh/zulip/python-zulip-api)
+
 This repository contains the source code for Zulip's PyPI packages:
 
 * `zulip`: [PyPI package](https://pypi.python.org/pypi/zulip/)
