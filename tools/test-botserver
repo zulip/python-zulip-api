@@ -26,6 +26,8 @@ def main():
             cov.load()
         cov.start()
 
+    # Codecov seems to work only when using loader.discover. It failed to capture line executions
+    # for functions like loader.loadTestFromModule or loader.loadTestFromNames.
     test_suites = unittest.defaultTestLoader.discover('zulip_botserver')
     suite = unittest.TestSuite(test_suites)
     runner = unittest.TextTestRunner(verbosity=2)
