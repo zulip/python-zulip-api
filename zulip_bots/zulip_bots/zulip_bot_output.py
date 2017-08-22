@@ -10,6 +10,7 @@ from importlib import import_module
 from os.path import basename, splitext
 
 import six
+from six.moves import configparser
 import mock
 from mock import MagicMock, patch
 
@@ -83,7 +84,26 @@ def main():
     message_handler = lib_module.handler_class()
 
     with patch('zulip_bots.lib.ExternalBotHandler') as mock_bot_handler:
-        mock_bot_handler.send_reply = MagicMock() 
+        def get_config_info(bot_name, section=None, optional=False):
+            # type: (str, Optional[str], Optional[bool]) -> Dict[str, Any]
+            conf_file_path = os.path.realpath(os.path.join(
+                'zulip_bots', 'bots', bot_name, bot_name + '.conf'))
+            section = section or bot_name
+            config = configparser.ConfigParser()
+            try:
+                with open(conf_file_path) as conf:
+                    config.readfp(conf)  # type: ignore
+            except IOError:
+                if optional:
+                    return dict()
+                raise
+            return dict(config.items(section))
+
+        mock_bot_handler.get_config_info = get_config_info
+        if (hasattr(message_handler, 'initialize') and callable(message_handler.initialize)):
+            message_handler.initialize(mock_bot_handler)
+
+        mock_bot_handler.send_reply = MagicMock()
         message_handler.handle_message(
             message=message,
             bot_handler=mock_bot_handler,
