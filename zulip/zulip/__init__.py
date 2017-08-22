@@ -616,6 +616,9 @@ class Client(object):
         if narrow is None:
             narrow = []
 
+        if event_types is None:
+            event_types = []
+
         request = dict(
             event_types=event_types,
             narrow=narrow,
