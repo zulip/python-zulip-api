@@ -20,6 +20,8 @@ def load_tests_from_modules(names, template):
 
 def load_all_tests():
     loader = unittest.defaultTestLoader
+    # Codecov seems to work only when using loader.discover. It failed to capture line executions
+    # for functions like loader.loadTestFromModule or loader.loadTestFromNames.
     return loader.discover('zulip_bots')
 
 def parse_args(available_bots):
