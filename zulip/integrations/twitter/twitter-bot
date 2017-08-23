@@ -32,12 +32,11 @@ from six.moves.configparser import ConfigParser, NoSectionError, NoOptionError
 import zulip
 VERSION = "0.9"
 CONFIGFILE = os.path.expanduser("~/.zulip_twitterrc")
+CONFIGFILE_INTERNAL = os.path.expanduser("~/.zulip_twitterrc_internal")
 
-def write_config(config, since_id, user):
+def write_config(config, configfile_path):
     # type: (ConfigParser, int, int) -> None
-    config.set('twitter', 'since_id', str(since_id))
-    config.set('twitter', 'user_id', str(user))
-    with open(CONFIGFILE, 'w') as configfile:
+    with open(configfile_path, 'w') as configfile:
         config.write(configfile)
 
 parser = zulip.add_default_arguments(argparse.ArgumentParser(r"""
@@ -92,6 +91,8 @@ if not options.twitter_id:
 try:
     config = ConfigParser()
     config.read(CONFIGFILE)
+    config_internal = ConfigParser()
+    config_internal.read(CONFIGFILE_INTERNAL)
 
     consumer_key = config.get('twitter', 'consumer_key')
     consumer_secret = config.get('twitter', 'consumer_secret')
@@ -122,12 +123,12 @@ if not user.id:
 
 try:
     since_id = config.getint('twitter', 'since_id')
-except NoOptionError:
+except (NoOptionError, NoSectionError):
     since_id = -1
 
 try:
     user_id = config.get('twitter', 'user_id')
-except NoOptionError:
+except (NoOptionError, NoSectionError):
     user_id = options.twitter_id
 
 client = zulip.Client(
@@ -164,4 +165,9 @@ for status in statuses[::-1][:options.limit_tweets]:
     else:
         since_id = status.id
 
-write_config(config, since_id, user_id)
+if 'twitter' not in config_internal.sections():
+    config_internal.add_section('twitter')
+config_internal.set('twitter', 'since_id', str(since_id))
+config_internal.set('twitter', 'user_id', str(user))
+
+write_config(config_internal, CONFIGFILE_INTERNAL)
