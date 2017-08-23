@@ -37,8 +37,8 @@ def write_config(config, since_id):
     # type: (ConfigParser, int) -> None
     if 'search' not in config.sections():
         config.add_section('search')
-    config.set('search', 'since_id', since_id)
-    with open(CONFIGFILE, 'wb') as configfile:
+    config.set('search', 'since_id', str(since_id))
+    with open(CONFIGFILE, 'w') as configfile:
         config.write(configfile)
 
 parser = zulip.add_default_arguments(argparse.ArgumentParser(r"""
