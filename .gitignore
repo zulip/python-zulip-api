@@ -32,5 +32,8 @@ nosetests.xml
 .project
 .pydevproject
 
-# ignore virtualenv created by ./tools/provision
+# Ignore virtualenv created by ./tools/provision
 zulip-api-py2-venv
+
+# Automatically generated MANIFEST.in in zulip_bots
+zulip_bots/MANIFEST.in
