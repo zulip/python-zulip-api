@@ -1,48 +1,59 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python
 
-BASEDIR=$(dirname `dirname $0`)
-VENVEXECDIR="bin"
-PYVERSION=$(python -V | grep -Po '(?<=Python ).+')
-PYCUSTOMPATH_ARG=""
-while getopts "hp:" arg; do
-    case "$arg" in
-        h)
-            echo "USAGE: $0 [-p <path_to_python_version>]"
-            exit
-            ;;
-        p)
-            PYCUSTOMPATH_ARG="-p $OPTARG"
-            PYVERSION=$("$OPTARG" "-V" 2>&1 | grep -Po '(?<=Python ).+')
-            ;;
-    esac
-done
-VENVDIR="zulip-api-py$PYVERSION-venv"
+import os
+import sys
+import argparse
+import pip
+import six
+import subprocess
 
-if [ ! -d "$BASEDIR/$VENVDIR" ]; then
-    virtualenv $PYCUSTOMPATH_ARG "$BASEDIR/$VENVDIR"
-    echo "Virtualenv created."
-fi
+from importlib import import_module
 
-if [[ ! -d "$BASEDIR/$VENVDIR/$VENVEXECDIR" ]]; then
-    # POSIX compatibility layer and Linux environment emulation for Windows
-    # Virtual uses /Scripts instead of /bin on Windows.
-    # Read https://virtualenv.pypa.io/en/stable/userguide/
-    VENVEXECDIR="Scripts"
-fi
+def main():
+    parser = argparse.ArgumentParser("Creates a Python virtualenv. Its Python version is equal to "
+                                     "the Python version this command is executed with.")
+    parser.parse_args()
 
-source "$BASEDIR/$VENVDIR/$VENVEXECDIR/activate"
-RVAL=$?
-if [ "$RVAL" -ne 0 ]; then
-    echo "Failed to activate virtualenv."
-    exit
-fi
+    base_dir = os.path.abspath(os.path.join(__file__, '..', '..'))
+    python_version = '.'.join(str(num) for num in sys.version_info[0:3])
+    python_interpreter = os.path.abspath(sys.executable)
+    venv_name = 'zulip-api-py{}-venv'.format(python_version)
 
-# Install python dependencies if needed.
-cmp "$BASEDIR/$VENVDIR/installed-requirements.txt" requirements.txt 2>/dev/null
-RVAL=$? # Return value of the comparision. 0 means files are same.
-if [ "$RVAL" -ne 0 ]; then
-    pip install -r "$BASEDIR/requirements.txt"
-    cp -a requirements.txt "$BASEDIR/$VENVDIR/installed-requirements.txt"
-    echo "Requirements installed."
-fi
-echo 'Success!  Run `source' "$BASEDIR/$VENVDIR/$VENVEXECDIR/activate"'`' "to activate virtualenv."
+    venv_dir = os.path.join(base_dir, venv_name)
+    if not os.path.isdir(venv_dir):
+        if subprocess.call(['virtualenv', '-p', python_interpreter, venv_dir]):
+            raise OSError("The command `virtualenv -p {} {}` failed. Virtualenv not created!"
+                          .format(python_interpreter, venv_dir))
+        else:
+            print("New virtualenv created.")
+    else:
+        print("Virtualenv already exists.")
+
+    if os.path.isdir(os.path.join(venv_dir, 'Scripts')):
+        # POSIX compatibility layer and Linux environment emulation for Windows
+        # Virtual uses /Scripts instead of /bin on Windows.
+        # Read https://virtualenv.pypa.io/en/stable/userguide/
+        venv_exec_dir = 'Scripts'
+    else:
+        venv_exec_dir = 'bin'
+
+    # In order to install all required packages for the venv, we need to activate it. Since
+    # the activation script sets environmental variables, it needs to be executed inline with
+    # `import_module`.
+    activate_module_dir = os.path.abspath(os.path.join(venv_dir, venv_exec_dir))
+    sys.path.append(activate_module_dir)
+    import_module('activate_this')
+
+    # In order to install all required packages for the venv, `pip` needs to be executed by
+    # the venv's Python interpreter. `--prefix venv_dir` ensures that all modules are installed
+    # in the right place.
+    if subprocess.call([os.path.join(venv_dir, venv_exec_dir, 'pip'),
+                        'install', '--prefix', venv_dir, '-r', os.path.join(base_dir, 'requirements.txt')]):
+        raise OSError("The command `pip install -r {}` failed. Dependencies not installed!"
+                      .format(os.path.join(base_dir, 'requirements.txt')))
+
+    print("Success!  Run `source {}` to activate virtualenv.".format(
+        os.path.join(base_dir, venv_dir, venv_exec_dir, 'activate')))
+
+if __name__ == '__main__':
+    main()
