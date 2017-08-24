@@ -18,9 +18,8 @@ the Python version this command is executed with."""
     parser.parse_args()
 
     base_dir = os.path.abspath(os.path.join(__file__, '..', '..'))
-    python_version = '.'.join(str(num) for num in sys.version_info[0:3])
     python_interpreter = os.path.abspath(sys.executable)
-    venv_name = 'zulip-api-py{}-venv'.format(python_version)
+    venv_name = 'zulip-api-py{}-venv'.format(sys.version_info.major)
 
     venv_dir = os.path.join(base_dir, venv_name)
     if not os.path.isdir(venv_dir):
