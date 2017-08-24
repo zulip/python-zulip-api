@@ -10,8 +10,11 @@ import subprocess
 from importlib import import_module
 
 def main():
-    parser = argparse.ArgumentParser("Creates a Python virtualenv. Its Python version is equal to "
-                                     "the Python version this command is executed with.")
+    usage = """./tools/provision
+
+Creates a Python virtualenv. Its Python version is equal to
+the Python version this command is executed with."""
+    parser = argparse.ArgumentParser(usage=usage)
     parser.parse_args()
 
     base_dir = os.path.abspath(os.path.join(__file__, '..', '..'))
