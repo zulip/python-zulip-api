@@ -67,30 +67,37 @@ class BotTestCase(TestCase):
 
         if type not in ["private", "stream", "all"]:
             logging.exception("check_expected_response expects type to be 'private', 'stream' or 'all'")
-        private = {'type': "private", 'display_recipient': recipient,
-                   'sender_email': email, 'sender_id': sender_id,
-                   'sender_full_name': sender_full_name}
-        stream = {'type': "stream", 'display_recipient': recipient,
-                   'subject': subject, 'sender_email': email, 'sender_id': sender_id,
-                   'sender_full_name': sender_full_name}
-        sources = []
-        if type != "stream":
-            sources.append(private)
-        if type != "private":
-            sources.append(stream)
 
-        for source in sources:
-            # A new (copy of) the state_handler is used for each source message.
-            # This avoids type="all" failing if state is created in the first iteration.
-            state_h = None if state_handler is None else deepcopy(state_handler)
+        private_message_dict = {'type': "private", 'display_recipient': recipient,
+                                'sender_email': email, 'sender_id': sender_id,
+                                'sender_full_name': sender_full_name}
+        stream_message_dict = {'type': "stream", 'display_recipient': recipient,
+                               'subject': subject, 'sender_email': email, 'sender_id': sender_id,
+                               'sender_full_name': sender_full_name}
+
+        trigger_messages = []
+        if type in ["private", "all"]:
+            trigger_messages.append(private_message_dict)
+        if type in ["stream", "all"]:
+            trigger_messages.append(stream_message_dict)
+
+        for trigger_message in trigger_messages:
+            if state_handler is None:
+                current_state_handler = None
+            else:
+                # A new (copy of) the state_handler is used for each trigger message.
+                # This avoids type="all" failing if state is created in the first iteration.
+                current_state_handler = deepcopy(state_handler)
+
             for m, r in expected:
                 # For calls with send_reply, r is a string (the content of a message),
                 # so we need to add it to a Dict as the value of 'content'.
                 # For calls with send_message, r is already a Dict.
-                message = dict(source, content = m)
+                message = dict(trigger_message, content = m)
                 response = {'content': r} if expected_method == 'send_reply' else r
                 self.assert_bot_response(message=message, response=response,
-                                         expected_method=expected_method, state_handler=state_h)
+                                         expected_method=expected_method,
+                                         state_handler=current_state_handler)
 
     def call_request(self, message, expected_method, response, state_handler):
         # type: (Dict[str, Any], str, Dict[str, Any], Optional[StateHandler]) -> None
