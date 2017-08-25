@@ -80,7 +80,7 @@ def main():
             provision_bot(bot_dir, options.force)
         lib_module = import_module('zulip_bots.bots.{bot}.{bot}'.format(bot=bot_name))
 
-    message = {'content': options.message}
+    message = {'content': options.message, 'sender_email': 'foo_sender@zulip.com'}
     message_handler = lib_module.handler_class()
 
     with patch('zulip_bots.lib.ExternalBotHandler') as mock_bot_handler:
@@ -100,17 +100,31 @@ def main():
             return dict(config.items(section))
 
         mock_bot_handler.get_config_info = get_config_info
-        if (hasattr(message_handler, 'initialize') and callable(message_handler.initialize)):
+        if hasattr(message_handler, 'initialize') and callable(message_handler.initialize):
             message_handler.initialize(mock_bot_handler)
 
         mock_bot_handler.send_reply = MagicMock()
+        mock_bot_handler.send_message = MagicMock()
         message_handler.handle_message(
             message=message,
             bot_handler=mock_bot_handler,
             state_handler=StateHandler()
         )
         print("On sending ", options.name, " bot the following message:\n\"", options.message, "\"")
-        print("\nThe bot gives the following output message:\n\"", list(mock_bot_handler.send_reply.call_args)[0][1], "\"")
+
+        # 'send_reply' and 'send_message' functions will have to be tested out in a different way.
+        # This is because any bot calling 'send_reply' calls it by passing (original_message, response),
+        # that is why we are only displaying 'response'.
+        # Whereas 'send_message' is being called by passing (response_message), which is the message
+        # dictionary, this means that the bot code may have editted/modified other fields as well.
+        # What we really want to test here is what the bot sends to the bot API class, that is the
+        # parameters with which the Bot API class' methods are called.
+        if mock_bot_handler.send_reply.called:
+            print("\nThe bot gives the following output message:\n\"", list(mock_bot_handler.send_reply.call_args)[0][1], "\"")
+        elif mock_bot_handler.send_message.called:
+            print("\nThe bot sends the following output to zulip:\n\"", list(mock_bot_handler.send_message.call_args)[0][0], "\"")
+        else:
+            print("Please check your code. The bot code must call 'send_message' or 'send_reply' functions of the bot handler class.")
 
 if __name__ == '__main__':
     main()
