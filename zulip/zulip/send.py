@@ -60,8 +60,7 @@ def main():
     Examples: zulip-send --stream denmark --subject castle -m "Something is rotten in the state of Denmark."
               zulip-send hamlet@example.com cordelia@example.com -m "Conscience doth make cowards of us all."
 
-    These examples assume you have a proper '~/.zuliprc'. You may also set your credentials with the
-    '--user' and '--api-key' arguments.
+    Specify your Zulip API credentials and server in a ~/.zuliprc file or using the options.
     """
 
     parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage))
