@@ -11,7 +11,7 @@ class DefineHandler(object):
     '''
 
     DEFINITION_API_URL = 'https://owlbot.info/api/v1/dictionary/{}?format=json'
-    REQUEST_ERROR_MESSAGE = 'Definition not available.'
+    REQUEST_ERROR_MESSAGE = 'Could not load definition.'
     EMPTY_WORD_REQUEST_ERROR_MESSAGE = 'Please enter a word to define.'
     PHRASE_ERROR_MESSAGE = 'Definitions for phrases are not available.'
 
