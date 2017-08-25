@@ -17,19 +17,19 @@ from zulip_bots.provision import provision_bot
 
 
 def import_module_from_source(path, name=None):
-    if name is None:
+    if not name:
         name = splitext(basename(path))[0]
 
     if six.PY2:
         import imp
         module = imp.load_source(name, path)
-        return module
     else:
         import importlib.util
         spec = importlib.util.spec_from_file_location(name, path)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
-        return module
+
+    return module
 
 
 def parse_args():
