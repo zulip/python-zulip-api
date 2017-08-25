@@ -16,8 +16,7 @@ from mock import MagicMock, patch
 
 from zulip_bots.lib import run_message_handler_for_bot, StateHandler
 from zulip_bots.provision import provision_bot
-from zulip_bots.run import import_module_from_source
-
+from zulip_bots.run import import_module_from_source, is_different
 
 def parse_args():
     usage = '''
@@ -53,11 +52,22 @@ def parse_args():
                         help='Install dependencies for the bot.')
 
     options = parser.parse_args()
+
     if not options.name and not options.path_to_bot:
         error_message = """
 You must either specify the name of an existing bot or
 specify a path to the file (--path-to-bot) that contains
 the bot handler class.
+"""
+        parser.error(error_message)
+    # Checks if both name and path to bots are provided:
+    # checks if both of these are in sync, otherwise we'll
+    # have to be bias towards one and the user may get incorrect
+    # result.
+    elif is_different(options.name, options.path_to_bot):
+        error_message = """
+Please make sure that the given name of the bot and the
+given path to the bot are same and valid.
 """
         parser.error(error_message)
 
