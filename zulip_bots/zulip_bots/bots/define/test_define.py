@@ -42,7 +42,7 @@ class TestDefineBot(BotTestCase):
             )
 
         # Incorrect word.
-        bot_response = "**foo**:\nDefinition not available."
+        bot_response = "**foo**:\nCould not load definition."
         with self.mock_http_conversation('test_incorrect_word'):
             self.assert_bot_response(
                 message = {'content': 'foo'},
