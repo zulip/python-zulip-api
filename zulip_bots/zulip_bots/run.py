@@ -15,7 +15,6 @@ import six
 from zulip_bots.lib import run_message_handler_for_bot
 from zulip_bots.provision import provision_bot
 
-
 def import_module_from_source(path, name=None):
     if not name:
         name = splitext(basename(path))[0]
@@ -31,6 +30,12 @@ def import_module_from_source(path, name=None):
 
     return module
 
+def name_and_patch_match(given_name, path_to_bot):
+    if given_name and path_to_bot:
+        name_by_path = os.path.splitext(os.path.basename(path_to_bot))[0]
+        if (given_name != name_by_path):
+            return False
+    return True
 
 def parse_args():
     usage = '''
@@ -78,6 +83,16 @@ def parse_args():
 You must either specify the name of an existing bot or
 specify a path to the file (--path-to-bot) that contains
 the bot handler class.
+"""
+        parser.error(error_message)
+    # Checks if both name and path to bots are provided:
+    # checks if both of these are in sync, otherwise we'll
+    # have to be bias towards one and the user may get incorrect
+    # result.
+    elif not name_and_path_match(options.name, options.path_to_bot):
+        error_message = """
+Please make sure that the given name of the bot and the
+given path to the bot are same and valid.
 """
         parser.error(error_message)
 
