@@ -59,6 +59,7 @@ package_info = dict(
     entry_points={
         'console_scripts': [
             'zulip-send=zulip.send:main',
+            'zulip-api-examples=zulip.api_examples:main'
         ],
     },
 )  # type: Dict[str, Any]
