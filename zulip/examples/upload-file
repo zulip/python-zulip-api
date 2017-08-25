@@ -31,13 +31,13 @@ import zulip
 class StringIO(_StringIO):
     name = ''  # https://github.com/python/typeshed/issues/598
 
-usage = """upload-file --user=<user's email address> --api-key=<user's api key> [options]
+usage = """upload-file [options]
 
 Upload a file, and print the corresponding URI.
 
-Example: upload-file --user=cordelia@zulip.com --api-key=a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5 --file-path=cat.png
+Example: upload-file --file-path=cat.png
 
-You can omit --user and --api-key arguments if you have a properly set up ~/.zuliprc
+Specify your Zulip API credentials and server in a ~/.zuliprc file or using the options.
 If no --file-path is specified, a placeholder text file will be used instead.
 """
 
