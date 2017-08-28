@@ -41,7 +41,7 @@ package_info = dict(
         'Topic :: Communications :: Chat',
     ],
     url='https://www.zulip.org/',
-    data_files=[('share/zulip/examples',
+    data_files=[('examples',
                  ["examples/zuliprc",
                   "examples/create-user",
                   "examples/edit-message",
