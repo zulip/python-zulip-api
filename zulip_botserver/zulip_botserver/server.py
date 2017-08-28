@@ -20,6 +20,9 @@ bots_lib_module = {}  # type: Dict[str, Any]
 
 def read_config_file(config_file_path):
     # type: (str) -> None
+    config_file_path = os.path.abspath(os.path.expanduser(config_file_path))
+    if not os.path.isfile(config_file_path):
+        raise IOError("Could not read config file {}: File not found.".format(config_file_path))
     parser = SafeConfigParser()
     parser.read(config_file_path)
 
@@ -55,7 +58,8 @@ def handle_bot(bot):
     lib_module = get_bot_lib_module(bot)
     if lib_module is None:
         return BadRequest("Can't find the configuration or Bot Handler code for bot {}. "
-                          "Make sure that the `zulip_bots` package is installed!".format(bot))
+                          "Make sure that the `zulip_bots` package is installed, and "
+                          "that your flaskbotrc is set up correctly".format(bot))
 
     client = Client(email=bots_config[bot]["email"],
                     api_key=bots_config[bot]["key"],

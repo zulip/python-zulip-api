@@ -246,6 +246,9 @@ class Client(object):
         if client is None:
             client = _default_client()
 
+        # Normalize user-specified path
+        if config_file is not None:
+            config_file = os.path.abspath(os.path.expanduser(config_file))
         # Fill values from Environment Variables if not available in Constructor
         if config_file is None:
             config_file = os.environ.get("ZULIP_CONFIG")
@@ -293,7 +296,7 @@ class Client(object):
                     raise RuntimeError("insecure is set to '%s', it must be 'true' or 'false' if it is used in %s"
                                        % (insecure_setting, config_file))
         elif None in (api_key, email):
-            raise RuntimeError("api_key or email not specified and %s does not exist"
+            raise RuntimeError("api_key or email not specified and file %s does not exist"
                                % (config_file,))
 
         self.api_key = api_key
