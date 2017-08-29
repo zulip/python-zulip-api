@@ -27,6 +27,7 @@ package_info = dict(
     entry_points={
         'console_scripts': [
             'zulip-run-bot=zulip_bots.run:main',
+            'zulip-bot-output=zulip_bots.zulip_bot_output:main'
         ],
     },
     include_package_data=True,
