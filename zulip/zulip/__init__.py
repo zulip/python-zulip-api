@@ -33,6 +33,7 @@ import optparse
 import argparse
 import platform
 import random
+import types
 from distutils.version import LooseVersion
 
 from six.moves.configparser import SafeConfigParser
@@ -104,8 +105,16 @@ def _default_client():
     # type: () -> str
     return "ZulipPython/" + __version__
 
-def add_default_arguments(parser):
+def add_default_arguments(parser, patch_error_handling=True):
     # type: (argparse.ArgumentParser) ->  argparse.ArgumentParser
+
+    if patch_error_handling:
+        def custom_error_handling(self, message):
+            import pprint
+            self.print_help(sys.stderr)
+            self.exit(2, '{}: error: {}\n'.format(self.prog, message))
+        parser.error = types.MethodType(custom_error_handling, parser)
+
     group = parser.add_argument_group('Zulip API configuration')
     group.add_argument('--site',
                        dest="zulip_site",
