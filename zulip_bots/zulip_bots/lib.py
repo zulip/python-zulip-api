@@ -119,8 +119,7 @@ class ExternalBotHandler(object):
 
     def get_config_info(self, bot_name, section=None, optional=False):
         # type: (str, Optional[str], Optional[bool]) -> Dict[str, Any]
-        conf_file_path = os.path.realpath(os.path.join(
-            'zulip_bots', 'bots', bot_name, bot_name + '.conf'))
+        conf_file_path = os.path.realpath(os.path.join(self._root_dir, bot_name + '.conf'))
         section = section or bot_name
         config = configparser.ConfigParser()
         try:
