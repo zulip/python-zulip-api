@@ -167,6 +167,8 @@ def build_custom_checkers(by_lang):
          'description': 'open() should not be used in Zulip\'s bots. Use functions'
                         ' provided by the bots framework to access the filesystem.',
          'include_only': set(['zulip_bots/zulip_bots/bots/'])},
+        {'pattern': 'pprint',
+         'description': 'Used pprint, which is most likely a debugging leftover. For user output, use print().'}
     ]) + whitespace_rules
     bash_rules = [
         {'pattern': '#!.*sh [-xe]',
