@@ -2,21 +2,18 @@
 from __future__ import print_function
 from __future__ import absolute_import
 
-import argparse
-import sys
 import os
-from types import ModuleType
-from importlib import import_module
-from os.path import basename, splitext
+import sys
+import argparse
+import zulip_bots
 
-import six
 from six.moves import configparser
-import mock
-from mock import MagicMock, patch
 
-from zulip_bots.lib import run_message_handler_for_bot, StateHandler
+from mock import MagicMock, patch
+from zulip_bots.lib import StateHandler
+from zulip_bots.lib import ExternalBotHandler
 from zulip_bots.provision import provision_bot
-from zulip_bots.run import import_module_from_source, name_and_patch_match
+from zulip_bots.run import import_module_from_source
 
 def parse_args():
     usage = '''
