@@ -59,7 +59,7 @@ def parse_args():
 
     parser.add_argument('--quiet', '-q',
                         action='store_true',
-                        help='Turn off logging output.')
+                        help='turn off logging output')
 
     parser.add_argument('--config-file',
                         action='store',
@@ -71,11 +71,11 @@ def parse_args():
 
     parser.add_argument('--force',
                         action='store_true',
-                        help='Try running the bot even if dependencies install fails.')
+                        help='try running the bot even if dependencies install fails')
 
     parser.add_argument('--provision',
                         action='store_true',
-                        help='Install dependencies for the bot.')
+                        help='install dependencies for the bot')
     args = parser.parse_args()
 
     if not args.name and not args.path_to_bot:
