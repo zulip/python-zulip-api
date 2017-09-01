@@ -77,18 +77,23 @@ def main():
             bot_handler=mock_bot_handler,
             state_handler=StateHandler()
         )
-        print("On sending ", bot_name, " bot the following message:\n\"", args.message, "\"")
-
+        print("On sending {} bot the message \"{}\"".format(bot_name, args.message))
         # send_reply and send_message have slightly arguments; the
         # following takes that into account.
         #   send_reply(original_message, response)
         #   send_message(response_message)
         if mock_bot_handler.send_reply.called:
-            print("\nThe bot gives the following output message:\n\"", list(mock_bot_handler.send_reply.call_args)[0][1], "\"")
+            output_message = list(mock_bot_handler.send_reply.call_args)[0][1]
         elif mock_bot_handler.send_message.called:
-            print("\nThe bot sends the following output to zulip:\n\"", list(mock_bot_handler.send_message.call_args)[0][0], "\"")
+            output_message = list(mock_bot_handler.send_message.call_args)[0][0]
+        elif mock_bot_handler.update_message.called:
+            output_message = list(mock_bot_handler.update_message.call_args)[0][0]['content']
+            print("the bot updates a message with the following text (in quotes):\n\"{}\"".format(output_message))
+            sys.exit()
         else:
-            print("\nThe bot sent no reply.")
+            print("the bot sent no reply.")
+            sys.exit()
+        print("the bot gives the following output message (in quotes):\n\"{}\"".format(output_message))
 
 if __name__ == '__main__':
     main()
