@@ -105,7 +105,7 @@ def _default_client():
     # type: () -> str
     return "ZulipPython/" + __version__
 
-def add_default_arguments(parser, patch_error_handling=True):
+def add_default_arguments(parser, patch_error_handling=True, allow_provisioning=False):
     # type: (argparse.ArgumentParser) ->  argparse.ArgumentParser
 
     if patch_error_handling:
@@ -113,6 +113,12 @@ def add_default_arguments(parser, patch_error_handling=True):
             self.print_help(sys.stderr)
             self.exit(2, '{}: error: {}\n'.format(self.prog, message))
         parser.error = types.MethodType(custom_error_handling, parser)
+
+    if allow_provisioning:
+        parser.add_argument('--provision',
+                            action='store_true',
+                            dest="provision",
+                            help="install dependencies for this script (found in requirements.txt)")
 
     group = parser.add_argument_group('Zulip API configuration')
     group.add_argument('--site',
@@ -221,6 +227,20 @@ def generate_option_group(parser, prefix=''):
 
 def init_from_options(options, client=None):
     # type: (Any, Optional[str]) -> Client
+
+    if options.provision:
+        requirements_path = os.path.abspath(os.path.join(sys.path[0], 'requirements.txt'))
+        try:
+            import pip
+        except ImportError:
+            traceback.print_exc()
+            print("Module `pip` is not installed. To install `pip`, follow the instructions here: "
+                  "https://pip.pypa.io/en/stable/installing/")
+            sys.exit(1)
+        if not pip.main(['install', '--upgrade', '--requirement', requirements_path]):
+            print("{color_green}Provisioning successful.{end_color}".format(
+                color_green='\033[92m', end_color='\033[0m'))
+
     if options.zulip_client is not None:
         client = options.zulip_client
     elif client is None:
