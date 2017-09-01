@@ -9,6 +9,7 @@ import re
 import sys
 import shutil
 import subprocess
+import tempfile
 import traceback
 
 try:
@@ -24,7 +25,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../"))
 import zulip
 from typing import List
 
-lock_path = "/var/tmp/log2zulip.lock"
+temp_dir = "/var/tmp/" if os.name == "posix" else tempfile.gettempdir()
 
 def mkdir_p(path):
     # type: (str) -> None
@@ -66,7 +67,7 @@ def process_lines(raw_lines, file_name):
 def process_logs():
     # type: () -> None
     for filename in log_files:
-        data_file_path = "/var/tmp/log2zulip.state"
+        data_file_path = os.path.join(temp_dir, "log2zulip.state")
     mkdir_p(os.path.dirname(data_file_path))
     if not os.path.exists(data_file_path):
         open(data_file_path, "w").write("{}")
@@ -103,6 +104,7 @@ if __name__ == "__main__":
     if not args.zulip_config_file and os.name == "posix":
         args.zulip_config_file = "/etc/log2zulip.zuliprc"
 
+    lock_path = os.path.join(temp_dir, "log2zulip.lock")
     if os.path.exists(lock_path):
         print("Log2zulip lock held; not doing anything")
         sys.exit(0)
