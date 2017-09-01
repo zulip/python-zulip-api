@@ -76,9 +76,9 @@ def parse_args():
     parser.add_argument('--provision',
                         action='store_true',
                         help='Install dependencies for the bot.')
-    options = parser.parse_args()
+    args = parser.parse_args()
 
-    if not options.name and not options.path_to_bot:
+    if not args.name and not args.path_to_bot:
         error_message = """
 You must either specify the name of an existing bot or
 specify a path to the file (--path-to-bot) that contains
@@ -89,40 +89,40 @@ the bot handler class.
     # checks if both of these are in sync, otherwise we'll
     # have to be bias towards one and the user may get incorrect
     # result.
-    elif not name_and_path_match(options.name, options.path_to_bot):
+    elif not name_and_path_match(args.name, args.path_to_bot):
         error_message = """
 Please make sure that the given name of the bot and the
 given path to the bot are same and valid.
 """
         parser.error(error_message)
 
-    return options
+    return args
 
 
 def main():
     # type: () -> None
-    options = parse_args()
-    bot_name = options.name
-    if options.path_to_bot:
-        if options.provision:
-            bot_dir = os.path.dirname(os.path.abspath(options.path_to_bot))
-            provision_bot(bot_dir, options.force)
-        lib_module = import_module_from_source(options.path_to_bot, name=bot_name)
-    elif options.name:
-        if options.provision:
+    args = parse_args()
+    bot_name = args.name
+    if args.path_to_bot:
+        if args.provision:
+            bot_dir = os.path.dirname(os.path.abspath(args.path_to_bot))
+            provision_bot(bot_dir, args.force)
+        lib_module = import_module_from_source(args.path_to_bot, name=bot_name)
+    elif args.name:
+        if args.provision:
             current_dir = os.path.dirname(os.path.abspath(__file__))
             bots_parent_dir = os.path.join(current_dir, "bots")
-            bot_dir = os.path.join(bots_parent_dir, options.name)
-            provision_bot(bot_dir, options.force)
+            bot_dir = os.path.join(bots_parent_dir, args.name)
+            provision_bot(bot_dir, args.force)
         lib_module = import_module('zulip_bots.bots.{bot}.{bot}'.format(bot=bot_name))
 
-    if not options.quiet:
+    if not args.quiet:
         logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
     run_message_handler_for_bot(
         lib_module=lib_module,
-        config_file=options.config_file,
-        quiet=options.quiet,
+        config_file=args.config_file,
+        quiet=args.quiet,
         bot_name=bot_name
     )
 
