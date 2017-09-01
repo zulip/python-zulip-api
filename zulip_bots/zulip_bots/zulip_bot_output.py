@@ -65,28 +65,13 @@ def main():
     message = {'content': args.message, 'sender_email': 'foo_sender@zulip.com'}
     message_handler = lib_module.handler_class()
 
-    with patch('zulip_bots.lib.ExternalBotHandler') as mock_bot_handler:
-        def get_config_info(bot_name, section=None, optional=False):
-            # type: (str, Optional[str], Optional[bool]) -> Dict[str, Any]
-            conf_file_path = os.path.realpath(os.path.join(
-                'zulip_bots', 'bots', bot_name, bot_name + '.conf'))
-            section = section or bot_name
-            config = configparser.ConfigParser()
-            try:
-                with open(conf_file_path) as conf:
-                    config.readfp(conf)  # type: ignore
-            except IOError:
-                if optional:
-                    return dict()
-                raise
-            return dict(config.items(section))
-
-        mock_bot_handler.get_config_info = get_config_info
-        if hasattr(message_handler, 'initialize') and callable(message_handler.initialize):
-            message_handler.initialize(mock_bot_handler)
-
+    with patch('zulip.Client') as mock_client:
+        mock_bot_handler = ExternalBotHandler(mock_client, bot_dir)
         mock_bot_handler.send_reply = MagicMock()
         mock_bot_handler.send_message = MagicMock()
+        mock_bot_handler.update_message = MagicMock()
+        if hasattr(message_handler, 'initialize') and callable(message_handler.initialize):
+            message_handler.initialize(mock_bot_handler)
         message_handler.handle_message(
             message=message,
             bot_handler=mock_bot_handler,
