@@ -7,10 +7,10 @@
 # (https://github.com/jaraco/irc)
 
 from __future__ import print_function
-import zulip
 import argparse
-
-from irc_mirror_backend import IRCBot
+import zulip
+import sys
+import traceback
 
 if False:
     from typing import Any, Dict
@@ -29,22 +29,27 @@ Also note that at present you need to edit this code to do the Zulip => IRC side
 
 """
 
-
 if __name__ == "__main__":
-    parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage))
+    parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage), allow_provisioning=True)
     parser.add_argument('--irc-server', default=None)
     parser.add_argument('--port', default=6667)
     parser.add_argument('--nick-prefix', default=None)
     parser.add_argument('--channel', default=None)
 
     options = parser.parse_args()
-
-    if options.irc_server is None or options.nick_prefix is None or options.channel is None:
-        parser.error("Missing required argument")
-
     # Setting the client to irc_mirror is critical for this to work
     options.client = "irc_mirror"
     zulip_client = zulip.init_from_options(options)
+    try:
+        from irc_mirror_backend import IRCBot
+    except ImportError as e:
+        traceback.print_exc()
+        print("You have unsatisfied dependencies. Install all missing dependencies with "
+              "{} --provision".format(sys.argv[0]))
+        sys.exit(1)
+
+    if options.irc_server is None or options.nick_prefix is None or options.channel is None:
+        parser.error("Missing required argument")
 
     nickname = options.nick_prefix + "_zulip"
     bot = IRCBot(zulip_client, options.channel, nickname, options.irc_server, options.port)
