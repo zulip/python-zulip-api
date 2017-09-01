@@ -15,6 +15,8 @@ import six
 from zulip_bots.lib import run_message_handler_for_bot
 from zulip_bots.provision import provision_bot
 
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
 def import_module_from_source(path, name=None):
     if not name:
         name = splitext(basename(path))[0]
@@ -51,11 +53,9 @@ def parse_args():
         '''
 
     parser = argparse.ArgumentParser(usage=usage)
-    parser.add_argument('name',
+    parser.add_argument('bot',
                         action='store',
-                        nargs='?',
-                        default=None,
-                        help='the name of an existing bot to run')
+                        help='the name or path of an existing bot to run')
 
     parser.add_argument('--quiet', '-q',
                         action='store_true',
@@ -65,10 +65,6 @@ def parse_args():
                         action='store',
                         help='(alternate config file to ~/.zuliprc)')
 
-    parser.add_argument('--path-to-bot',
-                        action='store',
-                        help='path to the file with the bot handler class')
-
     parser.add_argument('--force',
                         action='store_true',
                         help='try running the bot even if dependencies install fails')
@@ -76,45 +72,23 @@ def parse_args():
     parser.add_argument('--provision',
                         action='store_true',
                         help='install dependencies for the bot')
+
     args = parser.parse_args()
-
-    if not args.name and not args.path_to_bot:
-        error_message = """
-You must either specify the name of an existing bot or
-specify a path to the file (--path-to-bot) that contains
-the bot handler class.
-"""
-        parser.error(error_message)
-    # Checks if both name and path to bots are provided:
-    # checks if both of these are in sync, otherwise we'll
-    # have to be bias towards one and the user may get incorrect
-    # result.
-    elif not name_and_path_match(args.name, args.path_to_bot):
-        error_message = """
-Please make sure that the given name of the bot and the
-given path to the bot are same and valid.
-"""
-        parser.error(error_message)
-
     return args
 
 
 def main():
     # type: () -> None
     args = parse_args()
-    bot_name = args.name
-    if args.path_to_bot:
-        if args.provision:
-            bot_dir = os.path.dirname(os.path.abspath(args.path_to_bot))
-            provision_bot(bot_dir, args.force)
-        lib_module = import_module_from_source(args.path_to_bot, name=bot_name)
-    elif args.name:
-        if args.provision:
-            current_dir = os.path.dirname(os.path.abspath(__file__))
-            bots_parent_dir = os.path.join(current_dir, "bots")
-            bot_dir = os.path.join(bots_parent_dir, args.name)
-            provision_bot(bot_dir, args.force)
-        lib_module = import_module('zulip_bots.bots.{bot}.{bot}'.format(bot=bot_name))
+    if os.path.isfile(args.bot):
+        bot_path = os.path.abspath(args.bot)
+        bot_name = os.path.splitext(basename(bot_path))[0]
+    else:
+        bot_path = os.path.abspath(os.path.join(current_dir, 'bots', args.bot, args.bot+'.py'))
+        bot_name = args.bot
+    if args.provision:
+        provision_bot(os.path.dirname(bot_path), args.force)
+    lib_module = import_module_from_source(bot_path, bot_name)
 
     if not args.quiet:
         logging.basicConfig(stream=sys.stdout, level=logging.INFO)
