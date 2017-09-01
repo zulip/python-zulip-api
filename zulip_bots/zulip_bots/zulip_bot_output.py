@@ -15,6 +15,8 @@ from zulip_bots.lib import ExternalBotHandler
 from zulip_bots.provision import provision_bot
 from zulip_bots.run import import_module_from_source
 
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
 def parse_args():
     usage = '''
         zulip-bot-output <bot_name> --message "Send this message to the bot"
@@ -27,65 +29,38 @@ def parse_args():
         '''
 
     parser = argparse.ArgumentParser(usage=usage)
-    parser.add_argument('name',
+    parser.add_argument('bot',
                         action='store',
-                        nargs='?',
-                        default=None,
-                        help='the name of an existing bot to run')
-    parser.add_argument('--message',
+                        help='the name or path an existing bot to run')
+
+    parser.add_argument('--message', '-m',
                         action='store',
                         help='the message content to send to the bot')
 
-    parser.add_argument('--path-to-bot',
-                        action='store',
-                        help='path to the file with the bot handler class')
-
-    parser.add_argument('--force',
+    parser.add_argument('--force', '-f',
                         action='store_true',
-                        help='Try running the bot even if dependencies install fails.')
+                        help='try running bot even if dependencies install fails')
 
-    parser.add_argument('--provision',
+    parser.add_argument('--provision', '-p',
                         action='store_true',
-                        help='Install dependencies for the bot.')
+                        help='install dependencies for the bot')
 
     args = parser.parse_args()
-
-    if not args.name and not args.path_to_bot:
-        error_message = """
-You must either specify the name of an existing bot or
-specify a path to the file (--path-to-bot) that contains
-the bot handler class.
-"""
-        parser.error(error_message)
-    # Checks if both name and path to bots are provided:
-    # checks if both of these are in sync, otherwise we'll
-    # have to be bias towards one and the user may get incorrect
-    # result.
-    elif not name_and_patch_match(args.name, args.path_to_bot):
-        error_message = """
-Please make sure that the given name of the bot and the
-given path to the bot are same and valid.
-"""
-        parser.error(error_message)
-
     return args
 
 def main():
     # type: () -> None
     args = parse_args()
-    bot_name = args.name
-    if args.path_to_bot:
-        if args.provision:
-            bot_dir = os.path.dirname(os.path.abspath(args.path_to_bot))
-            provision_bot(bot_dir, args.force)
-        lib_module = import_module_from_source(args.path_to_bot, name=bot_name)
-    elif args.name:
-        if args.provision:
-            current_dir = os.path.dirname(os.path.abspath(__file__))
-            bots_parent_dir = os.path.join(current_dir, "bots")
-            bot_dir = os.path.join(bots_parent_dir, args.name)
-            provision_bot(bot_dir, args.force)
-        lib_module = import_module('zulip_bots.bots.{bot}.{bot}'.format(bot=bot_name))
+    if os.path.isfile(args.bot):
+        bot_path = os.path.abspath(args.bot)
+        bot_name = os.path.splitext(os.path.basename(bot_path))[0]
+    else:
+        bot_path = os.path.abspath(os.path.join(current_dir, 'bots', args.bot, args.bot+'.py'))
+        bot_name = args.bot
+    bot_dir = os.path.dirname(bot_path)
+    if args.provision:
+        provision_bot(os.path.dirname(bot_path), args.force)
+    lib_module = import_module_from_source(bot_path, bot_name)
 
     message = {'content': args.message, 'sender_email': 'foo_sender@zulip.com'}
     message_handler = lib_module.handler_class()
@@ -117,7 +92,7 @@ def main():
             bot_handler=mock_bot_handler,
             state_handler=StateHandler()
         )
-        print("On sending ", args.name, " bot the following message:\n\"", args.message, "\"")
+        print("On sending ", bot_name, " bot the following message:\n\"", args.message, "\"")
 
         # send_reply and send_message have slightly arguments; the
         # following takes that into account.
