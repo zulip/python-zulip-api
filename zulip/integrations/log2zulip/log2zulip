@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from __future__ import print_function
 
+import argparse
 import errno
 import os
 import platform
@@ -24,7 +25,6 @@ import zulip
 from typing import List
 
 lock_path = "/var/tmp/log2zulip.lock"
-control_path = "/etc/log2zulip.conf"
 
 def mkdir_p(path):
     # type: (str) -> None
@@ -96,17 +96,24 @@ def process_logs():
     open(data_file_path, "w").write(json.dumps(new_data))
 
 if __name__ == "__main__":
+    parser = zulip.add_default_arguments(argparse.ArgumentParser())  # type: argparse.ArgumentParser3
+    parser.add_argument("--control-path", default="/etc/log2zulip.conf")
+    args = parser.parse_args()
+    # On posix systems, we set the config directory explicitly for legacy reasons.
+    if not args.zulip_config_file and os.name == "posix":
+        args.zulip_config_file = "/etc/log2zulip.zuliprc"
+
     if os.path.exists(lock_path):
         print("Log2zulip lock held; not doing anything")
         sys.exit(0)
 
     try:
         open(lock_path, "w").write("1")
-        zulip_client = zulip.Client(config_file="/etc/log2zulip.zuliprc")
+        zulip_client = zulip.init_from_options(args)
         try:
-            log_files = json.loads(open(control_path, "r").read())
+            log_files = json.loads(open(args.control_path, "r").read())
         except (json.JSONDecodeError, IOError):
-            print("Could not load control data from %s" % (control_path,))
+            print("Could not load control data from %s" % (args.control_path,))
             traceback.print_exc()
             sys.exit(1)
         process_logs()
