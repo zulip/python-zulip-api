@@ -54,8 +54,9 @@ the Python version this command is executed with."""
         raise OSError("The command `pip install -r {}` failed. Dependencies not installed!"
                       .format(os.path.join(base_dir, 'requirements.txt')))
 
-    print("Success!  Run `source {}` to activate virtualenv.".format(
-        os.path.join(base_dir, venv_dir, venv_exec_dir, 'activate')))
+    print("{green}Success!{end_format}  Run\n{bold}source {activate}{end_format}\nto activate virtualenv.".format(
+        green='\033[92m', bold='\033[1m', end_format='\033[0m',
+        activate=os.path.join(base_dir, venv_dir, venv_exec_dir, 'activate')))
 
 if __name__ == '__main__':
     main()
