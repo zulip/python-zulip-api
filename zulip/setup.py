@@ -74,7 +74,7 @@ setuptools_info = dict(
 try:
     from setuptools import setup, find_packages
     package_info.update(setuptools_info)
-    package_info['packages'] = find_packages()
+    package_info['packages'] = find_packages(exclude=['tests'])
 
 except ImportError:
     from distutils.core import setup
