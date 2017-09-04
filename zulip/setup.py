@@ -55,7 +55,7 @@ package_info = dict(
                   "examples/send-message",
                   "examples/subscribe",
                   "examples/unsubscribe",
-                  ])] + list(recur_expand('share/zulip', 'integrations/')),
+                  ])] + list(recur_expand('share/zulip', 'integrations')),
     entry_points={
         'console_scripts': [
             'zulip-send=zulip.send:main',
