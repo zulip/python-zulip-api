@@ -46,7 +46,7 @@ You can run the tests for the `zulip_bots` package by typing:
 
 You can run the tests for the `zulip_botserver` by typing:
 
-`python -m unittest discover -v ./zulip_botserver`
+`./tools/test-botserver`
 
 To run the linter, type:
 
