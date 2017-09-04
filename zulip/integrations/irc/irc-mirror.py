@@ -24,10 +24,11 @@ def zulip_sender(sender_string):
     return nick + "@" + IRC_DOMAIN
 
 class IRCBot(irc.bot.SingleServerIRCBot):
-    def __init__(self, channel, nickname, server, port=6667):
-        # type: (irc.bot.Channel, str, str, int) -> None
+    def __init__(self, zulip_client, channel, nickname, server, port=6667):
+        # type: (Any, irc.bot.Channel, str, str, int) -> None
         irc.bot.SingleServerIRCBot.__init__(self, [(server, port)], nickname, nickname)
         self.channel = channel  # type: irc.bot.Channel
+        self.zulip_client = zulip_client
 
     def on_nicknameinuse(self, c, e):
         # type: (ServerConnection, Event) -> None
@@ -54,7 +55,7 @@ class IRCBot(irc.bot.SingleServerIRCBot):
         ## Forwarding from Zulip => IRC is disabled; uncomment the next
         ## line to make this bot forward in that direction instead.
         #
-        # zulip_client.call_on_each_message(forward_to_irc)
+        # self.zulip_client.call_on_each_message(forward_to_irc)
 
     def on_privmsg(self, c, e):
         # type: (ServerConnection, Event) -> None
@@ -64,7 +65,7 @@ class IRCBot(irc.bot.SingleServerIRCBot):
             return
 
         # Forward the PM to Zulip
-        print(zulip_client.send_message({
+        print(self.zulip_client.send_message({
             "sender": sender,
             "type": "private",
             "to": "username@example.com",
@@ -80,7 +81,7 @@ class IRCBot(irc.bot.SingleServerIRCBot):
             return
 
         # Forward the stream message to Zulip
-        print(zulip_client.send_message({
+        print(self.zulip_client.send_message({
             "forged": "yes",
             "sender": sender,
             "type": "stream",
@@ -138,5 +139,5 @@ if __name__ == "__main__":
     zulip_client = zulip.init_from_options(options)
 
     nickname = options.nick_prefix + "_zulip"
-    bot = IRCBot(options.channel, nickname, options.irc_server, options.port)
+    bot = IRCBot(zulip_client, options.channel, nickname, options.irc_server, options.port)
     bot.start()
