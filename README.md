@@ -40,13 +40,13 @@ This repository contains the source code for Zulip's PyPI packages:
 
 ### Running tests
 
-You can run the tests for the `zulip_bots` package by typing:
+To run the tests for
 
-`./tools/test-bots`
+* *zulip*: run `./tools/test-zulip`
 
-You can run the tests for the `zulip_botserver` by typing:
+* *zulip_bots*: run `./tools/test-bots`
 
-`./tools/test-botserver`
+* *zulip_botserver*: run `./tools/test-botserver`
 
 To run the linter, type:
 
