@@ -10,10 +10,10 @@ matrix:
   - python: "3.6"
     env: TEST_SUITE=lint
 install:
-  - pip install codecov
   - tools/provision
   - source zulip-api-py*-venv/bin/activate
 script:
   - tools/$TEST_SUITE
 after_success:
+  - pip install codecov
   - codecov
