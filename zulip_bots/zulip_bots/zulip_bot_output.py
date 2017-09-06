@@ -16,7 +16,7 @@ from mock import MagicMock, patch
 
 from zulip_bots.lib import run_message_handler_for_bot, StateHandler
 from zulip_bots.provision import provision_bot
-from zulip_bots.run import import_module_from_source, name_and_patch_match
+from zulip_bots.run import import_module_from_source, name_and_path_match
 
 def parse_args():
     usage = '''
@@ -64,7 +64,7 @@ the bot handler class.
     # checks if both of these are in sync, otherwise we'll
     # have to be bias towards one and the user may get incorrect
     # result.
-    elif not name_and_patch_match(options.name, options.path_to_bot):
+    elif not name_and_path_match(options.name, options.path_to_bot):
         error_message = """
 Please make sure that the given name of the bot and the
 given path to the bot are same and valid.
