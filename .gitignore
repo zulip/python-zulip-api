@@ -37,3 +37,9 @@ zulip-api-py*-venv
 
 # Automatically generated MANIFEST.in in zulip_bots
 zulip_bots/MANIFEST.in
+
+# Bot configuration files
+zuliprc
+.zuliprc
+flaskbotrc
+.flaskbotrc
