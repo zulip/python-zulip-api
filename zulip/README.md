@@ -22,7 +22,7 @@ please make sure we know you're using them so that we can notify you
 as we make any changes to them.
 
 The easiest way to use these API bindings is to base your tools off
-of the example tools under examples/ in this distribution.
+of the example tools under zulip/examples/ in this distribution.
 
 If you place your API key in the config file `~/.zuliprc` the Python
 API bindings will automatically read it in. The format of the config

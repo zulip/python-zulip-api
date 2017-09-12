@@ -608,7 +608,7 @@ class Client(object):
     def send_message(self, message_data):
         # type: (Dict[str, Any]) -> Dict[str, Any]
         '''
-            See api/examples/send-message for example usage.
+            See examples/send-message for example usage.
         '''
         return self.call_endpoint(
             url='messages',
@@ -618,7 +618,7 @@ class Client(object):
     def upload_file(self, file):
         # type: (IO) -> Dict[str, Any]
         '''
-            See api/examples/upload-file for example usage.
+            See examples/upload-file for example usage.
         '''
         return self.call_endpoint(
             url='user_uploads',
@@ -628,7 +628,7 @@ class Client(object):
     def update_message(self, message_data):
         # type: (Dict[str, Any]) -> Dict[str, Any]
         '''
-            See api/examples/edit-message for example usage.
+            See examples/edit-message for example usage.
         '''
         return self.call_endpoint(
             url='messages/%d' % (message_data['message_id'],),
@@ -724,7 +724,7 @@ class Client(object):
     def get_streams(self, **request):
         # type: (**Any) -> Dict[str, Any]
         '''
-            See api/examples/get-public-streams for example usage.
+            See examples/get-public-streams for example usage.
         '''
         return self.call_endpoint(
             url='streams',
@@ -735,7 +735,7 @@ class Client(object):
     def get_members(self, request=None):
         # type: (Dict[str, Any]) -> Dict[str, Any]
         '''
-            See api/examples/list-members for example usage.
+            See examples/list-members for example usage.
         '''
         return self.call_endpoint(
             url='users',
@@ -746,7 +746,7 @@ class Client(object):
     def list_subscriptions(self, request=None):
         # type: (Dict[str, Any]) -> Dict[str, Any]
         '''
-            See api/examples/list-subscriptions for example usage.
+            See examples/list-subscriptions for example usage.
         '''
         return self.call_endpoint(
             url='users/me/subscriptions',
@@ -757,7 +757,7 @@ class Client(object):
     def add_subscriptions(self, streams, **kwargs):
         # type: (Iterable[Dict[str, Any]], **Any) -> Dict[str, Any]
         '''
-            See api/examples/subscribe for example usage.
+            See examples/subscribe for example usage.
         '''
         request = dict(
             subscriptions=streams,
@@ -772,7 +772,7 @@ class Client(object):
     def remove_subscriptions(self, streams):
         # type: (Iterable[str]) -> Dict[str, Any]
         '''
-            See api/examples/unsubscribe for example usage.
+            See examples/unsubscribe for example usage.
         '''
         request = dict(delete=streams)
         return self.call_endpoint(
@@ -828,7 +828,7 @@ class Client(object):
     def create_user(self, request=None):
         # type: (Dict[str, Any]) -> Dict[str, Any]
         '''
-            See api/examples/create-user for example usage.
+            See examples/create-user for example usage.
         '''
         return self.call_endpoint(
             method='POST',

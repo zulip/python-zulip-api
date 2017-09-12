@@ -1,11 +1,11 @@
 recursive-include integrations *
 include README.md
-include examples/zuliprc
-include examples/send-message
-include examples/subscribe
-include examples/get-public-streams
-include examples/unsubscribe
-include examples/list-members
-include examples/list-subscriptions
-include examples/print-messages
-include examples/recent-messages
+include zulip/examples/zuliprc
+include zulip/examples/send-message
+include zulip/examples/subscribe
+include zulip/examples/get-public-streams
+include zulip/examples/unsubscribe
+include zulip/examples/list-members
+include zulip/examples/list-subscriptions
+include zulip/examples/print-messages
+include zulip/examples/recent-messages
