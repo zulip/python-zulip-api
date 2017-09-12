@@ -228,7 +228,7 @@ def generate_option_group(parser, prefix=''):
 def init_from_options(options, client=None):
     # type: (Any, Optional[str]) -> Client
 
-    if options.provision:
+    if getattr(options, 'provision', False):
         requirements_path = os.path.abspath(os.path.join(sys.path[0], 'requirements.txt'))
         try:
             import pip
