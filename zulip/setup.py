@@ -65,7 +65,6 @@ package_info = dict(
 
 setuptools_info = dict(
     install_requires=['requests>=0.12.1',
-                      'simplejson',
                       'six',
                       'typing>=3.5.2.2',
                       ],
@@ -80,11 +79,6 @@ except ImportError:
     from distutils.core import setup
     from distutils.version import LooseVersion
     # Manual dependency check
-    try:
-        import simplejson
-    except ImportError:
-        print("simplejson is not installed", file=sys.stderr)
-        sys.exit(1)
     try:
         import requests
         assert(LooseVersion(requests.__version__) >= LooseVersion('0.12.1'))

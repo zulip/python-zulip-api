@@ -27,10 +27,7 @@ from types import FrameType
 import sys
 from six.moves import map
 from six.moves import range
-try:
-    import simplejson
-except ImportError:
-    import json as simplejson  # type: ignore
+import json
 import re
 import time
 import subprocess
@@ -205,7 +202,7 @@ def update_subscriptions():
     # type: () -> None
     try:
         f = open(options.stream_file_path, "r")
-        public_streams = simplejson.loads(f.read())
+        public_streams = json.loads(f.read())
         f.close()
     except Exception:
         logger.exception("Error reading public streams:")
@@ -447,7 +444,7 @@ def process_notice(notice, log):
     logger.info("Received a message on %s/%s from %s..." %
                 (zephyr_class, notice.instance, notice.sender))
     if log is not None:
-        log.write(simplejson.dumps(zeph) + '\n')
+        log.write(json.dumps(zeph) + '\n')
         log.flush()
 
     if os.fork() == 0:
@@ -552,7 +549,7 @@ def zephyr_to_zulip(options):
         with open(options.logs_to_resend, 'r') as log:
             for ln in log:
                 try:
-                    zeph = simplejson.loads(ln)
+                    zeph = json.loads(ln)
                     # New messages added to the log shouldn't have any
                     # elements of type str (they should already all be
                     # unicode), but older messages in the log are

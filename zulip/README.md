@@ -4,7 +4,6 @@ The [Zulip API](https://zulipchat.com/api) Python bindings require the
 following Python libraries:
 
 * requests (version >= 0.12.1)
-* simplejson
 * six
 * typing (version >= 3.5.2.2)
 

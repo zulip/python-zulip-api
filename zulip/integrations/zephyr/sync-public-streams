@@ -4,7 +4,7 @@ import os
 import logging
 import optparse
 import time
-import simplejson
+import json
 import subprocess
 import unicodedata
 
@@ -68,7 +68,7 @@ if __name__ == "__main__":
             continue
 
         f = open("/home/zulip/public_streams.tmp", "w")
-        f.write(simplejson.dumps(list(public_streams)) + "\n")
+        f.write(json.dumps(list(public_streams)) + "\n")
         f.close()
 
         subprocess.call(["mv", "/home/zulip/public_streams.tmp", "/home/zulip/public_streams"])
