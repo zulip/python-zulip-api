@@ -41,24 +41,12 @@ package_info = dict(
         'Topic :: Communications :: Chat',
     ],
     url='https://www.zulip.org/',
-    data_files=[('share/zulip/examples',
-                 ["examples/zuliprc",
-                  "examples/create-user",
-                  "examples/edit-message",
-                  "examples/get-presence",
-                  "examples/get-public-streams",
-                  "examples/list-members",
-                  "examples/list-subscriptions",
-                  "examples/print-events",
-                  "examples/print-messages",
-                  "examples/recent-messages",
-                  "examples/send-message",
-                  "examples/subscribe",
-                  "examples/unsubscribe",
-                  ])] + list(recur_expand('share/zulip', 'integrations')),
+    data_files=list(recur_expand('share/zulip', 'integrations')),
+    include_package_data=True,
     entry_points={
         'console_scripts': [
             'zulip-send=zulip.send:main',
+            'zulip-api-examples=zulip.api_examples:main'
         ],
     },
 )  # type: Dict[str, Any]
