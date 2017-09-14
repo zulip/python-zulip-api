@@ -170,6 +170,10 @@ def add_default_arguments(parser, patch_error_handling=True, allow_provisioning=
                             file).''')
     return parser
 
+# This method might seem redundant with `add_default_arguments()`,
+# except for the fact that is uses the deprecated `optparse` module.
+# We still keep it for legacy support of out-of-tree bots and integrations
+# depending on it.
 def generate_option_group(parser, prefix=''):
     # type: (optparse.OptionParser, str) ->  optparse.OptionGroup
     logging.warning("""zulip.generate_option_group is based on optparse, which
