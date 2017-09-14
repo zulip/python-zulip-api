@@ -23,7 +23,7 @@
 from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import division
-import simplejson
+import json
 import requests
 import time
 import traceback
@@ -434,7 +434,7 @@ class Client(object):
             if isinstance(val, str) or isinstance(val, Text):
                 request[key] = val
             else:
-                request[key] = simplejson.dumps(val)
+                request[key] = json.dumps(val)
 
         for f in files:
             req_files.append((f.name, f))
@@ -459,7 +459,7 @@ class Client(object):
                 else:
                     sys.stdout.write(".")
                 sys.stdout.flush()
-            query_state["request"]["dont_block"] = simplejson.dumps(True)
+            query_state["request"]["dont_block"] = json.dumps(True)
             time.sleep(1)
             query_state["failures"] += 1
             return True
