@@ -106,13 +106,14 @@ def _default_client():
     return "ZulipPython/" + __version__
 
 def add_default_arguments(parser, patch_error_handling=True, allow_provisioning=False):
-    # type: (argparse.ArgumentParser) ->  argparse.ArgumentParser
+    # type: (argparse.ArgumentParser, bool, bool) ->  argparse.ArgumentParser
 
     if patch_error_handling:
         def custom_error_handling(self, message):
+            # type: (Any, str) -> None
             self.print_help(sys.stderr)
             self.exit(2, '{}: error: {}\n'.format(self.prog, message))
-        parser.error = types.MethodType(custom_error_handling, parser)
+        parser.error = types.MethodType(custom_error_handling, parser)  # type: ignore
 
     if allow_provisioning:
         parser.add_argument('--provision',

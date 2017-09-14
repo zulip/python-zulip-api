@@ -52,7 +52,7 @@ def do_send_message(client, message_data):
         return False
 
 def main():
-    # type: (Optional[List[str]]) -> int
+    # type: () -> int
     usage = """zulip-send [options] [recipient...]
 
     Sends a message to specified recipients.
