@@ -43,3 +43,6 @@ zuliprc
 .zuliprc
 flaskbotrc
 .flaskbotrc
+
+# mypy
+.mypy_cache

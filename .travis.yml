@@ -9,6 +9,8 @@ matrix:
   include:
   - python: "3.6"
     env: TEST_SUITE=lint
+  - python: "3.6"
+    env: TEST_SUITE=run-mypy
 install:
   - tools/provision
   - source zulip-api-py*-venv/bin/activate

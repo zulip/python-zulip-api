@@ -6,6 +6,7 @@ import argparse
 import pip
 import six
 import subprocess
+import warnings
 
 from importlib import import_module
 
@@ -49,10 +50,17 @@ the Python version this command is executed with."""
     # In order to install all required packages for the venv, `pip` needs to be executed by
     # the venv's Python interpreter. `--prefix venv_dir` ensures that all modules are installed
     # in the right place.
-    if subprocess.call([os.path.join(venv_dir, venv_exec_dir, 'pip'),
-                        'install', '--prefix', venv_dir, '-r', os.path.join(base_dir, 'requirements.txt')]):
-        raise OSError("The command `pip install -r {}` failed. Dependencies not installed!"
-                      .format(os.path.join(base_dir, 'requirements.txt')))
+    def install_dependencies(requirements_filename):
+        if subprocess.call([os.path.join(venv_dir, venv_exec_dir, 'pip'),
+                           'install', '--prefix', venv_dir, '-r', os.path.join(base_dir, requirements_filename)]):
+            raise OSError("The command `pip install -r {}` failed. Dependencies not installed!"
+                          .format(os.path.join(base_dir, requirements_filename)))
+
+    install_dependencies('requirements.txt')
+    if sys.version_info > (3, 1):
+        install_dependencies('py3_requirements.txt')
+    else:
+        warnings.warn("Your Python version does not support mypy. `tools/run-mypy` will fail.")
 
     print("{green}Success!{end_format}  Run\n    {bold}source '{activate}'{end_format}\nto activate virtualenv.".format(
         green='\033[92m', bold='\033[1m', end_format='\033[0m',
