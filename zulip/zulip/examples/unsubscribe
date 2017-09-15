@@ -38,13 +38,9 @@ Specify your Zulip API credentials and server in a ~/.zuliprc file or using the 
 import zulip
 
 parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage))
-parser.add_argument('--streams', default='')
+parser.add_argument('--streams', action='store', required=True)
 options = parser.parse_args()
 
 client = zulip.init_from_options(options)
-
-if options.streams == "":
-    print("Usage:", parser.usage, file=sys.stderr)
-    sys.exit(1)
 
 print(client.remove_subscriptions(options.streams.split()))
