@@ -100,15 +100,16 @@ if __name__ == "__main__":
     parser = zulip.add_default_arguments(argparse.ArgumentParser())  # type: argparse.ArgumentParser3
     parser.add_argument("--control-path", default="/etc/log2zulip.conf")
     args = parser.parse_args()
-    # On posix systems, we set the config directory explicitly for legacy reasons.
-    if not args.zulip_config_file and os.name == "posix":
-        args.zulip_config_file = "/etc/log2zulip.zuliprc"
 
     lock_path = os.path.join(temp_dir, "log2zulip.lock")
     if os.path.exists(lock_path):
+        # This locking code is here to protect against log2zulip,
+        # running in a cron job, ending up with multiple copies
+        # running at the same time.
         print("Log2zulip lock held; not doing anything")
         sys.exit(0)
 
+    # TODO: Convert this locking code to use a standard context manager.
     try:
         open(lock_path, "w").write("1")
         zulip_client = zulip.init_from_options(args)
