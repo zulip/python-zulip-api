@@ -242,8 +242,10 @@ def init_from_options(options, client=None):
                   "https://pip.pypa.io/en/stable/installing/")
             sys.exit(1)
         if not pip.main(['install', '--upgrade', '--requirement', requirements_path]):
-            print("{color_green}Provisioning successful.{end_color}".format(
-                color_green='\033[92m', end_color='\033[0m'))
+            print("{color_green}You successfully provisioned the dependencies for {script}.{end_color}".format(
+                color_green='\033[92m', end_color='\033[0m',
+                script=os.path.splitext(os.path.basename(sys.argv[0]))[0]))
+            sys.exit(0)
 
     if options.zulip_client is not None:
         client = options.zulip_client
