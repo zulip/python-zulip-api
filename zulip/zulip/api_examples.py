@@ -5,6 +5,7 @@ import zulip
 import argparse
 
 def main():
+    # type: () -> None
     usage = """zulip-api-examples [script_name]
 
 Prints the path to the Zulip API example scripts."""
