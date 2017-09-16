@@ -22,29 +22,10 @@ def exit_gracefully(signum, frame):
     # type: (int, Optional[Any]) -> None
     sys.exit(0)
 
-def get_bot_logo_path(name):
-    # type: str -> Optional[str]
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    logo_path_png = os.path.join(
-        current_dir, 'bots/{bot_name}/logo.png'.format(bot_name=name))
-    logo_path_svg = os.path.join(
-        current_dir, 'bots/{bot_name}/logo.svg'.format(bot_name=name))
-
-    if os.path.isfile(logo_path_png):
-        return logo_path_png
-    elif os.path.isfile(logo_path_svg):
-        return logo_path_svg
-
-    return None
-
 def get_bots_directory_path():
     # type: () -> str
     current_dir = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(current_dir, 'bots')
-
-def get_bot_doc_path(name):
-    # type: (str) -> str
-    return os.path.join(get_bots_directory_path(), '{}/doc.md'.format(name))
 
 class RateLimit(object):
     def __init__(self, message_limit, interval_limit):
