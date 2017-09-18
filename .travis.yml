@@ -14,6 +14,9 @@ install:
   - source zulip-api-py*-venv/bin/activate
 script:
   - tools/$TEST_SUITE
+  - wget https://github.com/houstondatavis/slack-export/archive/master.zip
+  - mv master.zip slack-export-master.zip
+  - zulip/integrations/slack/slackdata2zulipdata.py $PWD/slack-export-master.zip
 after_success:
   - pip install codecov
   - codecov
