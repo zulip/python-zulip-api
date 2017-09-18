@@ -1,0 +1,15 @@
+#!/bin/bash
+
+sed -i "s|python-zulip-api.git@0.3.4|python-zulip-api.git@refs/pull/$TRAVIS_PULL_REQUEST|" requirements/common.txt
+sed -i "s|python-zulip-api.git@0.3.4|python-zulip-api.git@refs/pull/$TRAVIS_PULL_REQUEST|" requirements/dev_lock.txt
+sed -i "s|python-zulip-api.git@0.3.4|python-zulip-api.git@refs/pull/$TRAVIS_PULL_REQUEST|" requirements/prod_lock.txt
+
+./tools/travis/setup-backend
+
+source tools/travis/activate-venv
+echo "Test suite is running under $(python --version)."
+
+set -e
+set -x
+
+./tools/test-api
