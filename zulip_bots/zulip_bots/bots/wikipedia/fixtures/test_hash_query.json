@@ -1,6 +1,6 @@
 {
     "request": {
-        "api_url":"https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=The%20sky%20is%20blue&format=json"
+        "api_url":"https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=%23&format=json"
     },
     "response": {
         "data": {
@@ -9,7 +9,7 @@
         "query": {
             "search": [
                 {
-                    "title":"Sky blue"
+                    "title":"Number sign"
                 }
             ]
         }

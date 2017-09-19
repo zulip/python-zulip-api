@@ -3,6 +3,7 @@ from __future__ import print_function
 import requests
 import logging
 import re
+from six.moves import urllib
 
 # See readme.md for instructions on running this code.
 
@@ -41,7 +42,8 @@ class WikipediaHandler(object):
         if query == '':
             return help_text
         query_wiki_link = ('https://en.wikipedia.org/w/api.php?action=query&'
-                           'list=search&srsearch=%s&format=json' % (query,))
+                           'list=search&srsearch=%s&format=json'
+                           % (urllib.parse.quote(query),))
         try:
             data = requests.get(query_wiki_link)
         except requests.exceptions.RequestException:
