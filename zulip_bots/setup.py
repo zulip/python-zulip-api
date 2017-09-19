@@ -9,7 +9,12 @@ import sys
 import generate_manifest
 
 ZULIP_BOTS_VERSION = "0.3.4"
+IS_PYPA_PACKAGE = False
 
+# IS_PYPA_PACKAGE is set to True by tools/release-packages
+# before making a PyPA release.
+if not IS_PYPA_PACKAGE:
+    generate_manifest.generate_dev_manifest()
 
 # We should be installable with either setuptools or distutils.
 package_info = dict(

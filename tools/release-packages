@@ -1,0 +1,362 @@
+#!/usr/bin/env python
+
+from __future__ import print_function
+from contextlib import contextmanager
+import os
+import argparse
+import functools
+import glob
+import shutil
+import tempfile
+
+from git import Repo
+import crayons
+import twine.commands.upload
+import setuptools.sandbox
+
+REPO_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+repo = Repo(REPO_DIR)
+git = repo.git
+
+@contextmanager
+def cd(newdir):
+    prevdir = os.getcwd()
+    os.chdir(os.path.expanduser(newdir))
+    try:
+        yield
+    finally:
+        os.chdir(prevdir)
+
+def _generate_dist(dist_type, setup_file, package_name, setup_args):
+    message = 'Generating {dist_type} for {package_name}.'.format(
+        dist_type=dist_type,
+        package_name=package_name,
+    )
+    print(crayons.white(message, bold=True))
+
+    setup_dir = os.path.dirname(setup_file)
+    with cd(setup_dir):
+        setuptools.sandbox.run_setup(setup_file, setup_args)
+
+    message = '{dist_type} for {package_name} generated under {dir}.\n'.format(
+        dist_type=dist_type,
+        package_name=package_name,
+        dir=setup_dir,
+    )
+    print(crayons.green(message, bold=True))
+
+def generate_sdist(setup_file, package_name):
+    _generate_dist('sdist', setup_file, package_name, ['sdist'])
+
+def generate_bdist_wheel_universal(setup_file, package_name):
+    _generate_dist('bdist_wheel', setup_file, package_name,
+                   ['bdist_wheel', '--universal'])
+
+def twine_upload(dist_dirs):
+    message = 'Uploading distributions under the following directories:'
+    print(crayons.green(message, bold=True))
+    for dist_dir in dist_dirs:
+        print(crayons.yellow(dist_dir))
+    twine.commands.upload.main(dist_dirs)
+
+def cleanup(package_dir):
+    build_dir = os.path.join(package_dir, 'build')
+    temp_dir = os.path.join(package_dir, 'temp')
+    dist_dir = os.path.join(package_dir, 'dist')
+    egg_info = os.path.join(
+        package_dir,
+        '{}.egg-info'.format(os.path.basename(package_dir))
+    )
+    version_symlink = os.path.join(package_dir, 'version.py')
+
+    def _rm_if_it_exists(directory):
+        if os.path.isdir(directory):
+            print(crayons.green('Removing {}/*.'.format(directory), bold=True))
+            shutil.rmtree(directory)
+
+    map(_rm_if_it_exists, [build_dir, temp_dir, dist_dir, egg_info])
+
+    if os.path.islink(version_symlink):
+        print(crayons.green('Removing {}.'.format(version_symlink), bold=True))
+        os.remove(version_symlink)
+
+def set_variable(fp, variable, value):
+    fh, temp_abs_path = tempfile.mkstemp()
+    with os.fdopen(fh, 'w') as new_file, open(fp) as old_file:
+        for line in old_file:
+            if line.startswith(variable):
+                if isinstance(value, bool):
+                    template = '{variable} = {value}\n'
+                else:
+                    template = '{variable} = "{value}"\n'
+                new_file.write(template.format(variable=variable, value=value))
+            else:
+                new_file.write(line)
+
+    os.remove(fp)
+    shutil.move(temp_abs_path, fp)
+
+    message = 'Set {variable} in {fp} to {value}.'.format(
+        fp=fp, variable=variable, value=value)
+    print(crayons.white(message, bold=True))
+
+def push_release_tag(version, upstream_or_origin):
+    print(crayons.yellow('Pushing release tag {}...'.format(version), bold=True))
+    git.tag(version)
+    git.push(upstream_or_origin, version)
+
+def commit_and_push_version_changes(version, init_files, upstream_or_origin):
+    message = 'Committing version number changes...{}'.format(version)
+    print(crayons.yellow(message, bold=True))
+
+    if upstream_or_origin == 'origin':
+        branch = 'release-{}'.format(version)
+        git.checkout('-b', branch)
+    else:
+        branch = 'master'
+        git.checkout(branch)
+
+    print(crayons.yellow('Diff:'))
+    print(git.diff())
+
+    git.add(*init_files)
+    commit_msg = 'python-zulip-api: Upgrade package versions to {}.'.format(
+        version)
+    print(crayons.yellow('Commit message: {}'.format(commit_msg), bold=True))
+    git.commit('-m', commit_msg)
+
+    git.push(upstream_or_origin, branch)
+
+def update_requirements_in_zulip_repo(zulip_repo_dir, version, hash_or_tag):
+    common = os.path.join(zulip_repo_dir, 'requirements', 'common.txt')
+    prod_lock = os.path.join(zulip_repo_dir, 'requirements', 'prod_lock.txt')
+    dev_lock = os.path.join(zulip_repo_dir, 'requirements', 'dev_lock.txt')
+    version_py = os.path.join(zulip_repo_dir, 'version.py')
+
+    def _edit_reqs_file(reqs, zulip_bots_line, zulip_line):
+        fh, temp_abs_path = tempfile.mkstemp()
+        with os.fdopen(fh, 'w') as new_file, open(reqs) as old_file:
+            for line in old_file:
+                if 'python-zulip-api' in line and 'zulip==' in line:
+                    new_file.write(zulip_line)
+                elif 'python-zulip-api' in line and 'zulip_bots' in line:
+                    new_file.write(zulip_bots_line)
+                else:
+                    new_file.write(line)
+
+        os.remove(reqs)
+        shutil.move(temp_abs_path, reqs)
+
+    url_zulip = 'git+https://github.com/zulip/python-zulip-api.git@{tag}#egg={name}=={version}_git&subdirectory={name}\n'
+    url_zulip_bots = 'git+https://github.com/zulip/python-zulip-api.git@{tag}#egg={name}=={version}+git&subdirectory={name}\n'
+    zulip_bots_line = url_zulip_bots.format(tag=hash_or_tag, name='zulip_bots',
+                                            version=version)
+    zulip_line = url_zulip.format(tag=hash_or_tag, name='zulip',
+                                  version=version)
+
+    map(functools.partial(
+        _edit_reqs_file,
+        zulip_bots_line=zulip_bots_line,
+        zulip_line=zulip_line,
+    ), [prod_lock, dev_lock])
+
+    editable_zulip = '-e "{}"\n'.format(url_zulip.rstrip())
+    editable_zulip_bots = '-e "{}"\n'.format(url_zulip_bots.rstrip())
+
+    _edit_reqs_file(
+        common,
+        editable_zulip_bots.format(tag=hash_or_tag, name='zulip_bots', version=version),
+        editable_zulip.format(tag=hash_or_tag, name='zulip', version=version),
+    )
+
+    message = 'Updated zulip API package requirements in the main repo.'
+    print(crayons.white(message, bold=True))
+
+    fh, temp_abs_path = tempfile.mkstemp()
+    with os.fdopen(fh, 'w') as new_file, open(version_py) as old_file:
+        variable_exists = False
+        for line in old_file:
+            if line.startswith('PROVISION_VERSION'):
+                variable_exists = True
+                version_num = float(line.split('=')[-1].strip().replace("'", ''))
+                version_num = version_num + 0.01
+                new_file.write("PROVISION_VERSION = '{}'\n".format(version_num))
+            else:
+                new_file.write(line)
+
+        if not variable_exists:
+            raise Exception('There is no variable named PROVISION_VERSION in {}'.format(version_py))
+
+    os.remove(version_py)
+    shutil.move(temp_abs_path, version_py)
+
+    message = 'Incremented PROVISION_VERSION in the main repo.'
+    print(crayons.white(message, bold=True))
+
+def commit_and_push_requirements_changes(version, upstream_or_origin,
+                                         zulip_repo_dir):
+    zulip_repo_dir = os.path.abspath(zulip_repo_dir)
+    common = os.path.join(zulip_repo_dir, 'requirements', 'common.txt')
+    prod_lock = os.path.join(zulip_repo_dir, 'requirements', 'prod_lock.txt')
+    dev_lock = os.path.join(zulip_repo_dir, 'requirements', 'dev_lock.txt')
+    version_py = os.path.join(zulip_repo_dir, 'version.py')
+
+    with cd(zulip_repo_dir):
+        zulip_git = Repo(zulip_repo_dir).git
+
+        message = 'Committing requirements changes...{}'.format(version)
+        print(crayons.yellow(message, bold=True))
+
+        if upstream_or_origin == 'origin':
+            branch = 'upgrade-zulip-packages-{}'.format(version)
+            zulip_git.checkout('-b', branch)
+        else:
+            branch = 'master'
+            zulip_git.checkout(branch)
+
+        print(crayons.yellow('Diff:'))
+        print(zulip_git.diff())
+
+        zulip_git.add(common, prod_lock, dev_lock, version_py)
+
+        commit_msg = 'requirements: Upgrade to version {} of the Zulip API packages.'.format(version)
+        print(crayons.yellow('Commit message: {}'.format(commit_msg), bold=True))
+        zulip_git.commit('-m', commit_msg)
+
+        zulip_git.push(upstream_or_origin, branch)
+
+def parse_args():
+    usage = """
+Script to automate the PyPA release of the zulip, zulip_bots and
+zulip_botserver packages.
+
+To make a release, execute the following steps in order:
+
+1. Run ./tools/provision
+2. Activate the virtualenv created by tools/provision
+3. For example, to make a release for version 0.3.5, run the
+   following command:
+
+./tools/release-packages 0.3.5 --build --release --push origin \
+    --update-zulip-main-repo "/home/username/zulip"
+
+The above command would accomplish the following (in order):
+
+1. Increment the __version__ in zulip/__init__.py,
+   zulip_bots/__init__.py and zulip_botserver/__init__.py.
+2. --build: Build sdists and universal wheels for all packages.
+   The sdists and wheels for a specific package are under
+   <package_name>/dist/.
+3. --release: Upload all dists under <package_name>/dist/* to
+   PyPA using twine.
+4. --update-zulip-main-repo: Update the requirements/ in the main
+   zulip repo to install off of the newest version of the packages.
+   Also increments PROVISION_VERSION in the main repo.
+5. --push origin: Commit the changes produced in Step 1 and 4,
+   checkout a new branch named release-<version>, generate a commit
+   message, commit the changes and push the branch to origin.
+"""
+    parser = argparse.ArgumentParser(usage=usage)
+
+    parser.add_argument('release_version',
+                        help='The new version number of the packages.')
+
+    parser.add_argument('--cleanup', '-c',
+                        action='store_true',
+                        default=False,
+                        help='Remove build directories (dist/, build/, egg-info/, etc).')
+
+    parser.add_argument('--build', '-b',
+                        action='store_true',
+                        default=False,
+                        help=('Build sdists and wheels for all packages.'
+                              ' sdists and wheels are stored in <package_name>/dist/*.'))
+
+    parser.add_argument('--release', '-r',
+                        action='store_true',
+                        default=False,
+                        help='Upload the packages to PyPA using twine.')
+
+    parser.add_argument('--push',
+                        metavar='origin or upstream',
+                        help=('Commit and push a commit changing package versions'
+                              ' (can be either "origin" or "upstream"). If "origin'
+                              ' is specified, a new branch named release-<version> is'
+                              ' checked out before committing and pushing. If'
+                              ' "upstream" is supplied, then master is checked out'
+                              ' before committing and pushing. The process is the'
+                              ' same for changes made to both repos.'))
+
+    parser.add_argument('--update-zulip-main-repo',
+                        metavar='PATH_TO_ZULIP_DIR',
+                        help='Update requirements/* in the main zulip repo and'
+                             ' increment PROVISION_VERSION.')
+
+    parser.add_argument('--hash',
+                        help=('Commit hash to install off of in the main zulip'
+                              ' repo (used in conjunction with'
+                              ' --update-requirements). If not supplied,'
+                              ' release_version is used as a tag.'))
+
+    return parser.parse_args()
+
+def main():
+    options = parse_args()
+
+    zulip_init = os.path.join(REPO_DIR, 'zulip', 'zulip', '__init__.py')
+    set_variable(zulip_init, '__version__', options.release_version)
+    bots_setup = os.path.join(REPO_DIR, 'zulip_bots', 'setup.py')
+    set_variable(bots_setup, 'ZULIP_BOTS_VERSION', options.release_version)
+    set_variable(bots_setup, 'IS_PYPA_PACKAGE', True)
+    botserver_setup = os.path.join(REPO_DIR, 'zulip_botserver', 'setup.py')
+    set_variable(botserver_setup, 'ZULIP_BOTSERVER_VERSION', options.release_version)
+
+    glob_pattern = os.path.join(REPO_DIR, '*', 'setup.py')
+    setup_py_files = glob.glob(glob_pattern)
+
+    if options.build:
+        for setup_file in setup_py_files:
+            package_name = os.path.basename(os.path.dirname(setup_file))
+            if package_name == 'zulip_bots':
+                setuptools.sandbox.run_setup(
+                    setup_file, ['gen_manifest', '--release']
+                )
+            generate_sdist(setup_file, package_name)
+            generate_bdist_wheel_universal(setup_file, package_name)
+
+    if options.release:
+        dist_dirs = glob.glob(os.path.join(REPO_DIR, '*', 'dist'))
+        twine_upload(dist_dirs)
+
+    if options.update_zulip_main_repo:
+        if options.hash:
+            update_requirements_in_zulip_repo(
+                options.update_zulip_main_repo,
+                options.release_version,
+                options.hash
+            )
+        else:
+            update_requirements_in_zulip_repo(
+                options.update_zulip_main_repo,
+                options.release_version,
+                options.release_version
+            )
+
+    if options.push:
+        set_variable(zulip_bots_init, 'IS_PYPA_PACKAGE', False)
+        if options.update_zulip_main_repo:
+            commit_and_push_requirements_changes(
+                options.release_version,
+                options.push,
+                options.update_zulip_main_repo,
+            )
+        push_release_tag(options.release_version, options.push)
+        commit_and_push_version_changes(options.release_version,
+                                        init_files, options.push)
+
+    if options.cleanup:
+        package_dirs = map(os.path.dirname, setup_py_files)
+        map(cleanup, package_dirs)
+
+if __name__ == '__main__':
+    main()
