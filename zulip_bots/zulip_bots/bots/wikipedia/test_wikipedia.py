@@ -37,6 +37,15 @@ class TestWikipediaBot(BotTestCase):
                 expected_method='send_reply'
             )
 
+        # Hash query
+        bot_response = "For search term \"#\", https://en.wikipedia.org/wiki/Number_sign"
+        with self.mock_http_conversation('test_hash_query'):
+            self.assert_bot_response(
+                message = {'content': '#'},
+                response = {'content': bot_response},
+                expected_method='send_reply'
+            )
+
         # Incorrect word
         bot_response = "I am sorry. The search term you provided is not found :slightly_frowning_face:"
         with self.mock_http_conversation('test_incorrect_query'):
