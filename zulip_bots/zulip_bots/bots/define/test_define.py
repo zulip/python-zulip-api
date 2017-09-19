@@ -58,6 +58,14 @@ class TestDefineBot(BotTestCase):
             expected_method='send_reply'
         )
 
+        # Symbols are considered invalid for words
+        bot_response = "Definitions of words with symbols are not possible."
+        self.assert_bot_response(
+            message = {'content': '#'},
+            response = {'content': bot_response},
+            expected_method='send_reply'
+        )
+
         # Empty messages are returned with a prompt to reply. No request is sent to the Internet.
         bot_response = "Please enter a word to define."
         self.assert_bot_response(
