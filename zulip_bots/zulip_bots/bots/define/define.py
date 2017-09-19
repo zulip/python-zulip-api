@@ -3,6 +3,7 @@ import logging
 import json
 import requests
 import html2text
+import string
 
 class DefineHandler(object):
     '''
@@ -14,6 +15,7 @@ class DefineHandler(object):
     REQUEST_ERROR_MESSAGE = 'Could not load definition.'
     EMPTY_WORD_REQUEST_ERROR_MESSAGE = 'Please enter a word to define.'
     PHRASE_ERROR_MESSAGE = 'Definitions for phrases are not available.'
+    SYMBOLS_PRESENT_ERROR_MESSAGE = 'Definitions of words with symbols are not possible.'
 
     def usage(self):
         return '''
@@ -35,6 +37,11 @@ class DefineHandler(object):
 
         to_define = split_content[0].strip()
         to_define_lower = to_define.lower()
+
+        # Check for presence of non-letters
+        non_letters = set(to_define_lower) - set(string.ascii_lowercase)
+        if len(non_letters):
+            return self.SYMBOLS_PRESENT_ERROR_MESSAGE
 
         # No word was entered.
         if not to_define_lower:
