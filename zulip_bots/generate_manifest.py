@@ -3,10 +3,42 @@
 import argparse
 import os
 import glob
+import distutils.cmd
+import distutils.log
 
 CURRENT_DIR = os.path.abspath(os.path.dirname(__file__))
 BOTS_DIR = os.path.normpath(os.path.join(CURRENT_DIR, 'zulip_bots', 'bots'))
 MANIFEST_PATH = os.path.join(CURRENT_DIR, 'MANIFEST.in')
+
+class GenerateManifest(distutils.cmd.Command):
+    """
+    A custom setup.py command to generate a MANIFEST.in
+    for the zulip_bots package.
+    """
+    description = 'generate a MANIFEST.in for PyPA or for development'
+    user_options = [
+        ('release', None, 'generate a MANIFEST for a PyPA release'),
+    ]
+
+    def initialize_options(self):
+        self.release = False
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        if self.release:
+            generate_release_manifest()
+            self.announce(
+                'Generating a MANIFEST for a PyPA release of zulip_bots.',
+                level=distutils.log.INFO
+            )
+        else:
+            generate_dev_manifest()
+            self.announce(
+                'Generating a MANIFEST for zulip_bots\' development.',
+                level=distutils.log.INFO
+            )
 
 def get_test_fixtures():
     # type: () -> List[str]

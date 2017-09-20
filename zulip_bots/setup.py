@@ -5,9 +5,7 @@ from __future__ import print_function
 
 import sys
 
-# Before anything, generate MANIFEST.in
 import generate_manifest
-generate_manifest.generate_dev_manifest()
 
 # We should be installable with either setuptools or distutils.
 package_info = dict(
@@ -31,6 +29,9 @@ package_info = dict(
         ],
     },
     include_package_data=True,
+    cmdclass={
+        'gen_manifest': generate_manifest.GenerateManifest,
+    },
 )  # type: Dict[str, Any]
 
 setuptools_info = dict(
