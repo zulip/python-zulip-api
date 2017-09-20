@@ -33,6 +33,15 @@ def get_docs():
     )
     return doc_paths
 
+def get_assets():
+    # type: () -> List[str]
+    glob_pattern = os.path.join(BOTS_DIR, '*', 'assets', '*')
+    assets_files = map(
+        lambda fp: os.path.join(*fp.split(os.path.sep)[-5:]).replace(os.path.sep, '/'),
+        glob.glob(glob_pattern)
+    )
+    return assets_files
+
 def main():
     # type: () -> None
     manifest_path = os.path.join(CURRENT_DIR, 'MANIFEST.in')
