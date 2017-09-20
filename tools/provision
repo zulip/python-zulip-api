@@ -8,6 +8,12 @@ import warnings
 
 from importlib import import_module
 
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+ZULIP_BOTS_DIR = os.path.join(CURRENT_DIR, '..', 'zulip_bots')
+sys.path.append(ZULIP_BOTS_DIR)
+
+import generate_manifest
+
 def main():
     usage = """./tools/provision
 
