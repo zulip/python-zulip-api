@@ -3,14 +3,18 @@
 
 from __future__ import print_function
 
+import os
 import sys
 
 import generate_manifest
 
+ZULIP_BOTS_VERSION = "0.3.4"
+
+
 # We should be installable with either setuptools or distutils.
 package_info = dict(
     name='zulip_bots',
-    version='0.3.4',
+    version=ZULIP_BOTS_VERSION,
     description='Zulip\'s Bot framework',
     author='Zulip Open Source Project',
     author_email='zulip-devel@googlegroups.com',
@@ -36,7 +40,7 @@ package_info = dict(
 
 setuptools_info = dict(
     install_requires=[
-        'zulip>=0.3.4',
+        'zulip',
         'mock>=2.0.0',
         'html2text',  # for bots/define
     ],
@@ -66,7 +70,7 @@ except ImportError:
                 print("{name} is not installed.".format(name=module_name), file=sys.stderr)
             sys.exit(1)
 
-    check_dependency_manually('zulip', '0.3.4')
+    check_dependency_manually('zulip')
     check_dependency_manually('mock', '2.0.0')
     check_dependency_manually('html2text')
     check_dependency_manually('PyDictionary')

@@ -3,12 +3,15 @@
 
 from __future__ import print_function
 
+import os
 import sys
+
+ZULIP_BOTSERVER_VERSION = "0.3.4"
 
 # We should be installable with either setuptools or distutils.
 package_info = dict(
     name='zulip_botserver',
-    version='0.3.4',
+    version=ZULIP_BOTSERVER_VERSION,
     description='Zulip\'s Flask server for running bots',
     author='Zulip Open Source Project',
     author_email='zulip-devel@googlegroups.com',
@@ -30,8 +33,8 @@ package_info = dict(
 
 setuptools_info = dict(
     install_requires=[
-        'zulip>=0.3.4',
-        'zulip_bots>=0.3.4',
+        'zulip',
+        'zulip_bots',
         'flask>=0.12.2',
     ],
 )
@@ -60,8 +63,8 @@ except ImportError:
                 print("{name} is not installed.".format(name=module_name), file=sys.stderr)
             sys.exit(1)
 
-    check_dependency_manually('zulip', '0.3.4')
-    check_dependency_manually('zulip_bots', '0.3.4')
+    check_dependency_manually('zulip')
+    check_dependency_manually('zulip_bots')
     check_dependency_manually('flask', '0.12.2')
 
     package_info['packages'] = ['zulip_botserver']
