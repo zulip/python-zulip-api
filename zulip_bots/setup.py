@@ -7,7 +7,7 @@ import sys
 
 # Before anything, generate MANIFEST.in
 import generate_manifest
-generate_manifest.main()
+generate_manifest.generate_dev_manifest()
 
 # We should be installable with either setuptools or distutils.
 package_info = dict(
