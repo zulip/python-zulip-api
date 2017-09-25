@@ -18,6 +18,11 @@ class WikipediaHandler(object):
     kind of external issue tracker as well.
     '''
 
+    META = {
+        'name': 'Wikipedia',
+        'description': 'Searches Wikipedia for a term and returns the top article.',
+    }
+
     def usage(self):
         return '''
             This plugin will allow users to directly search

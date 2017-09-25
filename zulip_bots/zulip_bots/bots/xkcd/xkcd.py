@@ -14,6 +14,11 @@ class XkcdHandler(object):
     commands.
     '''
 
+    META = {
+        'name': 'XKCD',
+        'description': 'Fetches comic strips from https://xkcd.com.',
+    }
+
     def usage(self):
         return '''
             This plugin allows users to fetch a comic strip provided by

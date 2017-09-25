@@ -187,7 +187,17 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
 
     state_handler = StateHandler()
 
+    # Set default bot_details, then override from class, if provided
+    bot_details = {
+        'name': bot_name.capitalize(),
+        'description': "",
+    }
+    bot_details.update(getattr(lib_module.handler_class, 'META', {}))
+
     if not quiet:
+        print("Running {} Bot:".format(bot_details['name']))
+        if bot_details['description'] != "":
+            print("\n\t{}".format(bot_details['description']))
         print(message_handler.usage())
 
     def handle_message(message):
