@@ -179,6 +179,22 @@ def setup_default_commands(bot_details, message_handler):
             return "**{name}**".format(**bot_details)
         return "**{name}**: {description}".format(**bot_details)
 
+    def default_commands_response():
+        return "**Commands**: {} {}".format(
+            " ".join(name for name in command_defaults if name),
+            " ".join(name for name in bot_details['commands'] if name))
+
+    def commands_list():
+        return ("\n".join("**{}** - {}".format(name, options['help'])
+                          for name, options in command_defaults.items() if name) +
+                "\n" +
+                "\n".join("**{}** - {}".format(name, description)
+                          for name, description in bot_details['commands'].items() if name))
+
+    def default_help_response():
+        return "{}\n{}\n{}".format(default_about_response(),
+                                   message_handler.usage(), commands_list())
+
     command_defaults = OrderedDict([  # Variable definition required for callbacks above
         ('', {'action': default_empty_response,
               'help': "[BLANK MESSAGE NOT SHOWN]"}),
@@ -186,19 +202,29 @@ def setup_default_commands(bot_details, message_handler):
                    'help': "The type and use of this bot"}),
         ('usage', {'action': lambda: message_handler.usage(),
                    'help': "Bot-provided usage text"}),
+        ('commands', {'action': default_commands_response,
+                      'help': "A short list of supported commands"}),
+        ('help', {'action': default_help_response,
+                  'help': "This help text"}),
     ])
     return command_defaults
 
 def updated_default_commands(default_commands, bot_details):
     if not bot_details['default_commands_enabled']:
         return OrderedDict()
-    updated = OrderedDict(default_commands)
+    exclude_list = bot_details['commands'] or ('commands', 'help')
+    updated = OrderedDict((name, option) for name, option in default_commands.items()
+                          if name not in exclude_list)
+    # Update bot_details if updated is empty
+    if len(updated) == 0:
+        bot_details['default_commands_enabled'] = False
     return updated
 
 def get_bot_details(bot_class, bot_name):
     bot_details = {
         'name': bot_name.capitalize(),
         'description': "",
+        'commands': {},
         'default_commands_enabled': True,
     }
     bot_details.update(getattr(bot_class, 'META', {}))
