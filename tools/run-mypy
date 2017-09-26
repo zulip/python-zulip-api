@@ -17,6 +17,29 @@ os.chdir(os.path.dirname(TOOLS_DIR))
 sys.path.append(os.path.dirname(TOOLS_DIR))
 
 exclude = """
+zulip/integrations/git/zulip_git_config.py
+zulip/integrations/irc/irc_mirror_backend.py
+zulip/integrations/log2zulip/log2zulip
+zulip/integrations/perforce/zulip_perforce_config.py
+zulip/integrations/perforce/git_p4.py
+zulip/integrations/svn/zulip_svn_config.py
+zulip/integrations/zephyr/process_ccache
+zulip/tests/__init__.py
+zulip/tests/test_default_arguments.py
+
+zulip_bots/zulip_bots/bots
+zulip_bots/generate_manifest.py
+zulip_bots/setup.py
+zulip_bots/zulip_bots/lib.py
+zulip_bots/zulip_bots/provision.py
+zulip_bots/zulip_bots/run.py
+zulip_bots/zulip_bots/test_lib.py
+zulip_bots/zulip_bots/test_run.py
+zulip_bots/zulip_bots/zulip_bot_output.py
+
+zulip_botserver/tests/__init__.py
+zulip_botserver/zulip_botserver/server.py
+zulip_botserver/setup.py
 """.split()
 
 default_targets = ['zulip/zulip',
