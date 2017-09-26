@@ -8,6 +8,8 @@ import sys
 import argparse
 import subprocess
 
+from collections import OrderedDict
+from pathlib import PurePath
 from server_lib import lister
 from typing import cast, Dict, List
 
@@ -42,11 +44,8 @@ zulip_botserver/zulip_botserver/server.py
 zulip_botserver/setup.py
 """.split()
 
-default_targets = ['zulip/zulip',
-                   'zulip/setup.py']
-
 parser = argparse.ArgumentParser(description="Run mypy on files tracked by git.")
-parser.add_argument('targets', nargs='*', default=default_targets,
+parser.add_argument('targets', nargs='*', default=[],
                     help="""files and directories to include in the result.
                     If this is not specified, the current directory is used""")
 parser.add_argument('-m', '--modified', action='store_true', default=False, help='list only modified files')
@@ -80,6 +79,12 @@ pyi_files = set(files_dict['pyi'])
 python_files = [fpath for fpath in files_dict['py']
                 if not fpath.endswith('.py') or fpath + 'i' not in pyi_files]
 
+repo_python_files = OrderedDict([('zulip', []), ('zulip_bots', []), ('zulip_botserver', [])])
+for file_path in python_files:
+    repo = PurePath(file_path).parts[0]
+    if repo in repo_python_files:
+        repo_python_files[repo].append(file_path)
+
 mypy_command = "mypy"
 
 extra_args = ["--check-untyped-defs",
@@ -98,8 +103,14 @@ if args.quick:
     extra_args.append("--quick")
 
 # run mypy
-if python_files:
-    rc = subprocess.call([mypy_command] + extra_args + python_files)
-    sys.exit(rc)
-else:
-    print("There are no files to run mypy on.")
+status = 0
+for repo, python_files in repo_python_files.items():
+    print("Running mypy for `{}`.".format(repo))
+    if python_files:
+        print(python_files)
+        result = subprocess.call([mypy_command] + extra_args + python_files)
+        if result != 0:
+            status = result
+    else:
+        print("There are no files to run mypy on.")
+sys.exit(status)
