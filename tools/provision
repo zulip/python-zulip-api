@@ -24,10 +24,18 @@ the Python version this command is executed with."""
 
     venv_dir = os.path.join(base_dir, venv_name)
     if not os.path.isdir(venv_dir):
-        if subprocess.call(['virtualenv', '-p', python_interpreter, venv_dir]):
-            raise OSError("The command `virtualenv -p {} {}` failed. Virtualenv not created!"
-                          .format(python_interpreter, venv_dir))
+        try:
+            return_code = subprocess.call(['virtualenv', '-p', python_interpreter, venv_dir])
+        except OSError:
+            if subprocess.call(['which', 'virtualenv']):
+                print("{red}Please install the virtualenv package and try again.{end_format}"
+                      .format(red='\033[91m', end_format='\033[0m'))
+                sys.exit(1)
+            raise
         else:
+            if return_code:
+                raise OSError("The command `virtualenv -p {} {}` failed. Virtualenv not created!"
+                              .format(python_interpreter, venv_dir))
             print("New virtualenv created.")
     else:
         print("Virtualenv already exists.")
