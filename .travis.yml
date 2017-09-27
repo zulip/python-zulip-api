@@ -8,9 +8,7 @@ env: TEST_SUITE=test-main
 matrix:
   include:
   - python: "3.6"
-    env: TEST_SUITE=lint
-  - python: "3.6"
-    env: TEST_SUITE=run-mypy
+    env: TEST_SUITE=test-static-analysis
 install:
   - tools/provision
   - source zulip-api-py*-venv/bin/activate

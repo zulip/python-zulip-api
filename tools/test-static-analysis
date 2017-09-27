@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+set -ev
+
+tools/lint
+tools/run-mypy
