@@ -1,40 +1,39 @@
 # xkcd bot
 
-xkcd bot is a Zulip bot that can fetch a comic strip from xkcd. To use xkcd
-bot you can simply call it with `@xkcd` followed by a command. Like this:
+xkcd bot is a Zulip bot that can fetch a comic strip from xkcd. To use
+the xkcd bot, you can simply call it with `@xkcd` followed by a command,
+like so:
 
 ```
 @xkcd <command>
 ```
 
-xkcd bot has four commands:  
+{!running-a-bot.md!}
 
-1. `help`  
-This command is used to list all commands that can be used with this bot.
-You can use this command by typing `@xkcd help` in a stream.  
-![](assets/xkcd-help.png)
+## Usage
 
-2. `latest`  
-This command is used to fetch the latest comic strip from xkcd. You can use
-this command by typing `@xkcd latest` in a stream.  
-![](assets/xkcd-latest.png)
+The xkcd bot has four commands:
 
-3. `random`  
-This command is used to fetch a random comic strip from xkcd. You can use
-this command by typing `@xkcd random` in a stream, xkcd bot will post a
-random xkcd comic strip.  
-![](assets/xkcd-random.png)
+1. `help` - This command is used to list all commands that can be used
+   with this bot. Example usage: `@xkcd help`:
+   ![](/static/generated/bots/xkcd/assets/xkcd-help.png)
 
-4. `<comic_id>`  
-To fetch a comic strip based on id, you can directly use `@xkcd <comic_id>`,
-for example if you want to fetch a comic strip with id 1234, you can type
-`@xkcd 1234`, xkcd bot will post a comic strip with id 1234.  
-![](assets/xkcd-specific-id.png)  
+2. `latest` - This command is used to fetch the latest comic strip from
+   xkcd. Example usage: `@xkcd latest`:
+   ![](/static/generated/bots/xkcd/assets/xkcd-latest.png)
 
-If you type a wrong command to xkcd bot, xkcd bot will post information
-you'd get from `@xkcd help`.  
-![](assets/xkcd-wrong-command.png)
+3. `random`- This command is used to fetch a random comic strip from xkcd.
+   Example usage: `@xkcd random`:
+   ![](/static/generated/bots/xkcd/assets/xkcd-random.png)
 
-And if you type a wrong id, xkcd bot will post a message that an xkcd comic
-strip with that id is not available.  
-![](assets/xkcd-wrong-id.png)
+4. `<comic_id>` - To fetch a comic strip based on ID, you can supply the
+   ID to the bot as a parameter (`@xkcd <comic_id>`). For example, if you
+   want to fetch a comic strip with ID 1234, type `@xkcd 1234`:
+   ![](/static/generated/bots/xkcd/assets/xkcd-specific-id.png)
+   If the ID requested doesn't exist, the bot will post a message that
+   the comic strip associated with that ID is not available, like so:
+   ![](/static/generated/bots/xkcd/assets/xkcd-wrong-id.png)
+
+5. If you type a command that isn't recognized by the bot, it will respond
+   the information printed by the `@xkcd help` command:
+   ![](/static/generated/bots/xkcd/assets/xkcd-wrong-command.png)
