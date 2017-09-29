@@ -57,8 +57,10 @@ the Python version this command is executed with."""
     # the venv's Python interpreter. `--prefix venv_dir` ensures that all modules are installed
     # in the right place.
     def install_dependencies(requirements_filename):
-        if subprocess.call([os.path.join(venv_dir, venv_exec_dir, 'pip'),
-                           'install', '--prefix', venv_dir, '-r', os.path.join(base_dir, requirements_filename)]):
+        pip_path = os.path.join(venv_dir, venv_exec_dir, 'pip')
+        subprocess.call([pip_path, 'install', 'pip>=9.0'])
+        if subprocess.call([pip_path, 'install', '--prefix', venv_dir, '-r',
+                            os.path.join(base_dir, requirements_filename)]):
             raise OSError("The command `pip install -r {}` failed. Dependencies not installed!"
                           .format(os.path.join(base_dir, requirements_filename)))
 
