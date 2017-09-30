@@ -168,6 +168,14 @@ def is_private_message_from_another_user(message_dict, current_user_id):
         return current_user_id != message_dict['sender_id']
     return False
 
+def get_bot_details(bot_class, bot_name):
+    bot_details = {
+        'name': bot_name.capitalize(),
+        'description': "",
+    }
+    bot_details.update(getattr(bot_class, 'META', {}))
+    return bot_details
+
 def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
     # type: (Any, bool, str, str) -> Any
     #
@@ -186,11 +194,7 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
         message_handler.initialize(bot_handler=restricted_client)
 
     # Set default bot_details, then override from class, if provided
-    bot_details = {
-        'name': bot_name.capitalize(),
-        'description': "",
-    }
-    bot_details.update(getattr(lib_module.handler_class, 'META', {}))
+    bot_details = get_bot_details(message_handler, bot_name)
 
     if not quiet:
         print("Running {} Bot:".format(bot_details['name']))
