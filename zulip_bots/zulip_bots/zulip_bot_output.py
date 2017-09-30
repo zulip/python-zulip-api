@@ -34,6 +34,7 @@ def parse_args():
                         help='the name or path an existing bot to run')
 
     parser.add_argument('--message', '-m',
+                        required=True,
                         action='store',
                         help='the message content to send to the bot')
 
