@@ -189,6 +189,12 @@ def setup_default_commands(bot_details, message_handler):
     ])
     return command_defaults
 
+def updated_default_commands(default_commands, bot_details):
+    if not bot_details['default_commands_enabled']:
+        return OrderedDict()
+    updated = OrderedDict(default_commands)
+    return updated
+
 def get_bot_details(bot_class, bot_name):
     bot_details = {
         'name': bot_name.capitalize(),
@@ -220,10 +226,7 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
 
     # Initialise default commands, then override & sync with bot_details
     default_commands = setup_default_commands(bot_details, message_handler)
-    if bot_details['default_commands_enabled']:
-        updated_defaults = default_commands
-    else:
-        updated_defaults = OrderedDict()
+    updated_defaults = updated_default_commands(default_commands, bot_details)
 
     if not quiet:
         print("Running {} Bot:".format(bot_details['name']))
