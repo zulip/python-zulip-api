@@ -17,6 +17,7 @@ class XkcdHandler(object):
     META = {
         'name': 'XKCD',
         'description': 'Fetches comic strips from https://xkcd.com.',
+        'default_commands_enabled': False,
     }
 
     def usage(self):

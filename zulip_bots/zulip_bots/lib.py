@@ -19,6 +19,8 @@ from types import ModuleType
 
 from zulip import Client
 
+from collections import OrderedDict
+
 def exit_gracefully(signum, frame):
     # type: (int, Optional[Any]) -> None
     sys.exit(0)
@@ -168,10 +170,30 @@ def is_private_message_from_another_user(message_dict, current_user_id):
         return current_user_id != message_dict['sender_id']
     return False
 
+def setup_default_commands(bot_details, message_handler):
+    def default_empty_response():
+        return "You sent the bot an empty message; perhaps try 'about', 'help' or 'usage'."
+
+    def default_about_response():
+        if bot_details['description'] == "":
+            return "**{name}**".format(**bot_details)
+        return "**{name}**: {description}".format(**bot_details)
+
+    command_defaults = OrderedDict([  # Variable definition required for callbacks above
+        ('', {'action': default_empty_response,
+              'help': "[BLANK MESSAGE NOT SHOWN]"}),
+        ('about', {'action': default_about_response,
+                   'help': "The type and use of this bot"}),
+        ('usage', {'action': lambda: message_handler.usage(),
+                   'help': "Bot-provided usage text"}),
+    ])
+    return command_defaults
+
 def get_bot_details(bot_class, bot_name):
     bot_details = {
         'name': bot_name.capitalize(),
         'description': "",
+        'default_commands_enabled': True,
     }
     bot_details.update(getattr(bot_class, 'META', {}))
     return bot_details
@@ -195,6 +217,13 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
 
     # Set default bot_details, then override from class, if provided
     bot_details = get_bot_details(message_handler, bot_name)
+
+    # Initialise default commands, then override & sync with bot_details
+    default_commands = setup_default_commands(bot_details, message_handler)
+    if bot_details['default_commands_enabled']:
+        updated_defaults = default_commands
+    else:
+        updated_defaults = OrderedDict()
 
     if not quiet:
         print("Running {} Bot:".format(bot_details['name']))
@@ -220,6 +249,13 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
                 return
 
         if is_private_message or is_mentioned:
+            # Handle any default commands first
+            for command in updated_defaults:
+                if command == message['content']:
+                    restricted_client.send_reply(message,
+                                                 updated_defaults[command]['action']())
+                    return
+            # ...then pass anything else to bot to deal with
             message_handler.handle_message(
                 message=message,
                 bot_handler=restricted_client
