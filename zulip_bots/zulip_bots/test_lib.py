@@ -13,7 +13,8 @@ import unittest
 
 from mock import MagicMock, patch
 
-from zulip_bots.lib import StateHandler
+from zulip_bots.lib import StateHandler, get_bot_details, setup_default_commands, updated_default_commands
+
 import zulip_bots.lib
 from six.moves import zip
 
@@ -94,8 +95,21 @@ class BotTestCase(TestCase):
 
     def call_request(self, message, expected_method, response):
         # type: (Dict[str, Any], str, Dict[str, Any]) -> None
-        # Send message to the concerned bot
-        self.message_handler.handle_message(message, self.mock_bot_handler)
+        bot_details = get_bot_details(self.message_handler, self.bot_name)
+
+        # Initialise default commands, then override & sync with bot_details
+        default_commands = setup_default_commands(bot_details, self.message_handler)
+        updated_defaults = updated_default_commands(default_commands, bot_details)
+
+        # Check if command handled in library first; if not, then delegate to bot
+        handled = False
+        for command in updated_defaults:
+            if command == message['content']:
+                self.MockClass().send_reply(message,
+                                            updated_defaults[command]['action']())
+                handled = True
+        if not handled:
+            self.message_handler.handle_message(message, self.mock_bot_handler)
 
         # Check if the bot is sending a message via `send_message` function.
         # Where response is a dictionary here.

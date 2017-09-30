@@ -4,6 +4,12 @@ import re
 import os
 
 class VirtualFsHandler(object):
+
+    META = {
+        'name': 'VirtualFS',
+        'default_commands_enabled': False,
+    }
+
     def usage(self):
         return get_help()
 

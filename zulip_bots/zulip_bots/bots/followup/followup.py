@@ -12,6 +12,11 @@ class FollowupHandler(object):
     external issue tracker as well.
     '''
 
+    META = {
+        'name': 'Followup',
+        'default_commands_enabled': False,
+    }
+
     def usage(self):
         return '''
             This plugin will allow users to flag messages

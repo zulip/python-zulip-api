@@ -4,6 +4,11 @@ import requests
 import json
 
 class WeatherHandler(object):
+    META = {
+        'name': 'Weather',
+        'default_commands_enabled': False,
+    }
+
     def initialize(self, bot_handler):
         self.api_key = bot_handler.get_config_info('weather')['key']
         self.response_pattern = 'Weather in {}, {}:\n{:.2f} F / {:.2f} C\n{}'

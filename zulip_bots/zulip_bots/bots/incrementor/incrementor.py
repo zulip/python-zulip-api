@@ -3,6 +3,11 @@
 
 class IncrementorHandler(object):
 
+    META = {
+        'name': 'Incrementor',
+        'default_commands_enabled': False,
+    }
+
     def usage(self):
         return '''
         This is a boilerplate bot that makes use of the

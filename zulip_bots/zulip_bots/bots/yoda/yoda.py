@@ -37,6 +37,12 @@ class YodaSpeakHandler(object):
     This bot will allow users to translate a sentence into 'Yoda speak'.
     It looks for messages starting with '@mention-bot'.
     '''
+
+    META = {
+        'name': 'Yoda',
+        'default_commands_enabled': False,
+    }
+
     def initialize(self, bot_handler):
         self.api_key = bot_handler.get_config_info('yoda')['api_key']
 

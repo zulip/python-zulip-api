@@ -2,6 +2,12 @@
 
 
 class HelloWorldHandler(object):
+
+    META = {
+        'name': 'Hello World',
+        'default_commands_enabled': False,
+    }
+
     def usage(self):
         return '''
         This is a boilerplate bot that responds to a user query with
