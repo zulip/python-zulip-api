@@ -68,7 +68,11 @@ def main():
         sys.exit(1)
 
     message = {'content': args.message, 'sender_email': 'foo_sender@zulip.com'}
-    message_handler = lib_module.handler_class()
+    try:
+        message_handler = lib_module.handler_class()
+    except AttributeError:
+        print("This module does not appear to have a bot handler_class specified.")
+        sys.exit(1)
 
     with patch('zulip.Client') as mock_client:
         mock_bot_handler = ExternalBotHandler(mock_client, bot_dir)
