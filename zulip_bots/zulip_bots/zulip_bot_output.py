@@ -19,8 +19,8 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 
 def parse_args():
     usage = '''
-        zulip-bot-output <bot_name> --message "Send this message to the bot"
-        Example: zulip-bot-output xkcd --message "1"
+        zulip-bot-output <bot_name> <message>
+        Example: zulip-bot-output xkcd "1"
         This tool can be used for testing bots by sending simple messages
         and capturing the response.
         (Internally, this program loads bot-related code from the
@@ -33,8 +33,7 @@ def parse_args():
                         action='store',
                         help='the name or path an existing bot to run')
 
-    parser.add_argument('--message', '-m',
-                        required=True,
+    parser.add_argument('message',
                         action='store',
                         help='the message content to send to the bot')
 
