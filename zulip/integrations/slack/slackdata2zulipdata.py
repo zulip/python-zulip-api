@@ -26,18 +26,27 @@ def users2zerver_userprofile(slack_dir, realm_id, timestamp, domain_name):
         slack_user_id = user['id']
         profile = user['profile']
         DESKTOP_NOTIFICATION = True
+
+        # email
         if 'email' not in profile:
             email = (hashlib.blake2b(user['real_name'].encode()).hexdigest() +
                      "@%s" % (domain_name))
         else:
             email = profile['email']
 
+        # avatar
+        # ref: https://chat.zulip.org/help/change-your-avatar
+        avatar_source = 'U'
+        if 'gravatar.com' in profile['image_32']:
+            # use the avatar from gravatar
+            avatar_source = 'G'
+
         # userprofile's quota is hardcoded as per
         # https://github.com/zulip/zulip/blob/e1498988d9094961e6f9988fb308b3e7310a8e74/zerver/migrations/0059_userprofile_quota.py#L18
         userprofile = dict(
             enable_desktop_notifications=DESKTOP_NOTIFICATION,
             is_staff=user.get('is_admin', False),
-            # avatar_source='G',
+            avatar_source=avatar_source,
             is_bot=user.get('is_bot', False),
             avatar_version=1,
             autoscroll_forever=False,
