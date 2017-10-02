@@ -18,18 +18,17 @@ from zulip_bots.run import import_module_from_source
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
 def parse_args():
-    usage = '''
-        zulip-bot-output <bot_name> <message>
-        Example: zulip-bot-output xkcd "1"
-        The message need only be enclosed in quotes if empty or containing spaces.
-        This tool can be used for testing bots by sending simple messages
-        and capturing the response.
-        (Internally, this program loads bot-related code from the
-        library code and then feeds the message provided
-        in the command to the library code to handle.)
-        '''
+    description = (
+        "A tool to test a bot: given a provided message, provides the bot response.\n\n"
+        'Example: %(prog)s xkcd "1"')
+    epilog = (
+        "The message need only be enclosed in quotes if empty or containing spaces.\n\n"
+        "(Internally, this program loads bot-related code from the library code and\n"
+        "then feeds the message provided in the command to the library code to handle.)")
 
-    parser = argparse.ArgumentParser(usage=usage)
+    parser = argparse.ArgumentParser(description=description,
+                                     epilog=epilog,
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('bot',
                         action='store',
                         help='the name or path an existing bot to run')
