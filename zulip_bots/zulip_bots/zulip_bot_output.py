@@ -61,7 +61,11 @@ def main():
     bot_dir = os.path.dirname(bot_path)
     if args.provision:
         provision_bot(os.path.dirname(bot_path), args.force)
-    lib_module = import_module_from_source(bot_path, bot_name)
+    try:
+        lib_module = import_module_from_source(bot_path, bot_name)
+    except IOError:
+        print("Could not find and import bot '{}'".format(bot_name))
+        sys.exit(1)
 
     message = {'content': args.message, 'sender_email': 'foo_sender@zulip.com'}
     message_handler = lib_module.handler_class()
