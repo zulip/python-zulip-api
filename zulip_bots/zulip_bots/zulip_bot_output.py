@@ -20,7 +20,8 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 def parse_args():
     description = (
         "A tool to test a bot: given a provided message, provides the bot response.\n\n"
-        'Example: %(prog)s xkcd "1"')
+        'Examples:   %(prog)s xkcd 1\n'
+        '            %(prog)s ./bot_folder/my_own_bot.py "test message"')
     epilog = (
         "The message need only be enclosed in quotes if empty or containing spaces.\n\n"
         "(Internally, this program loads bot-related code from the library code and\n"
