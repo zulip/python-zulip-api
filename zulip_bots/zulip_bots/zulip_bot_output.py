@@ -21,6 +21,7 @@ def parse_args():
     usage = '''
         zulip-bot-output <bot_name> <message>
         Example: zulip-bot-output xkcd "1"
+        The message need only be enclosed in quotes if empty or containing spaces.
         This tool can be used for testing bots by sending simple messages
         and capturing the response.
         (Internally, this program loads bot-related code from the
