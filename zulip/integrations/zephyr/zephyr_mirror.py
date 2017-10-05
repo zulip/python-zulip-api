@@ -49,7 +49,7 @@ signal.signal(signal.SIGINT, die)
 
 from zulip import RandomExponentialBackoff
 
-args = [os.path.join(options.root_path, "user_root", "zephyr_mirror_backend.py")]
+args = [os.path.join(os.path.dirname(os.path.realpath(__file__)), "zephyr_mirror_backend.py")]
 args.extend(sys.argv[1:])
 
 if options.sync_subscriptions:
