@@ -233,9 +233,9 @@ def maybe_kill_child():
 
 def maybe_restart_mirroring_script():
     # type: () -> None
-    if os.stat(os.path.join(options.root_path, "stamps", "restart_stamp")).st_mtime > start_time or \
+    if os.stat(os.path.join(options.stamp_path, "stamps", "restart_stamp")).st_mtime > start_time or \
             ((options.user == "tabbott" or options.user == "tabbott/extra") and
-             os.stat(os.path.join(options.root_path, "stamps", "tabbott_stamp")).st_mtime > start_time):
+             os.stat(os.path.join(options.stamp_path, "stamps", "tabbott_stamp")).st_mtime > start_time):
         logger.warning("")
         logger.warning("zephyr mirroring script has been updated; restarting...")
         maybe_kill_child()
@@ -1029,6 +1029,9 @@ def parse_args():
                       default=os.environ["USER"],
                       help=optparse.SUPPRESS_HELP)
     parser.add_option('--root-path',
+                      default="/afs/athena.mit.edu/user/t/a/tabbott/for_friends",
+                      help=optparse.SUPPRESS_HELP)
+    parser.add_option('--stamp-path',
                       default="/afs/athena.mit.edu/user/t/a/tabbott/for_friends",
                       help=optparse.SUPPRESS_HELP)
     parser.add_option('--session-path',
