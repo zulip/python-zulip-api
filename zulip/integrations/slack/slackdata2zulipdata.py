@@ -6,17 +6,26 @@ import sys
 import argparse
 import shutil
 import subprocess
-import zipfile
+
+from typing import Any, Dict, List
+# stubs
+user_profile_stub = Dict[str, Any]
+added_users_stub = Dict[str, int]
 
 
 # Transported from https://github.com/zulip/zulip/blob/master/zerver/lib/export.py
-def rm_tree(path):
-    # type: (str) -> None
+def rm_tree(path: str) -> None:
     if os.path.exists(path):
         shutil.rmtree(path)
 
-def users2zerver_userprofile(slack_dir, realm_id, timestamp, domain_name):
-    # type: () -> None
+def users2zerver_userprofile(slack_dir: str, realm_id: int, timestamp: Any,
+                             domain_name: str) -> (List[user_profile_stub], added_users_stub):
+    """
+    Returns:
+    1. zerver_userprofile, which is a list of user profile
+    2. added_users, which is a dictionary to map from slack user id to zulip
+       user id
+    """
     print('######### IMPORTING USERS STARTED #########\n')
     users = json.load(open(slack_dir + '/users.json'))
     zerver_userprofile = []
