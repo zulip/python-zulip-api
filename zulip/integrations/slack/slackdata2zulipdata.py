@@ -150,12 +150,12 @@ def channels2zerver_stream(slack_dir, realm_id, added_users):
             id=stream_id_count)
         zerver_stream.append(stream)
         added_channels[stream['name']] = stream_id_count
-       
+
         # construct the recipient object and append it zerver_recipient
         recipient = dict(
-             type_id=stream_id_count,
-             id=stream_id_count,
-             type=2)
+            type_id=stream_id_count,
+            id=stream_id_count,
+            type=2)
         zerver_recipient.append(recipient)
         # TOODO add recipients for private message and huddles
 
@@ -210,12 +210,36 @@ def channels2zerver_stream(slack_dir, realm_id, added_users):
 
 def channelmessage2zerver_message(slack_dir, channel, added_users, added_channels):
     json_names = os.listdir(slack_dir + '/' + channel)
+    users = json.load(open(slack_dir + '/users.json'))
     zerver_message = []
     msg_id_count = 1
+
+    # Sanitize the message text
+    def sanitize(text):
+        saved_string = str(text)
+        text = text.split(' ')
+        text[0] = text[0].replace('<@', ' ')
+        text[0] = text[0].replace('>', ' ')
+        text[0] = text[0].replace('|', ' ')
+        length = len(text[0].split(' '))
+        if length > 1:
+            short_name = text[0].split(' ')[2]
+            text[0] = text[0].split(' ')[1]
+        for user in users:
+            if (user['id'] == text[0] and user['name'] == short_name and length == 4) or \
+               (user['id'] == text[0] and length == 3):
+                text[0] = user.get('real_name', user['name'])
+                text[0] = "@**" + text[0] + "** "
+                text = " ".join(text)
+                return text
+        return saved_string
+
     for json_name in json_names:
         msgs = json.load(open(slack_dir + '/%s/%s' % (channel, json_name)))
         for msg in msgs:
             text = msg['text']
+            if "has joined the channel" in text:
+                continue
             try:
                 user = msg.get('user', msg['file']['user'])
             except KeyError:
@@ -231,7 +255,7 @@ def channelmessage2zerver_message(slack_dir, channel, added_users, added_channel
                 has_attachment=False,  # attachment will be posted in the subsequent message; this is how Slack does it, less like email
                 edit_history=None,
                 sender=added_users[user],  # map slack id to zulip id
-                content=text,  # TODO sanitize slack text, which contains <@msg['user']|short_name>
+                content=sanitize(text),
                 rendered_content=text,  # slack doesn't cache this
                 recipient=added_channels[channel],
                 last_edit_time=None,
