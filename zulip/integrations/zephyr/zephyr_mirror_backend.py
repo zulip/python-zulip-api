@@ -246,7 +246,7 @@ def maybe_restart_mirroring_script():
             logger.exception("")
         while True:
             try:
-                os.execvp(os.path.join(options.root_path, "user_root", "zephyr_mirror_backend.py"), sys.argv)
+                os.execvp(os.path.abspath(__file__), sys.argv)
             except Exception:
                 logger.exception("Error restarting mirroring script; trying again... Traceback:")
                 time.sleep(1)
