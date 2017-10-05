@@ -215,7 +215,7 @@ def channelmessage2zerver_message(slack_dir, channel, added_users, added_channel
             zulip_message = dict(
                 sending_client=1,
                 rendered_content_version=1,  # This is Zulip-specific
-                has_image=msg['has_image'],
+                has_image=msg.get('has_image', False),
                 subject=channel,  # This is Zulip-specific
                 pub_date=msg['ts'],
                 id=msg_id_count,
