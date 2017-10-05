@@ -119,6 +119,8 @@ def channels2zerver_stream(slack_dir, realm_id, added_users):
     stream_id_count = 1
     zerver_subscription = []
     zerver_recipient = []
+    subscription_id_count = 1
+
     for channel in channels:
         # slack_channel_id = channel['id']
 
@@ -139,11 +141,19 @@ def channels2zerver_stream(slack_dir, realm_id, added_users):
             id=stream_id_count)
         zerver_stream.append(stream)
         added_channels[stream['name']] = stream_id_count
+       
+        # construct the recipient object and append it zerver_recipient
+        recipient = dict(
+             type_id=stream_id_count,
+             id=stream_id_count,
+             type=2)
+        zerver_recipient.append(recipient)
+        # TOODO add recipients for private message and huddles
 
         # construct the subscription object and append it to zerver_subscription
         for member in channel['members']:
             sub = dict(
-                recipient=added_users[member],
+                recipient=stream_id_count,
                 notifications=False,
                 color="#c2c2c2",
                 desktop_notifications=True,
@@ -151,8 +161,15 @@ def channels2zerver_stream(slack_dir, realm_id, added_users):
                 in_home_view=True,
                 active=True,
                 user_profile=added_users[member],
-                id=stream_id_count)  # TODO is this the correct interpretation?
+                id=subscription_id_count)
+            # proof :  https://github.com/zulip/zulip/blob/master/zerver/views/messages.py#L240 &
+            # https://github.com/zulip/zulip/blob/master/zerver/views/messages.py#L324
             zerver_subscription.append(sub)
+            subscription_id_count += 1
+            # TOODO add zerver_subscription which correspond to
+            # private messages and huddles type recipient
+            # For private messages/huddle:
+            # sub['recipient']=recipient['id'] where recipient['type_id']=added_users[member]
 
             # recipient
             # type_id's
@@ -163,11 +180,6 @@ def channels2zerver_stream(slack_dir, realm_id, added_users):
             # This defaults to 2
             # TOODO do private message subscriptions between each users have to
             # be generated from scratch?
-            rcpt = dict(
-                type=2,
-                type_id=stream_id_count,
-                id=added_users[member])
-            zerver_recipient.append(rcpt)
 
         stream_id_count += 1
         print(u"{} -> created\n".format(channel['name']))
