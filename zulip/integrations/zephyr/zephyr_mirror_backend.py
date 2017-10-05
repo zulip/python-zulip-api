@@ -1028,9 +1028,6 @@ def parse_args():
     parser.add_option('--user',
                       default=os.environ["USER"],
                       help=optparse.SUPPRESS_HELP)
-    parser.add_option('--root-path',
-                      default="/afs/athena.mit.edu/user/t/a/tabbott/for_friends",
-                      help=optparse.SUPPRESS_HELP)
     parser.add_option('--stamp-path',
                       default="/afs/athena.mit.edu/user/t/a/tabbott/for_friends",
                       help=optparse.SUPPRESS_HELP)
@@ -1089,14 +1086,6 @@ if __name__ == "__main__":
 
     logger = open_logger()
     configure_logger(logger, "parent")
-
-    # The 'api' directory needs to go first, so that 'import zulip' won't pick
-    # up some other directory named 'humbug'.
-    pyzephyr_lib_path = "python-zephyr/build/lib.linux-%s-%s/" % (os.uname()[4], sys.version[0:3])
-    sys.path[:0] = [os.path.join(options.root_path, 'api'),
-                    options.root_path,
-                    os.path.join(options.root_path, "python-zephyr"),
-                    os.path.join(options.root_path, pyzephyr_lib_path)]
 
     # In case this is an automated restart of the mirroring script,
     # and we have lost AFS tokens, first try reading the API key from

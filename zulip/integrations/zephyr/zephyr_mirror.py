@@ -34,8 +34,6 @@ from zephyr_mirror_backend import parse_args
 
 (options, args) = parse_args()
 
-sys.path[:0] = [os.path.join(options.root_path, 'api')]
-
 from types import FrameType
 from typing import Any
 
@@ -57,6 +55,7 @@ if options.sync_subscriptions:
     sys.exit(0)
 
 if options.forward_class_messages and not options.noshard:
+    # Needed to get access to zephyr.lib.parallel
     sys.path.append("/home/zulip/zulip")
     if options.on_startup_command is not None:
         subprocess.call([options.on_startup_command])
