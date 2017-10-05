@@ -9,6 +9,8 @@ import random
 import logging
 import subprocess
 import hashlib
+import zephyr
+import zulip
 from six.moves import range
 
 if False:
@@ -26,24 +28,10 @@ parser.add_option('--site',
 parser.add_option('--sharded',
                   default=False,
                   action='store_true')
-parser.add_option('--root-path',
-                  dest='root_path',
-                  default="/home/zulip",
-                  action='store')
 (options, args) = parser.parse_args()
-
-# The 'api' directory needs to go first, so that 'import zulip' won't pick up
-# some other directory named 'zulip'.
-pyzephyr_lib_path = "python-zephyr/build/lib.linux-%s-%s/" % (os.uname()[4], sys.version[0:3])
-sys.path[:0] = [os.path.join(options.root_path, "api/"),
-                os.path.join(options.root_path, "python-zephyr"),
-                os.path.join(options.root_path, pyzephyr_lib_path),
-                options.root_path]
 
 mit_user = 'tabbott/extra@ATHENA.MIT.EDU'
 
-sys.path.append(".")
-import zulip
 zulip_client = zulip.Client(
     verbose=True,
     client="ZulipMonitoring/0.1",
@@ -147,7 +135,6 @@ except Exception:
     print_status_and_exit(1)
 
 # Subscribe to Zephyrs
-import zephyr
 zephyr_subs_to_add = []
 for (stream, test) in test_streams:
     if stream == "message":
