@@ -6,6 +6,7 @@ import sys
 import argparse
 import shutil
 import subprocess
+import re
 
 from typing import Any, Dict, List
 # stubs
@@ -150,12 +151,12 @@ def channels2zerver_stream(slack_dir, realm_id, added_users):
             id=stream_id_count)
         zerver_stream.append(stream)
         added_channels[stream['name']] = stream_id_count
-       
+
         # construct the recipient object and append it zerver_recipient
         recipient = dict(
-             type_id=stream_id_count,
-             id=stream_id_count,
-             type=2)
+            type_id=stream_id_count,
+            id=stream_id_count,
+            type=2)
         zerver_recipient.append(recipient)
         # TOODO add recipients for private message and huddles
 
@@ -210,12 +211,41 @@ def channels2zerver_stream(slack_dir, realm_id, added_users):
 
 def channelmessage2zerver_message(slack_dir, channel, added_users, added_channels):
     json_names = os.listdir(slack_dir + '/' + channel)
+    users = json.load(open(slack_dir + '/users.json'))
     zerver_message = []
     msg_id_count = 1
+
+    # Sanitize the message text
+    def sanitize_text(text):
+        tokens = text.split(' ')
+        text = ' '.join([sanitize_token(t) for t in tokens])
+        return text
+
+    def sanitize_token(token):
+        if (re.compile(r"<@.*|.*>").match(token)):
+            token = token.replace('<@', ' ')
+            token = token.replace('>', ' ')
+            token = token.replace('|', ' ')
+            length = len(token.split(' '))
+            if length > 1:
+                try:
+                    short_name = token.split(' ')[2]
+                except IndexError:
+                    short_name = ''
+                token = token.split(' ')[1]
+            for user in users:
+                if (user['id'] == token and user['name'] == short_name and length == 4) or \
+                   (user['id'] == token and length == 3):
+                    token = user.get('real_name', user['name'])
+                    token = "@**" + token + "** "
+        return token
+
     for json_name in json_names:
         msgs = json.load(open(slack_dir + '/%s/%s' % (channel, json_name)))
         for msg in msgs:
             text = msg['text']
+            if "has joined the channel" in text:
+                continue
             try:
                 user = msg.get('user', msg['file']['user'])
             except KeyError:
@@ -228,10 +258,10 @@ def channelmessage2zerver_message(slack_dir, channel, added_users, added_channel
                 subject=channel,  # This is Zulip-specific
                 pub_date=msg['ts'],
                 id=msg_id_count,
-                has_attachment=False,  # attachment will be posted in the subsequent message; this is how Slack does it, less like email
+                has_attachment=False,  # attachment will be posted in the subsequent message; this is how Slack does it, i.e. less like email
                 edit_history=None,
                 sender=added_users[user],  # map slack id to zulip id
-                content=text,  # TODO sanitize slack text, which contains <@msg['user']|short_name>
+                content=sanitize_text(text),
                 rendered_content=text,  # slack doesn't cache this
                 recipient=added_channels[channel],
                 last_edit_time=None,
@@ -293,7 +323,8 @@ def main(slack_zip_file: str) -> None:
     realm['zerver_subscription'] = zerver_subscription
     realm['zerver_recipient'] = zerver_recipient
     # IO
-    json.dump(realm, open(output_dir + '/realm.json', 'w'))
+    realm_file = output_dir + '/realm.json'
+    json.dump(realm, open(realm_file, 'w'))
 
     # now for message.json
     message_json = {}
@@ -304,7 +335,10 @@ def main(slack_zip_file: str) -> None:
                               added_users, added_channels))
     message_json['zerver_message'] = zerver_message
     # IO
-    json.dump(message_json, open(output_dir + '/message.json', 'w'))
+    message_file = output_dir + '/message.json'
+    json.dump(message_json, open(message_file, 'w'))
+    print('ls', os.listdir())
+    print('pwd', os.getcwd())
 
     # TODO
     # attachments
@@ -313,7 +347,7 @@ def main(slack_zip_file: str) -> None:
     rm_tree(slack_dir)
 
     # compress the folder
-    subprocess.check_call(['zip', '-r', output_dir + '.zip', output_dir])
+    subprocess.check_call(['zip', '-jpr', output_dir + '.zip', realm_file, message_file])
 
     # remove zulip dir
     rm_tree(output_dir)
