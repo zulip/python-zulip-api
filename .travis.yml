@@ -19,7 +19,6 @@ matrix:
     sudo: required
     env: TEST_SUITE=backend
     script:
-    - echo "$TRAVIS_PULL_REQUEST"
     - cd
     - git clone https://github.com/zulip/zulip.git
     - cd zulip

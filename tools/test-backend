@@ -1,8 +1,8 @@
 #!/bin/bash
 
-sed -i "s|python-zulip-api.git@0.3.4|python-zulip-api.git@refs/pull/$TRAVIS_PULL_REQUEST|" requirements/common.txt
-sed -i "s|python-zulip-api.git@0.3.4|python-zulip-api.git@refs/pull/$TRAVIS_PULL_REQUEST|" requirements/dev_lock.txt
-sed -i "s|python-zulip-api.git@0.3.4|python-zulip-api.git@refs/pull/$TRAVIS_PULL_REQUEST|" requirements/prod_lock.txt
+sed -i "s|zulip/python-zulip-api.git@0.3.4|$TRAVIS_PULL_REQUEST_SLUG.git@$TRAVIS_PULL_REQUEST_BRANCH|" requirements/common.txt
+sed -i "s|zulip/python-zulip-api.git@0.3.4|$TRAVIS_PULL_REQUEST_SLUG.git@$TRAVIS_PULL_REQUEST_BRANCH|" requirements/dev_lock.txt
+sed -i "s|zulip/python-zulip-api.git@0.3.4|$TRAVIS_PULL_REQUEST_SLUG.git@$TRAVIS_PULL_REQUEST_BRANCH|" requirements/prod_lock.txt
 
 ./tools/travis/setup-backend
 
