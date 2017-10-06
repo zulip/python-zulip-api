@@ -21,6 +21,7 @@ matrix:
     - git clone https://github.com/zulip/zulip.git
     - cd zulip
     - ./tools/travis/setup-backend
+    - source tools/travis/activate-venv
     - ./manage.py import ../zulip_data.zip
     addons:
       postgresql: "9.3"

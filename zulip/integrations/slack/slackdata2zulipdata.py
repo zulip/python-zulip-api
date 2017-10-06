@@ -223,7 +223,10 @@ def channelmessage2zerver_message(slack_dir, channel, added_users, added_channel
         text[0] = text[0].replace('|', ' ')
         length = len(text[0].split(' '))
         if length > 1:
-            short_name = text[0].split(' ')[2]
+            try:
+                short_name = text[0].split(' ')[2]
+            except IndexError:
+                short_name = ''
             text[0] = text[0].split(' ')[1]
         for user in users:
             if (user['id'] == text[0] and user['name'] == short_name and length == 4) or \
