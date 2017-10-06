@@ -574,6 +574,8 @@ class Client(object):
                     return (res['queue_id'], res['last_event_id'])
 
         queue_id = None
+        # Make long-polling requests with `get_events`. Once a request has received
+        # an answer, forward it to the callback and make a new request.
         while True:
             if queue_id is None:
                 (queue_id, last_event_id) = do_register()
@@ -600,6 +602,8 @@ class Client(object):
                         #
                         # Reset queue_id to register a new event queue.
                         queue_id = None
+                # Add a pause here to cover against potential bugs in this library
+                # causing infinite, bandwith-consuming requests.
                 # TODO: Make this back off once it's more reliable
                 time.sleep(1)
                 continue
