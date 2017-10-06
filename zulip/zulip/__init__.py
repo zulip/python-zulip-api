@@ -491,10 +491,13 @@ class Client(object):
                 if files:
                     kwargs['files'] = req_files
 
+                # Make long-polling api request. When long-polling, set timeout to 90
+                # sec as a balance between a low traffic rate and a still reasonable
+                # latency time in case of a connection failure.
                 res = self.session.request(
                     method,
                     urllib.parse.urljoin(self.base_url, url),
-                    timeout=90,
+                    timeout=90 if longpolling else 30,
                     **kwargs)
 
                 # On 50x errors, try again after a short sleep
@@ -547,7 +550,8 @@ class Client(object):
         # type: (str, str, Dict[str, Any], bool, List[IO]) -> Dict[str, Any]
         if request is None:
             request = dict()
-        return self.do_api_query(request, API_VERSTRING + url, method=method, files=files)
+        return self.do_api_query(request, API_VERSTRING + url, method=method,
+                                 longpolling=longpolling, files=files)
 
     def call_on_each_event(self, callback, event_types=None, narrow=None):
         # type: (Callable, Optional[List[str]], Any) -> None
