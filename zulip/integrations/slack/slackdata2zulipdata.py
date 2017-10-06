@@ -259,13 +259,11 @@ def channelmessage2zerver_message(slack_dir, channel, added_users, added_channel
                 rendered_content=text,  # slack doesn't cache this
                 recipient=added_channels[channel],
                 last_edit_time=None,
-                has_link=msg['has_link'])
+                has_link=msg.get('has_link', False))
             zerver_message.append(zulip_message)
     return zerver_message
 
-def main(slack_zip_file):
-    # type: (str) -> None
-
+def main(slack_zip_file: str) -> None:
     slack_dir = slack_zip_file.replace('.zip', '')
     subprocess.check_call(['unzip', slack_zip_file])
     # with zipfile.ZipFile(slack_zip_file, 'r') as zip_ref:
