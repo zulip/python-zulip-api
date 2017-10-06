@@ -6,6 +6,7 @@ import sys
 import argparse
 import shutil
 import subprocess
+import re
 
 from typing import Any, Dict, List
 # stubs
@@ -215,27 +216,29 @@ def channelmessage2zerver_message(slack_dir, channel, added_users, added_channel
     msg_id_count = 1
 
     # Sanitize the message text
-    def sanitize(text):
-        saved_string = str(text)
-        text = text.split(' ')
-        text[0] = text[0].replace('<@', ' ')
-        text[0] = text[0].replace('>', ' ')
-        text[0] = text[0].replace('|', ' ')
-        length = len(text[0].split(' '))
-        if length > 1:
-            try:
-                short_name = text[0].split(' ')[2]
-            except IndexError:
-                short_name = ''
-            text[0] = text[0].split(' ')[1]
-        for user in users:
-            if (user['id'] == text[0] and user['name'] == short_name and length == 4) or \
-               (user['id'] == text[0] and length == 3):
-                text[0] = user.get('real_name', user['name'])
-                text[0] = "@**" + text[0] + "** "
-                text = " ".join(text)
-                return text
-        return saved_string
+    def sanitize_text(text):
+        tokens = text.split(' ')
+        text = ' '.join([sanitize_token(t) for t in tokens])
+        return text
+
+    def sanitize_token(token):
+        if (re.compile(r"<@.*|.*>").match(token)):
+            token = token.replace('<@', ' ')
+            token = token.replace('>', ' ')
+            token = token.replace('|', ' ')
+            length = len(token.split(' '))
+            if length > 1:
+                try:
+                    short_name = token.split(' ')[2]
+                except IndexError:
+                    short_name = ''
+                token = token.split(' ')[1]
+            for user in users:
+                if (user['id'] == token and user['name'] == short_name and length == 4) or \
+                   (user['id'] == token and length == 3):
+                    token = user.get('real_name', user['name'])
+                    token = "@**" + token + "** "
+        return token
 
     for json_name in json_names:
         msgs = json.load(open(slack_dir + '/%s/%s' % (channel, json_name)))
@@ -258,7 +261,7 @@ def channelmessage2zerver_message(slack_dir, channel, added_users, added_channel
                 has_attachment=False,  # attachment will be posted in the subsequent message; this is how Slack does it, less like email
                 edit_history=None,
                 sender=added_users[user],  # map slack id to zulip id
-                content=sanitize(text),
+                content=sanitize_text(text),
                 rendered_content=text,  # slack doesn't cache this
                 recipient=added_channels[channel],
                 last_edit_time=None,
