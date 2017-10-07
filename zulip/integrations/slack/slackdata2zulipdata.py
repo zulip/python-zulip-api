@@ -226,13 +226,14 @@ def channelmessage2zerver_message(slack_dir, channel, added_users, added_channel
             token = token.replace('<@', ' ')
             token = token.replace('>', ' ')
             token = token.replace('|', ' ')
-            length = len(token.split(' '))
+            morphemes = token.split(' ')
+            length = len(morphemes)
             if length > 1:
-                try:
-                    short_name = token.split(' ')[2]
-                except IndexError:
+                if length > 2:
+                    short_name = morphemes[2]
+                else:
                     short_name = ''
-                token = token.split(' ')[1]
+                token = morphemes[1]
             for user in users:
                 if (user['id'] == token and user['name'] == short_name and length == 4) or \
                    (user['id'] == token and length == 3):
