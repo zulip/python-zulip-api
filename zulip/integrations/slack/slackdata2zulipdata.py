@@ -258,7 +258,7 @@ def channelmessage2zerver_message(slack_dir, channel, added_users, added_channel
                 subject=channel,  # This is Zulip-specific
                 pub_date=msg['ts'],
                 id=msg_id_count,
-                has_attachment=False,  # attachment will be posted in the subsequent message; this is how Slack does it, less like email
+                has_attachment=False,  # attachment will be posted in the subsequent message; this is how Slack does it, i.e. less like email
                 edit_history=None,
                 sender=added_users[user],  # map slack id to zulip id
                 content=sanitize_text(text),
@@ -323,7 +323,8 @@ def main(slack_zip_file: str) -> None:
     realm['zerver_subscription'] = zerver_subscription
     realm['zerver_recipient'] = zerver_recipient
     # IO
-    json.dump(realm, open(output_dir + '/realm.json', 'w'))
+    realm_file = output_dir + '/realm.json'
+    json.dump(realm, open(realm_file, 'w'))
 
     # now for message.json
     message_json = {}
@@ -334,7 +335,10 @@ def main(slack_zip_file: str) -> None:
                               added_users, added_channels))
     message_json['zerver_message'] = zerver_message
     # IO
-    json.dump(message_json, open(output_dir + '/message.json', 'w'))
+    message_file = output_dir + '/message.json'
+    json.dump(message_json, open(message_file, 'w'))
+    print('ls', os.listdir())
+    print('pwd', os.getcwd())
 
     # TODO
     # attachments
@@ -343,7 +347,7 @@ def main(slack_zip_file: str) -> None:
     rm_tree(slack_dir)
 
     # compress the folder
-    subprocess.check_call(['zip', '-r', output_dir + '.zip', output_dir])
+    subprocess.check_call(['zip', '-jpr', output_dir + '.zip', realm_file, message_file])
 
     # remove zulip dir
     rm_tree(output_dir)

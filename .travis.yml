@@ -18,11 +18,12 @@ matrix:
     - mv zulip_data.zip $HOME
     - cd
     - ls
-    - git clone https://github.com/zulip/zulip.git
+    - git clone --depth=50 https://github.com/zulip/zulip.git
     - cd zulip
     - ./tools/travis/setup-backend
     - source tools/travis/activate-venv
-    - ./manage.py import ../zulip_data.zip
+    - ./manage.py --help
+    - ./manage.py import --destroy-rebuild-database ../zulip_data.zip
     addons:
       postgresql: "9.3"
 install:
