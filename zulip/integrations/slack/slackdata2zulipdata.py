@@ -121,7 +121,7 @@ def users2zerver_userprofile(slack_dir: str, realm_id: int, timestamp: Any,
     return zerver_userprofile, added_users
 
 def channels2zerver_stream(slack_dir, realm_id, added_users):
-    # type: (Dict[str, Dict[str, str]]) -> None
+    # type: (Dict[str, Dict[str, Any]]) -> None
     print('######### IMPORTING CHANNELS STARTED #########\n')
     channels = json.load(open(slack_dir + '/channels.json'))
     added_channels = {}
@@ -130,6 +130,8 @@ def channels2zerver_stream(slack_dir, realm_id, added_users):
     zerver_subscription = []
     zerver_recipient = []
     subscription_id_count = 1
+    zerver_defaultstream = {}
+    
 
     for channel in channels:
         # slack_channel_id = channel['id']
@@ -149,7 +151,10 @@ def channels2zerver_stream(slack_dir, realm_id, added_users):
             invite_only=not channel["is_general"],
             date_created=channel["created"],
             id=stream_id_count)
-        zerver_stream.append(stream)
+        if channel["name"] == 'general':
+            zerver_defaultstream = stream
+        else:
+            zerver_stream.append(stream)
         added_channels[stream['name']] = stream_id_count
 
         # construct the recipient object and append it zerver_recipient
@@ -207,7 +212,7 @@ def channels2zerver_stream(slack_dir, realm_id, added_users):
         #         }
         #         ],
     print('######### IMPORTING STREAMS FINISHED #########\n')
-    return zerver_stream, added_channels, zerver_subscription, zerver_recipient
+    return zerver_defaultstream, zerver_stream, added_channels, zerver_subscription, zerver_recipient
 
 def channelmessage2zerver_message(slack_dir, channel, added_users, added_channels):
     json_names = os.listdir(slack_dir + '/' + channel)
@@ -295,8 +300,7 @@ def main(slack_zip_file: str) -> None:
     rm_tree(output_dir)
     os.makedirs(output_dir)
 
-    realm = dict(zerver_defaultstream=[],  # TODO
-                 zerver_client=[{"name": "populate_db", "id": 1},
+    realm = dict(zerver_client=[{"name": "populate_db", "id": 1},
                                 {"name": "website", "id": 2},
                                 {"name": "API", "id": 3}],
                  zerver_userpresence=[],  # TODO
@@ -319,7 +323,10 @@ def main(slack_zip_file: str) -> None:
                                                                DOMAIN_NAME)
     realm['zerver_userprofile'] = zerver_userprofile
 
-    zerver_stream, added_channels, zerver_subscription, zerver_recipient = channels2zerver_stream(slack_dir, REALM_ID, added_users)
+    zerver_defaultstream, zerver_stream, added_channels, zerver_subscription, zerver_recipient = channels2zerver_stream(slack_dir, REALM_ID, added_users)
+    # See https://zulipchat.com/help/set-default-streams-for-new-users
+    # for documentation on zerver_defaultstream
+    realm['zerver_defaultstream'] = [zerver_defaultstream]
     realm['zerver_stream'] = zerver_stream
     realm['zerver_subscription'] = zerver_subscription
     realm['zerver_recipient'] = zerver_recipient
