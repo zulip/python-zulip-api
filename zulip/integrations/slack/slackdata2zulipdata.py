@@ -131,7 +131,6 @@ def channels2zerver_stream(slack_dir, realm_id, added_users):
     zerver_recipient = []
     subscription_id_count = 1
     zerver_defaultstream = {}
-    
 
     for channel in channels:
         # slack_channel_id = channel['id']
@@ -177,6 +176,7 @@ def channels2zerver_stream(slack_dir, realm_id, added_users):
                 active=True,
                 user_profile=added_users[member],
                 id=subscription_id_count)
+            # The recipient is a stream for stream-readable message.
             # proof :  https://github.com/zulip/zulip/blob/master/zerver/views/messages.py#L240 &
             # https://github.com/zulip/zulip/blob/master/zerver/views/messages.py#L324
             zerver_subscription.append(sub)
@@ -303,7 +303,7 @@ def main(slack_zip_file: str) -> None:
     realm = dict(zerver_client=[{"name": "populate_db", "id": 1},
                                 {"name": "website", "id": 2},
                                 {"name": "API", "id": 3}],
-                 zerver_userpresence=[],  # TODO
+                 zerver_userpresence=[],  # shows last logged in data, which is not available in slack
                  zerver_userprofile_mirrordummy=[],
                  zerver_realmdomain=[{"realm": REALM_ID,
                                       "allow_subdomains": False,
@@ -337,11 +337,45 @@ def main(slack_zip_file: str) -> None:
     # now for message.json
     message_json = {}
     zerver_message = []
-    # TODO map zerver_usermessage
+    zerver_usermessage = []
+
+    # check if a user has been mentioned in a message
+    def check_user_mention(text):
+        mentions = re.findall(r'(@(?:\*\*([^\*]+)\*\*|(\w+)))', text)
+        mentioned_users_id = []
+        for mention in mentions:
+            for userprofile in zerver_userprofile:
+                if mention[1] == userprofile['full_name']:
+                        mentioned_users_id.append(userprofile['id'])
+        return mentioned_users_id
+
     for channel in added_channels.keys():
         zerver_message.append(channelmessage2zerver_message(slack_dir, channel,
                               added_users, added_channels))
+
+    # construct the usermessage object and append it to zerver_usermessage
+    usermessage_id = 1
+    for stream_messages in zerver_message:
+        for zulip_message in stream_messages:
+            mentioned_users_id = check_user_mention(zulip_message['content'])
+            for subscription in zerver_subscription:
+                if subscription['recipient'] == zulip_message['recipient']:
+                    flags_mask = 1
+                    if subscription['user_profile'] in mentioned_users_id:
+                        flags_mask = 9
+
+                    usermessage = dict(
+                        user_profile=subscription['user_profile'],
+                        id=usermessage_id,
+                        flags_mask=flags_mask,  # defaulting to 'read' or 'mentioned' and 'read'
+                        message=zulip_message['id'])
+                    usermessage_id += 1
+                    zerver_usermessage.append(usermessage)
+    # TOODO add zerver_usermessage corresponding to the
+    # private messages and huddles type recipients
+
     message_json['zerver_message'] = zerver_message
+    message_json['zerver_usermessage'] = zerver_usermessage
     # IO
     message_file = output_dir + '/message.json'
     json.dump(message_json, open(message_file, 'w'))
