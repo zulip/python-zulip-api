@@ -176,6 +176,7 @@ def channels2zerver_stream(slack_dir, realm_id, added_users):
                 active=True,
                 user_profile=added_users[member],
                 id=subscription_id_count)
+            # The recipient is a stream for stream-readable message.
             # proof :  https://github.com/zulip/zulip/blob/master/zerver/views/messages.py#L240 &
             # https://github.com/zulip/zulip/blob/master/zerver/views/messages.py#L324
             zerver_subscription.append(sub)
