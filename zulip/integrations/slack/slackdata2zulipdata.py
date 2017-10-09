@@ -339,21 +339,38 @@ def main(slack_zip_file: str) -> None:
     zerver_message = []
     zerver_usermessage = []
 
+    # check if a user has been mentioned in a message
+    def check_user_mention(text):
+        mentions = re.findall(r'(@(?:\*\*([^\*]+)\*\*|(\w+)))', text)
+        mentioned_users_id = []
+        for mention in mentions:
+            for userprofile in zerver_userprofile:
+                if mention[1] == userprofile['full_name']:
+                        mentioned_users_id.append(userprofile['id'])
+        return mentioned_users_id
+
     for channel in added_channels.keys():
         zerver_message.append(channelmessage2zerver_message(slack_dir, channel,
                               added_users, added_channels))
+
     # construct the usermessage object and append it to zerver_usermessage
     usermessage_id = 1
-    for zulip_message in zerver_message:
-        for subscription in zerver_subscription:
-            if subscription['recipient'] == zulip_message['recipient']:
-                usermessage = dict(
-                    user_profile=subscription['user_profile'],
-                    id=usermessage_id,
-                    flags_mask=1,  # defaulting to 'read'
-                    message=zulip_message['id'])
-                usermessage_id += 1
-                zerver_usermessage.append(usermessage)
+    for stream_messages in zerver_message:
+        for zulip_message in stream_messages:
+            mentioned_users_id = check_user_mention(zulip_message['content'])
+            for subscription in zerver_subscription:
+                if subscription['recipient'] == zulip_message['recipient']:
+                    flags_mask = 1
+                    if subscription['user_profile'] in mentioned_users_id:
+                        flags_mask = 9
+
+                    usermessage = dict(
+                        user_profile=subscription['user_profile'],
+                        id=usermessage_id,
+                        flags_mask=flags_mask,  # defaulting to 'read' or 'mentioned' and 'read'
+                        message=zulip_message['id'])
+                    usermessage_id += 1
+                    zerver_usermessage.append(usermessage)
     # TOODO add zerver_usermessage corresponding to the
     # private messages and huddles type recipients
 
