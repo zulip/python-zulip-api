@@ -389,7 +389,8 @@ def main(slack_zip_file: str) -> None:
     rm_tree(slack_dir)
 
     # compress the folder
-    subprocess.check_call(['zip', '-jpr', output_dir + '.zip', realm_file, message_file])
+    subprocess.check_call(["tar", "-czf", output_dir + '.tar.gz', output_dir])
+    # subprocess.check_call(['zip', '-jpr', output_dir + '.zip', realm_file, message_file])
 
     # remove zulip dir
     rm_tree(output_dir)
