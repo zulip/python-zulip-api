@@ -214,7 +214,7 @@ def channels2zerver_stream(slack_dir, realm_id, added_users):
     print('######### IMPORTING STREAMS FINISHED #########\n')
     return zerver_defaultstream, zerver_stream, added_channels, zerver_subscription, zerver_recipient
 
-def channelmessage2zerver_message(slack_dir, channel, added_users, added_channels):
+def channelmessage2zerver_message_for_one_stream(slack_dir, channel, added_users, added_channels):
     json_names = os.listdir(slack_dir + '/' + channel)
     users = json.load(open(slack_dir + '/users.json'))
     zerver_message = []
@@ -350,7 +350,7 @@ def main(slack_zip_file: str) -> None:
         return mentioned_users_id
 
     for channel in added_channels.keys():
-        zerver_message.append(channelmessage2zerver_message(slack_dir, channel,
+        zerver_message.append(channelmessage2zerver_message_for_one_stream(slack_dir, channel,
                               added_users, added_channels))
 
     # construct the usermessage object and append it to zerver_usermessage
