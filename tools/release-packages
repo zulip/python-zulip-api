@@ -325,7 +325,7 @@ def main():
             generate_bdist_wheel_universal(setup_file, package_name)
 
     if options.release:
-        dist_dirs = glob.glob(os.path.join(REPO_DIR, '*', 'dist'))
+        dist_dirs = glob.glob(os.path.join(REPO_DIR, '*', 'dist', '*'))
         twine_upload(dist_dirs)
 
     if options.update_zulip_main_repo:
