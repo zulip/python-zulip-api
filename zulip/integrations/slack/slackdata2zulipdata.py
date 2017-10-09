@@ -130,7 +130,7 @@ def channels2zerver_stream(slack_dir, realm_id, added_users):
     zerver_subscription = []
     zerver_recipient = []
     subscription_id_count = 1
-    zerver_defaultstream = {}
+    zerver_defaultstream = [{"realm": 1, "id": 1, "stream": 1}]  # TODO
 
     for channel in channels:
         # slack_channel_id = channel['id']
@@ -148,9 +148,9 @@ def channels2zerver_stream(slack_dir, realm_id, added_users):
             deactivated=channel["is_archived"],
             description=description,
             invite_only=not channel["is_general"],
-            date_created=channel["created"],
+            date_created=float(channel["created"]),
             id=stream_id_count)
-        if channel["name"] == 'general':
+        if channel["name"] == "general":
             zerver_defaultstream = stream
         else:
             zerver_stream.append(stream)
@@ -214,7 +214,7 @@ def channels2zerver_stream(slack_dir, realm_id, added_users):
     print('######### IMPORTING STREAMS FINISHED #########\n')
     return zerver_defaultstream, zerver_stream, added_channels, zerver_subscription, zerver_recipient
 
-def channelmessage2zerver_message(slack_dir, channel, added_users, added_channels):
+def channelmessage2zerver_message_for_one_stream(slack_dir, channel, added_users, added_channels):
     json_names = os.listdir(slack_dir + '/' + channel)
     users = json.load(open(slack_dir + '/users.json'))
     zerver_message = []
@@ -286,7 +286,7 @@ def main(slack_zip_file: str) -> None:
     DOMAIN_NAME = "zulipchat.com"
     REALM_ID = 1  # TODO how to find this
     REALM_NAME = "FleshEatingBatswithFangs"
-    NOW = datetime.utcnow().timestamp()
+    NOW = float(datetime.utcnow().timestamp())
 
     script_path = os.path.dirname(os.path.abspath(__file__)) + '/'
     zerver_realm_skeleton = json.load(open(script_path + 'zerver_realm_skeleton.json'))
@@ -350,7 +350,7 @@ def main(slack_zip_file: str) -> None:
         return mentioned_users_id
 
     for channel in added_channels.keys():
-        zerver_message.append(channelmessage2zerver_message(slack_dir, channel,
+        zerver_message.append(channelmessage2zerver_message_for_one_stream(slack_dir, channel,
                               added_users, added_channels))
 
     # construct the usermessage object and append it to zerver_usermessage
@@ -389,7 +389,8 @@ def main(slack_zip_file: str) -> None:
     rm_tree(slack_dir)
 
     # compress the folder
-    subprocess.check_call(['zip', '-jpr', output_dir + '.zip', realm_file, message_file])
+    subprocess.check_call(["tar", "-czf", output_dir + '.tar.gz', output_dir])
+    # subprocess.check_call(['zip', '-jpr', output_dir + '.zip', realm_file, message_file])
 
     # remove zulip dir
     rm_tree(output_dir)

@@ -7,7 +7,7 @@
     "waiting_period_threshold": 0,
     "email_changes_disabled": false,
     "deactivated": false,
-    "notifications_stream": null,
+    "notifications_stream": 1,
     "restricted_to_domain": true,
     "show_digest_email": true,
     "allow_message_editing": true,
@@ -31,6 +31,6 @@
     "name": "",
     "org_type": 1,
     "add_emoji_by_admins_only": false,
-    "date_created": null,
+    "date_created": 0.0,
     "id": 1
 }]
