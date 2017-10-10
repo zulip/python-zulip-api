@@ -14,7 +14,7 @@ from contextlib import contextmanager
 
 if False:
     from mypy_extensions import NoReturn
-from typing import Any, Optional, List, Dict
+from typing import Any, Optional, List, Dict, IO, Text
 from types import ModuleType
 
 from zulip import Client
@@ -64,7 +64,7 @@ class StateHandler(object):
         self.state_[key] = self.marshal(value)
 
     def get(self, key):
-        # type: () -> Text
+        # type: (Text) -> Text
         return self.demarshal(self.state_[key])
 
     def contains(self, key):
@@ -73,7 +73,7 @@ class StateHandler(object):
 
 class ExternalBotHandler(object):
     def __init__(self, client, root_dir):
-        # type: (Client, string) -> None
+        # type: (Client, str) -> None
         # Only expose a subset of our Client's functionality
         user_profile = client.get_profile()
         self._rate_limit = RateLimit(20, 5)
@@ -134,7 +134,7 @@ class ExternalBotHandler(object):
         return dict(config.items(section))
 
     def open(self, filepath):
-        # type: (str) -> None
+        # type: (str) -> IO[str]
         filepath = os.path.normpath(filepath)
         abs_filepath = os.path.join(self._root_dir, filepath)
         if abs_filepath.startswith(self._root_dir):
@@ -170,7 +170,7 @@ def is_private_message_from_another_user(message_dict, current_user_id):
     return False
 
 def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
-    # type: (Any, bool, str) -> Any
+    # type: (Any, bool, str, str) -> Any
     #
     # lib_module is of type Any, since it can contain any bot's
     # handler class. Eventually, we want bot's handler classes to
@@ -200,7 +200,7 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
         print(message_handler.usage())
 
     def handle_message(message, flags):
-        # type: (Dict[str, Any]) -> None
+        # type: (Dict[str, Any], List[str]) -> None
         logging.info('waiting for next message')
 
         # `mentioned` will be in `flags` if the bot is mentioned at ANY position
@@ -227,7 +227,7 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
     logging.info('starting message handling...')
 
     def event_callback(event):
-        # type: (Dict[str, str]) -> None
+        # type: (Dict[str, Any]) -> None
         if event['type'] == 'message':
             handle_message(event['message'], event['flags'])
 
