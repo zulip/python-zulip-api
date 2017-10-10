@@ -130,7 +130,7 @@ def channels2zerver_stream(slack_dir, realm_id, added_users):
     zerver_subscription = []
     zerver_recipient = []
     subscription_id_count = 1
-    zerver_defaultstream = {}
+    zerver_defaultstream = [{"realm": 1, "id": 1, "stream": 1}]  # TODO
 
     for channel in channels:
         # slack_channel_id = channel['id']
@@ -148,9 +148,9 @@ def channels2zerver_stream(slack_dir, realm_id, added_users):
             deactivated=channel["is_archived"],
             description=description,
             invite_only=not channel["is_general"],
-            date_created=channel["created"],
+            date_created=float(channel["created"]),
             id=stream_id_count)
-        if channel["name"] == 'general':
+        if channel["name"] == "general":
             zerver_defaultstream = stream
         else:
             zerver_stream.append(stream)
@@ -288,7 +288,7 @@ def main(slack_zip_file: str) -> None:
     # has multiple realms
     REALM_ID = 1
     REALM_NAME = "FleshEatingBatswithFangs"
-    NOW = datetime.utcnow().timestamp()
+    NOW = float(datetime.utcnow().timestamp())
 
     script_path = os.path.dirname(os.path.abspath(__file__)) + '/'
     zerver_realm_skeleton = json.load(open(script_path + 'zerver_realm_skeleton.json'))
