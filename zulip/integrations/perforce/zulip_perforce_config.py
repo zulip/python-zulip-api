@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from typing import Dict, Optional, Text
 
 # Change these values to configure authentication for the plugin
 ZULIP_USER = "p4-bot@example.com"
@@ -50,6 +51,7 @@ P4_WEB = None
 # * stream "depot_subdirectory-commits"
 # * subject "change_root"
 def commit_notice_destination(path, changelist):
+    # type: (Text, int) -> Optional[Dict[Text, Text]]
     dirs = path.split('/')
     if len(dirs) >= 4 and dirs[3] not in ("*", "..."):
         directory = dirs[3]

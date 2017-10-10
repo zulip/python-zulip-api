@@ -19,7 +19,6 @@ os.chdir(os.path.dirname(TOOLS_DIR))
 sys.path.append(os.path.dirname(TOOLS_DIR))
 
 exclude = """
-zulip/integrations/perforce/zulip_perforce_config.py
 zulip/integrations/perforce/git_p4.py
 zulip/integrations/svn/zulip_svn_config.py
 zulip/integrations/zephyr/process_ccache
