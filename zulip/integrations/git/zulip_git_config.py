@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from typing import Dict, Text
 
 # Change these values to configure authentication for the plugin
 ZULIP_USER = "git-bot@example.com"
@@ -41,6 +42,7 @@ ZULIP_API_KEY = "0123456789abcdef0123456789abcdef"
 # * topic "master"
 # And similarly for branch "test-post-receive" (for use when testing).
 def commit_notice_destination(repo, branch, commit):
+    # type: (Text, Text, Text) -> Dict[Text, Text]
     if branch in ["master", "test-post-receive"]:
         return dict(stream  = "commits",
                     subject = u"%s" % (branch,))
@@ -54,6 +56,7 @@ def commit_notice_destination(repo, branch, commit):
 #
 # return '!avatar(%s) [%s](https://example.com/commits/%s)\n' % (author, subject, commit_id)
 def format_commit_message(author, subject, commit_id):
+    # type: (Text, Text, Text) -> Text
     return '!avatar(%s) %s\n' % (author, subject)
 
 ## If properly installed, the Zulip API should be in your import
