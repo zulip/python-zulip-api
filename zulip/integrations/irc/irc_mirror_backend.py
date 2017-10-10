@@ -1,6 +1,7 @@
 import irc.bot
 import irc.strings
 from irc.client import ip_numstr_to_quad, ip_quad_to_numstr, Event, ServerConnection
+from typing import Any, Dict
 
 IRC_DOMAIN = "irc.example.com"
 
