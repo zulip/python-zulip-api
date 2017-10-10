@@ -284,7 +284,9 @@ def main(slack_zip_file: str) -> None:
     from datetime import datetime
     # TODO fetch realm config from zulip config
     DOMAIN_NAME = "zulipchat.com"
-    REALM_ID = 1  # TODO how to find this
+    # Hardcode this to 1, will implement later for zulipchat.com's case where it
+    # has multiple realms
+    REALM_ID = 1
     REALM_NAME = "FleshEatingBatswithFangs"
     NOW = datetime.utcnow().timestamp()
 
