@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from typing import Dict, Optional, Text
 
 # Change these values to configure authentication for the plugin
 ZULIP_USER = "svn-bot@example.com"
@@ -40,6 +41,7 @@ ZULIP_API_KEY = "0123456789abcdef0123456789abcdef"
 # * stream "commits"
 # * topic "branch_name"
 def commit_notice_destination(path, commit):
+    # type: (Text, Text) -> Optional[Dict[Text, Text]]
     repo = path.split('/')[-1]
     if repo not in ["evil-master-plan", "my-super-secret-repository"]:
         return dict(stream  = "commits",
