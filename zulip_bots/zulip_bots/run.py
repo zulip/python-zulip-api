@@ -9,6 +9,7 @@ import os
 from types import ModuleType
 from importlib import import_module
 from os.path import basename, splitext
+from typing import Any, Optional, Text
 
 from zulip_bots.lib import run_message_handler_for_bot
 from zulip_bots.provision import provision_bot
@@ -16,6 +17,7 @@ from zulip_bots.provision import provision_bot
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
 def import_module_from_source(path, name=None):
+    # type: (Text, Optional[Text]) -> Any
     if not name:
         name = splitext(basename(path))[0]
 
@@ -33,6 +35,7 @@ def import_module_from_source(path, name=None):
     return module
 
 def name_and_path_match(given_name, path_to_bot):
+    # type: (Text, Text) -> bool
     if given_name and path_to_bot:
         name_by_path = os.path.splitext(os.path.basename(path_to_bot))[0]
         if (given_name != name_by_path):
@@ -40,6 +43,7 @@ def name_and_path_match(given_name, path_to_bot):
     return True
 
 def parse_args():
+    # type: () -> argparse.Namespace
     usage = '''
         zulip-run-bot <bot_name>
         Example: zulip-run-bot followup

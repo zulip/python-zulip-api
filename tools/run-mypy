@@ -22,7 +22,6 @@ exclude = """
 zulip/integrations/perforce/git_p4.py
 
 zulip_bots/zulip_bots/bots
-zulip_bots/zulip_bots/run.py
 zulip_bots/zulip_bots/test_lib.py
 zulip_bots/zulip_bots/test_run.py
 zulip_bots/zulip_bots/zulip_bot_output.py
