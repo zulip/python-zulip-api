@@ -17,13 +17,14 @@ matrix:
     - zulip/integrations/slack/slackdata2zulipdata.py $PWD/slack-export-master.zip
     - mv zulip_data.tar.gz $HOME
     - cd
-    - ls
     - git clone --depth=50 https://github.com/zulip/zulip.git
     - cd zulip
+    - mv ../zulip_data.tar.gz .
+    - tar xf zulip_data.tar.gz
+    - ls zulip_data
     - ./tools/travis/setup-backend
     - source tools/travis/activate-venv
-    - ./manage.py --help
-    - ./manage.py import --destroy-rebuild-database ../zulip_data.tar.gz
+    - ./manage.py import --destroy-rebuild-database $PWD/zulip_data
     addons:
       postgresql: "9.3"
 install:
