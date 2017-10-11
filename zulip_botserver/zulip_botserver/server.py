@@ -84,7 +84,7 @@ def handle_bot(bot):
     return json.dumps("")
 
 def parse_args():
-    # type: () -> Tuple[Any]
+    # type: () -> argparse.Namespace
     usage = '''
             zulip-bot-server --config-file <path to flaskbotrc> --hostname <address> --port <port>
             Example: zulip-bot-server --config-file ~/flaskbotrc
