@@ -5,7 +5,8 @@ import os
 import glob
 import distutils.cmd
 import distutils.log
-from typing import IO, Iterator
+if False:
+    from typing import IO, Iterator
 
 CURRENT_DIR = os.path.abspath(os.path.dirname(__file__))
 BOTS_DIR = os.path.normpath(os.path.join(CURRENT_DIR, 'zulip_bots', 'bots'))

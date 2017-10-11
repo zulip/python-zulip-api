@@ -5,6 +5,8 @@ from __future__ import print_function
 
 import os
 import sys
+if False:
+    from typing import Any, Dict, Optional
 
 import generate_manifest
 
@@ -63,14 +65,15 @@ except ImportError:
 
     # Manual dependency check
     def check_dependency_manually(module_name, version=None):
+        # type: (str, Optional[str]) -> None
         try:
-            module = import_module(module_name)
+            module = import_module(module_name)  # type: Any
             if version is not None:
                 assert(LooseVersion(module.__version__) >= LooseVersion(version))
         except (ImportError, AssertionError):
             if version is not None:
                 print("{name}>={version} is not installed.".format(
-                    req=req, version=version), file=sys.stderr)
+                    name=module_name, version=version), file=sys.stderr)
             else:
                 print("{name} is not installed.".format(name=module_name), file=sys.stderr)
             sys.exit(1)
