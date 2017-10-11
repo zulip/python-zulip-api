@@ -8,6 +8,7 @@ import argparse
 import zulip_bots
 
 from six.moves import configparser
+from typing import Any
 
 from mock import MagicMock, patch
 from zulip_bots.lib import StateHandler
@@ -18,6 +19,7 @@ from zulip_bots.run import import_module_from_source
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
 def parse_args():
+    # type: () -> argparse.Namespace
     description = (
         "A tool to test a bot: given a provided message, provides the bot response.\n\n"
         'Examples:   %(prog)s xkcd 1\n'
@@ -75,7 +77,7 @@ def main():
         sys.exit(1)
 
     with patch('zulip.Client') as mock_client:
-        mock_bot_handler = ExternalBotHandler(mock_client, bot_dir)
+        mock_bot_handler = ExternalBotHandler(mock_client, bot_dir)  # type: Any
         mock_bot_handler.send_reply = MagicMock()
         mock_bot_handler.send_message = MagicMock()
         mock_bot_handler.update_message = MagicMock()
