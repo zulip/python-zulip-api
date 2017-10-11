@@ -97,7 +97,7 @@ def process_logs():
     open(data_file_path, "w").write(json.dumps(new_data))
 
 if __name__ == "__main__":
-    parser = zulip.add_default_arguments(argparse.ArgumentParser())  # type: argparse.ArgumentParser3
+    parser = zulip.add_default_arguments(argparse.ArgumentParser())  # type: argparse.ArgumentParser
     parser.add_argument("--control-path", default="/etc/log2zulip.conf")
     args = parser.parse_args()
 
@@ -115,7 +115,7 @@ if __name__ == "__main__":
         zulip_client = zulip.init_from_options(args)
         try:
             log_files = json.loads(open(args.control_path, "r").read())
-        except (json.JSONDecodeError, IOError):
+        except (json.JSONDecodeError, IOError):  # type: ignore # error: Cannot determine type of 'IOError'
             print("Could not load control data from %s" % (args.control_path,))
             traceback.print_exc()
             sys.exit(1)
