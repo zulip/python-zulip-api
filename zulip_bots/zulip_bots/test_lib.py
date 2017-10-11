@@ -21,7 +21,7 @@ from contextlib import contextmanager
 from importlib import import_module
 from unittest import TestCase
 
-from typing import List, Dict, Any, Optional, Callable
+from typing import List, Dict, Any, Optional, Callable, Tuple
 from types import ModuleType
 
 from copy import deepcopy
@@ -35,7 +35,7 @@ class BotTestCase(TestCase):
         # handler class. Eventually, we want bot's handler classes to
         # inherit from a common prototype specifying the handle_message
         # function.
-        lib_module = import_module('zulip_bots.bots.{bot}.{bot}'.format(bot=self.bot_name))
+        lib_module = import_module('zulip_bots.bots.{bot}.{bot}'.format(bot=self.bot_name))  # type: Any
         return lib_module.handler_class()
 
     def setUp(self):
@@ -58,7 +58,7 @@ class BotTestCase(TestCase):
     def check_expected_responses(self, expectations, expected_method='send_reply',
                                  email="foo_sender@zulip.com", recipient="foo", subject="foo",
                                  sender_id=0, sender_full_name="Foo Bar", type="all"):
-        # type: (Union[Sequence[Tuple[str, Any]], Dict[str, Any]], str, str, str, str, int, str, str) -> None
+        # type: (List[Tuple[str, Any]], str, str, str, str, int, str, str) -> None
         # To test send_message, Any would be a Dict type,
         # to test send_reply, Any would be a str type.
         if type not in ["private", "stream", "all"]:
