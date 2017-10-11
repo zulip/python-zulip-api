@@ -8,6 +8,7 @@ import os
 import sys
 import glob
 import pip
+from typing import Iterator
 
 def provision_bot(path_to_bot, force):
     # type: (str, bool) -> None
@@ -35,6 +36,7 @@ def provision_bot(path_to_bot, force):
 
 
 def parse_args(available_bots):
+    # type: (Iterator[str]) -> argparse.Namespace
     usage = """
 Installs dependencies of bots in the bots/<bot_name>
 directories. Add a requirements.txt file in a bot's folder
@@ -72,7 +74,7 @@ def main():
     # type: () -> None
     current_dir = os.path.dirname(os.path.abspath(__file__))
     bots_dir = os.path.join(current_dir, "bots")
-    bots_subdirs = map(os.path.abspath, glob.glob(bots_dir + '/*'))
+    bots_subdirs = map(lambda d: os.path.abspath(d), glob.glob(bots_dir + '/*'))
     available_bots = filter(lambda d: os.path.isdir(d), bots_subdirs)
 
     options = parse_args(available_bots)
