@@ -5,6 +5,7 @@ import os
 import glob
 import distutils.cmd
 import distutils.log
+from typing import IO, Iterator
 
 CURRENT_DIR = os.path.abspath(os.path.dirname(__file__))
 BOTS_DIR = os.path.normpath(os.path.join(CURRENT_DIR, 'zulip_bots', 'bots'))
@@ -21,27 +22,30 @@ class GenerateManifest(distutils.cmd.Command):
     ]
 
     def initialize_options(self):
+        # type: () -> None
         self.release = False
 
     def finalize_options(self):
+        # type: () -> None
         pass
 
     def run(self):
+        # type: () -> None
         if self.release:
             generate_release_manifest()
-            self.announce(
+            self.announce(  # type: ignore # error: "GenerateManifest" has no attribute "announce"
                 'Generating a MANIFEST for a PyPA release of zulip_bots.',
-                level=distutils.log.INFO
+                level=distutils.log.INFO  # type: ignore # error: Module has no attribute "INFO"
             )
         else:
             generate_dev_manifest()
-            self.announce(
+            self.announce(  # type: ignore
                 'Generating a MANIFEST for zulip_bots\' development.',
-                level=distutils.log.INFO
+                level=distutils.log.INFO  # type: ignore
             )
 
 def get_test_fixtures():
-    # type: () -> List[str]
+    # type: () -> Iterator[str]
     glob_pattern = os.path.join(BOTS_DIR, '*', 'fixtures', '*.json')
     fixtures_paths = map(
         lambda fp: os.path.join(*fp.split(os.path.sep)[-5:]).replace(os.path.sep, '/'),
@@ -50,7 +54,7 @@ def get_test_fixtures():
     return fixtures_paths
 
 def get_logos():
-    # type: () -> List[str]
+    # type: () -> Iterator[str]
     glob_pattern = os.path.join(BOTS_DIR, '*', 'logo.*')
     logo_paths = map(
         lambda fp: os.path.join(*fp.split(os.path.sep)[-4:]).replace(os.path.sep, '/'),
@@ -59,7 +63,7 @@ def get_logos():
     return logo_paths
 
 def get_docs():
-    # type: () -> List[str]
+    # type: () -> Iterator[str]
     glob_pattern = os.path.join(BOTS_DIR, '*', 'doc.md')
     doc_paths = map(
         lambda fp: os.path.join(*fp.split(os.path.sep)[-4:]).replace(os.path.sep, '/'),
@@ -68,7 +72,7 @@ def get_docs():
     return doc_paths
 
 def get_assets():
-    # type: () -> List[str]
+    # type: () -> Iterator[str]
     glob_pattern = os.path.join(BOTS_DIR, '*', 'assets', '*')
     assets_files = map(
         lambda fp: os.path.join(*fp.split(os.path.sep)[-5:]).replace(os.path.sep, '/'),
@@ -77,7 +81,7 @@ def get_assets():
     return assets_files
 
 def generate_and_write(filepaths, file_obj):
-    # type: () -> None
+    # type: (Iterator[str], IO[str]) -> None
     template = 'include {line}\n'
     lines = map(lambda line: template.format(line=line), filepaths)
 
@@ -99,6 +103,7 @@ def generate_release_manifest():
         generate_and_write(get_assets(), fp)
 
 def parse_args():
+    # type: () -> argparse.Namespace
     usage = """
 To generate a MANIFEST.in for a PyPA release, run:
 
