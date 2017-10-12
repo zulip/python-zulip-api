@@ -26,6 +26,7 @@ class TestDefaultArguments(TestCase):
     @patch('sys.argv', ['zulip-run-bot', 'giphy', '--config-file', '/foo/bar/baz.conf'])
     @patch('zulip_bots.run.run_message_handler_for_bot')
     def test_argument_parsing_with_bot_name(self, mock_run_message_handler_for_bot):
+        # type: (mock.Mock) -> None
         zulip_bots.run.main()
         mock_run_message_handler_for_bot.assert_called_with(bot_name='giphy',
                                                             config_file='/foo/bar/baz.conf',
@@ -35,6 +36,7 @@ class TestDefaultArguments(TestCase):
     @patch('sys.argv', ['zulip-run-bot', path_to_bot, '--config-file', '/foo/bar/baz.conf'])
     @patch('zulip_bots.run.run_message_handler_for_bot')
     def test_argument_parsing_with_bot_path(self, mock_run_message_handler_for_bot):
+        # type: (mock.Mock) -> None
         zulip_bots.run.main()
         mock_run_message_handler_for_bot.assert_called_with(
             bot_name='giphy',
