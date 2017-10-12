@@ -69,7 +69,7 @@ def users2zerver_userprofile(slack_dir: str, realm_id: int, timestamp: Any,
             pointer=-1,
             default_events_register_stream=None,
             is_realm_admin=user.get('is_owner', False),
-            invites_granted=0,
+            #invites_granted=0,
             enter_sends=True,
             bot_type=1 if user.get('is_bot', False) else None,
             enable_stream_sounds=False,
@@ -81,10 +81,9 @@ def users2zerver_userprofile(slack_dir: str, realm_id: int, timestamp: Any,
             full_name=user.get('real_name', user['name']),
             twenty_four_hour_time=False,
             groups=[],  # This is Zulip-specific
-            muted_topics=[],
             enable_online_push_notifications=False,
             alert_words="[]",
-            # bot_owner=None,  # This is Zulip-specific
+            bot_owner=None,  # This is Zulip-specific
             short_name=user['name'],
             enable_offline_push_notifications=True,
             left_side_userlist=False,
@@ -105,7 +104,7 @@ def users2zerver_userprofile(slack_dir: str, realm_id: int, timestamp: Any,
             emoji_alt_code=False,
             realm=realm_id,
             quota=1073741824,
-            invites_used=0,
+            #invites_used=0,
             id=user_id_count)
 
         # TODO map the avatar
@@ -130,7 +129,7 @@ def channels2zerver_stream(slack_dir, realm_id, added_users):
     zerver_subscription = []
     zerver_recipient = []
     subscription_id_count = 1
-    zerver_defaultstream = [{"realm": 1, "id": 1, "stream": 1}]  # TODO
+    zerver_defaultstream = []
 
     for channel in channels:
         # slack_channel_id = channel['id']
@@ -150,10 +149,15 @@ def channels2zerver_stream(slack_dir, realm_id, added_users):
             invite_only=not channel["is_general"],
             date_created=float(channel["created"]),
             id=stream_id_count)
+
         if channel["name"] == "general":
-            zerver_defaultstream = stream
-        else:
-            zerver_stream.append(stream)
+            defaultstream = dict(
+                stream=stream_id_count,
+                realm=realm_id,
+                id=1)
+            zerver_defaultstream.append(defaultstream)
+
+        zerver_stream.append(stream)
         added_channels[stream['name']] = stream_id_count
 
         # construct the recipient object and append it zerver_recipient
@@ -328,7 +332,7 @@ def main(slack_zip_file: str) -> None:
     zerver_defaultstream, zerver_stream, added_channels, zerver_subscription, zerver_recipient = channels2zerver_stream(slack_dir, REALM_ID, added_users)
     # See https://zulipchat.com/help/set-default-streams-for-new-users
     # for documentation on zerver_defaultstream
-    realm['zerver_defaultstream'] = [zerver_defaultstream]
+    realm['zerver_defaultstream'] = zerver_defaultstream
     realm['zerver_stream'] = zerver_stream
     realm['zerver_subscription'] = zerver_subscription
     realm['zerver_recipient'] = zerver_recipient
