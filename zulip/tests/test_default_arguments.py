@@ -16,9 +16,11 @@ else:
 class TestDefaultArguments(TestCase):
 
     def test_invalid_arguments(self):
+        # type: () -> None
         parser = zulip.add_default_arguments(argparse.ArgumentParser(usage="lorem ipsum"))
-        with self.assertRaises(SystemExit) as cm, patch('sys.stderr', new=six.StringIO()) as mock_stderr:
-            parser.parse_args(['invalid argument'])
+        with self.assertRaises(SystemExit) as cm:  # type: ignore # error: "assertRaises" doesn't match argument types
+            with patch('sys.stderr', new=six.StringIO()) as mock_stderr:
+                parser.parse_args(['invalid argument'])
         self.assertEqual(cm.exception.code, 2)
         # Assert that invalid arguments exit with printing the full usage (non-standard behavior)
         self.assertTrue(mock_stderr.getvalue().startswith("""usage: lorem ipsum
@@ -32,6 +34,7 @@ Zulip API configuration:
 
     @patch('os.path.exists', return_value=False)
     def test_config_path_with_tilde(self, mock_os_path_exists):
+        # type: (bool) -> None
         parser = zulip.add_default_arguments(argparse.ArgumentParser(usage="lorem ipsum"))
         test_path = '~/zuliprc'
         args = parser.parse_args(['--config-file', test_path])

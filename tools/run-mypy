@@ -20,7 +20,6 @@ sys.path.append(os.path.dirname(TOOLS_DIR))
 
 exclude = """
 zulip/integrations/perforce/git_p4.py
-zulip/tests/test_default_arguments.py
 
 zulip_bots/zulip_bots/bots
 zulip_bots/generate_manifest.py
