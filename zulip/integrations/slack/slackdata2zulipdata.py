@@ -51,6 +51,12 @@ def users2zerver_userprofile(slack_dir: str, realm_id: int, timestamp: Any,
             # use the avatar from gravatar
             avatar_source = 'G'
 
+        # timezone
+        _default_timezone = "America/New_York"
+        timezone = user.get("tz", _default_timezone)
+        if timezone is None or '/' not in timezone:
+            timezone = _default_timezone
+
         # userprofile's quota is hardcoded as per
         # https://github.com/zulip/zulip/blob/e1498988d9094961e6f9988fb308b3e7310a8e74/zerver/migrations/0059_userprofile_quota.py#L18
         userprofile = dict(
@@ -61,7 +67,7 @@ def users2zerver_userprofile(slack_dir: str, realm_id: int, timestamp: Any,
             avatar_version=1,
             autoscroll_forever=False,
             default_desktop_notifications=True,
-            timezone=user.get("tz", ""),
+            timezone=timezone,
             default_sending_stream=None,
             enable_offline_email_notifications=True,
             user_permissions=[],  # This is Zulip-specific
@@ -69,7 +75,7 @@ def users2zerver_userprofile(slack_dir: str, realm_id: int, timestamp: Any,
             pointer=-1,
             default_events_register_stream=None,
             is_realm_admin=user.get('is_owner', False),
-            #invites_granted=0,
+            # invites_granted=0,  # TODO
             enter_sends=True,
             bot_type=1 if user.get('is_bot', False) else None,
             enable_stream_sounds=False,
@@ -104,7 +110,7 @@ def users2zerver_userprofile(slack_dir: str, realm_id: int, timestamp: Any,
             emoji_alt_code=False,
             realm=realm_id,
             quota=1073741824,
-            #invites_used=0,
+            # invites_used=0,  # TODO
             id=user_id_count)
 
         # TODO map the avatar
