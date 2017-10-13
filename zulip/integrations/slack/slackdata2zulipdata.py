@@ -415,8 +415,10 @@ def main(slack_zip_file: str) -> None:
     os.makedirs(output_dir + '/uploads')
     json.dump([], open(uploads_records_file, 'w'))
 
-    # TODO
-    # attachments
+    # IO attachments TODO
+    attachment_file = output_dir + '/attachment.json'
+    attachment = {"zerver_attachment": []}
+    json.dump(attachment, open(attachment_file, 'w'))
 
     print('ls', os.listdir())
     print('pwd', os.getcwd())
