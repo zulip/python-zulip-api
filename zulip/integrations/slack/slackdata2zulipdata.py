@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import os
 import json
 import hashlib
@@ -375,7 +375,7 @@ def main(slack_zip_file: str) -> None:
     realm['zerver_stream'] = zerver_stream
     realm['zerver_subscription'] = zerver_subscription
     realm['zerver_recipient'] = zerver_recipient
-    # IO
+    # IO realm.json
     realm_file = output_dir + '/realm.json'
     json.dump(realm, open(realm_file, 'w'))
 
@@ -401,14 +401,25 @@ def main(slack_zip_file: str) -> None:
 
     message_json['zerver_message'] = zerver_message
     message_json['zerver_usermessage'] = zerver_usermessage
-    # IO
+    # IO message.json
     message_file = output_dir + '/message.json'
     json.dump(message_json, open(message_file, 'w'))
-    print('ls', os.listdir())
-    print('pwd', os.getcwd())
+
+    # IO avatar records
+    avatar_records_file = output_dir + '/avatars/records.json'
+    os.makedirs(output_dir + '/avatars')
+    json.dump([], open(avatar_records_file, 'w'))
+
+    # IO uploads TODO
+    uploads_records_file = output_dir + '/uploads/records.json'
+    os.makedirs(output_dir + '/uploads')
+    json.dump([], open(uploads_records_file, 'w'))
 
     # TODO
     # attachments
+
+    print('ls', os.listdir())
+    print('pwd', os.getcwd())
 
     # remove slack dir
     rm_tree(slack_dir)
