@@ -166,7 +166,10 @@ def channels2zerver_stream(slack_dir, realm_id, added_users):
         zerver_stream.append(stream)
         added_channels[stream['name']] = stream_id_count
 
-        # construct the recipient object and append it zerver_recipient
+        # construct the recipient object and append it to zerver_recipient
+        # type 1: private
+        # type 2: stream
+        # type 3: huddle
         recipient = dict(
             type_id=stream_id_count,
             id=stream_id_count,
@@ -274,8 +277,10 @@ def channelmessage2zerver_message_one_stream(slack_dir, channel, added_users,
         msgs = json.load(open(slack_dir + '/%s/%s' % (channel, json_name)))
         for msg in msgs:
             text = msg['text']
-            if "has joined the channel" in text:
+            if 'subtype' in msg.keys() and msg['subtype'] in ["channel_join", "channel_leave", "channel_name"]:
+                # Ignore noisy messages
                 continue
+
             try:
                 user = msg.get('user', msg['file']['user'])
             except KeyError:
