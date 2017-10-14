@@ -474,7 +474,8 @@ def main(slack_zip_file: str) -> None:
 
     # IO attachments
     attachment_file = output_dir + '/attachment.json'
-    attachment = {"zerver_attachment": zerver_attachment}
+    # attachment = {"zerver_attachment": zerver_attachment}
+    attachment = {"zerver_attachment": []}
     json.dump(attachment, open(attachment_file, 'w'))
 
     print('ls', os.listdir())
