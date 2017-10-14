@@ -263,6 +263,7 @@ def channelmessage2zerver_message_one_stream(slack_dir, channel, added_users,
         return token
 
     # check if a user has been mentioned in a message
+    # for zerver_usermessage
     def check_user_mention(text):
         # Zulip's at mention
         mentions = re.findall(r'(@(?:\*\*([^\*]+)\*\*|(\w+)))', text)
@@ -272,6 +273,17 @@ def channelmessage2zerver_message_one_stream(slack_dir, channel, added_users,
                 if mention[1] == userprofile['full_name']:
                         mentioned_users_id.append(userprofile['id'])
         return mentioned_users_id
+
+    # check if the text contain a URL
+    def check_has_link(msg):
+        if 'has_link' in msg:
+            return msg['has_link']
+        else:
+            text = msg['text']
+            return ('http://' in text or 'https://' in text)
+
+    def parse_url(url):
+        return url.replace("\/\/", "//").replace("\/", "/")
 
     for json_name in json_names:
         msgs = json.load(open(slack_dir + '/%s/%s' % (channel, json_name)))
@@ -301,7 +313,7 @@ def channelmessage2zerver_message_one_stream(slack_dir, channel, added_users,
                 rendered_content=text,  # slack doesn't cache this
                 recipient=added_channels[channel],
                 last_edit_time=None,
-                has_link=msg.get('has_link', False))
+                has_link=check_has_link(msg))
             zerver_message.append(zulip_message)
 
             # construct usermessages
