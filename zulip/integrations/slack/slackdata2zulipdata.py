@@ -8,6 +8,8 @@ import shutil
 import subprocess
 import re
 
+import requests
+
 from typing import Any, Dict, List
 # stubs
 user_profile_stub = Dict[str, Any]
@@ -227,14 +229,17 @@ def channels2zerver_stream(slack_dir, realm_id, added_users):
     print('######### IMPORTING STREAMS FINISHED #########\n')
     return zerver_defaultstream, zerver_stream, added_channels, zerver_subscription, zerver_recipient
 
-def channelmessage2zerver_message_one_stream(slack_dir, channel, added_users,
+def channelmessage2zerver_message_one_stream(constants, channel, added_users,
                                              zerver_userprofile,
-                                             added_channels, msg_id_count,
-                                             usermessage_id, zerver_subscription):
+                                             added_channels, ids,
+                                             zerver_subscription):
+    slack_dir, REALM_ID, upload_dir = constants
+    message_id, usermessage_id, attachment_id = ids
     json_names = os.listdir(slack_dir + '/' + channel)
     users = json.load(open(slack_dir + '/users.json'))
     zerver_message = []
     zerver_usermessage = []
+    zerver_attachment = []
 
     # Sanitize the message text
     def sanitize_text(text):
@@ -279,19 +284,51 @@ def channelmessage2zerver_message_one_stream(slack_dir, channel, added_users,
         if 'has_link' in msg:
             return msg['has_link']
         else:
+            # TODO map msg['attachments']['from_url']
             text = msg['text']
             return ('http://' in text or 'https://' in text)
 
     def parse_url(url):
         return url.replace("\/\/", "//").replace("\/", "/")
 
+    def save_attachment(url, _id, name):
+        url = parse_url(url)
+        response = requests.get(url, stream=True)
+        os.makedirs(upload_dir + '/' + str(id), exist_ok=True)
+        with open(upload_dir + '/' + str(id) + '/' + name, 'wb') as output_file:
+            shutil.copyfileobj(response.raw, output_file)
+
     for json_name in json_names:
         msgs = json.load(open(slack_dir + '/%s/%s' % (channel, json_name)))
         for msg in msgs:
             text = msg['text']
-            if 'subtype' in msg.keys() and msg['subtype'] in ["channel_join", "channel_leave", "channel_name"]:
-                # Ignore noisy messages
-                continue
+            has_attachment = False
+
+            if 'subtype' in msg.keys():
+                st = msg['subtype']
+                if st in ["channel_join", "channel_leave", "channel_name"]:
+                    # Ignore noisy messages
+                    continue
+                elif st == "file_share":
+                    has_attachment = True
+                    _file = msg['file']
+                    slack_user_id = _file['user']
+                    zulip_user_id = added_users[slack_user_id]
+                    save_attachment(_file['url_private'], attachment_id, _file['name'])
+                    path_id = "%d\/%d\/%s" % (REALM_ID, attachment_id, _file['name'])
+                    # construct attachments object and append it to zerver_attachment
+                    attachments = dict(
+                        id=attachment_id,
+                        is_realm_public=True,  # TOODOO map for private messages and huddles, where is_realm_public = False
+                        file_name=_file['name'],
+                        create_time=_file['created'],
+                        size=_file['size'],
+                        path_id=path_id,
+                        realm=REALM_ID,
+                        owner=zulip_user_id,
+                        messages=[message_id])
+                    attachment_id += 1
+                    zerver_attachment.append(attachments)
 
             try:
                 user = msg.get('user', msg['file']['user'])
@@ -305,8 +342,8 @@ def channelmessage2zerver_message_one_stream(slack_dir, channel, added_users,
                 has_image=msg.get('has_image', False),
                 subject=channel,  # This is Zulip-specific
                 pub_date=msg['ts'],
-                id=msg_id_count,
-                has_attachment=False,  # attachment will be posted in the subsequent message; this is how Slack does it, i.e. less like email
+                id=message_id,
+                has_attachment=has_attachment,  # attachment will be posted in the subsequent message; this is how Slack does it, i.e. less like email
                 edit_history=None,
                 sender=added_users[user],  # map slack id to zulip id
                 content=sanitize_text(text),
@@ -332,8 +369,8 @@ def channelmessage2zerver_message_one_stream(slack_dir, channel, added_users,
                     usermessage_id += 1
                     zerver_usermessage.append(usermessage)
 
-            msg_id_count += 1
-    return zerver_message, zerver_usermessage
+            message_id += 1
+    return zerver_message, zerver_usermessage, zerver_attachment
 
 def main(slack_zip_file: str) -> None:
     slack_dir = slack_zip_file.replace('.zip', '')
@@ -360,7 +397,7 @@ def main(slack_zip_file: str) -> None:
     # Make sure the directory output is clean
     output_dir = 'zulip_data'
     rm_tree(output_dir)
-    os.makedirs(output_dir)
+    os.makedirs(output_dir, exist_ok=True)
 
     realm = dict(zerver_client=[{"name": "populate_db", "id": 1},
                                 {"name": "website", "id": 2},
@@ -400,19 +437,22 @@ def main(slack_zip_file: str) -> None:
     message_json = {}
     zerver_message = []
     zerver_usermessage = []
+    zerver_attachment = []
 
+    upload_dir = output_dir + '/uploads/' + str(REALM_ID)
+    constants = [slack_dir, REALM_ID, upload_dir]
     for channel in added_channels.keys():
-        msg_id_count = len(zerver_message) + 1  # For the id of the messages
+        message_id = len(zerver_message) + 1  # For the id of the messages
         usermessage_id = len(zerver_usermessage) + 1
-        zm_one_stream, zum_one_stream = channelmessage2zerver_message_one_stream(slack_dir, channel,
-                                                                                 added_users,
-                                                                                 zerver_userprofile,
-                                                                                 added_channels,
-                                                                                 msg_id_count,
-                                                                                 usermessage_id,
-                                                                                 zerver_subscription)
-        zerver_message += zm_one_stream
-        zerver_usermessage += zum_one_stream
+        attachment_id = len(zerver_attachment) + 1
+        ids = [message_id, usermessage_id, attachment_id]
+        zm, zum, za = channelmessage2zerver_message_one_stream(constants, channel,
+                                                               added_users, zerver_userprofile,
+                                                               added_channels, ids,
+                                                               zerver_subscription)
+        zerver_message += zm
+        zerver_usermessage += zum
+        zerver_attachment += za
         # TOODOO add zerver_usermessage corresponding to the
         # private messages and huddles type recipients
 
@@ -424,17 +464,17 @@ def main(slack_zip_file: str) -> None:
 
     # IO avatar records
     avatar_records_file = output_dir + '/avatars/records.json'
-    os.makedirs(output_dir + '/avatars')
+    os.makedirs(output_dir + '/avatars', exist_ok=True)
     json.dump([], open(avatar_records_file, 'w'))
 
     # IO uploads TODO
     uploads_records_file = output_dir + '/uploads/records.json'
-    os.makedirs(output_dir + '/uploads')
+    os.makedirs(output_dir + '/uploads', exist_ok=True)
     json.dump([], open(uploads_records_file, 'w'))
 
-    # IO attachments TODO
+    # IO attachments
     attachment_file = output_dir + '/attachment.json'
-    attachment = {"zerver_attachment": []}
+    attachment = {"zerver_attachment": zerver_attachment}
     json.dump(attachment, open(attachment_file, 'w'))
 
     print('ls', os.listdir())
