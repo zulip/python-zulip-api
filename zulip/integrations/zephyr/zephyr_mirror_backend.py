@@ -31,7 +31,7 @@ import json
 import re
 import time
 import subprocess
-import optparse
+import argparse
 import os
 import datetime
 import textwrap
@@ -41,6 +41,8 @@ import logging
 import hashlib
 import tempfile
 import select
+
+import zulip
 
 DEFAULT_SITE = "https://api.zulip.com"
 
@@ -146,7 +148,7 @@ def send_zulip(zeph):
         message["to"] = zeph["recipient"]
     message['content'] = unwrap_lines(zeph['content'])
 
-    if options.test_mode and options.site == DEFAULT_SITE:
+    if options.test_mode and options.zulip_site == DEFAULT_SITE:
         logger.debug("Message is: %s" % (str(message),))
         return {'result': "success"}
 
@@ -234,7 +236,7 @@ def maybe_kill_child():
 def maybe_restart_mirroring_script():
     # type: () -> None
     if os.stat(os.path.join(options.stamp_path, "stamps", "restart_stamp")).st_mtime > start_time or \
-            ((options.user == "tabbott" or options.user == "tabbott/extra") and
+            ((options.zulip_email == "tabbott" or options.zulip_email == "tabbott/extra") and
              os.stat(os.path.join(options.stamp_path, "stamps", "tabbott_stamp")).st_mtime > start_time):
         logger.warning("")
         logger.warning("zephyr mirroring script has been updated; restarting...")
@@ -913,9 +915,9 @@ def parse_zephyr_subs(verbose=False):
             continue
         try:
             (cls, instance, recipient) = line.split(",")
-            cls = cls.replace("%me%", options.user)
-            instance = instance.replace("%me%", options.user)
-            recipient = recipient.replace("%me%", options.user)
+            cls = cls.replace("%me%", options.zulip_email)
+            instance = instance.replace("%me%", options.zulip_email)
+            recipient = recipient.replace("%me%", options.zulip_email)
             if not valid_stream_name(cls):
                 if verbose:
                     logger.error("Skipping subscription to unsupported class name: [%s]" % (line,))
@@ -937,7 +939,7 @@ def open_logger():
         else:
             log_file = "/var/log/zulip/mirror-log"
     else:
-        f = tempfile.NamedTemporaryFile(prefix="zulip-log.%s." % (options.user,),
+        f = tempfile.NamedTemporaryFile(prefix="zulip-log.%s." % (options.zulip_email,),
                                         delete=False)
         log_file = f.name
         # Close the file descriptor, since the logging system will
@@ -969,87 +971,77 @@ def configure_logger(logger, direction_name):
         handler.setFormatter(formatter)
 
 def parse_args():
-    # type: () -> Tuple
-    parser = optparse.OptionParser()
-    parser.add_option('--forward-class-messages',
-                      default=False,
-                      help=optparse.SUPPRESS_HELP,
-                      action='store_true')
-    parser.add_option('--shard',
-                      help=optparse.SUPPRESS_HELP)
-    parser.add_option('--noshard',
-                      default=False,
-                      help=optparse.SUPPRESS_HELP,
-                      action='store_true')
-    parser.add_option('--resend-log',
-                      dest='logs_to_resend',
-                      help=optparse.SUPPRESS_HELP)
-    parser.add_option('--enable-resend-log',
-                      dest='resend_log_path',
-                      help=optparse.SUPPRESS_HELP)
-    parser.add_option('--log-path',
-                      dest='log_path',
-                      help=optparse.SUPPRESS_HELP)
-    parser.add_option('--stream-file-path',
-                      dest='stream_file_path',
-                      default="/home/zulip/public_streams",
-                      help=optparse.SUPPRESS_HELP)
-    parser.add_option('--no-forward-personals',
-                      dest='forward_personals',
-                      help=optparse.SUPPRESS_HELP,
-                      default=True,
-                      action='store_false')
-    parser.add_option('--forward-mail-zephyrs',
-                      dest='forward_mail_zephyrs',
-                      help=optparse.SUPPRESS_HELP,
-                      default=False,
-                      action='store_true')
-    parser.add_option('--no-forward-from-zulip',
-                      default=True,
-                      dest='forward_from_zulip',
-                      help=optparse.SUPPRESS_HELP,
-                      action='store_false')
-    parser.add_option('--verbose',
-                      default=False,
-                      help=optparse.SUPPRESS_HELP,
-                      action='store_true')
-    parser.add_option('--sync-subscriptions',
-                      default=False,
-                      action='store_true')
-    parser.add_option('--ignore-expired-tickets',
-                      default=False,
-                      action='store_true')
-    parser.add_option('--site',
-                      default=DEFAULT_SITE,
-                      help=optparse.SUPPRESS_HELP)
-    parser.add_option('--on-startup-command',
-                      default=None,
-                      help=optparse.SUPPRESS_HELP)
-    parser.add_option('--user',
-                      default=os.environ["USER"],
-                      help=optparse.SUPPRESS_HELP)
-    parser.add_option('--stamp-path',
-                      default="/afs/athena.mit.edu/user/t/a/tabbott/for_friends",
-                      help=optparse.SUPPRESS_HELP)
-    parser.add_option('--session-path',
-                      default=None,
-                      help=optparse.SUPPRESS_HELP)
-    parser.add_option('--nagios-class',
-                      default=None,
-                      help=optparse.SUPPRESS_HELP)
-    parser.add_option('--nagios-path',
-                      default=None,
-                      help=optparse.SUPPRESS_HELP)
-    parser.add_option('--use-sessions',
-                      default=False,
-                      action='store_true',
-                      help=optparse.SUPPRESS_HELP)
-    parser.add_option('--test-mode',
-                      default=False,
-                      help=optparse.SUPPRESS_HELP,
-                      action='store_true')
-    parser.add_option('--api-key-file',
-                      default=os.path.join(os.environ["HOME"], "Private", ".humbug-api-key"))
+    # type: () -> Any
+    parser = zulip.add_default_arguments(argparse.ArgumentParser())
+    parser.add_argument('--forward-class-messages',
+                        default=False,
+                        help=argparse.SUPPRESS,
+                        action='store_true')
+    parser.add_argument('--shard',
+                        help=argparse.SUPPRESS)
+    parser.add_argument('--noshard',
+                        default=False,
+                        help=argparse.SUPPRESS,
+                        action='store_true')
+    parser.add_argument('--resend-log',
+                        dest='logs_to_resend',
+                        help=argparse.SUPPRESS)
+    parser.add_argument('--enable-resend-log',
+                        dest='resend_log_path',
+                        help=argparse.SUPPRESS)
+    parser.add_argument('--log-path',
+                        dest='log_path',
+                        help=argparse.SUPPRESS)
+    parser.add_argument('--stream-file-path',
+                        dest='stream_file_path',
+                        default="/home/zulip/public_streams",
+                        help=argparse.SUPPRESS)
+    parser.add_argument('--no-forward-personals',
+                        dest='forward_personals',
+                        help=argparse.SUPPRESS,
+                        default=True,
+                        action='store_false')
+    parser.add_argument('--forward-mail-zephyrs',
+                        dest='forward_mail_zephyrs',
+                        help=argparse.SUPPRESS,
+                        default=False,
+                        action='store_true')
+    parser.add_argument('--no-forward-from-zulip',
+                        default=True,
+                        dest='forward_from_zulip',
+                        help=argparse.SUPPRESS,
+                        action='store_false')
+    parser.add_argument('--sync-subscriptions',
+                        default=False,
+                        action='store_true')
+    parser.add_argument('--ignore-expired-tickets',
+                        default=False,
+                        action='store_true')
+    parser.add_argument('--on-startup-command',
+                        default=None,
+                        help=argparse.SUPPRESS)
+    parser.add_argument('--stamp-path',
+                        default="/afs/athena.mit.edu/user/t/a/tabbott/for_friends",
+                        help=argparse.SUPPRESS)
+    parser.add_argument('--session-path',
+                        default=None,
+                        help=argparse.SUPPRESS)
+    parser.add_argument('--nagios-class',
+                        default=None,
+                        help=argparse.SUPPRESS)
+    parser.add_argument('--nagios-path',
+                        default=None,
+                        help=argparse.SUPPRESS)
+    parser.add_argument('--use-sessions',
+                        default=False,
+                        action='store_true',
+                        help=argparse.SUPPRESS)
+    parser.add_argument('--test-mode',
+                        default=False,
+                        help=argparse.SUPPRESS,
+                        action='store_true')
+    parser.add_argument('--api-key-file',
+                        default=os.path.join(os.environ["HOME"], "Private", ".humbug-api-key"))
     return parser.parse_args()
 
 def die_gracefully(signal, frame):
@@ -1082,7 +1074,7 @@ if __name__ == "__main__":
     # The properties available on 'options' are dynamically
     # determined, so we have to treat it as an Any for type
     # annotations.
-    (options, args) = parse_args()  # type: Any, List[str]
+    options = parse_args()  # type: Any, List[str]
 
     logger = open_logger()
     configure_logger(logger, "parent")
@@ -1108,14 +1100,13 @@ or specify the --api-key-file option.""" % (options.api_key_file,))))
         logger.error("\n" + "nagios_path is required with nagios_class\n")
         sys.exit(1)
 
-    zulip_account_email = options.user + "@mit.edu"
-    import zulip
+    zulip_account_email = options.zulip_email + "@mit.edu"
     zulip_client = zulip.Client(
         email=zulip_account_email,
         api_key=api_key,
         verbose=True,
         client="zephyr_mirror",
-        site=options.site)
+        site=options.zulip_site)
 
     start_time = time.time()
 
@@ -1131,9 +1122,9 @@ or specify the --api-key-file option.""" % (options.api_key_file,))))
         if options.shard is not None:
             # sharded class mirror
             pgrep_query = "%s.*--shard=%s" % (pgrep_query, options.shard)
-        elif options.user is not None:
+        elif options.zulip_email is not None:
             # Personals mirror on behalf of another user.
-            pgrep_query = "%s.*--user=%s" % (pgrep_query, options.user)
+            pgrep_query = "%s.*--user=%s" % (pgrep_query, options.zulip_email)
         proc = subprocess.Popen(['pgrep', '-U', os.environ["USER"], "-f", pgrep_query],
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE)
@@ -1159,7 +1150,7 @@ or specify the --api-key-file option.""" % (options.api_key_file,))))
         options.forward_mail_zephyrs = subscribed_to_mail_messages()
 
     if options.session_path is None:
-        options.session_path = "/var/tmp/%s" % (options.user,)
+        options.session_path = "/var/tmp/%s" % (options.zulip_email,)
 
     if options.forward_from_zulip:
         child_pid = os.fork()  # type: int
