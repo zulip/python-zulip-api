@@ -41,7 +41,7 @@ class BotTestCase(TestCase):
     def setUp(self):
         # type: () -> None
         # Mocking ExternalBotHandler
-        self.patcher = patch('zulip_bots.lib.ExternalBotHandler')
+        self.patcher = patch('zulip_bots.lib.ExternalBotHandler', autospec=True)
         self.MockClass = self.patcher.start()
         self.message_handler = self.get_bot_message_handler()
 
@@ -51,7 +51,7 @@ class BotTestCase(TestCase):
 
     def initialize_bot(self):
         # type: () -> None
-        self.message_handler.initialize(self.MockClass())
+        self.message_handler.initialize(self.MockClass(None, None))
 
     def check_expected_responses(self, expectations, expected_method='send_reply',
                                  email="foo_sender@zulip.com", recipient="foo", subject="foo",
@@ -104,7 +104,7 @@ class BotTestCase(TestCase):
         if state_handler is None:
             state_handler = StateHandler()
         # Send message to the concerned bot
-        self.message_handler.handle_message(message, self.MockClass(), state_handler)
+        self.message_handler.handle_message(message, self.MockClass(None, None), state_handler)
 
         # Check if the bot is sending a message via `send_message` function.
         # Where response is a dictionary here.
