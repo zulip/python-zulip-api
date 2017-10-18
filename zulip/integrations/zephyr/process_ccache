@@ -10,7 +10,7 @@ ccache_data_encoded = sys.argv[3]
 
 # Update the Kerberos ticket cache file
 program_name = "zmirror-%s" % (short_user,)
-with open("/home/zulip/ccache/%s" % (program_name,), "w") as f:
+with open("/home/zulip/ccache/%s" % (program_name,), "wb") as f:
     f.write(base64.b64decode(ccache_data_encoded))
 
 # Setup API key
