@@ -200,13 +200,13 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
             print("\n\t{}".format(bot_details['description']))
         print(message_handler.usage())
 
-    def handle_message(message):
+    def handle_message(message, flags):
         # type: (Dict[str, Any]) -> None
         logging.info('waiting for next message')
 
-        # is_mentioned is true if the bot is mentioned at ANY position (not necessarily
-        # the first @mention in the message).
-        is_mentioned = message['is_mentioned']
+        # `mentioned` will be in `flags` if the bot is mentioned at ANY position
+        # (not necessarily the first @mention in the message).
+        is_mentioned = 'mentioned' in flags
         is_private_message = is_private_message_from_another_user(message, restricted_client.user_id)
 
         # Strip at-mention botname from the message
@@ -227,4 +227,10 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
     signal.signal(signal.SIGINT, exit_gracefully)
 
     logging.info('starting message handling...')
-    client.call_on_each_message(handle_message)
+
+    def event_callback(event):
+        # type: (Dict[str, str]) -> None
+        if event['type'] == 'message':
+            handle_message(event['message'], event['flags'])
+
+    client.call_on_each_event(event_callback, ['message'])
