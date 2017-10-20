@@ -204,9 +204,9 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
         # type: (Dict[str, Any]) -> None
         logging.info('waiting for next message')
 
-        # is_mentioned is true if the bot is mentioned at ANY position (not necessarily
-        # the first @mention in the message).
-        is_mentioned = message['is_mentioned']
+        # `mentioned` will be in `flags` if the bot is mentioned at ANY position
+        # (not necessarily the first @mention in the message).
+        is_mentioned = 'mentioned' in message['flags']
         is_private_message = is_private_message_from_another_user(message, restricted_client.user_id)
 
         # Strip at-mention botname from the message
