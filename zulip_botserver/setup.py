@@ -6,7 +6,7 @@ from __future__ import print_function
 import os
 import sys
 
-ZULIP_BOTSERVER_VERSION = "0.3.5"
+ZULIP_BOTSERVER_VERSION = "0.3.7"
 
 # We should be installable with either setuptools or distutils.
 package_info = dict(
