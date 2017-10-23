@@ -56,7 +56,7 @@ class BotTestCase(TestCase):
     def check_expected_responses(self, expectations, expected_method='send_reply',
                                  email="foo_sender@zulip.com", recipient="foo", subject="foo",
                                  sender_id=0, sender_full_name="Foo Bar", type="all",
-                                 state_handler=None):
+                                 storage=None):
         # type: (Union[Sequence[Tuple[str, Any]], Dict[str, Any]], str, str, str, str, int, str, str, Optional[StateHandler]) -> None
         # To test send_message, Any would be a Dict type,
         # to test send_reply, Any would be a str type.
@@ -82,12 +82,12 @@ class BotTestCase(TestCase):
             trigger_messages.append(stream_message_dict)
 
         for trigger_message in trigger_messages:
-            if state_handler is None:
-                current_state_handler = None
+            if storage is None:
+                current_storage = None
             else:
-                # A new (copy of) the state_handler is used for each trigger message.
+                # A new (copy of) the StateHandler is used for each trigger message.
                 # This avoids type="all" failing if state is created in the first iteration.
-                current_state_handler = deepcopy(state_handler)
+                current_storage = deepcopy(storage)
 
             for m, r in expected:
                 # For calls with send_reply, r is a string (the content of a message),
@@ -97,15 +97,15 @@ class BotTestCase(TestCase):
                 response = {'content': r} if expected_method == 'send_reply' else r
                 self.assert_bot_response(message=message, response=response,
                                          expected_method=expected_method,
-                                         state_handler=current_state_handler)
+                                         storage=current_storage)
 
-    def call_request(self, message, expected_method, response, state_handler):
+    def call_request(self, message, expected_method, response, storage):
         # type: (Dict[str, Any], str, Dict[str, Any], Optional[StateHandler]) -> None
-        if state_handler is None:
-            state_handler = StateHandler()
+        if storage is None:
+            storage = StateHandler()
         # Send message to the concerned bot
         mock_bot_handler = self.MockClass(None, None)
-        mock_bot_handler.state_handler = state_handler
+        mock_bot_handler.storage = storage
         self.message_handler.handle_message(message, mock_bot_handler)
 
         # Check if the bot is sending a message via `send_message` function.
@@ -159,8 +159,8 @@ class BotTestCase(TestCase):
                 else:
                     mock_get.assert_called_with(http_request['api_url'])
 
-    def assert_bot_response(self, message, response, expected_method, state_handler = None):
+    def assert_bot_response(self, message, response, expected_method, storage = None):
         # type: (Dict[str, Any], Dict[str, Any], str, Optional[StateHandler]) -> None
         # Strictly speaking, this function is not needed anymore,
         # kept for now for legacy reasons.
-        self.call_request(message, expected_method, response, state_handler)
+        self.call_request(message, expected_method, response, storage)

@@ -281,7 +281,7 @@ class ticTacToeHandler(object):
             command += val
         original_sender = message['sender_email']
 
-        with bot_handler.state_handler.state({}) as mydict:
+        with bot_handler.storage.state({}) as mydict:
             user_game = mydict.get(original_sender)
             if (not user_game) and command == "new":
                 user_game = TicTacToeGame(copy.deepcopy(initial_board))

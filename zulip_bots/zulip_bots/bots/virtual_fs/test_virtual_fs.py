@@ -45,5 +45,5 @@ class TestVirtualFsBot(BotTestCase):
             ("cd /home", "foo_sender@zulip.com:\nCurrent path: /home/"),
         ]
 
-        state_handler = StateHandler()
-        self.check_expected_responses(expected, state_handler = state_handler)
+        storage = StateHandler()
+        self.check_expected_responses(expected, storage = storage)

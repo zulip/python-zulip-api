@@ -79,7 +79,7 @@ class ExternalBotHandler(object):
         self._rate_limit = RateLimit(20, 5)
         self._client = client
         self._root_dir = root_dir
-        self.state_handler = StateHandler()
+        self.storage = StateHandler()
         try:
             self.user_id = user_profile['user_id']
             self.full_name = user_profile['full_name']

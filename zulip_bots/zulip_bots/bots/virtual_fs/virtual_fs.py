@@ -18,7 +18,7 @@ class VirtualFsHandler(object):
         if isinstance(recipient, list):  # If not a stream, then hash on list of emails
             recipient = " ".join([x['email'] for x in recipient])
 
-        with bot_handler.state_handler.state({}) as state:
+        with bot_handler.storage.state({}) as state:
             if recipient not in state:
                 state[recipient] = fs_new()
             fs = state[recipient]
