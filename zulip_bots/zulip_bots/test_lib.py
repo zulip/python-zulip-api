@@ -43,6 +43,8 @@ class BotTestCase(TestCase):
         # Mocking ExternalBotHandler
         self.patcher = patch('zulip_bots.lib.ExternalBotHandler', autospec=True)
         self.MockClass = self.patcher.start()
+        self.mock_bot_handler = self.MockClass(None, None)
+        self.mock_bot_handler.storage = StateHandler()
         self.message_handler = self.get_bot_message_handler()
 
     def tearDown(self):
@@ -51,13 +53,12 @@ class BotTestCase(TestCase):
 
     def initialize_bot(self):
         # type: () -> None
-        self.message_handler.initialize(self.MockClass(None, None))
+        self.message_handler.initialize(self.mock_bot_handler)
 
     def check_expected_responses(self, expectations, expected_method='send_reply',
                                  email="foo_sender@zulip.com", recipient="foo", subject="foo",
-                                 sender_id=0, sender_full_name="Foo Bar", type="all",
-                                 storage=None):
-        # type: (Union[Sequence[Tuple[str, Any]], Dict[str, Any]], str, str, str, str, int, str, str, Optional[StateHandler]) -> None
+                                 sender_id=0, sender_full_name="Foo Bar", type="all"):
+        # type: (Union[Sequence[Tuple[str, Any]], Dict[str, Any]], str, str, str, str, int, str, str) -> None
         # To test send_message, Any would be a Dict type,
         # to test send_reply, Any would be a str type.
         if isinstance(expectations, dict):
@@ -68,45 +69,38 @@ class BotTestCase(TestCase):
         if type not in ["private", "stream", "all"]:
             logging.exception("check_expected_response expects type to be 'private', 'stream' or 'all'")
 
-        private_message_dict = {'type': "private", 'display_recipient': recipient,
-                                'sender_email': email, 'sender_id': sender_id,
-                                'sender_full_name': sender_full_name}
-        stream_message_dict = {'type': "stream", 'display_recipient': recipient,
-                               'subject': subject, 'sender_email': email, 'sender_id': sender_id,
-                               'sender_full_name': sender_full_name}
+        private_message_template = {'type': "private", 'display_recipient': recipient,
+                                    'sender_email': email, 'sender_id': sender_id,
+                                    'sender_full_name': sender_full_name}
+        stream_message_template = {'type': "stream", 'display_recipient': recipient,
+                                   'subject': subject, 'sender_email': email, 'sender_id': sender_id,
+                                   'sender_full_name': sender_full_name}
 
-        trigger_messages = []
+        message_templates = []
         if type in ["private", "all"]:
-            trigger_messages.append(private_message_dict)
+            message_templates.append(private_message_template)
         if type in ["stream", "all"]:
-            trigger_messages.append(stream_message_dict)
+            message_templates.append(stream_message_template)
 
-        for trigger_message in trigger_messages:
-            if storage is None:
-                current_storage = None
-            else:
-                # A new (copy of) the StateHandler is used for each trigger message.
-                # This avoids type="all" failing if state is created in the first iteration.
-                current_storage = deepcopy(storage)
-
-            for m, r in expected:
+        initial_storage = deepcopy(self.mock_bot_handler.storage)
+        for message_template in message_templates:
+            # A new copy of the StateHandler is used for every new conversation with a
+            # different base template. This avoids type="all" failing if the created state
+            # of a prior conversation influences the current one.
+            self.mock_bot_handler.storage = deepcopy(initial_storage)
+            for m, r in expectations:
                 # For calls with send_reply, r is a string (the content of a message),
                 # so we need to add it to a Dict as the value of 'content'.
                 # For calls with send_message, r is already a Dict.
-                message = dict(trigger_message, content = m)
+                message = dict(message_template, content = m)
                 response = {'content': r} if expected_method == 'send_reply' else r
                 self.assert_bot_response(message=message, response=response,
-                                         expected_method=expected_method,
-                                         storage=current_storage)
+                                         expected_method=expected_method)
 
-    def call_request(self, message, expected_method, response, storage):
-        # type: (Dict[str, Any], str, Dict[str, Any], Optional[StateHandler]) -> None
-        if storage is None:
-            storage = StateHandler()
+    def call_request(self, message, expected_method, response):
+        # type: (Dict[str, Any], str, Dict[str, Any]) -> None
         # Send message to the concerned bot
-        mock_bot_handler = self.MockClass(None, None)
-        mock_bot_handler.storage = storage
-        self.message_handler.handle_message(message, mock_bot_handler)
+        self.message_handler.handle_message(message, self.mock_bot_handler)
 
         # Check if the bot is sending a message via `send_message` function.
         # Where response is a dictionary here.
@@ -159,8 +153,8 @@ class BotTestCase(TestCase):
                 else:
                     mock_get.assert_called_with(http_request['api_url'])
 
-    def assert_bot_response(self, message, response, expected_method, storage = None):
-        # type: (Dict[str, Any], Dict[str, Any], str, Optional[StateHandler]) -> None
+    def assert_bot_response(self, message, response, expected_method):
+        # type: (Dict[str, Any], Dict[str, Any], str) -> None
         # Strictly speaking, this function is not needed anymore,
         # kept for now for legacy reasons.
-        self.call_request(message, expected_method, response, storage)
+        self.call_request(message, expected_method, response)

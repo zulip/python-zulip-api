@@ -23,9 +23,8 @@ class TestIncrementorBot(BotTestCase):
                 'sender_email': 'foo_sender@zulip.com',
             },
         ]
-        storage = StateHandler()
         self.assert_bot_response(dict(messages[0], content=""), {'content': "1"},
-                                 'send_reply', storage)
+                                 'send_reply')
         # Last test commented out since we don't have update_message
         # support in the test framework yet.
 

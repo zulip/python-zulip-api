@@ -86,11 +86,11 @@ class TestTictactoeBot(BotTestCase):
             ("1,1", msg['after_1_1']),
             ("2, 1", msg['after_2_1']),
             ("(1,3)", msg['after_1_3']),
+            ("quit", msg['successful_quit']),
             # Can't test 'after_3_2' as it's random!
         ]
         for m in messages:
-            state = StateHandler()
             for (mesg, resp) in expected_send_message:
                 self.assert_bot_response(dict(m, content=mesg),
                                          dict(private_response, content=resp),
-                                         'send_message', state)
+                                         'send_message')
