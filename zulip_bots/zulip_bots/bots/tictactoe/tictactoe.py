@@ -274,14 +274,14 @@ class ticTacToeHandler(object):
             message starts with @mention-bot.
             '''
 
-    def handle_message(self, message, bot_handler, state_handler):
+    def handle_message(self, message, bot_handler):
         command_list = message['content']
         command = ""
         for val in command_list:
             command += val
         original_sender = message['sender_email']
 
-        with state_handler.state({}) as mydict:
+        with bot_handler.state_handler.state({}) as mydict:
             user_game = mydict.get(original_sender)
             if (not user_game) and command == "new":
                 user_game = TicTacToeGame(copy.deepcopy(initial_board))

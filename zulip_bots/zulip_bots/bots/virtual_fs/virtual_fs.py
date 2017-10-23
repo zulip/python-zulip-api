@@ -7,7 +7,7 @@ class VirtualFsHandler(object):
     def usage(self):
         return get_help()
 
-    def handle_message(self, message, bot_handler, state_handler):
+    def handle_message(self, message, bot_handler):
         command = message['content']
         if command == "":
             command = "help"
@@ -18,7 +18,7 @@ class VirtualFsHandler(object):
         if isinstance(recipient, list):  # If not a stream, then hash on list of emails
             recipient = " ".join([x['email'] for x in recipient])
 
-        with state_handler.state({}) as state:
+        with bot_handler.state_handler.state({}) as state:
             if recipient not in state:
                 state[recipient] = fs_new()
             fs = state[recipient]

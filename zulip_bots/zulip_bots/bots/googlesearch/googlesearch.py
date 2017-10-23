@@ -72,7 +72,7 @@ class GoogleSearchHandler(object):
             @mentioned-bot.
             '''
 
-    def handle_message(self, message, bot_handler, state_handler):
+    def handle_message(self, message, bot_handler):
         original_content = message['content']
         result = get_google_result(original_content)
         bot_handler.send_reply(message, result)

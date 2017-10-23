@@ -28,7 +28,7 @@ class EncryptHandler(object):
             Feeding encrypted messages into the bot decrypts them.
             '''
 
-    def handle_message(self, message, bot_handler, state_handler):
+    def handle_message(self, message, bot_handler):
         bot_response = self.get_bot_encrypt_response(message)
         bot_handler.send_reply(message, bot_response)
 

@@ -51,6 +51,26 @@ class RateLimit(object):
         logging.error(self.error_message)
         sys.exit(1)
 
+class StateHandler(object):
+    def __init__(self):
+        # type: () -> None
+        self.state_ = None  # type: Any
+
+    def set_state(self, state):
+        # type: (Any) -> None
+        self.state_ = state
+
+    def get_state(self):
+        # type: () -> Any
+        return self.state_
+
+    @contextmanager
+    def state(self, default):
+        # type: (Any) -> Any
+        new_state = self.get_state() or default
+        yield new_state
+        self.set_state(new_state)
+
 class ExternalBotHandler(object):
     def __init__(self, client, root_dir):
         # type: (Client, string) -> None
@@ -59,6 +79,7 @@ class ExternalBotHandler(object):
         self._rate_limit = RateLimit(20, 5)
         self._client = client
         self._root_dir = root_dir
+        self.state_handler = StateHandler()
         try:
             self.user_id = user_profile['user_id']
             self.full_name = user_profile['full_name']
@@ -122,26 +143,6 @@ class ExternalBotHandler(object):
             raise PermissionError("Cannot open file \"{}\". Bots may only access "
                                   "files in their local directory.".format(abs_filepath))
 
-class StateHandler(object):
-    def __init__(self):
-        # type: () -> None
-        self.state_ = None  # type: Any
-
-    def set_state(self, state):
-        # type: (Any) -> None
-        self.state_ = state
-
-    def get_state(self):
-        # type: () -> Any
-        return self.state_
-
-    @contextmanager
-    def state(self, default):
-        # type: (Any) -> Any
-        new_state = self.get_state() or default
-        yield new_state
-        self.set_state(new_state)
-
 def extract_query_without_mention(message, client):
     # type: (Dict[str, Any], ExternalBotHandler) -> str
     """
@@ -185,8 +186,6 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
     if hasattr(message_handler, 'initialize'):
         message_handler.initialize(bot_handler=restricted_client)
 
-    state_handler = StateHandler()
-
     # Set default bot_details, then override from class, if provided
     bot_details = {
         'name': bot_name.capitalize(),
@@ -220,8 +219,7 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
         if is_private_message or is_mentioned:
             message_handler.handle_message(
                 message=message,
-                bot_handler=restricted_client,
-                state_handler=state_handler
+                bot_handler=restricted_client
             )
 
     signal.signal(signal.SIGINT, exit_gracefully)

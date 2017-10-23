@@ -11,8 +11,8 @@ class IncrementorHandler(object):
         is @-mentioned, this number will be incremented in the same message.
         '''
 
-    def handle_message(self, message, bot_handler, state_handler):
-        with state_handler.state({'number': 0, 'message_id': None}) as state:
+    def handle_message(self, message, bot_handler):
+        with bot_handler.state_handler.state({'number': 0, 'message_id': None}) as state:
             state['number'] += 1
             if state['message_id'] is None:
                 result = bot_handler.send_reply(message, str(state['number']))

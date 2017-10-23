@@ -81,7 +81,7 @@ class HowdoiHandler(object):
 
         return answer
 
-    def handle_message(self, message, bot_handler, state_handler):
+    def handle_message(self, message, bot_handler):
         question = message['content'].strip()
 
         if question.startswith('howdowe!'):

@@ -31,7 +31,7 @@ class GiphyHandler(object):
         global config_info
         config_info = bot_handler.get_config_info('giphy')
 
-    def handle_message(self, message, bot_handler, state_handler):
+    def handle_message(self, message, bot_handler):
         bot_response = get_bot_giphy_response(message, bot_handler)
         bot_handler.send_reply(message, bot_response)
 

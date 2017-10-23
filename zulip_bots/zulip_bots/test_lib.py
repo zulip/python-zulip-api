@@ -104,7 +104,9 @@ class BotTestCase(TestCase):
         if state_handler is None:
             state_handler = StateHandler()
         # Send message to the concerned bot
-        self.message_handler.handle_message(message, self.MockClass(None, None), state_handler)
+        mock_bot_handler = self.MockClass(None, None)
+        mock_bot_handler.state_handler = state_handler
+        self.message_handler.handle_message(message, mock_bot_handler)
 
         # Check if the bot is sending a message via `send_message` function.
         # Where response is a dictionary here.

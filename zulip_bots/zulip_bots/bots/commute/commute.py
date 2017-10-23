@@ -180,7 +180,7 @@ class CommuteHandler(object):
         result = validate_requests(r)
         return result
 
-    def handle_message(self, message, bot_handler, state_handler):
+    def handle_message(self, message, bot_handler):
         original_content = message['content']
         query = original_content.split()
 

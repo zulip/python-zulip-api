@@ -32,7 +32,7 @@ class WikipediaHandler(object):
             should preface searches with "@mention-bot".
             '''
 
-    def handle_message(self, message, bot_handler, state_handler):
+    def handle_message(self, message, bot_handler):
         bot_response = self.get_bot_wiki_response(message, bot_handler)
         bot_handler.send_reply(message, bot_response)
 

@@ -11,7 +11,7 @@ class HelpHandler(object):
             your Zulip instance.
             '''
 
-    def handle_message(self, message, bot_handler, state_handler):
+    def handle_message(self, message, bot_handler):
         help_content = "Info on Zulip can be found here:\nhttps://github.com/zulip/zulip"
         bot_handler.send_reply(message, help_content)
 

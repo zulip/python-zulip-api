@@ -23,7 +23,7 @@ class DefineHandler(object):
             messages with @mention-bot.
             '''
 
-    def handle_message(self, message, bot_handler, state_handler):
+    def handle_message(self, message, bot_handler):
         original_content = message['content'].strip()
         bot_response = self.get_bot_define_response(original_content)
 

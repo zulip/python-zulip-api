@@ -54,7 +54,7 @@ class YodaSpeakHandler(object):
             @mention-bot You will learn how to speak like me someday.
             '''
 
-    def handle_message(self, message, bot_handler, state_handler):
+    def handle_message(self, message, bot_handler):
         self.handle_input(message, bot_handler)
 
     def send_to_yoda_api(self, sentence):
