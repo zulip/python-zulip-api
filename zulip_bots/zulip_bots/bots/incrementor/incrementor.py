@@ -11,17 +11,24 @@ class IncrementorHandler(object):
         is @-mentioned, this number will be incremented in the same message.
         '''
 
+    def initialize(self, bot_handler):
+        storage = bot_handler.storage
+        if not storage.contains('number') or not storage.contains('message_id'):
+            storage.put('number', 0)
+            storage.put('message_id', None)
+
     def handle_message(self, message, bot_handler):
-        with bot_handler.storage.state({'number': 0, 'message_id': None}) as state:
-            state['number'] += 1
-            if state['message_id'] is None:
-                result = bot_handler.send_reply(message, str(state['number']))
-                state['message_id'] = result['id']
-            else:
-                bot_handler.update_message(dict(
-                    message_id = state['message_id'],
-                    content = str(state['number'])
-                ))
+        storage = bot_handler.storage
+        num = storage.get('number')
+        storage.put('number', num + 1)
+        if storage.get('message_id') is None:
+            result = bot_handler.send_reply(message, str(storage.get('number')))
+            storage.put('message_id', result['id'])
+        else:
+            bot_handler.update_message(dict(
+                message_id = storage.get('message_id'),
+                content = str(storage.get('number'))
+            ))
 
 
 handler_class = IncrementorHandler

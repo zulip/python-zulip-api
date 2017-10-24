@@ -11,6 +11,7 @@ class TestIncrementorBot(BotTestCase):
     bot_name = "incrementor"
 
     def test_bot(self):
+        self.initialize_bot()
         messages = [  # Template for message inputs to test, absent of message content
             {
                 'type': 'stream',

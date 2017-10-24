@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+import json
 import logging
 import os
 import signal
@@ -54,22 +55,21 @@ class RateLimit(object):
 class StateHandler(object):
     def __init__(self):
         # type: () -> None
-        self.state_ = None  # type: Any
+        self.state_ = {}  # type: Dict[Text, Text]
+        self.marshal = lambda obj: obj
+        self.demarshal = lambda obj: obj
 
-    def set_state(self, state):
-        # type: (Any) -> None
-        self.state_ = state
+    def put(self, key, value):
+        # type: (Text, Text) -> None
+        self.state_[key] = self.marshal(value)
 
-    def get_state(self):
-        # type: () -> Any
-        return self.state_
+    def get(self, key):
+        # type: () -> Text
+        return self.demarshal(self.state_[key])
 
-    @contextmanager
-    def state(self, default):
-        # type: (Any) -> Any
-        new_state = self.get_state() or default
-        yield new_state
-        self.set_state(new_state)
+    def contains(self, key):
+        # type: (Text) -> bool
+        return key in self.state_
 
 class ExternalBotHandler(object):
     def __init__(self, client, root_dir):
