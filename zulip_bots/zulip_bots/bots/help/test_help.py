@@ -13,4 +13,4 @@ class TestHelpBot(BotTestCase):
     def test_bot(self):
         txt = "Info on Zulip can be found here:\nhttps://github.com/zulip/zulip"
         messages = ["", "help", "Hi, my name is abc"]
-        self.check_expected_responses(dict(list(zip(messages, len(messages)*[txt]))))
+        self.check_expected_responses(list(zip(messages, len(messages)*[txt])))

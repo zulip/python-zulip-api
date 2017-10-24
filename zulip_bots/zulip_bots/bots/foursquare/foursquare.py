@@ -47,7 +47,7 @@ Example Inputs:
     def send_info(self, message, letter, bot_handler):
         bot_handler.send_reply(message, letter)
 
-    def handle_message(self, message, bot_handler, state_handler):
+    def handle_message(self, message, bot_handler):
         words = message['content'].split()
         if "/help" in words:
             self.send_info(message, self.help_info, bot_handler)

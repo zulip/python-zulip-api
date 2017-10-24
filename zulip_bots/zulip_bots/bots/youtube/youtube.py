@@ -8,7 +8,7 @@ class YoutubeHandler(object):
             This bot will return the first Youtube search result for the give query.
             '''
 
-    def handle_message(self, message, bot_handler, state_handler):
+    def handle_message(self, message, bot_handler):
         help_content = '''
             To use the, Youtube Bot send `@mention-bot search terms`
             Example:

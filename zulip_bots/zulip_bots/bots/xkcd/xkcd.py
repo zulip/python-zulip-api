@@ -32,7 +32,7 @@ class XkcdHandler(object):
             `<comic_id>`, e.g `@mention-bot 1234`.
             '''
 
-    def handle_message(self, message, bot_handler, state_handler):
+    def handle_message(self, message, bot_handler):
         xkcd_bot_response = get_xkcd_bot_response(message)
         bot_handler.send_reply(message, xkcd_bot_response)
 

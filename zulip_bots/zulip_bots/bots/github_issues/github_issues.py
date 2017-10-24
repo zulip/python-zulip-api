@@ -47,7 +47,7 @@ class IssueHandler(object):
             github_token = <oauth_token>   (The personal access token for the GitHub bot)
             '''
 
-    def handle_message(self, message, bot_handler, state_handler):
+    def handle_message(self, message, bot_handler):
 
         original_content = message['content']
         original_sender = message['sender_email']

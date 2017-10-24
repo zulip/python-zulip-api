@@ -103,7 +103,7 @@ class JohnHandler(object):
         )
         self.chatterbot = create_chat_bot(True)
 
-    def handle_message(self, message, bot_handler, state_handler):
+    def handle_message(self, message, bot_handler):
         original_content = message['content']
         bot_response = str(self.chatterbot.get_response(original_content))
         bot_handler.send_reply(message, bot_response)

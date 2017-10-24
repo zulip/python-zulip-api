@@ -46,7 +46,7 @@ class ConverterHandler(object):
                all supported units.
                '''
 
-    def handle_message(self, message, bot_handler, state_handler):
+    def handle_message(self, message, bot_handler):
         bot_response = get_bot_converter_response(message, bot_handler)
         bot_handler.send_reply(message, bot_response)
 

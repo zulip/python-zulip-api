@@ -69,7 +69,7 @@ class GithubHandler(object):
                 repo = self.repo
         return (owner, repo)
 
-    def handle_message(self, message, bot_handler, state_handler):
+    def handle_message(self, message, bot_handler):
         # type: () -> None
         # Send help message
         if message['content'] == 'help':
