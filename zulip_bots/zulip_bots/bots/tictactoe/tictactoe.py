@@ -282,10 +282,11 @@ class ticTacToeHandler(object):
         original_sender = message['sender_email']
 
         with bot_handler.storage.state({}) as mydict:
-            user_game = mydict.get(original_sender)
-            if (not user_game) and command == "new":
-                user_game = TicTacToeGame(copy.deepcopy(initial_board))
-                mydict[original_sender] = user_game
+            user_board = mydict.get(original_sender)
+            if (not user_board) and command == "new":
+                user_board = copy.deepcopy(initial_board)
+                mydict[original_sender] = user_board
+            user_game = TicTacToeGame(user_board) if user_board else None
 
             if command == 'new':
                 if user_game and not first_time(user_game.board):
