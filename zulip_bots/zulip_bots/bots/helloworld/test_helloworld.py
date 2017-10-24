@@ -13,4 +13,4 @@ class TestHelloWorldBot(BotTestCase):
     def test_bot(self):
         txt = "beep boop"
         messages = ["", "foo", "Hi, my name is abc"]
-        self.check_expected_responses(dict(list(zip(messages, len(messages)*[txt]))))
+        self.check_expected_responses(list(zip(messages, len(messages)*[txt])))

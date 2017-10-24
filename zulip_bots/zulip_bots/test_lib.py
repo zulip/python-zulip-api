@@ -61,11 +61,6 @@ class BotTestCase(TestCase):
         # type: (Union[Sequence[Tuple[str, Any]], Dict[str, Any]], str, str, str, str, int, str, str) -> None
         # To test send_message, Any would be a Dict type,
         # to test send_reply, Any would be a str type.
-        if isinstance(expectations, dict):
-            expected = [(k, v) for k, v in expectations.items()]
-        else:
-            expected = expectations
-
         if type not in ["private", "stream", "all"]:
             logging.exception("check_expected_response expects type to be 'private', 'stream' or 'all'")
 
