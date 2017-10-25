@@ -3,7 +3,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 import sys
 import time
-import optparse
+import argparse
 import os
 import random
 import logging
@@ -16,26 +16,18 @@ from six.moves import range
 if False:
     from typing import Any, Dict, List, Set, Tuple
 
-parser = optparse.OptionParser()
-parser.add_option('--verbose',
-                  dest='verbose',
-                  default=False,
-                  action='store_true')
-parser.add_option('--site',
-                  dest='site',
-                  default=None,
-                  action='store')
-parser.add_option('--sharded',
-                  default=False,
-                  action='store_true')
-(options, args) = parser.parse_args()
+parser = zulip.add_default_arguments(argparse.ArgumentParser())
+parser.add_argument('--sharded',
+                    default=False,
+                    action='store_true')
+options = parser.parse_args()
 
 mit_user = 'tabbott/extra@ATHENA.MIT.EDU'
 
 zulip_client = zulip.Client(
     verbose=True,
     client="ZulipMonitoring/0.1",
-    site=options.site)
+    site=options.zulip_site)
 
 # Configure logging
 log_file     = "/var/log/zulip/check-mirroring-log"
