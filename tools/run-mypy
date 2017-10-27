@@ -18,10 +18,13 @@ os.chdir(os.path.dirname(TOOLS_DIR))
 
 sys.path.append(os.path.dirname(TOOLS_DIR))
 
-exclude = """
-zulip/integrations/perforce/git_p4.py
-zulip_bots/zulip_bots/bots
-""".split()
+exclude = [
+    # Excluded because it's third-party code.
+    "zulip/integrations/perforce/git_p4.py",
+    # Excluded because we don't want to require bot authors to
+    # fully annotate their bots.
+    "zulip_bots/zulip_bots/bots",
+]
 
 parser = argparse.ArgumentParser(description="Run mypy on files tracked by git.")
 parser.add_argument('targets', nargs='*', default=[],
