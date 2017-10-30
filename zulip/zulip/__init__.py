@@ -859,6 +859,38 @@ class Client(object):
             request=request,
         )
 
+    def update_state(self, request):
+        # type: (Dict[str, Any]) -> Dict[str, Any]
+        '''
+            Example usage:
+
+            >>> client.update_state({'state': {"entry 1": "value 1", "entry 2": "value 2", "entry 3": "value 3"}})
+            >>> client.get_state({'keys': ["entry 1", "entry 3"]})
+            {'result': 'success', 'state': {'entry 1': 'value 1', 'entry 3': 'value 3'}, 'msg': ''}
+        '''
+        return self.call_endpoint(
+            url='user_state',
+            method='PUT',
+            request=request,
+        )
+
+    def get_state(self, request=None):
+        # type: (Optional[Dict[str, Any]]) -> Dict[str, Any]
+        '''
+            Example usage:
+
+            >>> client.update_state({'state': {"entry 1": "value 1", "entry 2": "value 2", "entry 3": "value 3"}})
+            >>> client.get_state()
+            {'result': 'success', 'state': {"entry 1": "value 1", "entry 2": "value 2", "entry 3": "value 3"}, 'msg': ''}
+            >>> client.get_state(keys=('entry 1', 'entry 3'))
+            {'result': 'success', 'state': {'entry 1': 'value 1', 'entry 3': 'value 3'}, 'msg': ''}
+        '''
+        return self.call_endpoint(
+            url='user_state',
+            method='GET',
+            request=request,
+        )
+
 class ZulipStream(object):
     """
     A Zulip stream-like object
