@@ -327,7 +327,7 @@ def get_directory(path):
         return path[:slash]
 
 def directory(fns):
-    return dict(kind='dir', fns=set(fns))
+    return dict(kind='dir', fns=list(fns))
 
 def text_file(content):
     return dict(kind='text', content=content)
