@@ -85,8 +85,7 @@ def main():
             message_handler.initialize(mock_bot_handler)
         message_handler.handle_message(
             message=message,
-            bot_handler=mock_bot_handler,
-            state_handler=StateHandler()
+            bot_handler=mock_bot_handler
         )
         print("On sending {} bot the message \"{}\"".format(bot_name, args.message))
         # send_reply and send_message have slightly arguments; the
