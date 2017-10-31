@@ -6,7 +6,7 @@ from .server_test_lib import BotServerTestCase
 
 class BotServerTests(BotServerTestCase):
     class MockMessageHandler(object):
-        def handle_message(self, message, bot_handler, state_handler):
+        def handle_message(self, message, bot_handler):
             # type: (Any, Any, Any) -> None
             assert message == {'key': "test message"}
 

@@ -74,13 +74,9 @@ def handle_bot(bot):
 
     message_handler = lib_module.handler_class()
 
-    # TODO: Handle stateful bots properly.
-    state_handler = StateHandler()
-
     event = request.get_json(force=True)
     message_handler.handle_message(message=event["message"],
-                                   bot_handler=restricted_client,
-                                   state_handler=state_handler)
+                                   bot_handler=restricted_client)
     return json.dumps("")
 
 def parse_args():
