@@ -299,6 +299,7 @@ class ticTacToeHandler(object):
             return_content = TicTacToeGame.detailed_help_message
         elif (user_game) and TicTacToeGame.check_validity(user_game, TicTacToeGame.sanitize_move(user_game, command)):
             return_content = TicTacToeGame.tictactoe(user_game, user_board, command)
+            storage.put(original_sender, user_board)
         elif (user_game) and command == 'quit':
             storage.put(original_sender, None)
             return_content = "You've successfully quit the game."

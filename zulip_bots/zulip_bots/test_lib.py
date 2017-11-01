@@ -45,6 +45,8 @@ class BotTestCase(TestCase):
         self.MockClass = self.patcher.start()
         self.mock_bot_handler = self.MockClass(None, None)
         self.mock_bot_handler.storage = StateHandler()
+        self.mock_bot_handler.send_message.return_value = {'id': 42}
+        self.mock_bot_handler.send_reply.return_value = {'id': 42}
         self.message_handler = self.get_bot_message_handler()
 
     def tearDown(self):

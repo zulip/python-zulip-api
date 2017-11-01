@@ -56,8 +56,8 @@ class StateHandler(object):
     def __init__(self):
         # type: () -> None
         self.state_ = {}  # type: Dict[Text, Text]
-        self.marshal = lambda obj: obj
-        self.demarshal = lambda obj: obj
+        self.marshal = lambda obj: json.dumps(obj)
+        self.demarshal = lambda obj: json.loads(obj)
 
     def put(self, key, value):
         # type: (Text, Text) -> None
