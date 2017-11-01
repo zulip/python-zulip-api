@@ -45,7 +45,9 @@ class BotTestCaseBase(TestCase):
         self.patcher = patch('zulip_bots.lib.ExternalBotHandler', autospec=True)
         self.MockClass = self.patcher.start()
         self.mock_bot_handler = self.MockClass(None, None)
-        self.mock_bot_handler.storage = StateHandler()
+        self.mock_client = MagicMock()
+        self.mock_client.get_state.return_value = {'result': 'success', 'state': {}}
+        self.mock_bot_handler.storage = StateHandler(self.mock_client)
         self.mock_bot_handler.send_message.return_value = {'id': 42}
         self.mock_bot_handler.send_reply.return_value = {'id': 42}
         self.message_handler = self.get_bot_message_handler()

@@ -39,8 +39,9 @@ class BotServerTests(BotServerTestCase):
                                         check_success=False)
 
     @mock.patch('logging.error')
-    def test_wrong_bot_credentials(self, mock_LoggingError):
-        # type: (mock.Mock) -> None
+    @mock.patch('zulip_bots.lib.StateHandler')
+    def test_wrong_bot_credentials(self, mock_StateHandler, mock_LoggingError):
+        # type: (mock.Mock, mock.Mock) -> None
         available_bots = ['nonexistent-bot']
         bots_config = {
             'nonexistent-bot': {
