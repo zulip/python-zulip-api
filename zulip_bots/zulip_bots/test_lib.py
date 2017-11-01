@@ -102,18 +102,17 @@ class BotTestCaseBase(TestCase):
 
         # Check if the bot is sending a message via `send_message` function.
         # Where response is a dictionary here.
-        instance = self.MockClass.return_value
         if expected_method == "send_message":
-            instance.send_message.assert_called_with(response)
+            self.mock_bot_handler.send_message.assert_called_with(response)
         else:
-            instance.send_reply.assert_called_with(message, response['content'])
+            self.mock_bot_handler.send_reply.assert_called_with(message, response['content'])
 
     @contextmanager
     def mock_config_info(self, config_info):
         # type: (Dict[str, str]) -> Any
-        self.MockClass.return_value.get_config_info.return_value = config_info
+        self.mock_bot_handler.get_config_info.return_value = config_info
         yield
-        self.MockClass.return_value.get_config_info.return_value = None
+        self.mock_bot_handler.get_config_info.return_value = None
 
     @contextmanager
     def mock_http_conversation(self, test_name):
