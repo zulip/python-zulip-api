@@ -24,6 +24,7 @@ exclude = [
     # Excluded because we don't want to require bot authors to
     # fully annotate their bots.
     "zulip_bots/zulip_bots/bots",
+    "zulip_bots/zulip_bots/bots_unmaintained",
 ]
 
 parser = argparse.ArgumentParser(description="Run mypy on files tracked by git.")
