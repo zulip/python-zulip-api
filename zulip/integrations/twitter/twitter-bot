@@ -33,7 +33,7 @@ import zulip
 VERSION = "0.9"
 CONFIGFILE = os.path.expanduser("~/.zulip_twitterrc")
 INSTRUCTIONS = r"""
-twitter-bot --site=https://zulip.example.com --search="@nprnews,quantum physics"
+twitter-bot --config-file=~/.zuliprc --search="@nprnews,quantum physics"
 
 Send Twitter tweets to a Zulip stream.
 
@@ -43,13 +43,13 @@ To use this script:
 
 0. Use `pip install python-twitter` to install `python-twitter`
 1. Set up Twitter authentication, as described below
-2. Set up a Zulip bot user and download its `.zuliprc` config file to `~/.zuliprc`
+2. Set up a Zulip bot user and download its `.zuliprc` config file to e.g. `~/.zuliprc`
 3. Subscribe the bot to the stream that will receive Twitter updates (default stream: twitter)
 4. Test the script by running it manually, like this:
 
-twitter-bot --site=<your.zulip.server> --search="<search-query>"
+twitter-bot --config-file=<path/to/.zuliprc> --search="<search-query>"
 or
-twitter-bot --site=<your.zulip.server> --twitter-name="<your-twitter-handle>"
+twitter-bot --config-file=<path/to/.zuliprc> --twitter-name="<your-twitter-handle>"
 
 4. Configure a crontab entry for this script. A sample crontab entry
 that will process tweets every 5 minutes is:
@@ -171,12 +171,7 @@ if not user.id:
     print("Unable to log in to twitter with supplied credentials. Please double-check and try again")
     sys.exit(1)
 
-client = zulip.Client(
-    email=opts.zulip_email,
-    api_key=opts.zulip_api_key,
-    site=opts.zulip_site,
-    client=client_type+VERSION,
-    verbose=True)
+client = zulip.init_from_options(opts, client=client_type+VERSION)
 
 if opts.search_terms:
     search_query = " OR ".join(opts.search_terms.split(","))
