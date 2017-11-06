@@ -194,12 +194,14 @@ for status in statuses[::-1][:opts.limit_tweets]:
     # https://twitter.com/eatevilpenguins/status/309995853408530432
     composed = "%s (%s)" % (status.user.name, status.user.screen_name)
     url = "https://twitter.com/%s/status/%s" % (status.user.screen_name, status.id)
-    content = status.text
+    # This contains all strings that could have caused the tweet to match our query.
+    text_to_check = [status.text, status.user.screen_name]
+    text_to_check.extend(url.expanded_url for url in status.urls)
 
     if opts.search_terms:
         search_term_used = None
         for term in opts.search_terms.split(","):
-            if term.lower() in content.lower():
+            if any(term.lower() in text.lower() for text in text_to_check):
                 search_term_used = term
                 break
         # For some reason (perhaps encodings or message tranformations we
