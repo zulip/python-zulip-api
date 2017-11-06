@@ -5,7 +5,7 @@ import json
 
 class WeatherHandler(object):
     def initialize(self, bot_handler):
-        self.api_key = bot_handler.get_config_info('weather', 'weather-config')['key']
+        self.api_key = bot_handler.get_config_info('weather')['key']
         self.response_pattern = 'Weather in {}, {}:\n{:.2f} F / {:.2f} C\n{}'
 
     def usage(self):
