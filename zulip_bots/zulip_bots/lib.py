@@ -119,10 +119,9 @@ class ExternalBotHandler(object):
         else:
             self._rate_limit.show_error_and_exit()
 
-    def get_config_info(self, bot_name, section=None, optional=False):
-        # type: (str, Optional[str], Optional[bool]) -> Dict[str, Any]
+    def get_config_info(self, bot_name, optional=False):
+        # type: (str, Optional[bool]) -> Dict[str, Any]
         conf_file_path = os.path.realpath(os.path.join(self._root_dir, bot_name + '.conf'))
-        section = section or bot_name
         config = configparser.ConfigParser()
         try:
             with open(conf_file_path) as conf:
@@ -131,7 +130,7 @@ class ExternalBotHandler(object):
             if optional:
                 return dict()
             raise
-        return dict(config.items(section))
+        return dict(config.items(bot_name))
 
     def open(self, filepath):
         # type: (str) -> IO[str]
