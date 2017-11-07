@@ -17,6 +17,7 @@ from zulip_bots.lib import ExternalBotHandler, StateHandler
 bots_config = {}  # type: Dict[str, Mapping[str, str]]
 available_bots = []  # type: List[str]
 bots_lib_module = {}  # type: Dict[str, Any]
+bot_handlers = {}  # type: Dict[str, ExternalBotHandler]
 
 def read_config_file(config_file_path):
     # type: (str) -> None
@@ -44,6 +45,20 @@ def load_lib_modules():
             print("\n Import Error: Bot \"{}\" doesn't exists. Please make sure you have set up the flaskbotrc "
                   "file correctly.\n".format(bot))
 
+def load_bot_handlers():
+    # type: () -> Any
+    for bot in available_bots:
+        client = Client(email=bots_config[bot]["email"],
+                        api_key=bots_config[bot]["key"],
+                        site=bots_config[bot]["site"])
+        try:
+            bot_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                   'bots', bot)
+            bot_handlers[bot] = ExternalBotHandler(client, bot_dir)
+        except SystemExit:
+            return BadRequest("Cannot fetch user profile for bot {}, make sure you have set up the flaskbotrc "
+                              "file correctly.".format(bot))
+
 def get_bot_lib_module(bot):
     # type: (str) -> Any
     if bot in bots_lib_module.keys():
@@ -60,23 +75,11 @@ def handle_bot(bot):
         return BadRequest("Can't find the configuration or Bot Handler code for bot {}. "
                           "Make sure that the `zulip_bots` package is installed, and "
                           "that your flaskbotrc is set up correctly".format(bot))
-
-    client = Client(email=bots_config[bot]["email"],
-                    api_key=bots_config[bot]["key"],
-                    site=bots_config[bot]["site"])
-    try:
-        bot_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                               'bots', bot)
-        restricted_client = ExternalBotHandler(client, bot_dir)
-    except SystemExit:
-        return BadRequest("Cannot fetch user profile for bot {}, make sure you have set up the flaskbotrc "
-                          "file correctly.".format(bot))
-
     message_handler = lib_module.handler_class()
 
     event = request.get_json(force=True)
     message_handler.handle_message(message=event["message"],
-                                   bot_handler=restricted_client)
+                                   bot_handler=bot_handlers[bot])
     return json.dumps("")
 
 def parse_args():
@@ -120,6 +123,7 @@ def main():
     global available_bots
     available_bots = list(bots_config.keys())
     load_lib_modules()
+    load_bot_handlers()
     app.run(host=options.hostname, port=int(options.port), debug=True)
 
 if __name__ == '__main__':

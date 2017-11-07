@@ -14,11 +14,12 @@ class BotServerTestCase(TestCase):
                                    available_bots=None,
                                    bots_config=None,
                                    bots_lib_module=None,
+                                   bot_handlers=None,
                                    payload_url="/bots/testbot",
                                    message=dict(message={'key': "test message"}),
                                    check_success=False,
                                    ):
-        # type: (List[str], Dict[str, Any], Dict[str, Any], str, Dict[str, Dict[str, Any]], bool) -> None
+        # type: (List[str], Dict[str, Any], Dict[str, Any], Dict[str, Any], str, Dict[str, Dict[str, Any]], bool) -> None
 
         if available_bots is not None:
             zulip_botserver.server.available_bots = available_bots
@@ -28,6 +29,9 @@ class BotServerTestCase(TestCase):
 
         if bots_lib_module is not None:
             zulip_botserver.server.bots_lib_module = bots_lib_module
+
+        if bot_handlers is not None:
+            zulip_botserver.server.bot_handlers = bot_handlers
 
         response = self.app.post(payload_url, data=json.dumps(message))
 
