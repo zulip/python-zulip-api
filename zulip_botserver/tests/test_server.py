@@ -40,18 +40,21 @@ class BotServerTests(BotServerTestCase):
     @mock.patch('logging.error')
     def test_wrong_bot_credentials(self, mock_LoggingError):
         # type: (mock.Mock) -> None
-        available_bots = ['helloworld']
+        available_bots = ['nonexistent-bot']
         bots_config = {
-            'helloworld': {
+            'nonexistent-bot': {
                 'email': 'helloworld-bot@zulip.com',
                 'key': '123456789qwertyuiop',
                 'site': 'http://localhost',
             }
         }
-        server.available_bots = available_bots
-        server.load_bot_handlers()
-        mock_LoggingError.assert_called_with("Cannot fetch user profile, make sure you have set up the zuliprc file correctly.")
-
+        # This complains about mismatching argument types, yet they are all correct?
+        # We should investigate and file an issue in mypy.
+        self.assertRaisesRegexp(ImportError,  # type: ignore
+                                "Bot \"nonexistent-bot\" doesn't exists. Please "
+                                "make sure you have set up the flaskbotrc file correctly.",
+                                lambda: self.assert_bot_server_response(available_bots=available_bots,
+                                                                        bots_config=bots_config))
 
 if __name__ == '__main__':
     unittest.main()
