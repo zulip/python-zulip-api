@@ -15,23 +15,16 @@ class BotServerTestCase(TestCase):
                                    bots_config=None,
                                    bots_lib_module=None,
                                    bot_handlers=None,
-                                   payload_url="/bots/testbot",
+                                   payload_url="/bots/helloworld",
                                    message=dict(message={'key': "test message"}),
                                    check_success=False,
                                    ):
         # type: (List[str], Dict[str, Any], Dict[str, Any], Dict[str, Any], str, Dict[str, Dict[str, Any]], bool) -> None
-
         if available_bots is not None:
             zulip_botserver.server.available_bots = available_bots
-
-        if bots_config is not None:
             zulip_botserver.server.bots_config = bots_config
-
-        if bots_lib_module is not None:
-            zulip_botserver.server.bots_lib_module = bots_lib_module
-
-        if bot_handlers is not None:
-            zulip_botserver.server.bot_handlers = bot_handlers
+            zulip_botserver.server.load_lib_modules()
+            zulip_botserver.server.load_bot_handlers()
 
         response = self.app.post(payload_url, data=json.dumps(message))
 
