@@ -20,16 +20,19 @@ def main():
 Creates a Python virtualenv. Its Python version is equal to
 the Python version this command is executed with."""
     parser = argparse.ArgumentParser(usage=usage)
-    parser.parse_args()
+    parser.add_argument('--python-interpreter', '-p',
+                        metavar='PATH_TO_PYTHON_INTERPRETER',
+                        default=os.path.abspath(sys.executable),
+                        help='Path to the Python interpreter to use when provisioning.')
+    options = parser.parse_args()
 
     base_dir = os.path.abspath(os.path.join(__file__, '..', '..'))
-    python_interpreter = os.path.abspath(sys.executable)
     venv_name = 'zulip-api-py{}-venv'.format(sys.version_info.major)
 
     venv_dir = os.path.join(base_dir, venv_name)
     if not os.path.isdir(venv_dir):
         try:
-            return_code = subprocess.call(['virtualenv', '-p', python_interpreter, venv_dir])
+            return_code = subprocess.call(['virtualenv', '-p', options.python_interpreter, venv_dir])
         except OSError:
             if subprocess.call(['which', 'virtualenv']):
                 print("{red}Please install the virtualenv package and try again.{end_format}"
@@ -39,7 +42,7 @@ the Python version this command is executed with."""
         else:
             if return_code:
                 raise OSError("The command `virtualenv -p {} {}` failed. Virtualenv not created!"
-                              .format(python_interpreter, venv_dir))
+                              .format(options.python_interpreter, venv_dir))
             print("New virtualenv created.")
     else:
         print("Virtualenv already exists.")
