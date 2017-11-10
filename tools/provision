@@ -82,7 +82,7 @@ the Python version this command is executed with."""
 
     green = '\033[92m'
     end_format = '\033[0m'
-    bold = '\033[1m' 
+    bold = '\033[1m'
 
     print('\n')
     print(green + 'Success!' + end_format)

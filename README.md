@@ -36,7 +36,7 @@ This repository contains the source code for Zulip's PyPI packages:
    ./tools/provision -p <path_to_your_python_version>`
    ```
 
-5. The above step, if successful, will tell you the command to "source" your 
+5. The above step, if successful, will tell you the command to "source" your
    virtual environment.  Run that command!
 
 6. You should now be able to run all the tests within this virtualenv.
