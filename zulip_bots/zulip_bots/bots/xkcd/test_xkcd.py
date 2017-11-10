@@ -13,7 +13,7 @@ class TestXkcdBot(BotTestCase):
     @mock.patch('logging.exception')
     def test_bot(self, mock_logging_exception):
         help_txt = "xkcd bot supports these commands:"
-        err_txt  = "xkcd bot only supports these commands:"
+        err_txt  = "xkcd bot only supports these commands, not `{}`:"
         commands = '''
 * `@xkcd help` to show this help message.
 * `@xkcd latest` to fetch the latest comic strip from xkcd.
@@ -78,7 +78,7 @@ class TestXkcdBot(BotTestCase):
             )
 
         # Empty query, no request made to the Internet.
-        bot_response = err_txt+commands
+        bot_response = err_txt.format('')+commands
         self.assert_bot_response(
             message = {'content': ''},
             response = {'content': bot_response},
@@ -94,7 +94,7 @@ class TestXkcdBot(BotTestCase):
         )
 
         # wrong command.
-        bot_response = err_txt+commands
+        bot_response = err_txt.format('x')+commands
         self.assert_bot_response(
             message = {'content': 'x'},
             response = {'content': bot_response},
