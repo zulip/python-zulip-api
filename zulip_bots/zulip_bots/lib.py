@@ -146,14 +146,12 @@ def extract_query_without_mention(message, client):
     # type: (Dict[str, Any], ExternalBotHandler) -> str
     """
     If the bot is the first @mention in the message, then this function returns
-    the message with the bot's @mention removed.  Otherwise, it returns None.
+    the stripped message with the bot's @mention removed.  Otherwise, it returns None.
     """
-    bot_mention = r'^@(\*\*{0}\*\*)'.format(client.full_name)
-    start_with_mention = re.compile(bot_mention).match(message['content'])
-    if start_with_mention is None:
+    mention = '@**' + client.full_name + '**'
+    if not message['content'].startswith(mention):
         return None
-    query_without_mention = message['content'][len(start_with_mention.group()):]
-    return query_without_mention.lstrip()
+    return message['content'][len(mention):].lstrip()
 
 def is_private_message_from_another_user(message_dict, current_user_id):
     # type: (Dict[str, Any], int) -> bool
