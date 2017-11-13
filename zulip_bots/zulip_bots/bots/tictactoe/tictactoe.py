@@ -267,6 +267,11 @@ class ticTacToeHandler(object):
     tic-tac-toe bot! Make sure your message starts with
     "@mention-bot".
     '''
+    META = {
+        'name': 'TicTacToe',
+        'description': 'Lets you play Tic-tac-toe against a computer.',
+        'uses_storage': True,
+    }
 
     def usage(self):
         return '''

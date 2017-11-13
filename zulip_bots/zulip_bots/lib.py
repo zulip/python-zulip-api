@@ -92,14 +92,15 @@ class StateHandler(object):
                 raise StateHandlerError("Error updating state: {}".format(str(response)))
 
 class ExternalBotHandler(object):
-    def __init__(self, client, root_dir):
-        # type: (Client, str) -> None
+    def __init__(self, client, root_dir, bot_details={}):
+        # type: (Client, str, Dict[str, Any]) -> None
         # Only expose a subset of our Client's functionality
         user_profile = client.get_profile()
         self._rate_limit = RateLimit(20, 5)
         self._client = client
         self._root_dir = root_dir
-        self.storage = StateHandler(client)
+        self.bot_details = bot_details
+        self._storage = StateHandler(client) if self.bot_details.get('uses_storage', False) else None
         try:
             self.user_id = user_profile['user_id']
             self.full_name = user_profile['full_name']
@@ -108,6 +109,20 @@ class ExternalBotHandler(object):
             logging.error('Cannot fetch user profile, make sure you have set'
                           ' up the zuliprc file correctly.')
             sys.exit(1)
+
+    @property
+    def storage(self):
+        # type: () -> StateHandler
+        if not self._storage:
+            raise AttributeError("""Bot tried to access storage, but has not enabled
+storage access. To enable storage access, add
+    META = {
+        'uses_storage': True,
+    }
+to your bot handler class. Check out the incrementor
+bot for an example on how to do this.
+""")
+        return self._storage
 
     def send_message(self, message):
         # type: (Dict[str, Any]) -> Dict[str, Any]
@@ -194,21 +209,20 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
     # inherit from a common prototype specifying the handle_message
     # function.
     #
-    # Make sure you set up your ~/.zuliprc
-    client = Client(config_file=config_file, client="Zulip{}Bot".format(bot_name.capitalize()))
-    bot_dir = os.path.dirname(lib_module.__file__)
-    restricted_client = ExternalBotHandler(client, bot_dir)
-
-    message_handler = lib_module.handler_class()
-    if hasattr(message_handler, 'initialize'):
-        message_handler.initialize(bot_handler=restricted_client)
-
     # Set default bot_details, then override from class, if provided
     bot_details = {
         'name': bot_name.capitalize(),
         'description': "",
     }
     bot_details.update(getattr(lib_module.handler_class, 'META', {}))
+    # Make sure you set up your ~/.zuliprc
+    client = Client(config_file=config_file, client="Zulip{}Bot".format(bot_name.capitalize()))
+    bot_dir = os.path.dirname(lib_module.__file__)
+    restricted_client = ExternalBotHandler(client, bot_dir, bot_details)
+
+    message_handler = lib_module.handler_class()
+    if hasattr(message_handler, 'initialize'):
+        message_handler.initialize(bot_handler=restricted_client)
 
     if not quiet:
         print("Running {} Bot:".format(bot_details['name']))
