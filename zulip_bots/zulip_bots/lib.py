@@ -61,7 +61,7 @@ class StateHandler(object):
         self._client = client
         self.marshal = lambda obj: json.dumps(obj)
         self.demarshal = lambda obj: json.loads(obj)
-        response = self._client.get_state()
+        response = self._client.get_storage()
         if response['result'] == 'success':
             self.state_ = response['state']
             self._modified_entries = set()  # type: Set[Text]
@@ -85,7 +85,7 @@ class StateHandler(object):
         # type: () -> None
         state_update = {'state': {key: self.state_[key] for key in self._modified_entries}}
         if state_update:
-            response = self._client.update_state(state_update)
+            response = self._client.update_storage(state_update)
             if response['result'] == 'success':
                 self._modified_entries.clear()
             else:
