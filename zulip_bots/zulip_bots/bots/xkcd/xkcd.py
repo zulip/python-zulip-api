@@ -49,7 +49,7 @@ class XkcdServerError(Exception):
 
 def get_xkcd_bot_response(message):
     original_content = message['content'].strip()
-    command = original_content.strip()
+    command = original_content.split(' ', 1)[-1].strip()
 
     commands_help = ("%s"
                      "\n* `@xkcd help` to show this help message."
@@ -68,7 +68,7 @@ def get_xkcd_bot_response(message):
         elif command.isdigit():
             fetched = fetch_xkcd_query(XkcdBotCommand.COMIC_ID, command)
         else:
-            return commands_help % ('xkcd bot only supports these commands:')
+            return commands_help % ("xkcd bot only supports these commands, not '%s':"%command)
     except (requests.exceptions.ConnectionError, XkcdServerError):
         logging.exception('Connection error occurred when trying to connect to xkcd server')
         return 'Sorry, I cannot process your request right now, please try again later!'
