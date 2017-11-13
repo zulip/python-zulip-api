@@ -859,13 +859,13 @@ class Client(object):
             request=request,
         )
 
-    def update_state(self, request):
+    def update_storage(self, request):
         # type: (Dict[str, Any]) -> Dict[str, Any]
         '''
             Example usage:
 
-            >>> client.update_state({'state': {"entry 1": "value 1", "entry 2": "value 2", "entry 3": "value 3"}})
-            >>> client.get_state({'keys': ["entry 1", "entry 3"]})
+            >>> client.update_storage({'state': {"entry 1": "value 1", "entry 2": "value 2", "entry 3": "value 3"}})
+            >>> client.get_storage({'keys': ["entry 1", "entry 3"]})
             {'result': 'success', 'state': {'entry 1': 'value 1', 'entry 3': 'value 3'}, 'msg': ''}
         '''
         return self.call_endpoint(
@@ -874,15 +874,15 @@ class Client(object):
             request=request,
         )
 
-    def get_state(self, request=None):
+    def get_storage(self, request=None):
         # type: (Optional[Dict[str, Any]]) -> Dict[str, Any]
         '''
             Example usage:
 
-            >>> client.update_state({'state': {"entry 1": "value 1", "entry 2": "value 2", "entry 3": "value 3"}})
-            >>> client.get_state()
+            >>> client.update_storage({'state': {"entry 1": "value 1", "entry 2": "value 2", "entry 3": "value 3"}})
+            >>> client.get_storage()
             {'result': 'success', 'state': {"entry 1": "value 1", "entry 2": "value 2", "entry 3": "value 3"}, 'msg': ''}
-            >>> client.get_state(keys=('entry 1', 'entry 3'))
+            >>> client.get_storage(keys=('entry 1', 'entry 3'))
             {'result': 'success', 'state': {'entry 1': 'value 1', 'entry 3': 'value 3'}, 'msg': ''}
         '''
         return self.call_endpoint(
