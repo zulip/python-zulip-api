@@ -54,3 +54,7 @@ To run the tests for
 To run the linter, type:
 
 `./tools/lint`
+
+To check the type annotations, run:
+
+`./tools/run-mypy`
