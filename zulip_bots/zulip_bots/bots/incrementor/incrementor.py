@@ -2,6 +2,11 @@
 
 
 class IncrementorHandler(object):
+    META = {
+        'name': 'Incrementor',
+        'description': 'Example bot to test the update_message() function.',
+        'uses_storage': True,
+    }
 
     def usage(self):
         return '''
