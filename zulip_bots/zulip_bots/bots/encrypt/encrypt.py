@@ -39,7 +39,3 @@ class EncryptHandler(object):
         return send_content
 
 handler_class = EncryptHandler
-
-if __name__ == '__main__':
-    assert encrypt('ABCDabcd1234') == 'NOPQnopq1234'
-    assert encrypt('NOPQnopq1234') == 'ABCDabcd1234'

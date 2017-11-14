@@ -5,10 +5,18 @@ from __future__ import print_function
 
 import json
 
-from zulip_bots.test_lib import BotTestCase
+from zulip_bots.test_lib import BotTestCaseBase
 
-class TestGithubDetailBot(BotTestCase):
+class TestGithubDetailBot(BotTestCaseBase):
     bot_name = "github_detail"
+    mock_config = {'owner': 'zulip', 'repo': 'zulip'}
+
+    # Overrides default test_bot_usage().
+    def test_bot_usage(self):
+        # type: () -> None
+        with self.mock_config_info(self.mock_config):
+            self.initialize_bot()
+            self.assertNotEqual(self.message_handler.usage(), '')
 
     def test_issue(self):
         bot_response = '**[zulip/zulip#5365](https://github.com/zulip/zulip/issues/5365)'\
@@ -75,8 +83,7 @@ class TestGithubDetailBot(BotTestCase):
                        'the default repo is zulip.'
         # This message calls the `send_reply` function of BotHandlerApi
 
-        mock_config = {'owner': 'zulip', 'repo': 'zulip'}
-        with self.mock_config_info(mock_config):
+        with self.mock_config_info(self.mock_config):
             self.initialize_bot()
             self.assert_bot_response(
                 message = {'content': 'help'},

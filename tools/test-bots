@@ -8,6 +8,7 @@ import sys
 import argparse
 import glob
 import unittest
+from unittest import TestCase, TestSuite
 
 def load_tests_from_modules(names, template):
     loader = unittest.defaultTestLoader
@@ -90,6 +91,19 @@ def main():
             template='zulip_bots.bots.{name}.test_{name}')
     else:
         test_suites = load_all_tests()
+
+    def filter_tests(tests):
+        # type: (Union[TestSuite, TestCase]) -> TestSuite
+        filtered_tests = TestSuite()
+        for test in tests:
+            if isinstance(test, TestCase):
+                # Exclude test base class from being tested.
+                if 'BotTestCase' not in test.__class__.__name__:
+                    filtered_tests.addTest(test)
+            else:
+                filtered_tests.addTest(filter_tests(test))
+        return filtered_tests
+    test_suites = filter_tests(test_suites)
 
     suite = unittest.TestSuite(test_suites)
     runner = unittest.TextTestRunner(verbosity=2)
