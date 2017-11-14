@@ -26,7 +26,8 @@ from types import ModuleType
 
 from copy import deepcopy
 
-class BotTestCase(TestCase):
+class BotTestCaseBase(TestCase):
+    """Test class for common Bot test helper methods"""
     bot_name = ''  # type: str
 
     def get_bot_message_handler(self):
@@ -153,3 +154,10 @@ class BotTestCase(TestCase):
         # Strictly speaking, this function is not needed anymore,
         # kept for now for legacy reasons.
         self.call_request(message, expected_method, response)
+
+class BotTestCase(BotTestCaseBase):
+    """Test class extending BotTestCaseBase to add common default tests
+    that should be run (by default) for all our bots"""
+    def test_bot_usage(self):
+        # type: () -> None
+        self.assertNotEqual(self.message_handler.usage(), '')
