@@ -34,15 +34,15 @@ class GenerateManifest(distutils.cmd.Command):
         # type: () -> None
         if self.release:
             generate_release_manifest()
-            self.announce(  # type: ignore # error: "GenerateManifest" has no attribute "announce"
+            self.announce(  # type: ignore # https://github.com/zulip/python-zulip-api/issues/142
                 'Generating a MANIFEST for a PyPA release of zulip_bots.',
-                level=distutils.log.INFO  # type: ignore # error: Module has no attribute "INFO"
+                level=distutils.log.INFO  # type: ignore # https://github.com/zulip/python-zulip-api/issues/142
             )
         else:
             generate_dev_manifest()
-            self.announce(  # type: ignore
+            self.announce(  # type: ignore # https://github.com/zulip/python-zulip-api/issues/142
                 'Generating a MANIFEST for zulip_bots\' development.',
-                level=distutils.log.INFO  # type: ignore
+                level=distutils.log.INFO  # type: ignore # https://github.com/zulip/python-zulip-api/issues/142
             )
 
 def get_test_fixtures():
