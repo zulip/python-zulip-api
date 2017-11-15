@@ -113,7 +113,7 @@ def add_default_arguments(parser, patch_error_handling=True, allow_provisioning=
             # type: (Any, str) -> None
             self.print_help(sys.stderr)
             self.exit(2, '{}: error: {}\n'.format(self.prog, message))
-        parser.error = types.MethodType(custom_error_handling, parser)  # type: ignore
+        parser.error = types.MethodType(custom_error_handling, parser)  # type: ignore # patching function
 
     if allow_provisioning:
         parser.add_argument('--provision',
