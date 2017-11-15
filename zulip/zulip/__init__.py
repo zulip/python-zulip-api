@@ -181,7 +181,7 @@ def generate_option_group(parser, prefix=''):
                     is now deprecated. We recommend migrating to argparse and
                     using zulip.add_default_arguments instead.""")
 
-    group = optparse.OptionGroup(parser, 'Zulip API configuration')  # type: ignore # https://github.com/python/typeshed/pull/1248
+    group = optparse.OptionGroup(parser, 'Zulip API configuration')
     group.add_option('--%ssite' % (prefix,),
                      dest="zulip_site",
                      help="Zulip server URI",
