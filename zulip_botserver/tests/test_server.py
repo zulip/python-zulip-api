@@ -4,6 +4,7 @@ import unittest
 from typing import Any
 from zulip_botserver import server
 from .server_test_lib import BotServerTestCase
+import six
 
 class BotServerTests(BotServerTestCase):
     class MockMessageHandler(object):
@@ -48,13 +49,14 @@ class BotServerTests(BotServerTestCase):
                 'site': 'http://localhost',
             }
         }
-        # This complains about mismatching argument types, yet they are all correct?
-        # We should investigate and file an issue in mypy.
-        self.assertRaisesRegexp(ImportError,  # type: ignore
-                                "Bot \"nonexistent-bot\" doesn't exists. Please "
-                                "make sure you have set up the flaskbotrc file correctly.",
-                                lambda: self.assert_bot_server_response(available_bots=available_bots,
-                                                                        bots_config=bots_config))
+        # TODO: The following passes mypy, though the six stubs don't match the
+        # unittest ones, so we could file a mypy bug to improve this.
+        six.assertRaisesRegex(self,
+                              ImportError,
+                              "Bot \"nonexistent-bot\" doesn't exists. Please "
+                              "make sure you have set up the flaskbotrc file correctly.",
+                              lambda: self.assert_bot_server_response(available_bots=available_bots,
+                                                                      bots_config=bots_config))
 
 if __name__ == '__main__':
     unittest.main()
