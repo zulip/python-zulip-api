@@ -125,7 +125,7 @@ class ExternalBotHandler(object):
         config = configparser.ConfigParser()
         try:
             with open(conf_file_path) as conf:
-                config.readfp(conf)  # type: ignore
+                config.readfp(conf)  # type: ignore # readfp->read_file in python 3, so not in stubs
         except IOError:
             if optional:
                 return dict()
