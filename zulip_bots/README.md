@@ -3,9 +3,9 @@
 This directory contains the source code for the `zulip_bots` PyPI package.
 
 The Zulip documentation has guides on [using Zulip's bot system](
-http://zulip.readthedocs.io/en/latest/running-bots-guide.html)
+https://chat.zulip.org/api/running-bots)
 and [writing your own bots](
-http://zulip.readthedocs.io/en/latest/writing-bots-guide.html).
+https://chat.zulip.org/api/writing-bots).
 
 ## Directory structure
 
