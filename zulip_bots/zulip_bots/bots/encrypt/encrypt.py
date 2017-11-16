@@ -21,6 +21,11 @@ class EncryptHandler(object):
     It encrypts/decrypts messages starting with @mention-bot.
     '''
 
+    META = {
+        'name': 'Encrypt',
+        'default_commands_enabled': False,
+    }
+
     def usage(self):
         return '''
             This bot uses ROT13 encryption for its purposes.

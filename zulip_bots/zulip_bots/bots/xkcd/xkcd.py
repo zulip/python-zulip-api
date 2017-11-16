@@ -3,6 +3,8 @@ import random
 import logging
 import requests
 
+from collections import OrderedDict
+
 XKCD_TEMPLATE_URL = 'https://xkcd.com/%s/info.0.json'
 LATEST_XKCD_URL = 'https://xkcd.com/info.0.json'
 
@@ -17,6 +19,13 @@ class XkcdHandler(object):
     META = {
         'name': 'XKCD',
         'description': 'Fetches comic strips from https://xkcd.com.',
+        'default_commands_enabled': True,
+        'commands': OrderedDict([
+                ('', ""),  # Allow bot to handle blank commands; no help text
+                ('latest', "Show the latest comic strip"),
+                ('random', "Show a random comic strip"),
+                ('<comic id>', "Show a comic strip with a specific 'comic id'"),
+        ])  # NOTE: help not listed here, so default command used
     }
 
     def usage(self):

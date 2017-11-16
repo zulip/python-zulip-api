@@ -35,6 +35,11 @@ class ConverterHandler(object):
     the plugin, along with a list of all supported units.
     '''
 
+    META = {
+        'name': 'Converter',
+        'default_commands_enabled': False,
+    }
+
     def usage(self):
         return '''
                This plugin allows users to make conversions between

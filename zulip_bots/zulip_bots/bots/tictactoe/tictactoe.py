@@ -268,6 +268,11 @@ class ticTacToeHandler(object):
     "@mention-bot".
     '''
 
+    META = {
+        'name': 'TicTacToe',
+        'default_commands_enabled': False,
+    }
+
     def usage(self):
         return '''
             You can play tic-tac-toe with the computer now! Make sure your

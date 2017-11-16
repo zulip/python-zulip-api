@@ -22,6 +22,7 @@ class WikipediaHandler(object):
     META = {
         'name': 'Wikipedia',
         'description': 'Searches Wikipedia for a term and returns the top article.',
+        'default_commands_enabled': False,
     }
 
     def usage(self):

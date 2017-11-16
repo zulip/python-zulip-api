@@ -19,6 +19,8 @@ from types import ModuleType
 
 from zulip import Client
 
+from collections import OrderedDict
+
 def exit_gracefully(signum, frame):
     # type: (int, Optional[Any]) -> None
     sys.exit(0)
@@ -166,6 +168,66 @@ def is_private_message_from_another_user(message_dict, current_user_id):
         return current_user_id != message_dict['sender_id']
     return False
 
+def setup_default_commands(bot_details, message_handler):
+    def default_empty_response():
+        return "You sent the bot an empty message; perhaps try 'about', 'help' or 'usage'."
+
+    def default_about_response():
+        if bot_details['description'] == "":
+            return "**{name}**".format(**bot_details)
+        return "**{name}**: {description}".format(**bot_details)
+
+    def default_commands_response():
+        return "**Commands**: {} {}".format(
+            " ".join(name for name in command_defaults if name),
+            " ".join(name for name in bot_details['commands'] if name))
+
+    def commands_list():
+        return ("\n".join("**{}** - {}".format(name, options['help'])
+                          for name, options in command_defaults.items() if name) +
+                "\n" +
+                "\n".join("**{}** - {}".format(name, description)
+                          for name, description in bot_details['commands'].items() if name))
+
+    def default_help_response():
+        return "{}\n{}\n{}".format(default_about_response(),
+                                   message_handler.usage(), commands_list())
+
+    command_defaults = OrderedDict([  # Variable definition required for callbacks above
+        ('', {'action': default_empty_response,
+              'help': "[BLANK MESSAGE NOT SHOWN]"}),
+        ('about', {'action': default_about_response,
+                   'help': "The type and use of this bot"}),
+        ('usage', {'action': lambda: message_handler.usage(),
+                   'help': "Bot-provided usage text"}),
+        ('commands', {'action': default_commands_response,
+                      'help': "A short list of supported commands"}),
+        ('help', {'action': default_help_response,
+                  'help': "This help text"}),
+    ])
+    return command_defaults
+
+def updated_default_commands(default_commands, bot_details):
+    if not bot_details['default_commands_enabled']:
+        return OrderedDict()
+    exclude_list = bot_details['commands'] or ('commands', 'help')
+    updated = OrderedDict((name, option) for name, option in default_commands.items()
+                          if name not in exclude_list)
+    # Update bot_details if updated is empty
+    if len(updated) == 0:
+        bot_details['default_commands_enabled'] = False
+    return updated
+
+def get_bot_details(bot_class, bot_name):
+    bot_details = {
+        'name': bot_name.capitalize(),
+        'description': "",
+        'commands': {},
+        'default_commands_enabled': True,
+    }
+    bot_details.update(getattr(bot_class, 'META', {}))
+    return bot_details
+
 def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
     # type: (Any, bool, str, str) -> Any
     #
@@ -184,11 +246,11 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
         message_handler.initialize(bot_handler=restricted_client)
 
     # Set default bot_details, then override from class, if provided
-    bot_details = {
-        'name': bot_name.capitalize(),
-        'description': "",
-    }
-    bot_details.update(getattr(lib_module.handler_class, 'META', {}))
+    bot_details = get_bot_details(message_handler, bot_name)
+
+    # Initialise default commands, then override & sync with bot_details
+    default_commands = setup_default_commands(bot_details, message_handler)
+    updated_defaults = updated_default_commands(default_commands, bot_details)
 
     if not quiet:
         print("Running {} Bot:".format(bot_details['name']))
@@ -214,6 +276,13 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
                 return
 
         if is_private_message or is_mentioned:
+            # Handle any default commands first
+            for command in updated_defaults:
+                if command == message['content']:
+                    restricted_client.send_reply(message,
+                                                 updated_defaults[command]['action']())
+                    return
+            # ...then pass anything else to bot to deal with
             message_handler.handle_message(
                 message=message,
                 bot_handler=restricted_client

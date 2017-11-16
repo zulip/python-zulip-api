@@ -1,6 +1,12 @@
 # See readme.md for instructions on running this code.
 
 class HelpHandler(object):
+
+    META = {
+        'name': 'Help',
+        'default_commands_enabled': False,
+    }
+
     def usage(self):
         return '''
             This plugin will give info about Zulip to

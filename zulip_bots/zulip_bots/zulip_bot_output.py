@@ -13,6 +13,7 @@ from typing import Any
 from mock import MagicMock, patch
 from zulip_bots.lib import StateHandler
 from zulip_bots.lib import ExternalBotHandler
+from zulip_bots.lib import get_bot_details, setup_default_commands, updated_default_commands
 from zulip_bots.provision import provision_bot
 from zulip_bots.run import import_module_from_source
 
@@ -76,6 +77,11 @@ def main():
         print("This module does not appear to have a bot handler_class specified.")
         sys.exit(1)
 
+    bot_details = get_bot_details(message_handler, args.bot)
+
+    default_commands = setup_default_commands(bot_details, message_handler)
+    updated_defaults = updated_default_commands(default_commands, bot_details)
+
     with patch('zulip.Client') as mock_client:
         mock_bot_handler = ExternalBotHandler(mock_client, bot_dir)  # type: Any
         mock_bot_handler.send_reply = MagicMock()
@@ -83,10 +89,20 @@ def main():
         mock_bot_handler.update_message = MagicMock()
         if hasattr(message_handler, 'initialize') and callable(message_handler.initialize):
             message_handler.initialize(mock_bot_handler)
-        message_handler.handle_message(
-            message=message,
-            bot_handler=mock_bot_handler
-        )
+
+        # Check if command handled in library first; if not, then delegate to bot
+        handled = False
+        for command in updated_defaults:
+            if command == message['content']:
+                mock_bot_handler.send_reply(message,
+                                            updated_defaults[command]['action']())
+                handled = True
+        if not handled:
+            message_handler.handle_message(
+                message=message,
+                bot_handler=mock_bot_handler
+            )
+
         print("On sending {} bot the message \"{}\"".format(bot_name, args.message))
         # send_reply and send_message have slightly arguments; the
         # following takes that into account.
