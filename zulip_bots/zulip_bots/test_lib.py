@@ -25,6 +25,7 @@ from typing import List, Dict, Any, Optional, Callable, Tuple
 from types import ModuleType
 
 from copy import deepcopy
+from zulip_bots.lib import ExternalBotHandler
 
 class BotTestCaseBase(TestCase):
     """Test class for common Bot test helper methods"""
@@ -95,12 +96,20 @@ class BotTestCaseBase(TestCase):
 
     def call_request(self, message, expected_method, response):
         # type: (Dict[str, Any], str, Dict[str, Any]) -> None
+        instance = self.MockClass.return_value
+
+        # Set mock identity of the bot
+        if not hasattr(self.__class__, 'bot_identity'):
+            name = "test bot"
+            pad = '**' if ' ' in name else ''
+            self.bot_identity = ExternalBotHandler.BotIdentity(name, "{}{}{}".format(pad, name, pad), None)
+        instance.identity.return_value = self.bot_identity
+
         # Send message to the concerned bot
         self.message_handler.handle_message(message, self.mock_bot_handler)
 
         # Check if the bot is sending a message via `send_message` function.
         # Where response is a dictionary here.
-        instance = self.MockClass.return_value
         if expected_method == "send_message":
             instance.send_message.assert_called_with(response)
         else:

@@ -6,19 +6,22 @@ from __future__ import print_function
 import mock
 from mock import MagicMock, patch
 from zulip_bots.test_lib import BotTestCase
+from zulip_bots.lib import ExternalBotHandler
 
 class TestXkcdBot(BotTestCase):
     bot_name = "xkcd"
+    bot_identity = ExternalBotHandler.BotIdentity(name="xkcd bot", quoted_name="**xkcd bot**", email=None)
 
     @mock.patch('logging.exception')
     def test_bot(self, mock_logging_exception):
         help_txt = "xkcd bot supports these commands:"
         err_txt  = "xkcd bot only supports these commands, not `{}`:"
         commands = '''
-* `@xkcd help` to show this help message.
-* `@xkcd latest` to fetch the latest comic strip from xkcd.
-* `@xkcd random` to fetch a random comic strip from xkcd.
-* `@xkcd <comic id>` to fetch a comic strip based on `<comic id>` e.g `@xkcd 1234`.'''
+* `{0} help` to show this help message.
+* `{0} latest` to fetch the latest comic strip from xkcd.
+* `{0} random` to fetch a random comic strip from xkcd.
+* `{0} <comic id>` to fetch a comic strip based on `<comic id>` e.g `{0} 1234`.'''.format(
+            "@" + self.bot_identity.quoted_name)
         invalid_id_txt = "Sorry, there is likely no xkcd comic strip with id: #"
 
         # 'latest' query

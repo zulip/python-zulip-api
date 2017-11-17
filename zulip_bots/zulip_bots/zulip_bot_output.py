@@ -83,6 +83,8 @@ def main():
         mock_bot_handler.update_message = MagicMock()
         if hasattr(message_handler, 'initialize') and callable(message_handler.initialize):
             message_handler.initialize(mock_bot_handler)
+        mock_bot_handler.identity = MagicMock()
+        mock_bot_handler.identity.return_value = ExternalBotHandler.BotIdentity("bot id", "**bot id**", None)
         message_handler.handle_message(
             message=message,
             bot_handler=mock_bot_handler
