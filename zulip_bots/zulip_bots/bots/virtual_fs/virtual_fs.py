@@ -249,7 +249,7 @@ def fs_rmdir(fs, user, fn):
     new_fs.pop(path)
     directory = get_directory(path)
     new_fs[directory]['fns'].remove(path)
-    for sub_path in new_fs.keys():
+    for sub_path in list(new_fs):
         if sub_path.startswith(path+'/'):
             new_fs.pop(sub_path)
     msg = 'removed'
