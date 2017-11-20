@@ -45,15 +45,8 @@ def name_and_path_match(given_name, path_to_bot):
 def parse_args():
     # type: () -> argparse.Namespace
     usage = '''
-        zulip-run-bot <bot_name>
-        Example: zulip-run-bot followup
-        (This program loads bot-related code from the
-        library code and then runs a message loop,
-        feeding messages to the library code to handle.)
-        Please make sure you have a current ~/.zuliprc
-        file with the credentials you want to use for
-        this bot.
-        See lib/readme.md for more context.
+        zulip-run-bot <bot_name> --config-file ~/zuliprc
+        zulip-run-bot --help
         '''
 
     parser = argparse.ArgumentParser(usage=usage)
@@ -67,7 +60,8 @@ def parse_args():
 
     parser.add_argument('--config-file',
                         action='store',
-                        help='(alternate config file to ~/.zuliprc)')
+                        required=True,
+                        help='zulip configuration file (e.g. ~/Downloads/zuliprc)')
 
     parser.add_argument('--force',
                         action='store_true',
