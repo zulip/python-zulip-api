@@ -77,7 +77,7 @@ class JohnHandler(object):
             "I would like to request a remote dev instance",
             """Greetings! You should receive a response from one of our mentors soon.
             In the meantime, why don't you learn more about running Zulip on a development
-            environment? https://zulip.readthedocs.io/en/latest/using-dev-environment.html""",
+            environment? https://zulip.readthedocs.io/en/latest/development/using.html""",
         ])
         self.bot.train([
             "Joke!",

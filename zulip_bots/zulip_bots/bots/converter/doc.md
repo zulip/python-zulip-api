@@ -4,7 +4,7 @@ This bot allows users to perform conversions for various measurement units.
 
 ## Usage
 
-Run this bot as described in [here](http://zulip.readthedocs.io/en/latest/bots-guide.html#how-to-deploy-a-bot).
+Run this bot as described in [here](https://zulipchat.com/api/running-bots#running-a-bot).
 
 Use this bot with the following command
 

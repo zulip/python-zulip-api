@@ -7,7 +7,7 @@ highest safe-search setting.
 ## Usage
 
 Run this bot as described
-[here](http://zulip.readthedocs.io/en/latest/bots-guide.html#how-to-deploy-a-bot).
+[here](https://zulipchat.com/api/running-bots#running-a-bot).
 
 Use this bot with the following command
 
