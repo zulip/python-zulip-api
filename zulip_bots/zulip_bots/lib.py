@@ -14,7 +14,7 @@ from contextlib import contextmanager
 
 if False:
     from mypy_extensions import NoReturn
-from typing import Any, Optional, List, Dict, IO, Text, Set
+from typing import Any, Optional, List, Dict, IO, Text, Set, Sequence
 from types import ModuleType
 
 from zulip import Client, ZulipError
@@ -84,6 +84,14 @@ class StateHandler(object):
     def contains(self, key):
         # type: (Text) -> bool
         return key in self.state_
+
+class NotADefaultCommand(Exception):
+    def __init__(self, command, supported):
+        # type: (Text, Sequence[Text])
+        self.msg = "'{}' is not a supported default command; options are: {}".format(
+            command, ", ".join([repr(s) for s in supported]))
+    def __str__(self):
+        return self.msg
 
 class ExternalBotHandler(object):
     def __init__(self, client, root_dir, bot_details, bot_config_file):
@@ -209,6 +217,27 @@ class ExternalBotHandler(object):
         else:
             raise PermissionError("Cannot open file \"{}\". Bots may only access "
                                   "files in their local directory.".format(abs_filepath))
+
+    def dispatch_default_commands(self, message, command_list, meta):
+        # type: (Dict[str, Any], Sequence[Text], Dict[Text, Text]) -> Optional[Text]
+        supported_commands = ["", "about"]  # TODO: commands, help, 'custom'
+
+        # Check command_list has supported commands
+        for requested_command in command_list:
+            if requested_command not in supported_commands:
+                raise NotADefaultCommand(requested_command, supported_commands)
+
+        # Act on message content
+        possible_command = message['content'].split(" ")
+        if possible_command:
+            command = possible_command[0]
+            if command in command_list:
+                # Act on command
+                if command == "":
+                    return "You sent the bot an empty message; perhaps try 'about', 'help' or 'usage'."
+                elif command == "about":
+                    return "**{name}**: {description}".format(**meta)
+        return None
 
 def extract_query_without_mention(message, client):
     # type: (Dict[str, Any], ExternalBotHandler) -> str
