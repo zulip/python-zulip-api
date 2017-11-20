@@ -2,6 +2,6 @@
 
 set -ev
 
-tools/test-bots --coverage combine
+tools/test-bots --coverage
 tools/test-botserver --coverage combine
 tools/test-zulip --coverage combine
