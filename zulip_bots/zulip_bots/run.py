@@ -75,6 +75,18 @@ def parse_args():
     return args
 
 
+def exit_gracefully_if_config_file_does_not_exist(config_file):
+    # type: (str) -> None
+    if not os.path.exists(config_file):
+        print('''
+            ERROR: %s does not exist.
+
+            You may need to download a config file from the Zulip app, or
+            if you have already done that, you need to specify the file
+            location correctly.
+            ''' % (config_file,))
+        sys.exit(1)
+
 def main():
     # type: () -> None
     args = parse_args()
@@ -90,6 +102,8 @@ def main():
 
     if not args.quiet:
         logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+
+    exit_gracefully_if_config_file_does_not_exist(args.config_file)
 
     run_message_handler_for_bot(
         lib_module=lib_module,
