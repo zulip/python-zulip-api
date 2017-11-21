@@ -216,7 +216,10 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
     }
     bot_details.update(getattr(lib_module.handler_class, 'META', {}))
     # Make sure you set up your ~/.zuliprc
-    client = Client(config_file=config_file, client="Zulip{}Bot".format(bot_name.capitalize()))
+
+    client_name = "Zulip{}Bot".format(bot_name.capitalize())
+    client = Client(config_file=config_file, client=client_name)
+
     bot_dir = os.path.dirname(lib_module.__file__)
     restricted_client = ExternalBotHandler(client, bot_dir, bot_details)
 
