@@ -218,7 +218,14 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
     # Make sure you set up your ~/.zuliprc
 
     client_name = "Zulip{}Bot".format(bot_name.capitalize())
-    client = Client(config_file=config_file, client=client_name)
+
+    try:
+        client = Client(config_file=config_file, client=client_name)
+    except configparser.Error as e:
+        file_contents = open(config_file).read()
+        print('\nERROR: {} seems to be broken:\n\n{}'.format(config_file, file_contents))
+        print('\nMore details here:\n\n' + str(e) + '\n')
+        sys.exit(1)
 
     bot_dir = os.path.dirname(lib_module.__file__)
     restricted_client = ExternalBotHandler(client, bot_dir, bot_details)
