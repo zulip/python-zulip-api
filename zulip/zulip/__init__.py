@@ -271,6 +271,9 @@ def get_default_config_filename():
                            "  mv ~/.humbugrc ~/.zuliprc\n")
     return config_file
 
+class ZulipError(Exception):
+    pass
+
 class Client(object):
     def __init__(self, email=None, api_key=None, config_file=None,
                  verbose=False, retry_on_errors=True,
@@ -381,6 +384,8 @@ class Client(object):
         self.client_cert_key = client_cert_key
 
         self.session = None  # type: Union[None, requests.Session]
+
+        self.has_connected = False
 
     def ensure_session(self):
         # type: () -> None
@@ -507,6 +512,8 @@ class Client(object):
                     timeout=request_timeout,
                     **kwargs)
 
+                self.has_connected = True
+
                 # On 50x errors, try again after a short sleep
                 if str(res.status_code).startswith('5'):
                     if error_retry(" (server %s)" % (res.status_code,)):
@@ -528,6 +535,13 @@ class Client(object):
                     return {'msg': "Connection error:\n%s" % traceback.format_exc(),
                             "result": "connection-error"}
             except requests.exceptions.ConnectionError:
+                if not self.has_connected:
+                    # If we have never successfully connected to the server, don't
+                    # go into retry logic, because the most likely scenario here is
+                    # that somebody just hasn't started their server, or they passed
+                    # in an invalid site.
+                    raise ZulipError('cannot connect to server ' + self.base_url)
+
                 if error_retry(""):
                     continue
                 end_error_retry(False)

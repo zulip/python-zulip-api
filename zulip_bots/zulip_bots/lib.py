@@ -17,7 +17,7 @@ if False:
 from typing import Any, Optional, List, Dict, IO, Text, Set
 from types import ModuleType
 
-from zulip import Client
+from zulip import Client, ZulipError
 
 def exit_gracefully(signum, frame):
     # type: (int, Optional[Any]) -> None
@@ -95,7 +95,17 @@ class ExternalBotHandler(object):
     def __init__(self, client, root_dir, bot_details={}):
         # type: (Client, str, Dict[str, Any]) -> None
         # Only expose a subset of our Client's functionality
-        user_profile = client.get_profile()
+        try:
+            user_profile = client.get_profile()
+        except ZulipError as e:
+            print('''
+                ERROR: {}
+
+                Have you not started the server?
+                Or did you mis-specify the URL?
+                '''.format(e))
+            sys.exit(1)
+
         self._rate_limit = RateLimit(20, 5)
         self._client = client
         self._root_dir = root_dir
