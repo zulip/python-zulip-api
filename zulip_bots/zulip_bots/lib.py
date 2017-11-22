@@ -106,6 +106,13 @@ class ExternalBotHandler(object):
                 '''.format(e))
             sys.exit(1)
 
+        if user_profile.get('result') == 'error':
+            msg = user_profile.get('msg', 'unknown')
+            print('''
+                ERROR: {}
+                '''.format(msg))
+            sys.exit(1)
+
         self._rate_limit = RateLimit(20, 5)
         self._client = client
         self._root_dir = root_dir
