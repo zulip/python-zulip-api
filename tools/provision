@@ -4,7 +4,6 @@ import os
 import sys
 import argparse
 import subprocess
-import warnings
 
 from importlib import import_module
 
@@ -13,6 +12,11 @@ ZULIP_BOTS_DIR = os.path.join(CURRENT_DIR, '..', 'zulip_bots')
 sys.path.append(ZULIP_BOTS_DIR)
 
 import generate_manifest
+
+yellow = '\033[93m'
+green = '\033[92m'
+end_format = '\033[0m'
+bold = '\033[1m'
 
 def main():
     usage = """./tools/provision
@@ -83,13 +87,8 @@ the Python version this command is executed with."""
     if py_version > (3, 1):
         install_dependencies('py3_requirements.txt')
     else:
-        warnings.warn("Your Python version does not support mypy. `tools/run-mypy` will fail.")
+        print(yellow + "Your Python version does not support mypy. `tools/run-mypy` will fail." + end_format)
 
-    green = '\033[92m'
-    end_format = '\033[0m'
-    bold = '\033[1m'
-
-    print('\n')
     print(green + 'Success!' + end_format)
 
     activate_command = os.path.join(base_dir,
