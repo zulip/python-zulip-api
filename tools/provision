@@ -27,7 +27,12 @@ the Python version this command is executed with."""
     options = parser.parse_args()
 
     base_dir = os.path.abspath(os.path.join(__file__, '..', '..'))
-    venv_name = 'zulip-api-py{}-venv'.format(sys.version_info.major)
+    py_version_output = subprocess.check_output([options.python_interpreter, '--version'],
+                                                stderr=subprocess.STDOUT, universal_newlines=True)
+    # The output has the format "Python 1.2.3"
+    py_version_list = py_version_output.split()[1].split('.')
+    py_version = tuple(int(num) for num in py_version_list)
+    venv_name = 'zulip-api-py{}-venv'.format(py_version[0])
 
     venv_dir = os.path.join(base_dir, venv_name)
     if not os.path.isdir(venv_dir):
@@ -75,7 +80,7 @@ the Python version this command is executed with."""
                           .format(os.path.join(base_dir, requirements_filename)))
 
     install_dependencies('requirements.txt')
-    if sys.version_info > (3, 1):
+    if py_version > (3, 1):
         install_dependencies('py3_requirements.txt')
     else:
         warnings.warn("Your Python version does not support mypy. `tools/run-mypy` will fail.")
