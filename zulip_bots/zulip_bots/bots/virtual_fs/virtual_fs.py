@@ -7,7 +7,6 @@ class VirtualFsHandler(object):
     META = {
         'name': 'VirtualFs',
         'description': 'Provides a simple, permanent file system to store and retrieve strings.',
-        'uses_storage': True,
     }
 
     def usage(self):

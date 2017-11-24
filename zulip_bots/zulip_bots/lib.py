@@ -64,14 +64,15 @@ class StateHandler(object):
         response = self._client.get_storage()
         if response['result'] == 'success':
             self.state_ = response['state']
-            self._modified_entries = set()  # type: Set[Text]
         else:
             raise StateHandlerError("Error initializing state: {}".format(str(response)))
 
     def put(self, key, value):
         # type: (Text, Text) -> None
         self.state_[key] = self.marshal(value)
-        self._modified_entries.add(key)
+        response = self._client.update_storage({'state': {key: self.state_[key]}})
+        if response['result'] != 'success':
+            raise StateHandlerError("Error updating state: {}".format(str(response)))
 
     def get(self, key):
         # type: (Text) -> Text
@@ -80,16 +81,6 @@ class StateHandler(object):
     def contains(self, key):
         # type: (Text) -> bool
         return key in self.state_
-
-    def _save(self):
-        # type: () -> None
-        state_update = {'state': {key: self.state_[key] for key in self._modified_entries}}
-        if state_update:
-            response = self._client.update_storage(state_update)
-            if response['result'] == 'success':
-                self._modified_entries.clear()
-            else:
-                raise StateHandlerError("Error updating state: {}".format(str(response)))
 
 class ExternalBotHandler(object):
     def __init__(self, client, root_dir, bot_details={}):
@@ -117,7 +108,7 @@ class ExternalBotHandler(object):
         self._client = client
         self._root_dir = root_dir
         self.bot_details = bot_details
-        self._storage = StateHandler(client) if self.bot_details.get('uses_storage', False) else None
+        self._storage = StateHandler(client)
         try:
             self.user_id = user_profile['user_id']
             self.full_name = user_profile['full_name']
@@ -130,15 +121,6 @@ class ExternalBotHandler(object):
     @property
     def storage(self):
         # type: () -> StateHandler
-        if not self._storage:
-            raise AttributeError("""Bot tried to access storage, but has not enabled
-storage access. To enable storage access, add
-    META = {
-        'uses_storage': True,
-    }
-to your bot handler class. Check out the incrementor
-bot for an example on how to do this.
-""")
         return self._storage
 
     def send_message(self, message):
@@ -279,7 +261,6 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
                 message=message,
                 bot_handler=restricted_client
             )
-        restricted_client.storage._save()
 
     signal.signal(signal.SIGINT, exit_gracefully)
 
