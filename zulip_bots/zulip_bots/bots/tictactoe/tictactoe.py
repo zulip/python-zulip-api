@@ -270,7 +270,6 @@ class ticTacToeHandler(object):
     META = {
         'name': 'TicTacToe',
         'description': 'Lets you play Tic-tac-toe against a computer.',
-        'uses_storage': True,
     }
 
     def usage(self):
