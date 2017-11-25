@@ -12,6 +12,8 @@ from six.moves import configparser
 
 from contextlib import contextmanager
 
+from collections import OrderedDict
+
 if False:
     from mypy_extensions import NoReturn
 from typing import Any, Optional, List, Dict, IO, Text, Set, Sequence
@@ -219,8 +221,14 @@ class ExternalBotHandler(object):
                                   "files in their local directory.".format(abs_filepath))
 
     def dispatch_default_commands(self, message, command_list, meta, other_commands=None):
-        # type: (Dict[str, Any], Sequence[Text], Dict[Text, Text], Optional[Sequence[Text]]) -> Optional[Text]
-        supported_commands = ["", "about", "commands"]  # TODO: help, 'custom'
+        # type: (Dict[str, Any], Sequence[Text], Dict[Text, Text], Optional[Mapping[Text, Text]]) -> Optional[Text]
+        supported_commands = OrderedDict([
+            ("", ""),  # No help text, as this shouldn't appear in commands/help
+            ("about", "The brief type and use of this bot."),
+            ("commands", "A short list of the supported commands."),
+            ("help", "This help text."),
+        ])
+        ["", "about", "commands", "help"]  # TODO: 'custom'
 
         # Check command_list has supported commands
         for requested_command in command_list:
@@ -242,6 +250,14 @@ class ExternalBotHandler(object):
                     if other_commands is not None:
                         cmd_list.extend(other_commands)
                     return "**Commands**: " + ", ".join(cmd_list)
+                elif command == "help":
+                    cmd_list = OrderedDict([(cmd, supported_commands[cmd]) for cmd in command_list if cmd != ""])
+                    if other_commands is not None:
+                        cmd_list.update(other_commands)
+                    help_text = ("**{name}**: {description}".format(**meta)+
+                                 "\nThis bot supports the following commands:\n"+
+                                 "\n".join(["**{}** - {}".format(c, h) for c, h in cmd_list.items()]))
+                    return help_text
         return None
 
 def extract_query_without_mention(message, client):

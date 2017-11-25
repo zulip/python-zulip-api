@@ -21,3 +21,4 @@ class TestHelloWorldDefaultsBot(BotTestCase):
 #        ""
 #        "about"
 #        "commands"
+#        "help"
