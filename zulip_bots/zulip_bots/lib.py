@@ -16,7 +16,7 @@ from collections import OrderedDict
 
 if False:
     from mypy_extensions import NoReturn
-from typing import Any, Optional, List, Dict, IO, Text, Set, Sequence
+from typing import Any, Optional, List, Dict, IO, Text, Set, Sequence, Tuple, Callable
 from types import ModuleType
 
 from zulip import Client, ZulipError
@@ -221,14 +221,14 @@ class ExternalBotHandler(object):
                                   "files in their local directory.".format(abs_filepath))
 
     def dispatch_default_commands(self, message, command_list, meta, other_commands=None):
-        # type: (Dict[str, Any], Sequence[Text], Dict[Text, Text], Optional[Mapping[Text, Text]]) -> Optional[Text]
+        # type: (Dict[str, Any], Sequence[Text], Dict[Text, Text], Optional[Mapping[Text, Tuple[Text, Optional[Callable[[], Text]]]]]) -> Optional[Text]
         supported_commands = OrderedDict([
             ("", ""),  # No help text, as this shouldn't appear in commands/help
             ("about", "The brief type and use of this bot."),
             ("commands", "A short list of the supported commands."),
             ("help", "This help text."),
         ])
-        ["", "about", "commands", "help"]  # TODO: 'custom'
+        ["", "about", "commands", "help"]
 
         # Check command_list has supported commands
         for requested_command in command_list:
@@ -253,11 +253,14 @@ class ExternalBotHandler(object):
                 elif command == "help":
                     cmd_list = OrderedDict([(cmd, supported_commands[cmd]) for cmd in command_list if cmd != ""])
                     if other_commands is not None:
-                        cmd_list.update(other_commands)
+                        cmd_list.update(OrderedDict([(c, h[0]) for c, h in other_commands.items()]))
                     help_text = ("**{name}**: {description}".format(**meta)+
                                  "\nThis bot supports the following commands:\n"+
                                  "\n".join(["**{}** - {}".format(c, h) for c, h in cmd_list.items()]))
                     return help_text
+            if other_commands is not None and command in other_commands:
+                if other_commands[command][1] is not None:
+                    return other_commands[command][1]()
         return None
 
 def extract_query_without_mention(message, client):

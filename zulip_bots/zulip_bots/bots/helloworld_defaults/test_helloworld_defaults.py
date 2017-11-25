@@ -24,3 +24,6 @@ class TestHelloWorldDefaultsBot(BotTestCase):
 #        "about"
 #        "commands"
 #        "help"
+
+#        "hi" is handled in the library too, though is an external function
+#        so we can't test it?

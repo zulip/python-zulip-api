@@ -15,9 +15,14 @@ class HelloWorld_DefaultBot(object):
         sophisticated, bots using default commands.
         '''
 
+    def do_hi(self):
+        return "Hi!"
+
     def handle_message(self, message, bot_handler):
         default_commands_to_handle = ["", "about", "commands", "help"]
-        other_commands = {"hello": "Says hello to the user."}
+        other_commands = {"hello": ("Says hello to the user.", None),
+                          "hi": ("Says hi to the user.", self.do_hi),
+        }
         default_response = bot_handler.dispatch_default_commands(message,
                                                                  default_commands_to_handle,
                                                                  self.META,
@@ -32,5 +37,6 @@ class HelloWorld_DefaultBot(object):
 
         content = 'beep boop'
         bot_handler.send_reply(message, content)
+
 
 handler_class = HelloWorld_DefaultBot
