@@ -16,7 +16,7 @@ class HelloWorld_DefaultBot(object):
         '''
 
     def handle_message(self, message, bot_handler):
-        default_commands_to_handle = ["", "about"]
+        default_commands_to_handle = ["", "about", "commands"]
         default_response = bot_handler.dispatch_default_commands(message,
                                                                  default_commands_to_handle,
                                                                  self.META)

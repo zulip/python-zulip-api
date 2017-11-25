@@ -20,3 +20,4 @@ class TestHelloWorldDefaultsBot(BotTestCase):
         # Don't check for these, as they are handled by default in the library
 #        ""
 #        "about"
+#        "commands"

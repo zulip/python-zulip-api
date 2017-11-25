@@ -218,9 +218,9 @@ class ExternalBotHandler(object):
             raise PermissionError("Cannot open file \"{}\". Bots may only access "
                                   "files in their local directory.".format(abs_filepath))
 
-    def dispatch_default_commands(self, message, command_list, meta):
-        # type: (Dict[str, Any], Sequence[Text], Dict[Text, Text]) -> Optional[Text]
-        supported_commands = ["", "about"]  # TODO: commands, help, 'custom'
+    def dispatch_default_commands(self, message, command_list, meta, other_commands=None):
+        # type: (Dict[str, Any], Sequence[Text], Dict[Text, Text], Optional[Sequence[Text]]) -> Optional[Text]
+        supported_commands = ["", "about", "commands"]  # TODO: help, 'custom'
 
         # Check command_list has supported commands
         for requested_command in command_list:
@@ -237,6 +237,11 @@ class ExternalBotHandler(object):
                     return "You sent the bot an empty message; perhaps try 'about', 'help' or 'usage'."
                 elif command == "about":
                     return "**{name}**: {description}".format(**meta)
+                elif command == "commands":
+                    cmd_list = [cmd for cmd in command_list if cmd != ""]
+                    if other_commands is not None:
+                        cmd_list.extend(other_commands)
+                    return "**Commands**: " + ", ".join(cmd_list)
         return None
 
 def extract_query_without_mention(message, client):
