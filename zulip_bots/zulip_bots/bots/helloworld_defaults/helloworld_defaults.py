@@ -1,5 +1,7 @@
 # See readme.md for instructions on running this code.
 
+from zulip_bots.lib import dispatch
+
 class HelloWorld_DefaultBot(object):
     META = {
         'name': 'HelloWorld-defaults',
@@ -37,6 +39,10 @@ class HelloWorld_DefaultBot(object):
 
         content = 'beep boop'
         bot_handler.send_reply(message, content)
+
+@dispatch("bye", "Says bye to the user.")
+def do_byebye():
+    return "I'm not going anywhere!"
 
 
 handler_class = HelloWorld_DefaultBot

@@ -95,6 +95,15 @@ class NotADefaultCommand(Exception):
     def __str__(self):
         return self.msg
 
+to_dispatch = {}
+def dispatch(command, help_text):
+    def wrap(func):
+        to_dispatch[command] = (help_text, func)
+        def wrapped_f(*args, **kwargs):
+            return func(*args, **kwargs)
+        return wrapped_f
+    return wrap
+
 class ExternalBotHandler(object):
     def __init__(self, client, root_dir, bot_details, bot_config_file):
         # type: (Client, str, Dict[str, Any], str) -> None
@@ -249,11 +258,13 @@ class ExternalBotHandler(object):
                     cmd_list = [cmd for cmd in command_list if cmd != ""]
                     if other_commands is not None:
                         cmd_list.extend(other_commands)
+                    cmd_list.extend(to_dispatch)
                     return "**Commands**: " + ", ".join(cmd_list)
                 elif command == "help":
                     cmd_list = OrderedDict([(cmd, supported_commands[cmd]) for cmd in command_list if cmd != ""])
                     if other_commands is not None:
                         cmd_list.update(OrderedDict([(c, h[0]) for c, h in other_commands.items()]))
+                    cmd_list.update(OrderedDict([(c, h[0]) for c, h in to_dispatch.items()]))
                     help_text = ("**{name}**: {description}".format(**meta)+
                                  "\nThis bot supports the following commands:\n"+
                                  "\n".join(["**{}** - {}".format(c, h) for c, h in cmd_list.items()]))
@@ -261,6 +272,8 @@ class ExternalBotHandler(object):
             if other_commands is not None and command in other_commands:
                 if other_commands[command][1] is not None:
                     return other_commands[command][1]()
+            if command in to_dispatch:
+                return to_dispatch[command][1]()
         return None
 
 def extract_query_without_mention(message, client):
