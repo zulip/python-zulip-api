@@ -17,6 +17,8 @@ class TestHelloWorldDefaultsBot(BotTestCase):
         beep_messages = ["foo", "Hi, my name is abc"]
         self.check_expected_responses(list(zip(beep_messages, len(beep_messages)*[txt])))
 
+        self.check_expected_responses([("hello", "Hello!")])
+
         # Don't check for these, as they are handled by default in the library
 #        ""
 #        "about"

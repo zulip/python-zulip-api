@@ -17,11 +17,17 @@ class HelloWorld_DefaultBot(object):
 
     def handle_message(self, message, bot_handler):
         default_commands_to_handle = ["", "about", "commands", "help"]
+        other_commands = {"hello": "Says hello to the user."}
         default_response = bot_handler.dispatch_default_commands(message,
                                                                  default_commands_to_handle,
-                                                                 self.META)
+                                                                 self.META,
+                                                                 other_commands)
         if default_response is not None:
             bot_handler.send_reply(message, default_response)
+            return
+
+        if message['content'].startswith('hello'):
+            bot_handler.send_reply(message, "Hello!")
             return
 
         content = 'beep boop'
