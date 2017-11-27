@@ -137,7 +137,7 @@ class BotTestCaseBase(TestCase):
             http_headers = http_data.get('response-headers')
             with patch('requests.get') as mock_get:
                 mock_result = requests.Response()
-                mock_result._content = json.dumps(http_response).encode()
+                mock_result._content = json.dumps(http_response).encode()  # type: ignore # We are modifying a "hidden" attribute.
                 mock_result.status_code = http_headers.get('status', 200)
                 mock_get.return_value = mock_result
                 yield
