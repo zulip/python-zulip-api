@@ -54,7 +54,7 @@ def load_bot_handlers():
         try:
             bot_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                    'bots', bot)
-            bot_handlers[bot] = ExternalBotHandler(client, bot_dir)
+            bot_handlers[bot] = ExternalBotHandler(client, bot_dir, bot_details={})
         except SystemExit:
             return BadRequest("Cannot fetch user profile for bot {}, make sure you have set up the flaskbotrc "
                               "file correctly.".format(bot))

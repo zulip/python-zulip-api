@@ -83,7 +83,7 @@ class StateHandler(object):
         return key in self.state_
 
 class ExternalBotHandler(object):
-    def __init__(self, client, root_dir, bot_details={}):
+    def __init__(self, client, root_dir, bot_details):
         # type: (Client, str, Dict[str, Any]) -> None
         # Only expose a subset of our Client's functionality
         try:
