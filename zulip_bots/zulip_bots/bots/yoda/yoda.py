@@ -67,7 +67,7 @@ class YodaSpeakHandler(object):
                                 )
 
         if response.status_code == 200:
-            return response.text
+            return response.json()['text']
         if response.status_code == 403:
             raise ApiKeyError
         if response.status_code == 503:
