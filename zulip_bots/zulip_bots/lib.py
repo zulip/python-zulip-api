@@ -200,6 +200,12 @@ def is_private_message_from_another_user(message_dict, current_user_id):
         return current_user_id != message_dict['sender_id']
     return False
 
+def display_config_file_errors(error_msg, config_file):
+    # type: (str, str) -> None
+    file_contents = open(config_file).read()
+    print('\nERROR: {} seems to be broken:\n\n{}'.format(config_file, file_contents))
+    print('\nMore details here:\n\n{}\n'.format(error_msg))
+
 def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
     # type: (Any, bool, str, str) -> Any
     #
@@ -221,9 +227,7 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_name):
     try:
         client = Client(config_file=config_file, client=client_name)
     except configparser.Error as e:
-        file_contents = open(config_file).read()
-        print('\nERROR: {} seems to be broken:\n\n{}'.format(config_file, file_contents))
-        print('\nMore details here:\n\n' + str(e) + '\n')
+        display_config_file_errors(str(e), config_file)
         sys.exit(1)
 
     bot_dir = os.path.dirname(lib_module.__file__)
