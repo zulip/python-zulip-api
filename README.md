@@ -33,7 +33,7 @@ This repository contains the source code for Zulip's PyPI packages:
    where `<your_python_version>` is your default version of Python. If you would like to specify
    a different Python version, run
    ```
-   ./tools/provision -p <path_to_your_python_version>`
+   ./tools/provision -p <path_to_your_python_version>
    ```
 
 5. The above step, if successful, will tell you the command to "source" your
