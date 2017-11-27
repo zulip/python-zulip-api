@@ -29,11 +29,12 @@ class TestDefaultArguments(TestCase):
     @patch('zulip_bots.run.run_message_handler_for_bot')
     def test_argument_parsing_with_bot_name(self, mock_run_message_handler_for_bot):
         # type: (mock.Mock) -> None
-        with patch('zulip_bots.run.exit_gracefully_if_config_file_does_not_exist'):
+        with patch('zulip_bots.run.exit_gracefully_if_zulip_config_file_does_not_exist'):
             zulip_bots.run.main()
 
         mock_run_message_handler_for_bot.assert_called_with(bot_name='giphy',
                                                             config_file='/foo/bar/baz.conf',
+                                                            bot_config_file=None,
                                                             lib_module=mock.ANY,
                                                             quiet=False)
 
@@ -41,12 +42,13 @@ class TestDefaultArguments(TestCase):
     @patch('zulip_bots.run.run_message_handler_for_bot')
     def test_argument_parsing_with_bot_path(self, mock_run_message_handler_for_bot):
         # type: (mock.Mock) -> None
-        with patch('zulip_bots.run.exit_gracefully_if_config_file_does_not_exist'):
+        with patch('zulip_bots.run.exit_gracefully_if_zulip_config_file_does_not_exist'):
             zulip_bots.run.main()
 
         mock_run_message_handler_for_bot.assert_called_with(
             bot_name='giphy',
             config_file='/foo/bar/baz.conf',
+            bot_config_file=None,
             lib_module=mock.ANY,
             quiet=False)
 

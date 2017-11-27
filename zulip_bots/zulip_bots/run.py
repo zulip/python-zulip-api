@@ -11,7 +11,11 @@ from importlib import import_module
 from os.path import basename, splitext
 from typing import Any, Optional, Text
 
-from zulip_bots.lib import run_message_handler_for_bot
+from zulip_bots.lib import (
+    run_message_handler_for_bot,
+    NoBotConfigException,
+)
+
 from zulip_bots.provision import provision_bot
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -63,6 +67,10 @@ def parse_args():
                         required=True,
                         help='zulip configuration file (e.g. ~/Downloads/zuliprc)')
 
+    parser.add_argument('--bot-config-file', '-b',
+                        action='store',
+                        help='third party configuration file (e.g. ~/giphy.conf')
+
     parser.add_argument('--force',
                         action='store_true',
                         help='try running the bot even if dependencies install fails')
@@ -75,7 +83,7 @@ def parse_args():
     return args
 
 
-def exit_gracefully_if_config_file_does_not_exist(config_file):
+def exit_gracefully_if_zulip_config_file_does_not_exist(config_file):
     # type: (str) -> None
     if not os.path.exists(config_file):
         print('''
@@ -85,6 +93,21 @@ def exit_gracefully_if_config_file_does_not_exist(config_file):
             if you have already done that, you need to specify the file
             location correctly.
             ''' % (config_file,))
+        sys.exit(1)
+
+def exit_gracefully_if_bot_config_file_does_not_exist(bot_config_file):
+    # type: (str) -> None
+    if bot_config_file is None:
+        # This is a common case, just so succeed quietly. (Some
+        # bots don't have third party configuration.)
+        return
+
+    if not os.path.exists(bot_config_file):
+        print('''
+            ERROR: %s does not exist.
+
+            You probably just specified the wrong file location here.
+            ''' % (bot_config_file,))
         sys.exit(1)
 
 def main():
@@ -103,14 +126,28 @@ def main():
     if not args.quiet:
         logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
-    exit_gracefully_if_config_file_does_not_exist(args.config_file)
+    # It's a bit unfortunate that we have two config files, but the
+    # alternative would be way worse for people running multiple bots
+    # or testing against multiple Zulip servers.
+    exit_gracefully_if_zulip_config_file_does_not_exist(args.config_file)
+    exit_gracefully_if_bot_config_file_does_not_exist(args.bot_config_file)
 
-    run_message_handler_for_bot(
-        lib_module=lib_module,
-        config_file=args.config_file,
-        quiet=args.quiet,
-        bot_name=bot_name
-    )
+    try:
+        run_message_handler_for_bot(
+            lib_module=lib_module,
+            config_file=args.config_file,
+            bot_config_file=args.bot_config_file,
+            quiet=args.quiet,
+            bot_name=bot_name
+        )
+    except NoBotConfigException:
+        print('''
+            ERROR: Your bot requires you to specify a third party
+            config file with the --bot-config-file option.
+
+            Exiting now.
+            ''')
+        sys.exit(1)
 
 if __name__ == '__main__':
     main()
