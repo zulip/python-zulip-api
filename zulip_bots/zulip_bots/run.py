@@ -58,7 +58,7 @@ def parse_args():
                         action='store_true',
                         help='turn off logging output')
 
-    parser.add_argument('--config-file',
+    parser.add_argument('--config-file', '-c',
                         action='store',
                         required=True,
                         help='zulip configuration file (e.g. ~/Downloads/zuliprc)')
