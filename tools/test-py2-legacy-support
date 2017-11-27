@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# This script must be executed in a Python 2 environment to
+# have any meaning.
+
+set -ev
+
+tools/test-zulip --coverage combine
