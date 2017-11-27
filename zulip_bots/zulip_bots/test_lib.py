@@ -44,7 +44,7 @@ class BotTestCaseBase(TestCase):
         # Mocking ExternalBotHandler
         self.patcher = patch('zulip_bots.lib.ExternalBotHandler', autospec=True)
         self.MockClass = self.patcher.start()
-        self.mock_bot_handler = self.MockClass(None, None, None)
+        self.mock_bot_handler = self.MockClass(None, None, None, None)
         self.mock_client = MagicMock()
         self.mock_client.get_storage.return_value = {'result': 'success', 'state': {}}
         self.mock_client.update_storage.return_value = {'result': 'success'}
