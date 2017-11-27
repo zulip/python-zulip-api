@@ -2,7 +2,7 @@
   "request": {
     "api_url": "http://api.giphy.com/v1/gifs/translate",
     "params": {
-      "s": "Hello",
+      "s": "world without zulip",
       "api_key": "12345678"
     }
   },
@@ -10,17 +10,10 @@
     "meta": {
       "status": 200
     },
-    "data": {
-      "images": {
-        "original": {
-          "url": "https://media4.giphy.com/media/3o6ZtpxSZbQRRnwCKQ/giphy.gif"
-        }
-      }
-    }
+    "data": []
   },
   "response-headers": {
     "status": 200,
-    "ok": true,
     "content-type": "application/json; charset=utf-8"
   }
 }

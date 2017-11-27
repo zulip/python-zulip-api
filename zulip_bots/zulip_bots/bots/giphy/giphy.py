@@ -51,11 +51,7 @@ def get_url_gif_giphy(keyword, api_key):
     except requests.exceptions.ConnectionError as e:  # Usually triggered by bad connection.
         logging.warning(e)
         raise
-
-    search_status = data.json()['meta']['status']
-    if search_status != 200 or not data.ok:
-        raise requests.exceptions.ConnectionError
-
+    data.raise_for_status()
     try:
         gif_url = data.json()['data']['images']['original']['url']
     except (TypeError, KeyError):  # Usually triggered by no result in Giphy.
