@@ -28,11 +28,14 @@ class GiphyHandler(object):
             '''
 
     def initialize(self, bot_handler):
-        global config_info
-        config_info = bot_handler.get_config_info('giphy')
+        self.config_info = bot_handler.get_config_info('giphy')
 
     def handle_message(self, message, bot_handler):
-        bot_response = get_bot_giphy_response(message, bot_handler)
+        bot_response = get_bot_giphy_response(
+            message,
+            bot_handler,
+            self.config_info
+        )
         bot_handler.send_reply(message, bot_response)
 
 
@@ -64,7 +67,7 @@ def get_url_gif_giphy(keyword, api_key):
     return gif_url
 
 
-def get_bot_giphy_response(message, bot_handler):
+def get_bot_giphy_response(message, bot_handler, config_info):
     # Each exception has a specific reply should "gif_url" return a number.
     # The bot will post the appropriate message for the error.
     keyword = message['content']
