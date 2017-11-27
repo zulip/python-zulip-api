@@ -136,12 +136,9 @@ class BotTestCaseBase(TestCase):
             http_response = http_data.get('response')
             http_headers = http_data.get('response-headers')
             with patch('requests.get') as mock_get:
-                mock_result = mock.MagicMock()
-                mock_result.json.return_value = http_response
-                if 'text' in http_response:
-                    mock_result.text = http_response.get('text', None)
+                mock_result = requests.Response()
+                mock_result._content = json.dumps(http_response).encode()
                 mock_result.status_code = http_headers.get('status', 200)
-                mock_result.ok.return_value = http_headers.get('ok', True)
                 mock_get.return_value = mock_result
                 yield
                 if 'params' in http_request:
