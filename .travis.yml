@@ -1,12 +1,13 @@
 language: python
 python:
-  - "2.7"
   - "3.4"
   - "3.5"
   - "3.6"
 env: TEST_SUITE=test-main
 matrix:
   include:
+  - python: "2.7"
+    env: TEST_SUITE=test-py2-legacy-support
   - python: "3.6"
     env: TEST_SUITE=test-static-analysis
 install:
