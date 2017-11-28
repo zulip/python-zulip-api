@@ -56,18 +56,23 @@ def main():
 
     sender_email = 'foo_sender@zulip.com'
 
-    while True:
-        content = input('Enter your message: ')
+    try:
+        while True:
+            content = input('Enter your message: ')
 
-        message = dict(
-            content=content,
-            sender_email=sender_email,
-            display_recipient=sender_email,
-        )
-        message_handler.handle_message(
-            message=message,
-            bot_handler=bot_handler,
-        )
+            message = dict(
+                content=content,
+                sender_email=sender_email,
+                display_recipient=sender_email,
+            )
+            message_handler.handle_message(
+                message=message,
+                bot_handler=bot_handler,
+            )
+    except KeyboardException:
+        print("\n\nOk, if you're happy with your terminal-based testing, try it out with a Zulip server.",
+              "\nYou can refer to https://zulipchat.com/api/running-bots#running-a-bot.")
+        sys.exit(1)
 
 if __name__ == '__main__':
     main()
