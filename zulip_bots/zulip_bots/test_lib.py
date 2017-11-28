@@ -46,7 +46,7 @@ class BotTestCaseBase(TestCase):
         self.MockClass = self.patcher.start()
         self.mock_bot_handler = self.MockClass(None, None)
         self.mock_client = MagicMock()
-        self.mock_client.get_storage.return_value = {'result': 'success', 'state': {}}
+        self.mock_client.get_storage.return_value = {'result': 'success', 'storage': {}}
         self.mock_client.update_storage.return_value = {'result': 'success'}
         self.mock_bot_handler.storage = StateHandler(self.mock_client)
         self.mock_bot_handler.send_message.return_value = {'id': 42}

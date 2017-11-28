@@ -878,12 +878,12 @@ class Client(object):
         '''
             Example usage:
 
-            >>> client.update_storage({'state': {"entry 1": "value 1", "entry 2": "value 2", "entry 3": "value 3"}})
+            >>> client.update_storage({'storage': {"entry 1": "value 1", "entry 2": "value 2", "entry 3": "value 3"}})
             >>> client.get_storage({'keys': ["entry 1", "entry 3"]})
-            {'result': 'success', 'state': {'entry 1': 'value 1', 'entry 3': 'value 3'}, 'msg': ''}
+            {'result': 'success', 'storage': {'entry 1': 'value 1', 'entry 3': 'value 3'}, 'msg': ''}
         '''
         return self.call_endpoint(
-            url='user_state',
+            url='bot_storage',
             method='PUT',
             request=request,
         )
@@ -893,14 +893,14 @@ class Client(object):
         '''
             Example usage:
 
-            >>> client.update_storage({'state': {"entry 1": "value 1", "entry 2": "value 2", "entry 3": "value 3"}})
+            >>> client.update_storage({'storage': {"entry 1": "value 1", "entry 2": "value 2", "entry 3": "value 3"}})
             >>> client.get_storage()
-            {'result': 'success', 'state': {"entry 1": "value 1", "entry 2": "value 2", "entry 3": "value 3"}, 'msg': ''}
+            {'result': 'success', 'storage': {"entry 1": "value 1", "entry 2": "value 2", "entry 3": "value 3"}, 'msg': ''}
             >>> client.get_storage(keys=('entry 1', 'entry 3'))
-            {'result': 'success', 'state': {'entry 1': 'value 1', 'entry 3': 'value 3'}, 'msg': ''}
+            {'result': 'success', 'storage': {'entry 1': 'value 1', 'entry 3': 'value 3'}, 'msg': ''}
         '''
         return self.call_endpoint(
-            url='user_state',
+            url='bot_storage',
             method='GET',
             request=request,
         )

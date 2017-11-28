@@ -63,14 +63,14 @@ class StateHandler(object):
         self.demarshal = lambda obj: json.loads(obj)
         response = self._client.get_storage()
         if response['result'] == 'success':
-            self.state_ = response['state']
+            self.state_ = response['storage']
         else:
             raise StateHandlerError("Error initializing state: {}".format(str(response)))
 
     def put(self, key, value):
         # type: (Text, Text) -> None
         self.state_[key] = self.marshal(value)
-        response = self._client.update_storage({'state': {key: self.state_[key]}})
+        response = self._client.update_storage({'storage': {key: self.state_[key]}})
         if response['result'] != 'success':
             raise StateHandlerError("Error updating state: {}".format(str(response)))
 
