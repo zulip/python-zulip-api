@@ -1,4 +1,5 @@
 import configparser
+import sys
 
 class SimpleStorage:
     def __init__(self):
@@ -49,10 +50,7 @@ class TerminalBotHandler:
         return self.message_server.send(message)
 
     def send_reply(self, message, response):
-        print('''
-            reply:
-            {}
-            '''.format(response))
+        print("\nReply from the bot is printed between the dotted lines:\n-------\n{}\n-------".format(response))
         response_message = dict(
             content=response
         )
