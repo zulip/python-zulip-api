@@ -17,9 +17,10 @@ zulip_bots  # This directory
 │   ├───lib.py  # Backbone of run.py
 │   ├───provision.py  # Creates a development environment.
 │   ├───run.py  # Used to run bots.
+│   ├───simple_lib.py  # Used for terminal testing.
 │   ├───test_lib.py  # Backbone for bot unit tests.
 │   ├───test_run.py  # Unit tests for run.py
-│   └───zulip_bot_output.py  # Used to test bots in the command line.
+│   └───terminal.py  # Used to test bots in the command line.
 ├───generate_manifest.py  # Helper-script for packaging.
 └───setup.py  # Script for packaging.
 ```
