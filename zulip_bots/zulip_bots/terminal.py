@@ -1,0 +1,73 @@
+#!/usr/bin/env python
+import os
+import sys
+import argparse
+
+from zulip_bots.run import import_module_from_source
+from zulip_bots.simple_lib import TerminalBotHandler
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+def parse_args():
+    description = '''
+        This tool allows you to test a bot using the terminal (and no Zulip server).
+
+        Examples:   %(prog)s followup
+        '''
+
+    parser = argparse.ArgumentParser(description=description,
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('bot',
+                        action='store',
+                        help='the name or path an existing bot to run')
+
+    parser.add_argument('--bot-config-file', '-b',
+                        action='store',
+                        help='optional third party config file (e.g. ~/giphy.conf)')
+
+    args = parser.parse_args()
+    return args
+
+def main():
+    args = parse_args()
+    if os.path.isfile(args.bot):
+        bot_path = os.path.abspath(args.bot)
+        bot_name = os.path.splitext(os.path.basename(bot_path))[0]
+    else:
+        bot_path = os.path.abspath(os.path.join(current_dir, 'bots', args.bot, args.bot+'.py'))
+        bot_name = args.bot
+    bot_dir = os.path.dirname(bot_path)
+
+    try:
+        lib_module = import_module_from_source(bot_path, bot_name)
+    except IOError:
+        print("Could not find and import bot '{}'".format(bot_name))
+        sys.exit(1)
+
+    try:
+        message_handler = lib_module.handler_class()
+    except AttributeError:
+        print("This module does not appear to have a bot handler_class specified.")
+        sys.exit(1)
+
+    bot_handler = TerminalBotHandler(args.bot_config_file)
+    if hasattr(message_handler, 'initialize') and callable(message_handler.initialize):
+        message_handler.initialize(bot_handler)
+
+    sender_email = 'foo_sender@zulip.com'
+
+    while True:
+        content = input('Enter your message: ')
+
+        message = dict(
+            content=content,
+            sender_email=sender_email,
+            display_recipient=sender_email,
+        )
+        message_handler.handle_message(
+            message=message,
+            bot_handler=bot_handler,
+        )
+
+if __name__ == '__main__':
+    main()
