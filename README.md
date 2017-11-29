@@ -13,6 +13,8 @@ This repository contains the source code for Zulip's PyPI packages:
 * `zulip_botserver`: [PyPI package](https://pypi.python.org/pypi/zulip-botserver)
   for Zulip's Flask bot server.
 
+The source code is written in *Python 3*.
+
 ## Development
 
 1. Fork and clone the Git repo:
