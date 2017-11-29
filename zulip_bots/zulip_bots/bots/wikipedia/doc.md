@@ -2,7 +2,7 @@
 
 ## Intro
 
-This bot returns the top wikipedia link for a search term.
+This bot returns the top wikipedia link for a search term entered by the user.
 
 ## Setup
 
