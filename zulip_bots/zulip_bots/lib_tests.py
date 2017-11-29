@@ -1,4 +1,5 @@
 from unittest import TestCase
+from mock import MagicMock
 from zulip_bots.lib import (
     ExternalBotHandler,
     StateHandler,
@@ -58,3 +59,25 @@ class LibTest(TestCase):
         state_handler = StateHandler(client)
         val = state_handler.get('key')
         self.assertEqual(val, [1, 2, 3])
+
+    def test_send_reply(self):
+        client = FakeClient()
+        profile = client.get_profile()
+        handler = ExternalBotHandler(
+            client=client,
+            root_dir=None,
+            bot_details=None,
+            bot_config_file=None
+        )
+        to = {'email': 'Some@User'}
+        expected = [({'type': 'private', 'display_recipient': [to]},
+                     {'type': 'private', 'to': [to['email']]}),
+                    ({'type': 'private', 'display_recipient': [to, profile]},
+                     {'type': 'private', 'to': [to['email']]}),
+                    ({'type': 'stream', 'display_recipient': 'Stream name', 'subject': 'Topic'},
+                     {'type': 'stream', 'to': 'Stream name', 'subject': 'Topic'})]
+        response_text = "Response"
+        for test in expected:
+            client.send_message = MagicMock()
+            handler.send_reply(test[0], response_text)
+            client.send_message.assert_called_once_with(dict(test[1], content=response_text))
