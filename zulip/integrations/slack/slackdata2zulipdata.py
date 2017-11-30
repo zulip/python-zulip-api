@@ -127,7 +127,7 @@ def users2zerver_userprofile(slack_dir: str, realm_id: int, timestamp: Any,
     print('######### IMPORTING USERS FINISHED #########\n')
     return zerver_userprofile, added_users
 
-def channels2zerver_stream(slack_dir, realm_id, added_users):
+def channels2zerver_stream(slack_dir, realm_id, added_users, zerver_userprofile):
     # type: (Dict[str, Dict[str, Any]]) -> None
     print('######### IMPORTING CHANNELS STARTED #########\n')
     channels = json.load(open(slack_dir + '/channels.json'))
@@ -197,17 +197,10 @@ def channels2zerver_stream(slack_dir, realm_id, added_users):
             zerver_subscription.append(sub)
             subscription_id_count += 1
             # TOODO add zerver_subscription which correspond to
-            # private messages and huddles type recipient
-            # For private messages/huddle:
+            # huddles type recipient
+            # For huddles:
             # sub['recipient']=recipient['id'] where recipient['type_id']=added_users[member]
 
-            # recipient
-            # type_id's
-            # 1: private message
-            # 2: stream
-            # 3: huddle
-            # TOODO currently the goal is to map Slack's standard export
-            # This defaults to 2
             # TOODO do private message subscriptions between each users have to
             # be generated from scratch?
 
@@ -226,6 +219,36 @@ def channels2zerver_stream(slack_dir, realm_id, added_users):
         #             "created": "1444755463"
         #         }
         #         ],
+    recipient_id_count = stream_id_count + 1
+    subscription_id_count += 1
+
+    for user in zerver_userprofile:
+        zulip_user_id = user['id']
+
+        # this maps the recipients and subscriptions
+        # related to private messages
+
+        recipient = dict(
+            type_id=zulip_user_id,
+            id=recipient_id_count,
+            type=1)
+        zerver_recipient.append(recipient)
+
+        sub = dict(
+            recipient=recipient_id_count,
+            notifications=False,
+            color="#c2c2c2",
+            desktop_notifications=True,
+            pin_to_top=False,
+            in_home_view=True,
+            active=True,
+            user_profile=zulip_user_id,
+            id=subscription_id_count)
+
+        zerver_subscription.append(sub)
+        subscription_id_count += 1
+        recipient_id_count += 1
+
     print('######### IMPORTING STREAMS FINISHED #########\n')
     return zerver_defaultstream, zerver_stream, added_channels, zerver_subscription, zerver_recipient
 
@@ -422,7 +445,10 @@ def main(slack_zip_file: str) -> None:
                                                                DOMAIN_NAME)
     realm['zerver_userprofile'] = zerver_userprofile
 
-    zerver_defaultstream, zerver_stream, added_channels, zerver_subscription, zerver_recipient = channels2zerver_stream(slack_dir, REALM_ID, added_users)
+    zerver_defaultstream, zerver_stream, added_channels, zerver_subscription, zerver_recipient = channels2zerver_stream(slack_dir,
+                                                                                                                        REALM_ID,
+                                                                                                                        added_users,
+                                                                                                                        zerver_userprofile)
     # See https://zulipchat.com/help/set-default-streams-for-new-users
     # for documentation on zerver_defaultstream
     realm['zerver_defaultstream'] = zerver_defaultstream
