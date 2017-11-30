@@ -1,33 +1,31 @@
 #!/usr/bin/env python
+import mock
 
-from __future__ import absolute_import
-from __future__ import print_function
+from zulip_bots.test_lib import (
+    get_bot_message_handler,
+    StubBotHandler,
+    StubBotTestCase,
+)
 
-from zulip_bots.test_lib import BotTestCase
-from zulip_bots.lib import StateHandler
-
-
-class TestIncrementorBot(BotTestCase):
+class TestIncrementorBot(StubBotTestCase):
     bot_name = "incrementor"
 
     def test_bot(self):
-        self.initialize_bot()
-        messages = [  # Template for message inputs to test, absent of message content
-            {
-                'type': 'stream',
-                'display_recipient': 'some stream',
-                'subject': 'some subject',
-                'sender_email': 'foo_sender@zulip.com',
-            },
-            {
-                'type': 'private',
-                'sender_email': 'foo_sender@zulip.com',
-            },
-        ]
-        self.assert_bot_response(dict(messages[0], content=""), {'content': "1"},
-                                 'send_reply')
-        # Last test commented out since we don't have update_message
-        # support in the test framework yet.
+        bot = get_bot_message_handler(self.bot_name)
+        bot_handler = StubBotHandler()
 
-        # self.assert_bot_response(dict(messages[0], content=""), {'message_id': 5, 'content': "2"},
-        #                          'update_message', storage)
+        message = dict(type='stream')
+
+        bot.initialize(bot_handler)
+        bot.handle_message(message, bot_handler)
+
+        with mock.patch('zulip_bots.simple_lib.SimpleMessageServer.update') as m:
+            bot.handle_message(message, bot_handler)
+            bot.handle_message(message, bot_handler)
+            bot.handle_message(message, bot_handler)
+
+        content_updates = [
+            item[0][0]['content']
+            for item in m.call_args_list
+        ]
+        self.assertEqual(content_updates, ['2', '3', '4'])
