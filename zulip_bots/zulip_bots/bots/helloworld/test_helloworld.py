@@ -1,16 +1,15 @@
 #!/usr/bin/env python
 
-from __future__ import absolute_import
-from __future__ import print_function
+from zulip_bots.test_lib import StubBotTestCase
 
-from six.moves import zip
-
-from zulip_bots.test_lib import BotTestCase
-
-class TestHelloWorldBot(BotTestCase):
+class TestHelpBot(StubBotTestCase):
     bot_name = "helloworld"
 
     def test_bot(self):
-        txt = "beep boop"
-        messages = ["", "foo", "Hi, my name is abc"]
-        self.check_expected_responses(list(zip(messages, len(messages)*[txt])))
+        dialog = [
+            ('', 'beep boop'),
+            ('help', 'beep boop'),
+            ('foo', 'beep boop'),
+        ]
+
+        self.verify_dialog(dialog)
