@@ -13,7 +13,7 @@ sys.path.append(ZULIP_BOTS_DIR)
 
 import generate_manifest
 
-yellow = '\033[93m'
+red = '\033[91m'
 green = '\033[92m'
 end_format = '\033[0m'
 bold = '\033[1m'
@@ -28,6 +28,8 @@ the Python version this command is executed with."""
                         metavar='PATH_TO_PYTHON_INTERPRETER',
                         default=os.path.abspath(sys.executable),
                         help='Path to the Python interpreter to use when provisioning.')
+    parser.add_argument('--force', '-f', action='store_true',
+                        help='create venv even with outdated Python version.')
     options = parser.parse_args()
 
     base_dir = os.path.abspath(os.path.join(__file__, '..', '..'))
@@ -86,8 +88,11 @@ the Python version this command is executed with."""
     install_dependencies('requirements.txt')
     if py_version > (3, 1):
         install_dependencies('py3_requirements.txt')
-    else:
-        print(yellow + "Your Python version does not support mypy. `tools/run-mypy` will fail." + end_format)
+    elif not options.force:
+        print(red + "Provision failed: Cannot create venv with outdated Python version ({}).\n"
+              "Run this script with --force if you want to proceed anyway."
+              .format(py_version_output.strip()) + end_format)
+        sys.exit(1)
 
     print(green + 'Success!' + end_format)
 
