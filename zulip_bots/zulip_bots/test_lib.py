@@ -26,6 +26,65 @@ from types import ModuleType
 
 from copy import deepcopy
 
+from zulip_bots.simple_lib import (
+    SimpleStorage,
+    SimpleMessageServer,
+)
+
+class StubBotHandler:
+    def __init__(self):
+        # type: () -> None
+        self.storage = SimpleStorage()
+        self.message_server = SimpleMessageServer()
+        self.sent_messages = []  # type: List[Dict[str, Any]]
+
+    def send_message(self, message):
+        # type: (Dict[str, Any]) -> Dict[str, Any]
+        self.sent_messages.append(message)
+        self.sent_messages.append(message)
+        return self.message_server.send(message)
+
+    def send_reply(self, message, response):
+        # type: (Dict[str, Any], str) -> Dict[str, Any]
+        response_message = dict(
+            content=response
+        )
+        self.sent_messages.append(response_message)
+        return self.message_server.send(response_message)
+
+    def update_message(self, message):
+        # type: (Dict[str, Any]) -> None
+        self.message_server.update(message)
+
+    def last_test_response(self):
+        # type: () -> Dict[str, Any]
+        return self.sent_messages[-1]
+
+class StubBotTestCase(TestCase):
+    '''
+    The goal for this class is to eventually replace
+    BotTestCaseBase for places where we may want more
+    fine-grained control and less heavy setup.
+    '''
+
+    bot_name = ''
+
+    def verify_dialog(self, conversation):
+        # type: (List[Tuple[str, str]]) -> None
+
+        # Start a new message handler for the full conversation.
+        bot = get_bot_message_handler(self.bot_name)
+        bot_handler = StubBotHandler()
+
+        for (request, expected_response) in conversation:
+            message = dict(
+                sender_email='foo@example.com',
+                content=request,
+            )
+            bot.handle_message(message, bot_handler)
+            response = bot_handler.last_test_response()
+            self.assertEqual(expected_response, response['content'])
+
 def get_bot_message_handler(bot_name):
     # type: (str) -> Any
     # message_handler is of type 'Any', since it can contain any bot's
