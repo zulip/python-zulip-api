@@ -1,4 +1,5 @@
-Simple Zulip bot that will respond to any query with a "beep boop".
+Zulip bot that will respond to a message with its word count.
 
-The helloworld bot is a boilerplate bot that can be used as a
-template for more sophisticated/evolved Zulip bots.
+The message_info bot is a bot that can be used to give some information about
+a message back in a private message. It is useful for making sure messages
+don't get too wordy.
