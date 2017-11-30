@@ -15,5 +15,11 @@ class MessageInfoHandler(object):
         unformatted_content = 'You sent a message with {} words.'
         content = unformatted_content.format(len(words_in_message))
 
+        original_sender = message['sender_email']
+        bot_handler.send_message({
+            'type': 'private',
+            'to': original_sender,
+            'content': content,
+        })
 
 handler_class = MessageInfoHandler
