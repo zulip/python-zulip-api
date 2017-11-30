@@ -11,7 +11,7 @@ matrix:
   - python: "3.6"
     env: TEST_SUITE=test-static-analysis
 install:
-  - tools/provision
+  - tools/provision --force
   - source zulip-api-py*-venv/bin/activate
 script:
   - tools/$TEST_SUITE
