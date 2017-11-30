@@ -1,0 +1,13 @@
+{
+    "request": {
+      "api_url": "http://www.google.com/search",
+      "params": {
+        "q": "no res"
+      }
+    },
+    "response": "<head></head><body><div id='search'></div></body>",
+    "response-headers": {
+      "status": 200,
+      "content-type": "text/html; charset=utf-8"
+    }
+  }
