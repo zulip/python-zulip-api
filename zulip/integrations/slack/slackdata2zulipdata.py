@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 import os
 import json
 import hashlib
@@ -7,8 +7,6 @@ import argparse
 import shutil
 import subprocess
 import re
-
-import requests
 
 from typing import Any, Dict, List
 # stubs
@@ -258,150 +256,6 @@ def channels2zerver_stream(slack_dir, realm_id, added_users, zerver_userprofile)
     print('######### IMPORTING STREAMS FINISHED #########\n')
     return zerver_defaultstream, zerver_stream, added_channels, zerver_subscription, zerver_recipient
 
-def channelmessage2zerver_message_one_stream(constants, channel, added_users,
-                                             zerver_userprofile,
-                                             added_channels, ids,
-                                             zerver_subscription):
-    slack_dir, REALM_ID, upload_dir = constants
-    message_id, usermessage_id, attachment_id = ids
-    json_names = os.listdir(slack_dir + '/' + channel)
-    users = json.load(open(slack_dir + '/users.json'))
-    zerver_message = []
-    zerver_usermessage = []
-    zerver_attachment = []
-
-    # Sanitize the message text
-    def sanitize_text(text):
-        tokens = text.split(' ')
-        text = ' '.join([sanitize_token(t) for t in tokens])
-        return text
-
-    def sanitize_token(token):
-        if (re.compile(r"<@.*|.*>").match(token)):
-            token = token.replace('<@', ' ')
-            token = token.replace('>', ' ')
-            token = token.replace('|', ' ')
-            morphemes = token.split(' ')
-            length = len(morphemes)
-            if length > 1:
-                if length > 2:
-                    short_name = morphemes[2]
-                else:
-                    short_name = ''
-                token = morphemes[1]
-            for user in users:
-                if (user['id'] == token and user['name'] == short_name and length == 4) or \
-                   (user['id'] == token and length == 3):
-                    token = user.get('real_name', user['name'])
-                    token = "@**" + token + "** "
-        return token
-
-    # check if a user has been mentioned in a message
-    # for zerver_usermessage
-    def check_user_mention(text):
-        # Zulip's at mention
-        mentions = re.findall(r'(@(?:\*\*([^\*]+)\*\*|(\w+)))', text)
-        mentioned_users_id = []
-        for mention in mentions:
-            for userprofile in zerver_userprofile:
-                if mention[1] == userprofile['full_name']:
-                        mentioned_users_id.append(userprofile['id'])
-        return mentioned_users_id
-
-    # check if the text contain a URL
-    def check_has_link(msg):
-        if 'has_link' in msg:
-            return msg['has_link']
-        else:
-            # TODO map msg['attachments']['from_url']
-            text = msg['text']
-            return ('http://' in text or 'https://' in text)
-
-    def parse_url(url):
-        return url.replace("\/\/", "//").replace("\/", "/")
-
-    def save_attachment(url, _id, name):
-        url = parse_url(url)
-        response = requests.get(url, stream=True)
-        os.makedirs(upload_dir + '/' + str(id), exist_ok=True)
-        with open(upload_dir + '/' + str(id) + '/' + name, 'wb') as output_file:
-            shutil.copyfileobj(response.raw, output_file)
-
-    for json_name in json_names:
-        msgs = json.load(open(slack_dir + '/%s/%s' % (channel, json_name)))
-        for msg in msgs:
-            text = msg['text']
-            has_attachment = False
-
-            if 'subtype' in msg.keys():
-                st = msg['subtype']
-                if st in ["channel_join", "channel_leave", "channel_name"]:
-                    # Ignore noisy messages
-                    continue
-                elif st == "file_share":
-                    has_attachment = True
-                    _file = msg['file']
-                    slack_user_id = _file['user']
-                    zulip_user_id = added_users[slack_user_id]
-                    save_attachment(_file['url_private'], attachment_id, _file['name'])
-                    path_id = "%d\/%d\/%s" % (REALM_ID, attachment_id, _file['name'])
-                    # construct attachments object and append it to zerver_attachment
-                    attachments = dict(
-                        id=attachment_id,
-                        is_realm_public=True,  # TOODOO map for private messages and huddles, where is_realm_public = False
-                        file_name=_file['name'],
-                        create_time=_file['created'],
-                        size=_file['size'],
-                        path_id=path_id,
-                        realm=REALM_ID,
-                        owner=zulip_user_id,
-                        messages=[message_id])
-                    attachment_id += 1
-                    zerver_attachment.append(attachments)
-
-            try:
-                user = msg.get('user', msg['file']['user'])
-            except KeyError:
-                # black magic, explain this later TOODOO
-                user = msg['user']
-            # construct message
-            zulip_message = dict(
-                sending_client=1,
-                rendered_content_version=1,  # This is Zulip-specific
-                has_image=msg.get('has_image', False),
-                subject=channel,  # This is Zulip-specific
-                pub_date=msg['ts'],
-                id=message_id,
-                has_attachment=has_attachment,  # attachment will be posted in the subsequent message;
-                                                # this is how Slack does it, i.e. less like email
-                edit_history=None,
-                sender=added_users[user],  # map slack id to zulip id
-                content=sanitize_text(text),
-                rendered_content=text,  # slack doesn't cache this
-                recipient=added_channels[channel],
-                last_edit_time=None,
-                has_link=check_has_link(msg))
-            zerver_message.append(zulip_message)
-
-            # construct usermessages
-            mentioned_users_id = check_user_mention(zulip_message['content'])
-            for subscription in zerver_subscription:
-                if subscription['recipient'] == zulip_message['recipient']:
-                    flags_mask = 1
-                    if subscription['user_profile'] in mentioned_users_id:
-                        flags_mask = 9
-
-                    usermessage = dict(
-                        user_profile=subscription['user_profile'],
-                        id=usermessage_id,
-                        flags_mask=flags_mask,  # defaulting to 'read' or 'mentioned' and 'read'
-                        message=zulip_message['id'])
-                    usermessage_id += 1
-                    zerver_usermessage.append(usermessage)
-
-            message_id += 1
-    return zerver_message, zerver_usermessage, zerver_attachment
-
 def main(slack_zip_file: str) -> None:
     slack_dir = slack_zip_file.replace('.zip', '')
     subprocess.check_call(['unzip', slack_zip_file])
@@ -411,6 +265,7 @@ def main(slack_zip_file: str) -> None:
     from datetime import datetime
     # TODO fetch realm config from zulip config
     DOMAIN_NAME = "zulipchat.com"
+
     # Hardcode this to 1, will implement later for zulipchat.com's case where it
     # has multiple realms
     REALM_ID = 1
@@ -471,23 +326,8 @@ def main(slack_zip_file: str) -> None:
     zerver_message = []
     zerver_usermessage = []
     zerver_attachment = []
-
-    upload_dir = output_dir + '/uploads/' + str(REALM_ID)
-    constants = [slack_dir, REALM_ID, upload_dir]
-    for channel in added_channels.keys():
-        message_id = len(zerver_message) + 1  # For the id of the messages
-        usermessage_id = len(zerver_usermessage) + 1
-        attachment_id = len(zerver_attachment) + 1
-        ids = [message_id, usermessage_id, attachment_id]
-        zm, zum, za = channelmessage2zerver_message_one_stream(constants, channel,
-                                                               added_users, zerver_userprofile,
-                                                               added_channels, ids,
-                                                               zerver_subscription)
-        zerver_message += zm
-        zerver_usermessage += zum
-        zerver_attachment += za
-        # TOODOO add zerver_usermessage corresponding to the
-        # private messages and huddles type recipients
+    zerver_message = []
+    zerver_usermessage = []
 
     message_json['zerver_message'] = zerver_message
     message_json['zerver_usermessage'] = zerver_usermessage
