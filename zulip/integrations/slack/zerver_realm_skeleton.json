@@ -7,7 +7,7 @@
     "waiting_period_threshold": 0,
     "email_changes_disabled": false,
     "deactivated": false,
-    "notifications_stream": 1,
+    "notifications_stream": null,
     "restricted_to_domain": true,
     "show_digest_email": true,
     "allow_message_editing": true,

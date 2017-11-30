@@ -59,6 +59,12 @@ def users2zerver_userprofile(slack_dir: str, realm_id: int, timestamp: Any,
         if timezone is None or '/' not in timezone:
             timezone = _default_timezone
 
+        if user['deleted'] is False:
+            if user['real_name'] == '':
+                full_name = user['name']
+            else:
+                full_name = user['real_name']
+
         # userprofile's quota is hardcoded as per
         # https://github.com/zulip/zulip/blob/e1498988d9094961e6f9988fb308b3e7310a8e74/zerver/migrations/0059_userprofile_quota.py#L18
         userprofile = dict(
@@ -86,7 +92,7 @@ def users2zerver_userprofile(slack_dir: str, realm_id: int, timestamp: Any,
             last_login=timestamp,
             tos_version=None,
             default_all_public_streams=False,
-            full_name=user.get('real_name', user['name']),
+            full_name=full_name,
             twenty_four_hour_time=False,
             groups=[],  # This is Zulip-specific
             enable_online_push_notifications=False,
@@ -106,7 +112,7 @@ def users2zerver_userprofile(slack_dir: str, realm_id: int, timestamp: Any,
             default_language="en",
             enable_sounds=True,
             pm_content_in_desktop_notifications=True,
-            is_active=user['deleted'],
+            is_active=not user['deleted'],
             onboarding_steps="[]",
             emojiset="google",
             emoji_alt_code=False,
@@ -366,7 +372,8 @@ def channelmessage2zerver_message_one_stream(constants, channel, added_users,
                 subject=channel,  # This is Zulip-specific
                 pub_date=msg['ts'],
                 id=message_id,
-                has_attachment=has_attachment,  # attachment will be posted in the subsequent message; this is how Slack does it, i.e. less like email
+                has_attachment=has_attachment,  # attachment will be posted in the subsequent message;
+                                                # this is how Slack does it, i.e. less like email
                 edit_history=None,
                 sender=added_users[user],  # map slack id to zulip id
                 content=sanitize_text(text),
