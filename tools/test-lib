@@ -1,11 +1,20 @@
 #!/usr/bin/env python
 
-import coverage
 import os
 import sys
 import unittest
+import argparse
 
 from importlib import import_module
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--coverage',
+                        nargs='?',
+                        const=True,
+                        default=False,
+                        help='compute test coverage ("--coverage combine" to combine with previous reports)')
+    return parser.parse_args()
 
 def run_all():
     TOOLS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -13,8 +22,14 @@ def run_all():
     BOTS_DIR = os.path.join(ROOT_DIR, 'zulib_bots')
     sys.path.insert(0, BOTS_DIR)
 
-    cov = coverage.Coverage(config_file="tools/.coveragerc")
-    cov.start()
+    options = parse_args()
+
+    if options.coverage:
+        import coverage
+        cov = coverage.Coverage(config_file="tools/.coveragerc")
+        if options.coverage == 'combine':
+            cov.load()
+        cov.start()
 
     module = import_module('zulip_bots.lib_tests')
     suite = unittest.defaultTestLoader.loadTestsFromModule(module)
@@ -25,11 +40,12 @@ def run_all():
     if result.failures or result.errors:
         sys.exit(1)
 
-    cov.stop()
-    cov.data_suffix = False  # Disable suffix so that filename is .coverage
-    cov.save()
-    cov.html_report()
-    print("HTML report saved under directory 'htmlcov'.")
+    if not result.failures and options.coverage:
+        cov.stop()
+        cov.data_suffix = False  # Disable suffix so that filename is .coverage
+        cov.save()
+        cov.html_report()
+        print("HTML report saved under directory 'htmlcov'.")
 
 if __name__ == '__main__':
     run_all()
