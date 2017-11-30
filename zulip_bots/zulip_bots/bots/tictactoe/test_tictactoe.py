@@ -1,13 +1,8 @@
 #!/usr/bin/env python
+from zulip_bots.test_lib import StubBotTestCase
 
-from __future__ import absolute_import
-from __future__ import print_function
-
-from zulip_bots.test_lib import BotTestCase
-from zulip_bots.lib import StateHandler
-
-class TestTictactoeBot(BotTestCase):
-    bot_name = "tictactoe"
+class TestTictactoeBot(StubBotTestCase):
+    bot_name = 'tictactoe'
 
     def test_bot(self):
         messages = [  # Template for message inputs to test, absent of message content
@@ -49,7 +44,7 @@ class TestTictactoeBot(BotTestCase):
                          "Your turn! Enter a coordinate or type help."),
         )
 
-        expected_send_message = [
+        conversation = [
             # Empty message
             ("", msg['didnt_understand']),
             # Non-command
@@ -89,8 +84,5 @@ class TestTictactoeBot(BotTestCase):
             ("quit", msg['successful_quit']),
             # Can't test 'after_3_2' as it's random!
         ]
-        for m in messages:
-            for (mesg, resp) in expected_send_message:
-                self.assert_bot_response(dict(m, content=mesg),
-                                         dict(private_response, content=resp),
-                                         'send_message')
+
+        self.verify_dialog(conversation)
