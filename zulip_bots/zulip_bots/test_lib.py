@@ -35,6 +35,46 @@ def get_bot_message_handler(bot_name):
     lib_module = import_module('zulip_bots.bots.{bot}.{bot}'.format(bot=bot_name))  # type: Any
     return lib_module.handler_class()
 
+def read_bot_fixture_data(bot_name, test_name):
+    # type: (str, str) -> Dict[str, Any]
+    base_path = os.path.realpath(os.path.join(os.path.dirname(
+        os.path.abspath(__file__)), 'bots', bot_name, 'fixtures'))
+    http_data_path = os.path.join(base_path, '{}.json'.format(test_name))
+    with open(http_data_path) as f:
+        content = f.read()
+    http_data = json.loads(content)
+    return http_data
+
+@contextmanager
+def mock_http_conversation(http_data):
+    # type: (Dict[str, Any]) -> Any
+    """
+    Use this context manager to mock and verify a bot's HTTP
+    requests to the third-party API (and provide the correct
+    third-party API response. This allows us to test things
+    that would require the Internet without it).
+
+    http_data should be fixtures data formatted like the data
+    in zulip_bots/zulip_bots/bots/giphy/fixtures/test_normal.json
+    """
+    http_request = http_data.get('request')
+    http_response = http_data.get('response')
+    http_headers = http_data.get('response-headers')
+    with patch('requests.get') as mock_get:
+        mock_result = requests.Response()
+        mock_result._content = json.dumps(http_response).encode()  # type: ignore # We are modifying a "hidden" attribute.
+        mock_result.status_code = http_headers.get('status', 200)
+        mock_get.return_value = mock_result
+        yield
+        if 'params' in http_request:
+            params = http_request.get('params', None)
+            mock_get.assert_called_with(http_request['api_url'], params=params)
+        elif 'headers' in http_request:
+            headers = http_request.get('headers', None)
+            mock_get.assert_called_with(http_request['api_url'], headers=headers)
+        else:
+            mock_get.assert_called_with(http_request['api_url'])
+
 class BotTestCaseBase(TestCase):
     """Test class for common Bot test helper methods"""
     bot_name = ''  # type: str
@@ -139,38 +179,11 @@ class BotTestCaseBase(TestCase):
         yield
         self.mock_bot_handler.get_config_info.return_value = None
 
-    @contextmanager
     def mock_http_conversation(self, test_name):
         # type: (str) -> Any
-        """
-        Use this context manager to mock and verify a bot's HTTP
-        requests to the third-party API (and provide the correct
-        third-party API response. This allows us to test things
-        that would require the Internet without it).
-        """
         assert test_name is not None
-        base_path = os.path.realpath(os.path.join(os.path.dirname(
-            os.path.abspath(__file__)), 'bots', self.bot_name, 'fixtures'))
-        http_data_path = os.path.join(base_path, '{}.json'.format(test_name))
-        with open(http_data_path, 'r') as http_data_file:
-            http_data = json.load(http_data_file)
-            http_request = http_data.get('request')
-            http_response = http_data.get('response')
-            http_headers = http_data.get('response-headers')
-            with patch('requests.get') as mock_get:
-                mock_result = requests.Response()
-                mock_result._content = json.dumps(http_response).encode()  # type: ignore # We are modifying a "hidden" attribute.
-                mock_result.status_code = http_headers.get('status', 200)
-                mock_get.return_value = mock_result
-                yield
-                if 'params' in http_request:
-                    params = http_request.get('params', None)
-                    mock_get.assert_called_with(http_request['api_url'], params=params)
-                elif 'headers' in http_request:
-                    headers = http_request.get('headers', None)
-                    mock_get.assert_called_with(http_request['api_url'], headers=headers)
-                else:
-                    mock_get.assert_called_with(http_request['api_url'])
+        http_data = read_bot_fixture_data(self.bot_name, test_name)
+        return mock_http_conversation(http_data)
 
     def assert_bot_response(self, message, response, expected_method):
         # type: (Dict[str, Any], Dict[str, Any], str) -> None
