@@ -16,4 +16,4 @@ class MessageInfoHandler(object):
         content = unformatted_content.format(len(words_in_message))
 
 
-handler_class = HelloWorldHandler
+handler_class = MessageInfoHandler
