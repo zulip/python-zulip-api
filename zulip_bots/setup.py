@@ -50,6 +50,8 @@ setuptools_info = dict(
         'zulip',
         'mock>=2.0.0',
         'html2text',  # for bots/define
+        'BeautifulSoup4',  # for bots/googlesearch
+        'lxml',  # for bots/googlesearch
     ],
 )
 

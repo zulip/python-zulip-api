@@ -1,13 +1,42 @@
 # See readme.md for instructions on running this code.
 from __future__ import print_function
 import logging
-from six.moves.urllib import error
-from six.moves.urllib.request import urlopen
+from six.moves.urllib import parse
 
-# Uses the Google search engine bindings
-#   pip install --upgrade google
-from google import search
+import requests
 
+from bs4 import BeautifulSoup
+
+def google_search(keywords):
+    query = {'q': keywords}
+    # Gets the page
+    page = requests.get('http://www.google.com/search', params=query)
+    # Parses the page into BeautifulSoup
+    soup = BeautifulSoup(page.text, "lxml")
+
+    # Gets all search URLs
+    anchors = soup.find(id='search').findAll('a')
+    results = []
+
+    for a in anchors:
+        try:
+            # Tries to get the href property of the URL
+            link = a['href']
+        except KeyError:
+            continue
+        # Link must start with '/url?', as these are the search result links
+        if (not link.startswith('/url?')):
+            continue
+        # Makes sure a hidden 'cached' result isn't displayed
+        if (a.text.strip() == 'Cached' and 'webcache.googleusercontent.com'):
+            continue
+        if (a.text.strip() == ''):
+            continue
+        # a.text: The name of the page
+        result = {'url': "https://www.google.com{}".format(link),
+                  'name': a.text}
+        results.append(result)
+    return results
 
 def get_google_result(search_keywords):
     help_message = "To use this bot, start messages with @mentioned-bot, \
@@ -18,23 +47,21 @@ def get_google_result(search_keywords):
                     An example message that could be sent is:\
                     '@mentioned-bot zulip' or \
                     '@mentioned-bot how to create a chatbot'."
+
+    search_keywords = search_keywords.strip()
+
     if search_keywords == 'help':
         return help_message
     elif search_keywords == '' or search_keywords is None:
         return help_message
     else:
         try:
-            urls = search(search_keywords, stop=20)
-            urlopen('http://216.58.192.142', timeout=1)
-        except error.URLError as er:
-            logging.exception(er)
-            return 'Error: No internet connection. {}.'.format(er)
-        except Exception as e:
-            logging.exception(e)
-            return 'Error: Search failed. {}.'.format(e)
-
-        try:
-            url = next(urls)
+            results = google_search(search_keywords)
+            if (len(results) == 0):
+                return "Found no results."
+            return "Found Result: [{}]({})".format(results[0]['name'], results[0]['url'])
+        except ConnectionError as c_err:
+            return "Error: Failed to connect. {}.".format(c_err)
         except AttributeError as a_err:
             # google.search query failed and urls is of object
             # 'NoneType'
@@ -47,11 +74,7 @@ def get_google_result(search_keywords):
             logging.exception(t_err)
             return "Error: Google search function failed. {}.".format(t_err)
         except Exception as e:
-            logging.exception(e)
             return 'Error: Search failed. {}.'.format(e)
-
-        return 'Success: {}'.format(url)
-
 
 class GoogleSearchHandler(object):
     '''
@@ -78,16 +101,3 @@ class GoogleSearchHandler(object):
         bot_handler.send_reply(message, result)
 
 handler_class = GoogleSearchHandler
-
-
-def test():
-    try:
-        urlopen('http://216.58.192.142', timeout=1)
-        print('Success')
-        return True
-    except error.URLError as e:
-        print('Error: {}'.format(e))
-        return False
-
-if __name__ == '__main__':
-    test()

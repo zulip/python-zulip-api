@@ -1,0 +1,13 @@
+{
+  "request": {
+    "api_url": "http://www.google.com/search",
+    "params": {
+      "q": "zulip"
+    }
+  },
+  "response": "<head></head><body><div id='search'><a href='/url?url=https%3A%2F%2Fzulipchat.com%2F'>Zulip</a></div></body>",
+  "response-headers": {
+    "status": 200,
+    "content-type": "text/html; charset=utf-8"
+  }
+}
