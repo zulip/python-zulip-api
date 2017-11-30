@@ -26,18 +26,18 @@ from types import ModuleType
 
 from copy import deepcopy
 
+def get_bot_message_handler(bot_name):
+    # type: (str) -> Any
+    # message_handler is of type 'Any', since it can contain any bot's
+    # handler class. Eventually, we want bot's handler classes to
+    # inherit from a common prototype specifying the handle_message
+    # function.
+    lib_module = import_module('zulip_bots.bots.{bot}.{bot}'.format(bot=bot_name))  # type: Any
+    return lib_module.handler_class()
+
 class BotTestCaseBase(TestCase):
     """Test class for common Bot test helper methods"""
     bot_name = ''  # type: str
-
-    def get_bot_message_handler(self):
-        # type: () -> Any
-        # message_handler is of type 'Any', since it can contain any bot's
-        # handler class. Eventually, we want bot's handler classes to
-        # inherit from a common prototype specifying the handle_message
-        # function.
-        lib_module = import_module('zulip_bots.bots.{bot}.{bot}'.format(bot=self.bot_name))  # type: Any
-        return lib_module.handler_class()
 
     def setUp(self):
         # type: () -> None
@@ -51,7 +51,7 @@ class BotTestCaseBase(TestCase):
         self.mock_bot_handler.storage = StateHandler(self.mock_client)
         self.mock_bot_handler.send_message.return_value = {'id': 42}
         self.mock_bot_handler.send_reply.return_value = {'id': 42}
-        self.message_handler = self.get_bot_message_handler()
+        self.message_handler = get_bot_message_handler(self.bot_name)
 
     def tearDown(self):
         # type: () -> None
