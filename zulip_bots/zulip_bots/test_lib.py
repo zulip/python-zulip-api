@@ -51,6 +51,7 @@ class BotTestCaseBase(TestCase):
         self.mock_bot_handler.storage = StateHandler(self.mock_client)
         self.mock_bot_handler.send_message.return_value = {'id': 42}
         self.mock_bot_handler.send_reply.return_value = {'id': 42}
+        self.mock_bot_handler.dispatch_default_commands.return_value = None
         self.message_handler = self.get_bot_message_handler()
 
     def tearDown(self):
@@ -108,6 +109,16 @@ class BotTestCaseBase(TestCase):
             self.message_handler.handle_message(message, self.mock_bot_handler)
         except KeyError as key_err:
             raise Exception("Message tested likely required key {}.".format(key_err))
+
+        # If default-dispatch feature used, check if should have triggered
+        if self.mock_bot_handler.dispatch_default_commands.called:
+            possible_command = message['content'].split(" ")
+            if possible_command:
+                command = possible_command[0]
+                args = self.mock_bot_handler.dispatch_default_commands.call_args_list[0][0]
+                default_handled = args[1]
+                assert command not in default_handled, ("Tested for message with command '%s' but handled by default in library." % (command,))
+                # Default commands were specified but not relevant, so test normally.
 
         # Determine which messaging functions are expected
         send_messages = [call(r[0]) for r in responses if r[1] == 'send_message']
