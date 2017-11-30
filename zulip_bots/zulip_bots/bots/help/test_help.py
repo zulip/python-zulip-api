@@ -1,16 +1,17 @@
 #!/usr/bin/env python
 
-from __future__ import absolute_import
-from __future__ import print_function
+from zulip_bots.test_lib import StubBotTestCase
 
-from six.moves import zip
-
-from zulip_bots.test_lib import BotTestCase
-
-class TestHelpBot(BotTestCase):
+class TestHelpBot(StubBotTestCase):
     bot_name = "help"
 
     def test_bot(self):
-        txt = "Info on Zulip can be found here:\nhttps://github.com/zulip/zulip"
-        messages = ["", "help", "Hi, my name is abc"]
-        self.check_expected_responses(list(zip(messages, len(messages)*[txt])))
+        help_text = "Info on Zulip can be found here:\nhttps://github.com/zulip/zulip"
+        requests = ["", "help", "Hi, my name is abc"]
+
+        dialog = [
+            (request, help_text)
+            for request in requests
+        ]
+
+        self.verify_dialog(dialog)
