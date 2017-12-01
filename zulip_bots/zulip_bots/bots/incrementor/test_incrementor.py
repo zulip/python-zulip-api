@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 #!/usr/bin/env python
 import mock
+=======
+#!/usr/bin/env python3
+>>>>>>> Update bots to python3
 
 from zulip_bots.test_lib import (
     get_bot_message_handler,

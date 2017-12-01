@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 #!/usr/bin/env python
 from zulip_bots.test_lib import StubBotTestCase
+=======
+#!/usr/bin/env python3
+>>>>>>> Update bots to python3
 
 class TestTictactoeBot(StubBotTestCase):
     bot_name = 'tictactoe'
