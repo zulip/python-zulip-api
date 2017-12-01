@@ -8,11 +8,11 @@ import shutil
 import subprocess
 import re
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 # stubs
-user_profile_stub = Dict[str, Any]
-added_users_stub = Dict[str, int]
-
+ZerverFieldsT = Dict[str, Any]
+AddedUsersT = Dict[str, int]
+AddedChannelsT = Dict[str, int]
 
 # Transported from https://github.com/zulip/zulip/blob/master/zerver/lib/export.py
 def rm_tree(path: str) -> None:
@@ -20,7 +20,7 @@ def rm_tree(path: str) -> None:
         shutil.rmtree(path)
 
 def users2zerver_userprofile(slack_dir: str, realm_id: int, timestamp: Any,
-                             domain_name: str) -> (List[user_profile_stub], added_users_stub):
+                             domain_name: str) -> Tuple[List[ZerverFieldsT], AddedUsersT]:
     """
     Returns:
     1. zerver_userprofile, which is a list of user profile
@@ -39,7 +39,7 @@ def users2zerver_userprofile(slack_dir: str, realm_id: int, timestamp: Any,
 
         # email
         if 'email' not in profile:
-            email = (hashlib.blake2b(user['real_name'].encode()).hexdigest() +
+            email = (hashlib.sha256(user['real_name'].encode()).hexdigest() +
                      "@%s" % (domain_name))
         else:
             email = profile['email']
@@ -131,8 +131,12 @@ def users2zerver_userprofile(slack_dir: str, realm_id: int, timestamp: Any,
     print('######### IMPORTING USERS FINISHED #########\n')
     return zerver_userprofile, added_users
 
-def channels2zerver_stream(slack_dir, realm_id, added_users, zerver_userprofile):
-    # type: (Dict[str, Dict[str, Any]]) -> None
+def channels2zerver_stream(slack_dir: str, realm_id: int, added_users: AddedUsersT,
+                           zerver_userprofile: List[ZerverFieldsT]) -> Tuple[List[ZerverFieldsT],
+                                                                             List[ZerverFieldsT],
+                                                                             AddedChannelsT,
+                                                                             List[ZerverFieldsT],
+                                                                             List[ZerverFieldsT]]:
     print('######### IMPORTING CHANNELS STARTED #########\n')
     channels = json.load(open(slack_dir + '/channels.json'))
     added_channels = {}
@@ -323,11 +327,9 @@ def main(slack_zip_file: str) -> None:
 
     # now for message.json
     message_json = {}
-    zerver_message = []
-    zerver_usermessage = []
-    zerver_attachment = []
-    zerver_message = []
-    zerver_usermessage = []
+    zerver_message = []  # type: List[ZerverFieldsT]
+    zerver_usermessage = []  # type: List[ZerverFieldsT]
+    zerver_attachment = []  # type: List[ZerverFieldsT]
 
     message_json['zerver_message'] = zerver_message
     message_json['zerver_usermessage'] = zerver_usermessage
@@ -347,8 +349,7 @@ def main(slack_zip_file: str) -> None:
 
     # IO attachments
     attachment_file = output_dir + '/attachment.json'
-    # attachment = {"zerver_attachment": zerver_attachment}
-    attachment = {"zerver_attachment": []}
+    attachment = {"zerver_attachment": zerver_attachment}
     json.dump(attachment, open(attachment_file, 'w'))
 
     print('ls', os.listdir())
