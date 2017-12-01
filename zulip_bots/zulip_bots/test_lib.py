@@ -63,7 +63,7 @@ class StubBotHandler:
 class StubBotTestCase(TestCase):
     '''
     The goal for this class is to eventually replace
-    BotTestCaseBase for places where we may want more
+    BotTestCase for places where we may want more
     fine-grained control and less heavy setup.
     '''
 
@@ -84,6 +84,11 @@ class StubBotTestCase(TestCase):
             bot.handle_message(message, bot_handler)
             response = bot_handler.last_test_response()
             self.assertEqual(expected_response, response['content'])
+
+    def test_bot_usage(self):
+        # type: () -> None
+        bot = get_bot_message_handler(self.bot_name)
+        self.assertNotEqual(bot.usage(), '')
 
 def get_bot_message_handler(bot_name):
     # type: (str) -> Any
@@ -134,7 +139,7 @@ def mock_http_conversation(http_data):
         else:
             mock_get.assert_called_with(http_request['api_url'])
 
-class BotTestCaseBase(TestCase):
+class BotTestCase(StubBotTestCase):
     """Test class for common Bot test helper methods"""
     bot_name = ''  # type: str
 
@@ -253,10 +258,3 @@ class BotTestCaseBase(TestCase):
     def assert_bot_responses(self, message, *response_list):
         # type: (Dict[str, Any], *Tuple[Dict[str, Any], str]) -> None
         self.call_request(message, *response_list)
-
-class BotTestCase(BotTestCaseBase):
-    """Test class extending BotTestCaseBase to add common default tests
-    that should be run (by default) for all our bots"""
-    def test_bot_usage(self):
-        # type: () -> None
-        self.assertNotEqual(self.message_handler.usage(), '')

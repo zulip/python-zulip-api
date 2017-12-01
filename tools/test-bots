@@ -98,7 +98,7 @@ def main():
         for test in tests:
             if isinstance(test, TestCase):
                 # Exclude test base class from being tested.
-                if test.__class__.__name__ not in ['StubBotTestCase', 'BotTestCase', 'BotTestCaseBase']:
+                if test.__class__.__name__ not in ['StubBotTestCase', 'BotTestCase']:
                     filtered_tests.addTest(test)
             else:
                 filtered_tests.addTest(filter_tests(test))
