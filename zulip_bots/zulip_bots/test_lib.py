@@ -36,12 +36,15 @@ class StubBotHandler:
         # type: () -> None
         self.storage = SimpleStorage()
         self.message_server = SimpleMessageServer()
-        self.sent_messages = []  # type: List[Dict[str, Any]]
+        self.reset_transcript()
+
+    def reset_transcript(self):
+        # type: () -> None
+        self.transcript = []  # type: List[Tuple[str, Dict[str, Any]]]
 
     def send_message(self, message):
         # type: (Dict[str, Any]) -> Dict[str, Any]
-        self.sent_messages.append(message)
-        self.sent_messages.append(message)
+        self.transcript.append(('send_message', message))
         return self.message_server.send(message)
 
     def send_reply(self, message, response):
@@ -49,16 +52,29 @@ class StubBotHandler:
         response_message = dict(
             content=response
         )
-        self.sent_messages.append(response_message)
+        self.transcript.append(('send_reply', response_message))
         return self.message_server.send(response_message)
 
     def update_message(self, message):
         # type: (Dict[str, Any]) -> None
         self.message_server.update(message)
 
-    def last_test_response(self):
+    def unique_response(self):
         # type: () -> Dict[str, Any]
-        return self.sent_messages[-1]
+        responses = [
+            message
+            for (method, message)
+            in self.transcript
+        ]
+        self.ensure_unique_response(responses)
+        return responses[0]
+
+    def ensure_unique_response(self, responses):
+        # type: (List[Dict[str, Any]]) -> None
+        if not responses:
+            raise Exception('The bot is not responding for some reason.')
+        if len(responses) > 1:
+            raise Exception('The bot is giving too many responses for some reason.')
 
 class StubBotTestCase(TestCase):
     '''
@@ -81,8 +97,9 @@ class StubBotTestCase(TestCase):
                 sender_email='foo@example.com',
                 content=request,
             )
+            bot_handler.reset_transcript()
             bot.handle_message(message, bot_handler)
-            response = bot_handler.last_test_response()
+            response = bot_handler.unique_response()
             self.assertEqual(expected_response, response['content'])
 
     def test_bot_usage(self):
