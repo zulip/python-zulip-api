@@ -59,6 +59,17 @@ class StubBotHandler:
         # type: (Dict[str, Any]) -> None
         self.message_server.update(message)
 
+    def unique_reply(self):
+        # type: () -> Dict[str, Any]
+        responses = [
+            message
+            for (method, message)
+            in self.transcript
+            if method == 'send_reply'
+        ]
+        self.ensure_unique_response(responses)
+        return responses[0]
+
     def unique_response(self):
         # type: () -> Dict[str, Any]
         responses = [
@@ -84,6 +95,22 @@ class StubBotTestCase(TestCase):
     '''
 
     bot_name = ''
+
+    def verify_reply(self, request, response):
+        # type: (str, str) -> None
+
+        # Start a new message handler for the full conversation.
+        bot = get_bot_message_handler(self.bot_name)
+        bot_handler = StubBotHandler()
+
+        message = dict(
+            sender_email='foo@example.com',
+            content=request,
+        )
+        bot_handler.reset_transcript()
+        bot.handle_message(message, bot_handler)
+        reply = bot_handler.unique_reply()
+        self.assertEqual(response, reply['content'])
 
     def verify_dialog(self, conversation):
         # type: (List[Tuple[str, str]]) -> None
