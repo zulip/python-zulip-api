@@ -107,6 +107,12 @@ class StubBotTestCase(TestCase):
         bot = get_bot_message_handler(self.bot_name)
         self.assertNotEqual(bot.usage(), '')
 
+    def mock_http_conversation(self, test_name):
+        # type: (str) -> Any
+        assert test_name is not None
+        http_data = read_bot_fixture_data(self.bot_name, test_name)
+        return mock_http_conversation(http_data)
+
 def get_bot_message_handler(bot_name):
     # type: (str) -> Any
     # message_handler is of type 'Any', since it can contain any bot's
@@ -257,12 +263,6 @@ class BotTestCase(StubBotTestCase):
         self.mock_bot_handler.get_config_info.return_value = config_info
         yield
         self.mock_bot_handler.get_config_info.return_value = None
-
-    def mock_http_conversation(self, test_name):
-        # type: (str) -> Any
-        assert test_name is not None
-        http_data = read_bot_fixture_data(self.bot_name, test_name)
-        return mock_http_conversation(http_data)
 
     def assert_bot_response(self, message, response, expected_method):
         # type: (Dict[str, Any], Dict[str, Any], str) -> None
