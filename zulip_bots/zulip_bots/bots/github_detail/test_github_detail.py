@@ -5,9 +5,9 @@ from __future__ import print_function
 
 import json
 
-from zulip_bots.test_lib import BotTestCaseBase
+from zulip_bots.test_lib import BotTestCase
 
-class TestGithubDetailBot(BotTestCaseBase):
+class TestGithubDetailBot(BotTestCase):
     bot_name = "github_detail"
     mock_config = {'owner': 'zulip', 'repo': 'zulip'}
 
