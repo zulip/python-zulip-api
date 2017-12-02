@@ -159,6 +159,13 @@ def read_bot_fixture_data(bot_name, test_name):
     http_data = json.loads(content)
     return http_data
 
+def get_response(http_response, http_headers):
+    # type: (Dict[str, Any], Dict[str, Any]) -> Any
+    mock_result = requests.Response()
+    mock_result._content = json.dumps(http_response).encode()  # type: ignore # This modifies a "hidden" attribute.
+    mock_result.status_code = http_headers.get('status', 200)
+    return mock_result
+
 @contextmanager
 def mock_http_conversation(http_data):
     # type: (Dict[str, Any]) -> Any
@@ -174,20 +181,36 @@ def mock_http_conversation(http_data):
     http_request = http_data.get('request')
     http_response = http_data.get('response')
     http_headers = http_data.get('response-headers')
-    with patch('requests.get') as mock_get:
-        mock_result = requests.Response()
-        mock_result._content = json.dumps(http_response).encode()  # type: ignore # We are modifying a "hidden" attribute.
-        mock_result.status_code = http_headers.get('status', 200)
-        mock_get.return_value = mock_result
-        yield
-        if 'params' in http_request:
-            params = http_request.get('params', None)
-            mock_get.assert_called_with(http_request['api_url'], params=params)
-        elif 'headers' in http_request:
-            headers = http_request.get('headers', None)
-            mock_get.assert_called_with(http_request['api_url'], headers=headers)
-        else:
-            mock_get.assert_called_with(http_request['api_url'])
+    http_method = http_request.get('method', 'GET')
+
+    if http_method == 'GET':
+        with patch('requests.get') as mock_get:
+            mock_get.return_value = get_response(http_response, http_headers)
+            yield
+            if 'params' in http_request:
+                params = http_request.get('params', None)
+                mock_get.assert_called_with(http_request['api_url'], params=params)
+            elif 'headers' in http_request:
+                headers = http_request.get('headers', None)
+                mock_get.assert_called_with(http_request['api_url'], headers=headers)
+            else:
+                mock_get.assert_called_with(http_request['api_url'])
+    else:
+        with patch('requests.post') as mock_post:
+            mock_post.return_value = get_response(http_response, http_headers)
+            yield
+            if 'json' in http_request:
+                json = http_request.get('json', None)
+                if 'params' in http_request:
+                    params = http_request.get('params', None)
+                    mock_post.assert_called_with(http_request['api_url'], json=json, params=params)
+                else:
+                    mock_post.assert_called_with(http_request['api_url'], json=json)
+            elif 'params' in http_request:
+                params = http_request.get('params', None)
+                mock_post.assert_called_with(http_request['api_url'], params=params)
+            else:
+                mock_post.assert_called_with(http_request['api_url'])
 
 class BotTestCase(StubBotTestCase):
     """Test class for common Bot test helper methods"""
