@@ -1,7 +1,5 @@
 # Wikipedia bot
 
-## Intro
-
 This bot returns the top wikipedia link for a search term entered by the user.
 
 To call the bot, use `@mention_bot` at the start of your search.
