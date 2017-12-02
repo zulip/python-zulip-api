@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import mock
 
 from zulip_bots.test_lib import (
