@@ -164,7 +164,7 @@ def build_custom_checkers(by_lang):
          'exclude': set(['tools/provision']),
          'include_only': set(['zulip/', 'tools/', 'zulip_botserver/']),
          'description': 'Explicit python invocations should not include a version'},
-        {'pattern': '#!/usr/bin/env python[ 2]',
+        {'pattern': '#!/usr/bin/env python$',
          'include_only': set(['zulip_bots/']),
          'description': 'Python shebangs must be python3'},
         {'pattern': '(^|\s)open\s*\(',
