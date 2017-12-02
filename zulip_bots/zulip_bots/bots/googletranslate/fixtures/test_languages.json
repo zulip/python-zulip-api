@@ -1,0 +1,32 @@
+{
+    "request": {
+        "method": "GET",
+        "api_url": "https://translation.googleapis.com/language/translate/v2/languages",
+        "params": {
+            "key": "abcdefg",
+            "target": "en"
+        }
+    },
+    "response": {
+        "data": {
+            "languages": [
+                {
+                    "language": "en",
+                    "name": "English"
+                },
+                {
+                    "language": "fr",
+                    "name": "French"
+                },
+                {
+                    "language": "de",
+                    "name": "German"
+                }
+            ]
+        }
+    },
+    "response-headers": {
+        "status": 200,
+        "content-type": "application/json; charset=utf-8"
+    }
+}

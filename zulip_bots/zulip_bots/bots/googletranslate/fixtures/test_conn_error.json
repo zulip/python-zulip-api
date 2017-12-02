@@ -1,0 +1,16 @@
+{
+  "request": {
+    "method": "POST",
+    "api_url": "https://translation.googleapis.com/language/translate/v2",
+    "params": {
+      "q": "Hello",
+      "key": "abcdefg",
+      "target": "de",
+      "source": "en"
+    }
+  },
+  "response": {
+  },
+  "response-headers": {
+  }
+}
