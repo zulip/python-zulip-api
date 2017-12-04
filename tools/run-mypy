@@ -32,6 +32,12 @@ exclude = [
     "tools/test-lib",
 ]
 
+# These files will be included even if excluded by a rule above.
+force_include = [
+    # Include bots that we migrate to mypy.
+    "zulip_bots/zulip_bots/bots/helloworld/helloworld.py",
+]
+
 parser = argparse.ArgumentParser(description="Run mypy on files tracked by git.")
 parser.add_argument('targets', nargs='*', default=[],
                     help="""files and directories to include in the result.
@@ -63,6 +69,11 @@ files_dict = cast(Dict[str, List[str]],
                                     use_shebang=True, modified_only=args.modified,
                                     exclude = exclude + ['stubs'], group_by_ftype=True,
                                     extless_only=args.scripts_only))
+
+for inpath in force_include:
+    ext = os.path.splitext(inpath)[1].split('.')[1]
+    files_dict[ext].append(inpath)
+
 pyi_files = set(files_dict['pyi'])
 python_files = [fpath for fpath in files_dict['py']
                 if not fpath.endswith('.py') or fpath + 'i' not in pyi_files]
