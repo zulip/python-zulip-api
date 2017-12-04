@@ -3,9 +3,9 @@
 from zulip_bots.test_lib import StubBotTestCase
 
 class TestHelpBot(StubBotTestCase):
-    bot_name = "helloworld"
+    bot_name = "helloworld"  # type: str
 
-    def test_bot(self):
+    def test_bot(self) -> None:
         dialog = [
             ('', 'beep boop'),
             ('help', 'beep boop'),
