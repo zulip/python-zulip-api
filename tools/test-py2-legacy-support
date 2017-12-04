@@ -5,4 +5,4 @@
 
 set -ev
 
-tools/test-zulip --coverage combine
+tools/test-zulip
