@@ -1,5 +1,6 @@
 # See readme.md for instructions on running this code.
 
+import six.moves.configparser
 class FollowupHandler(object):
     '''
     This plugin facilitates creating follow-up tasks when
@@ -22,15 +23,24 @@ class FollowupHandler(object):
             called "followup" that your API user can send to.
             '''
 
+    def initialize(self, bot_handler):
+        try:
+            self.config_info = bot_handler.get_config_info('stream_detail', optional=True)
+            self.default_stream = self.config_info.get("stream", False)
+        except:
+            self.default_stream = 'followup'
+
+
     def handle_message(self, message, bot_handler):
         if message['content'] == '':
             bot_response = "Please specify the message you want to send to followup stream after @mention-bot"
             bot_handler.send_reply(message, bot_response)
         else:
             bot_response = self.get_bot_followup_response(message)
+            default_stream = self.default_stream
             bot_handler.send_message(dict(
                 type='stream',
-                to='followup',
+                to=default_stream,
                 subject=message['sender_email'],
                 content=bot_response,
             ))

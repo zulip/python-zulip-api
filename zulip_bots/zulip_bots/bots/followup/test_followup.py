@@ -7,6 +7,7 @@ from zulip_bots.test_lib import BotTestCase
 
 class TestFollowUpBot(BotTestCase):
     bot_name = "followup"
+    mock_config = {'stream': 'followup'}
 
     def test_bot(self):
         expected_send_reply = [
@@ -26,4 +27,6 @@ class TestFollowUpBot(BotTestCase):
               'subject': 'foo_sender@zulip.com',
               'content': 'from foo_sender@zulip.com: I have completed my task'}),
         ]
-        self.check_expected_responses(expected_send_message, expected_method='send_message')
+        with self.mock_config_info(self.mock_config):
+            self.initialize_bot()
+            self.check_expected_responses(expected_send_message, expected_method='send_message')
