@@ -52,7 +52,8 @@ setuptools_info = dict(
         'html2text',  # for bots/define
         'BeautifulSoup4',  # for bots/googlesearch
         'lxml',  # for bots/googlesearch
-        'requests'  # for bots/link_shortener
+        'requests',  # for bots/link_shortener
+        'python-chess[engine,gaviota]'  # for bots/chess
     ],
 )
 
