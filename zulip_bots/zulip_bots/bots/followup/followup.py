@@ -24,12 +24,9 @@ class FollowupHandler(object):
             '''
 
     def initialize(self, bot_handler):
-        try:
             self.config_info = bot_handler.get_config_info('stream_detail', optional=True)
             self.default_stream = self.config_info.get("stream", False)
-        except:
             self.default_stream = 'followup'
-
 
     def handle_message(self, message, bot_handler):
         if message['content'] == '':
