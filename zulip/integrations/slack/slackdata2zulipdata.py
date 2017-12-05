@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import re
 
+from datetime import datetime
 from typing import Any, Dict, List, Tuple
 # stubs
 ZerverFieldsT = Dict[str, Any]
@@ -260,27 +261,25 @@ def channels2zerver_stream(slack_dir: str, realm_id: int, added_users: AddedUser
     print('######### IMPORTING STREAMS FINISHED #########\n')
     return zerver_defaultstream, zerver_stream, added_channels, zerver_subscription, zerver_recipient
 
-def main(slack_zip_file: str) -> None:
+def main(slack_zip_file: str, realm_name: str) -> None:
     slack_dir = slack_zip_file.replace('.zip', '')
     subprocess.check_call(['unzip', slack_zip_file])
     # with zipfile.ZipFile(slack_zip_file, 'r') as zip_ref:
     #     zip_ref.extractall(slack_dir)
 
-    from datetime import datetime
     # TODO fetch realm config from zulip config
     DOMAIN_NAME = "zulipchat.com"
 
     # Hardcode this to 1, will implement later for zulipchat.com's case where it
     # has multiple realms
     REALM_ID = 1
-    REALM_NAME = "FleshEatingBatswithFangs"
     NOW = float(datetime.utcnow().timestamp())
 
     script_path = os.path.dirname(os.path.abspath(__file__)) + '/'
     zerver_realm_skeleton = json.load(open(script_path + 'zerver_realm_skeleton.json'))
     zerver_realm_skeleton[0]['id'] = REALM_ID
     zerver_realm_skeleton[0]['string_id'] = 'zulip'  # subdomain / short_name of realm
-    zerver_realm_skeleton[0]['name'] = REALM_NAME
+    zerver_realm_skeleton[0]['name'] = realm_name
     zerver_realm_skeleton[0]['date_created'] = NOW
 
     # Make sure the directory output is clean
@@ -371,7 +370,10 @@ if __name__ == '__main__':
     # from django.conf import settings
     # settings_module = "settings.py"
     # os.environ['DJANGO_SETTINGS_MODULE'] = settings_module
-    description = ("script to convert Slack export data into Zulip export data")
+    description = ("Script to convert Slack export data into Zulip export data.")
     parser = argparse.ArgumentParser(description=description)
-    slack_zip_file = sys.argv[1]
-    main(slack_zip_file)
+    if len(sys.argv) != 3:
+        sys.stderr.write('Usage: python slackdata2zulipdata.py <slack_zip_file> <realm_name>\n')
+        sys.exit(1)
+    slack_zip_file, realm_name = sys.argv[1], sys.argv[2]
+    main(slack_zip_file, realm_name)
