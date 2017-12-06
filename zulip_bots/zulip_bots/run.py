@@ -9,7 +9,9 @@ import os
 from types import ModuleType
 from importlib import import_module
 from os.path import basename, splitext
-from typing import Any, Optional, Text
+
+if False:
+    from typing import Any, Optional, Text
 
 from zulip_bots.lib import (
     run_message_handler_for_bot,
