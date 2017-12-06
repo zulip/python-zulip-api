@@ -32,7 +32,7 @@ logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.ERROR)
 #
 # If you didn't specify any, it should be in the default
 # path (~/.google_credentials.json)
-CREDENTIAL_PATH = '~/.google_credentials.json'
+CREDENTIAL_PATH = '~/google-credentials.json'
 
 class MessageParseError(Exception):
     def __init__(self, error_id):
@@ -204,7 +204,7 @@ class GCalendarHandler(object):
             (https://www.googleapis.com/auth/calendar).
             '''
 
-    def handle_message(self, message, bot_handler, state_handler):
+    def handle_message(self, message, bot_handler, state_handler=None):
 
         content = message['content'].strip()
         if content == 'help':
