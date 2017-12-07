@@ -5,12 +5,14 @@ from __future__ import print_function
 
 from zulip_bots.test_lib import BotTestCase
 
+from typing import Any
+
 class TestFollowUpBot(BotTestCase):
     bot_name = "followup"
     mock_config_default_stream = {'stream': 'followup'}
     mock_config_specified_stream = {'stream': 'issue'}
 
-    def test_bot_default_stream(self):
+    def test_bot(self: Any) -> None:
         expected_send_reply = [
             ("", 'Please specify the message you want to send to followup stream after @mention-bot')
         ]

@@ -1,4 +1,5 @@
 # See readme.md for instructions on running this code.
+from typing import Dict, Any
 
 import six.moves.configparser
 class FollowupHandler(object):
@@ -13,7 +14,7 @@ class FollowupHandler(object):
     external issue tracker as well.
     '''
 
-    def usage(self):
+    def usage(self: Any) -> str:
         return '''
             This plugin will allow users to flag messages
             as being follow-up items.  Users should preface
@@ -23,11 +24,7 @@ class FollowupHandler(object):
             called "followup" that your API user can send to.
             '''
 
-    def initialize(self, bot_handler):
-            self.config_info = bot_handler.get_config_info('stream_detail', optional=True)
-            self.default_stream = self.config_info.get("stream", "folllowup")
-
-    def handle_message(self, message, bot_handler):
+    def handle_message(self: Any, message: Dict[str, str], bot_handler: Any) -> None:
         if message['content'] == '':
             bot_response = "Please specify the message you want to send to followup stream after @mention-bot"
             bot_handler.send_reply(message, bot_response)
@@ -41,7 +38,7 @@ class FollowupHandler(object):
                 content=bot_response,
             ))
 
-    def get_bot_followup_response(self, message):
+    def get_bot_followup_response(self: Any, message: Dict[str, str]) -> str:
         original_content = message['content']
         original_sender = message['sender_email']
         temp_content = 'from %s: ' % (original_sender,)
