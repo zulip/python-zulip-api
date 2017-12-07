@@ -36,6 +36,8 @@ exclude = [
 force_include = [
     # Include bots that we migrate to mypy.
     "zulip_bots/zulip_bots/bots/helloworld/helloworld.py",
+    "zulip_bots/zulip_bots/bots/converter/converter.py",
+    "zulip_bots/zulip_bots/bots/converter/test_converter.py"
 ]
 
 parser = argparse.ArgumentParser(description="Run mypy on files tracked by git.")

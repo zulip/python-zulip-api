@@ -8,7 +8,7 @@ from zulip_bots.test_lib import BotTestCase
 class TestConverterBot(BotTestCase):
     bot_name = "converter"
 
-    def test_bot(self):
+    def test_bot(self) -> None:
         expected = [
             ("", 'Too few arguments given. Enter `@convert help` '
                  'for help on using the converter.\n'),
