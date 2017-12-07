@@ -39,5 +39,7 @@ class TestWikipediaBot(StubBotTestCase):
 
         # Empty query, no request made to the Internet.
         bot_request = ''
-        bot_response = "Please enter your message after @mention-bot"
+        bot_response = "Please enter your search term after @mention-bot"
         self.verify_reply(bot_request, bot_response)
+
+    
