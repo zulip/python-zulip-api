@@ -7,18 +7,19 @@ import json
 
 from zulip_bots.test_lib import BotTestCase
 
+from typing import Any
+
 class TestGithubDetailBot(BotTestCase):
     bot_name = "github_detail"
     mock_config = {'owner': 'zulip', 'repo': 'zulip'}
 
     # Overrides default test_bot_usage().
-    def test_bot_usage(self):
-        # type: () -> None
+    def test_bot_usage(self: Any) -> None:
         with self.mock_config_info(self.mock_config):
             self.initialize_bot()
             self.assertNotEqual(self.message_handler.usage(), '')
 
-    def test_issue(self):
+    def test_issue(self: Any) -> None:
         bot_response = '**[zulip/zulip#5365](https://github.com/zulip/zulip/issues/5365)'\
                        ' - frontend: Enable hot-reloading of CSS in development**\n'\
                        'Created by **[timabbott](https://github.com/timabbott)**\n'\
@@ -36,7 +37,7 @@ class TestGithubDetailBot(BotTestCase):
                 expected_method='send_reply'
             )
 
-    def test_pull_request(self):
+    def test_pull_request(self: Any) -> None:
         bot_response = '**[zulip/zulip#5345](https://github.com/zulip/zulip/pull/5345)'\
                        ' - [WIP] modal: Replace bootstrap modal with custom modal class**\n'\
                        'Created by **[jackrzhang](https://github.com/jackrzhang)**\n'\
@@ -56,7 +57,7 @@ class TestGithubDetailBot(BotTestCase):
                 expected_method='send_reply'
             )
 
-    def test_404(self):
+    def test_404(self: Any) -> None:
         bot_response = 'Failed to find issue/pr: zulip/zulip#0'
         # This message calls the `send_reply` function of BotHandlerApi
         with self.mock_http_conversation('test_404'):
@@ -66,7 +67,7 @@ class TestGithubDetailBot(BotTestCase):
                 expected_method='send_reply'
             )
 
-    def test_random_text(self):
+    def test_random_text(self: Any) -> None:
         bot_response = 'Failed to find any issue or PR.'
         # This message calls the `send_reply` function of BotHandlerApi
         self.assert_bot_response(
@@ -75,7 +76,7 @@ class TestGithubDetailBot(BotTestCase):
             expected_method='send_reply'
         )
 
-    def test_help_text(self):
+    def test_help_text(self: Any) -> None:
         bot_response = 'This plugin displays details on github issues and pull requests. '\
                        'To reference an issue or pull request usename mention the bot then '\
                        'anytime in the message type its id, for example:\n@**Github detail** '\
