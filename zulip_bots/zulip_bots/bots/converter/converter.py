@@ -10,7 +10,9 @@ from math import log10, floor
 import re
 from zulip_bots.bots.converter import utils
 
-def is_float(value):
+from typing import Any, Dict, List
+
+def is_float(value: Any) -> bool:
     try:
         float(value)
         return True
@@ -22,7 +24,8 @@ def is_float(value):
 # fractional decimals, e.g. 0.00045 would become 0.0.
 # 'round_to()' rounds only the digits that are not 0.
 # 0.00045 would then become 0.0005.
-def round_to(x, digits):
+
+def round_to(x: float, digits: int) -> float:
     return round(x, digits-int(floor(log10(abs(x)))))
 
 class ConverterHandler(object):
@@ -35,7 +38,7 @@ class ConverterHandler(object):
     the plugin, along with a list of all supported units.
     '''
 
-    def usage(self):
+    def usage(self) -> str:
         return '''
                This plugin allows users to make conversions between
                various units, e.g. Celsius to Fahrenheit,
@@ -46,11 +49,11 @@ class ConverterHandler(object):
                all supported units.
                '''
 
-    def handle_message(self, message, bot_handler):
+    def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
         bot_response = get_bot_converter_response(message, bot_handler)
         bot_handler.send_reply(message, bot_response)
 
-def get_bot_converter_response(message, bot_handler):
+def get_bot_converter_response(message: Dict[str, str], bot_handler: Any) -> str:
     content = message['content']
 
     words = content.lower().split()
@@ -72,8 +75,9 @@ def get_bot_converter_response(message, bot_handler):
                 results.append('`' + number + '` is not a valid number. ' + utils.QUICK_HELP)
                 continue
 
-            number = float(number)
-            number_res = copy.copy(number)
+            # cannot reassign "number" as a float after using as string, so changed name
+            convert_num = float(number)
+            number_res = copy.copy(convert_num)
 
             for key, exp in utils.PREFIXES.items():
                 if unit_from.startswith(key):
@@ -83,14 +87,14 @@ def get_bot_converter_response(message, bot_handler):
                     exponent -= exp
                     unit_to = unit_to[len(key):]
 
-            uf_to_std = utils.UNITS.get(unit_from, False)
-            ut_to_std = utils.UNITS.get(unit_to, False)
+            uf_to_std = utils.UNITS.get(unit_from, [])  # type: List[Any]
+            ut_to_std = utils.UNITS.get(unit_to, [])  # type: List[Any]
 
-            if uf_to_std is False:
+            if not uf_to_std:
                 results.append('`' + unit_from + '` is not a valid unit. ' + utils.QUICK_HELP)
-            if ut_to_std is False:
+            if not ut_to_std:
                 results.append('`' + unit_to + '` is not a valid unit.' + utils.QUICK_HELP)
-            if uf_to_std is False or ut_to_std is False:
+            if not uf_to_std or not ut_to_std:
                 continue
 
             base_unit = uf_to_std[2]
