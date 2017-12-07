@@ -26,7 +26,6 @@ class FollowupHandler(object):
 
     def initialize(self: Any, bot_handler: Any) -> None:
         self.config_info = bot_handler.get_config_info('stream')
-        self.stream = self.config_info.get("stream", "followup")
 
     def handle_message(self: Any, message: Dict[str, str], bot_handler: Any, config_info: Dict[str, str]) -> None:
         if message['content'] == 'help':
