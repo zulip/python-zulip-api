@@ -8,12 +8,13 @@ import json
 from unittest.mock import patch
 from requests.exceptions import HTTPError, ConnectionError
 
+from typing import Any, Union
 from zulip_bots.test_lib import BotTestCase
 
 class TestGiphyBot(BotTestCase):
     bot_name = "giphy"
 
-    def test_normal(self):
+    def test_normal(self: Any) -> None:
         bot_response = '[Click to enlarge]' \
                        '(https://media4.giphy.com/media/3o6ZtpxSZbQRRnwCKQ/giphy.gif)' \
                        '[](/static/images/interactive-bot/giphy/powered-by-giphy.png)'
@@ -27,7 +28,7 @@ class TestGiphyBot(BotTestCase):
                 expected_method='send_reply'
             )
 
-    def test_no_result(self):
+    def test_no_result(self: Any) -> None:
         with self.mock_config_info({'key': '12345678'}), \
                 self.mock_http_conversation('test_no_result'):
             self.initialize_bot()
@@ -37,7 +38,7 @@ class TestGiphyBot(BotTestCase):
                 expected_method='send_reply'
             )
 
-    def test_403(self):
+    def test_403(self: Any) -> None:
         with self.mock_config_info({'key': '12345678'}), \
                 self.mock_http_conversation('test_403'), \
                 self.assertRaises(HTTPError):
@@ -48,7 +49,7 @@ class TestGiphyBot(BotTestCase):
             self.message_handler.handle_message(message={'content': 'Hello'},
                                                 bot_handler=self.mock_bot_handler)
 
-    def test_connection_error(self):
+    def test_connection_error(self: Any) -> None:
         with self.mock_config_info({'key': '12345678'}), \
                 patch('requests.get', side_effect=ConnectionError()), \
                 patch('logging.warning'):
