@@ -1,10 +1,5 @@
 #!/usr/bin/env python
 
-from __future__ import absolute_import
-from __future__ import print_function
-
-import json
-
 from unittest.mock import patch
 from requests.exceptions import HTTPError, ConnectionError
 
