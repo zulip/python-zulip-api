@@ -7,7 +7,9 @@ import requests
 
 from bs4 import BeautifulSoup
 
-def google_search(keywords):
+from typing import Dict, Any, Union, List
+
+def google_search(keywords: str) -> List[Dict[str, str]]:
     query = {'q': keywords}
     # Gets the page
     page = requests.get('http://www.google.com/search', params=query)
@@ -38,7 +40,7 @@ def google_search(keywords):
         results.append(result)
     return results
 
-def get_google_result(search_keywords):
+def get_google_result(search_keywords: str) -> str:
     help_message = "To use this bot, start messages with @mentioned-bot, \
                     followed by what you want to search for. If \
                     found, Zulip will return the first search result \
@@ -65,13 +67,13 @@ def get_google_result(search_keywords):
         except AttributeError as a_err:
             # google.search query failed and urls is of object
             # 'NoneType'
-            logging.exception(a_err)
+            logging.exception(str(a_err))
             return "Error: Google search failed with a NoneType result. {}.".format(a_err)
         except TypeError as t_err:
             # google.search query failed and returned None
             # This technically should not happen but the prior
             # error check assumed this behavior
-            logging.exception(t_err)
+            logging.exception(str(t_err))
             return "Error: Google search function failed. {}.".format(t_err)
         except Exception as e:
             return 'Error: Search failed. {}.'.format(e)
@@ -85,7 +87,7 @@ class GoogleSearchHandler(object):
     with @mentioned-bot.
     '''
 
-    def usage(self):
+    def usage(self: Any) -> str:
         return '''
             This plugin will allow users to search
             for a given search term on Google from
@@ -95,7 +97,7 @@ class GoogleSearchHandler(object):
             @mentioned-bot.
             '''
 
-    def handle_message(self, message, bot_handler):
+    def handle_message(self: Any, message: Dict[str, str], bot_handler: Any) -> None:
         original_content = message['content']
         result = get_google_result(original_content)
         bot_handler.send_reply(message, result)
