@@ -68,16 +68,22 @@ class WikipediaHandler(object):
         if len(data.json()['query']['search']) == 0:
             new_content = 'I am sorry. The search term you provided is not found :slightly_frowning_face:'
         else:
-            search_string1 = data.json()['query']['search'][0]['title'].replace(' ', '_')
-            search_string2 = data.json()['query']['search'][1]['title'].replace(' ', '_')
-            search_string3 = data.json()['query']['search'][2]['title'].replace(' ', '_')
-            url1 = 'https://en.wikipedia.org/wiki/' + search_string1
-            url2 = 'https://en.wikipedia.org/wiki/' + search_string2
-            url3 = 'https://en.wikipedia.org/wiki/' + search_string3
-            new_content = (new_content + '\n'
-                           + 'Result 1: ' + url1 + '\n'
-                           + 'Result 2: ' + url2 + '\n' 
-                           + 'Result 3: ' + url3 + '\n')
+            try:
+                search_string1 = data.json()['query']['search'][0]['title'].replace(' ', '_')
+                search_string2 = data.json()['query']['search'][1]['title'].replace(' ', '_')
+                search_string3 = data.json()['query']['search'][2]['title'].replace(' ', '_')
+                url1 = 'https://en.wikipedia.org/wiki/' + search_string1
+                url2 = 'https://en.wikipedia.org/wiki/' + search_string2
+                url3 = 'https://en.wikipedia.org/wiki/' + search_string3
+                new_content = (f'''{new_content}
+                Result 1: {url1}
+                Result 2: {url2}
+                Result 3: {url3}''')
+            except:
+                search_string1 = data.json()['query']['search'][0]['title'].replace(' ', '_')
+                url1 = 'https://en.wikipedia.org/wiki/' + search_string1
+                new_content = (new_content + '\n'
+                           + 'Result 1: ' + url1)
         return new_content
 
     

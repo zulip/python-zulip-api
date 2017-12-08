@@ -9,7 +9,10 @@ class TestWikipediaBot(StubBotTestCase):
 
         # Single-word query
         bot_request = 'happy'
-        bot_response = "For search term \"happy\", https://en.wikipedia.org/wiki/Happiness"
+        bot_response = ('''For search term:happy
+Result 1: https://en.wikipedia.org/wiki/Happiness
+Result 2: https://en.wikipedia.org/wiki/Happy!
+Result 3: https://en.wikipedia.org/wiki/Happy,_Happy''')
         with self.mock_http_conversation('test_single_word'):
             self.verify_reply(bot_request, bot_response)
 
