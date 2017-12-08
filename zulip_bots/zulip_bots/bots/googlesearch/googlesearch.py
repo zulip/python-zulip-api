@@ -27,12 +27,10 @@ def google_search(keywords: str) -> List[Dict[str, str]]:
         except KeyError:
             continue
         # Link must start with '/url?', as these are the search result links
-        if (not link.startswith('/url?')):
+        if not link.startswith('/url?'):
             continue
         # Makes sure a hidden 'cached' result isn't displayed
-        if (a.text.strip() == 'Cached' and 'webcache.googleusercontent.com'):
-            continue
-        if (a.text.strip() == ''):
+        if a.text.strip() == 'Cached' and 'webcache.googleusercontent.com' in a['href']:
             continue
         # a.text: The name of the page
         result = {'url': "https://www.google.com{}".format(link),
@@ -62,20 +60,8 @@ def get_google_result(search_keywords: str) -> str:
             if (len(results) == 0):
                 return "Found no results."
             return "Found Result: [{}]({})".format(results[0]['name'], results[0]['url'])
-        except ConnectionError as c_err:
-            return "Error: Failed to connect. {}.".format(c_err)
-        except AttributeError as a_err:
-            # google.search query failed and urls is of object
-            # 'NoneType'
-            logging.exception(str(a_err))
-            return "Error: Google search failed with a NoneType result. {}.".format(a_err)
-        except TypeError as t_err:
-            # google.search query failed and returned None
-            # This technically should not happen but the prior
-            # error check assumed this behavior
-            logging.exception(str(t_err))
-            return "Error: Google search function failed. {}.".format(t_err)
         except Exception as e:
+            logging.exception(str(e))
             return 'Error: Search failed. {}.'.format(e)
 
 class GoogleSearchHandler(object):
