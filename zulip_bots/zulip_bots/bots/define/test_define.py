@@ -1,11 +1,8 @@
 #!/usr/bin/env python
 
-from __future__ import absolute_import
-from __future__ import print_function
+from zulip_bots.test_lib import StubBotTestCase
 
-from zulip_bots.test_lib import BotTestCase
-
-class TestDefineBot(BotTestCase):
+class TestDefineBot(StubBotTestCase):
     bot_name = "define"
 
     def test_bot(self):
@@ -16,11 +13,7 @@ class TestDefineBot(BotTestCase):
                         "kept as a pet or for catching mice, and many breeds have been "
                         "developed.\n&nbsp;&nbsp;their pet cat\n\n")
         with self.mock_http_conversation('test_single_type_word'):
-            self.assert_bot_response(
-                message = {'content': 'cat'},
-                response = {'content': bot_response},
-                expected_method='send_reply'
-            )
+            self.verify_reply('cat', bot_response)
 
         # Multi-type word.
         bot_response = ("**help**:\n\n"
@@ -35,41 +28,21 @@ class TestDefineBot(BotTestCase):
                         "* (**exclamation**) used as an appeal for urgent assistance.\n"
                         "&nbsp;&nbsp;Help! I'm drowning!\n\n")
         with self.mock_http_conversation('test_multi_type_word'):
-            self.assert_bot_response(
-                message = {'content': 'help'},
-                response = {'content': bot_response},
-                expected_method='send_reply'
-            )
+            self.verify_reply('help', bot_response)
 
         # Incorrect word.
         bot_response = "**foo**:\nCould not load definition."
         with self.mock_http_conversation('test_incorrect_word'):
-            self.assert_bot_response(
-                message = {'content': 'foo'},
-                response = {'content': bot_response},
-                expected_method='send_reply'
-            )
+            self.verify_reply('foo', bot_response)
 
         # Phrases are not defined. No request is sent to the Internet.
         bot_response = "Definitions for phrases are not available."
-        self.assert_bot_response(
-            message = {'content': 'The sky is blue'},
-            response = {'content': bot_response},
-            expected_method='send_reply'
-        )
+        self.verify_reply('The sky is blue', bot_response)
 
         # Symbols are considered invalid for words
         bot_response = "Definitions of words with symbols are not possible."
-        self.assert_bot_response(
-            message = {'content': '#'},
-            response = {'content': bot_response},
-            expected_method='send_reply'
-        )
+        self.verify_reply('#', bot_response)
 
         # Empty messages are returned with a prompt to reply. No request is sent to the Internet.
         bot_response = "Please enter a word to define."
-        self.assert_bot_response(
-            message = {'content': ''},
-            response = {'content': bot_response},
-            expected_method='send_reply'
-        )
+        self.verify_reply('', bot_response)
