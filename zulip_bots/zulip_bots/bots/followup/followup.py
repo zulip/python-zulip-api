@@ -13,7 +13,7 @@ class FollowupHandler(object):
     external issue tracker as well.
     '''
 
-    def usage(self: Any) -> str:
+    def usage(self) -> str:
         return '''
             This plugin will allow users to flag messages
             as being follow-up items.  Users should preface
@@ -23,7 +23,7 @@ class FollowupHandler(object):
             called "followup" that your API user can send to.
             '''
 
-    def handle_message(self: Any, message: Dict[str, str], bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
         if message['content'] == '':
             bot_response = "Please specify the message you want to send to followup stream after @mention-bot"
             bot_handler.send_reply(message, bot_response)
@@ -36,7 +36,7 @@ class FollowupHandler(object):
                 content=bot_response,
             ))
 
-    def get_bot_followup_response(self: Any, message: Dict[str, str]) -> str:
+    def get_bot_followup_response(self, message: Dict[str, str]) -> str:
         original_content = message['content']
         original_sender = message['sender_email']
         temp_content = 'from %s: ' % (original_sender,)

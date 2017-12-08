@@ -21,17 +21,17 @@ class GiphyHandler(object):
     and responds with a message with the GIF based on provided keywords.
     It also responds to private messages.
     '''
-    def usage(self: Any) -> str:
+    def usage(self) -> str:
         return '''
             This plugin allows users to post GIFs provided by Giphy.
             Users should preface keywords with the Giphy-bot @mention.
             The bot responds also to private messages.
             '''
 
-    def initialize(self: Any, bot_handler: Any) -> None:
+    def initialize(self, bot_handler: Any) -> None:
         self.config_info = bot_handler.get_config_info('giphy')
 
-    def handle_message(self: Any, message: Dict[str, str], bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
         bot_response = get_bot_giphy_response(
             message,
             bot_handler,
