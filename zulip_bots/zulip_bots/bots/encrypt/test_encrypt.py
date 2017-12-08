@@ -8,7 +8,7 @@ from zulip_bots.test_lib import BotTestCase
 class TestEncryptBot(BotTestCase):
     bot_name = "encrypt"
 
-    def test_bot(self):
+    def test_bot(self) -> None:
         expected = [
             ("", "Encrypted/Decrypted text: "),
             ("Let\'s Do It", "Encrypted/Decrypted text: Yrg\'f Qb Vg"),

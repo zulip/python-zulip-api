@@ -1,4 +1,6 @@
-def encrypt(text):
+from typing import Any, Dict
+
+def encrypt(text: Any) -> Any:
     # This is where the actual ROT13 is applied
     # WHY IS .JOIN NOT WORKING?!
     textlist = list(text)
@@ -21,18 +23,18 @@ class EncryptHandler(object):
     It encrypts/decrypts messages starting with @mention-bot.
     '''
 
-    def usage(self):
+    def usage(self) -> str:
         return '''
             This bot uses ROT13 encryption for its purposes.
             It responds to me starting with @mention-bot.
             Feeding encrypted messages into the bot decrypts them.
             '''
 
-    def handle_message(self, message, bot_handler):
+    def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
         bot_response = self.get_bot_encrypt_response(message)
         bot_handler.send_reply(message, bot_response)
 
-    def get_bot_encrypt_response(self, message):
+    def get_bot_encrypt_response(self, message: Dict[str, str]) -> str:
         original_content = message['content']
         temp_content = encrypt(original_content)
         send_content = "Encrypted/Decrypted text: " + temp_content
