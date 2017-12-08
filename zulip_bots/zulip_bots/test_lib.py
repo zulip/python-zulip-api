@@ -100,6 +100,17 @@ class StubBotTestCase(TestCase):
 
     bot_name = ''
 
+    def get_response(self, message):
+        bot = get_bot_message_handler(self.bot_name)
+        bot_handler = StubBotHandler()
+
+        if hasattr(bot, 'initialize'):
+            bot.initialize(bot_handler)
+
+        bot_handler.reset_transcript()
+        bot.handle_message(message, bot_handler)
+        return bot_handler.unique_response()
+
     def verify_reply(self, request, response):
         # type: (str, str) -> None
 

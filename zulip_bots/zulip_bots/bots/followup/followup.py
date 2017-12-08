@@ -40,7 +40,7 @@ class FollowupHandler(object):
             bot_response = self.get_bot_followup_response(message)
             bot_handler.send_message(dict(
                 type='stream',
-                to= 'followup',
+                to= self.stream,
                 subject=message['sender_email'],
                 content=bot_response,
             ))
