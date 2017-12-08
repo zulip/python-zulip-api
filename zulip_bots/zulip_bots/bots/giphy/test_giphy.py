@@ -45,7 +45,7 @@ class TestGiphyBot(StubBotTestCase):
     def test_connection_error(self) -> None:
         with self.mock_config_info({'key': '12345678'}), \
                 patch('requests.get', side_effect=ConnectionError()), \
-                patch('logging.warning'):
+                patch('logging.exception'):
             self.verify_reply(
                 'world without chocolate',
                 'Uh oh, sorry :slightly_frowning_face:, I '
