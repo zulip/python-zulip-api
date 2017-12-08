@@ -3,29 +3,60 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
-from zulip_bots.test_lib import BotTestCase
+from zulip_bots.test_lib import (
+    StubBotHandler,
+    StubBotTestCase,
+    get_bot_message_handler,
+)
 
 from typing import Any
 
-class TestFollowUpBot(BotTestCase):
+
+class TestFollowUpBot(StubBotTestCase):
     bot_name = "followup"
 
-    def test_bot(self) -> None:
-        expected_send_reply = [
-            ("", 'Please specify the message you want to send to followup stream after @mention-bot')
-        ]
-        self.check_expected_responses(expected_send_reply, expected_method='send_reply')
+    def test_followup_stream(self) -> None:
+        message = dict(
+            content='feed the cat',
+            type='stream',
+            sender_email='foo@example.com',
+        )
 
-        expected_send_message = [
-            ("foo",
-             {'type': 'stream',
-              'to': 'followup',
-              'subject': 'foo_sender@zulip.com',
-              'content': 'from foo_sender@zulip.com: foo'}),
-            ("I have completed my task",
-             {'type': 'stream',
-              'to': 'followup',
-              'subject': 'foo_sender@zulip.com',
-              'content': 'from foo_sender@zulip.com: I have completed my task'}),
-        ]
-        self.check_expected_responses(expected_send_message, expected_method='send_message')
+        with self.mock_config_info({'stream': 'followup'}):
+            response = self.get_response(message)
+
+        self.assertEqual(response['content'], 'from foo@example.com: feed the cat')
+        self.assertEqual(response['to'], 'followup')
+
+    def test_different_stream(self) -> None:
+        message = dict(
+            content='feed the cat',
+            type='stream',
+            sender_email='foo@example.com',
+        )
+
+        with self.mock_config_info({'stream': 'issue'}):
+            response = self.get_response(message)
+
+        self.assertEqual(response['content'], 'from foo@example.com: feed the cat')
+        self.assertEqual(response['to'], 'issue')
+
+    def test_bot_responds_to_empty_message(self) -> None:
+        bot_response = 'Please specify the message you want to send to followup stream after @mention-bot'
+
+        with self.mock_config_info({'stream': 'followup'}):
+            self.verify_reply('', bot_response)
+
+    def test_help_text(self) -> None:
+        request = 'help'
+        bot_response = '''
+            This plugin will allow users to flag messages
+            as being follow-up items.  Users should preface
+            messages with "@mention-bot".
+
+            Before running this, make sure to create a stream
+            called "followup" that your API user can send to.
+            '''
+
+        with self.mock_config_info({'stream': 'followup'}):
+            self.verify_reply(request, bot_response)
