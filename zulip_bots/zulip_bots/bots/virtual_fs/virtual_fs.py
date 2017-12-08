@@ -60,56 +60,54 @@ commands.
 '''
 
 def sample_conversation():
-    return [
-        ('cd /\nCurrent path: /\n\n'),
-        ('cd /home\nERROR: invalid path\n\n'),
-        ('cd .\nERROR: invalid path\n\n'),
-        ('mkdir home\ndirectory created\n\n'),
-        ('cd home\nCurrent path: /home/\n\n'),
-        ('cd /home/\nCurrent path: /home/\n\n'),
-        ('mkdir stuff/\nERROR: stuff/ is not a valid name\n\n'),
-        ('mkdir stuff\ndirectory created\n\n'),
-        ('write stuff/file1 something\nfile written\n\n'),
-        ('read stuff/file1\nsomething\n\n'),
-        ('read /home/stuff/file1\nsomething\n\n'),
-        ('read home/stuff/file1\nERROR: file does not exist\n\n'),
-        ('pwd    \n/home/\n\n'),
-        ('pwd bla\nERROR: syntax: pwd\n\n'),
-        ('ls bla foo\nERROR: syntax: ls <optional_path>\n\n'),
-        ('cd /\nCurrent path: /\n\n'),
-        ('rm home\nERROR: /home/ is a directory, file required\n\n'),
-        ('rmdir home\nremoved\n\n'),
-        ('ls  \nWARNING: directory is empty\n\n'),
-        ('cd home\nERROR: invalid path\n\n'),
-        ('read /home/stuff/file1\nERROR: file does not exist\n\n'),
-        ('cd /\nCurrent path: /\n\n'),
-        ('write /foo contents of /foo\nfile written\n\n'),
-        ('read /foo\ncontents of /foo\n\n'),
-        ('write /bar Contents: bar bar\nfile written\n\n'),
-        ('read /bar\nContents: bar bar\n\n'),
-        ('write /bar invalid\nERROR: file already exists\n\n'),
-        ('rm /bar\nremoved\n\n'),
-        ('rm /bar\nERROR: file does not exist\n\n'),
-        ('write /bar new bar\nfile written\n\n'),
-        ('read /bar\nnew bar\n\n'),
-        ('write /yo/invalid whatever\nERROR: /yo is not a directory\n\n'),
-        ('mkdir /yo\ndirectory created\n\n'),
-        ('read /yo\nERROR: /yo/ is a directory, file required\n\n'),
-        ('ls /yo\nWARNING: directory is empty\n\n'),
-        ('read /yo/nada\nERROR: file does not exist\n\n'),
-        ('write /yo whatever\nERROR: file already exists\n\n'),
-        ('write /yo/apple red\nfile written\n\n'),
-        ('read /yo/apple\nred\n\n'),
-        ('mkdir /yo/apple\nERROR: file already exists\n\n'),
-        ('ls /invalid\nERROR: file does not exist\n\n'),
-        ('ls /foo\nERROR: /foo is not a directory\n\n'),
-        ('ls /\n* /*bar*\n* /*foo*\n* /yo/\n\n'),
-        ('invalid command\nERROR: unrecognized command\n\n'),
-        ('write\nERROR: syntax: write <path> <some_text>\n\n'),
-        ('help' + get_help() + '\n\n'),
-        ('help ls\nsyntax: ls <optional_path>\n\n'),
-        ('help invalid_command' + get_help() + '\n\n'),
-    ]
+    return ('cd /\nCurrent path: /\n\n'
+            'cd /home\nERROR: invalid path\n\n'
+            'cd .\nERROR: invalid path\n\n'
+            'mkdir home\ndirectory created\n\n'
+            'cd home\nCurrent path: /home/\n\n'
+            'cd /home/\nCurrent path: /home/\n\n'
+            'mkdir stuff/\nERROR: stuff/ is not a valid name\n\n'
+            'mkdir stuff\ndirectory created\n\n'
+            'write stuff/file1 something\nfile written\n\n'
+            'read stuff/file1\nsomething\n\n'
+            'read /home/stuff/file1\nsomething\n\n'
+            'read home/stuff/file1\nERROR: file does not exist\n\n'
+            'pwd    \n/home/\n\n'
+            'pwd bla\nERROR: syntax: pwd\n\n'
+            'ls bla foo\nERROR: syntax: ls <optional_path>\n\n'
+            'cd /\nCurrent path: /\n\n'
+            'rm home\nERROR: /home/ is a directory, file required\n\n'
+            'rmdir home\nremoved\n\n'
+            'ls  \nWARNING: directory is empty\n\n'
+            'cd home\nERROR: invalid path\n\n'
+            'read /home/stuff/file1\nERROR: file does not exist\n\n'
+            'cd /\nCurrent path: /\n\n'
+            'write /foo contents of /foo\nfile written\n\n'
+            'read /foo\ncontents of /foo\n\n'
+            'write /bar Contents: bar bar\nfile written\n\n'
+            'read /bar\nContents: bar bar\n\n'
+            'write /bar invalid\nERROR: file already exists\n\n'
+            'rm /bar\nremoved\n\n'
+            'rm /bar\nERROR: file does not exist\n\n'
+            'write /bar new bar\nfile written\n\n'
+            'read /bar\nnew bar\n\n'
+            'write /yo/invalid whatever\nERROR: /yo is not a directory\n\n'
+            'mkdir /yo\ndirectory created\n\n'
+            'read /yo\nERROR: /yo/ is a directory, file required\n\n'
+            'ls /yo\nWARNING: directory is empty\n\n'
+            'read /yo/nada\nERROR: file does not exist\n\n'
+            'write /yo whatever\nERROR: file already exists\n\n'
+            'write /yo/apple red\nfile written\n\n'
+            'read /yo/apple\nred\n\n'
+            'mkdir /yo/apple\nERROR: file already exists\n\n'
+            'ls /invalid\nERROR: file does not exist\n\n'
+            'ls /foo\nERROR: /foo is not a directory\n\n'
+            'ls /\n* /*bar*\n* /*foo*\n* /yo/\n\n'
+            'invalid command\nERROR: unrecognized command\n\n'
+            'write\nERROR: syntax: write <path> <some_text>\n\n'
+            'help' + get_help() + '\n\n'
+            'help ls\nsyntax: ls <optional_path>\n\n'
+            'help invalid_command' + get_help() + '\n\n')
 
 REGEXES = dict(
     command='(cd|ls|mkdir|read|rmdir|rm|write|pwd)',
@@ -250,7 +248,7 @@ def fs_rmdir(fs, user, fn):
     new_fs.pop(path)
     directory = get_directory(path)
     new_fs[directory]['fns'].remove(path)
-    for sub_path in new_fs.keys():
+    for sub_path in list(new_fs):
         if sub_path.startswith(path+'/'):
             new_fs.pop(sub_path)
     msg = 'removed'
