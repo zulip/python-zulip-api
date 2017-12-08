@@ -1,25 +1,29 @@
 #!/usr/bin/env python
 
-from __future__ import absolute_import
-from __future__ import print_function
-
-import json
-
-from zulip_bots.test_lib import BotTestCase
+from zulip_bots.test_lib import (
+    StubBotHandler,
+    StubBotTestCase,
+    get_bot_message_handler,
+)
 
 from typing import Any
 
-class TestGithubDetailBot(BotTestCase):
+class TestGithubDetailBot(StubBotTestCase):
     bot_name = "github_detail"
     mock_config = {'owner': 'zulip', 'repo': 'zulip'}
 
     # Overrides default test_bot_usage().
     def test_bot_usage(self: Any) -> None:
+        bot = get_bot_message_handler(self.bot_name)
+        bot_handler = StubBotHandler()
+
         with self.mock_config_info(self.mock_config):
-            self.initialize_bot()
-            self.assertNotEqual(self.message_handler.usage(), '')
+            bot.initialize(bot_handler)
+
+        self.assertIn('displays details on github issues', bot.usage())
 
     def test_issue(self: Any) -> None:
+        request = 'zulip/zulip#5365'
         bot_response = '**[zulip/zulip#5365](https://github.com/zulip/zulip/issues/5365)'\
                        ' - frontend: Enable hot-reloading of CSS in development**\n'\
                        'Created by **[timabbott](https://github.com/timabbott)**\n'\
@@ -29,15 +33,13 @@ class TestGithubDetailBot(BotTestCase):
                        'able to use the hot-reloading feature of webpack for managing our CSS.\r\n\r\n'\
                        'In order to do this, step 1 is to move our CSS minification pipeline '\
                        'from django-pipeline to Webpack.  \n```'
-        # This message calls the `send_reply` function of BotHandlerApi
+
         with self.mock_http_conversation('test_issue'):
-            self.assert_bot_response(
-                message = {'content': 'zulip/zulip#5365'},
-                response = {'content': bot_response},
-                expected_method='send_reply'
-            )
+            with self.mock_config_info(self.mock_config):
+                self.verify_reply(request, bot_response)
 
     def test_pull_request(self: Any) -> None:
+        request = 'zulip/zulip#5345'
         bot_response = '**[zulip/zulip#5345](https://github.com/zulip/zulip/pull/5345)'\
                        ' - [WIP] modal: Replace bootstrap modal with custom modal class**\n'\
                        'Created by **[jackrzhang](https://github.com/jackrzhang)**\n'\
@@ -49,45 +51,30 @@ class TestGithubDetailBot(BotTestCase):
                        'using bootstrap for the account settings modal and all other modals,'\
                        ' replace with `Modal` class\r\n[] Add hotkey support for closing the'\
                        ' top modal for `Esc`\r\n\r\nThis should also be a helpful step in removing dependencies from Bootstrap.\n```'
-        # This message calls the `send_reply` function of BotHandlerApi
         with self.mock_http_conversation('test_pull'):
-            self.assert_bot_response(
-                message = {'content': 'zulip/zulip#5345'},
-                response = {'content': bot_response},
-                expected_method='send_reply'
-            )
+            with self.mock_config_info(self.mock_config):
+                self.verify_reply(request, bot_response)
 
     def test_404(self: Any) -> None:
+        request = 'zulip/zulip#0'
         bot_response = 'Failed to find issue/pr: zulip/zulip#0'
-        # This message calls the `send_reply` function of BotHandlerApi
         with self.mock_http_conversation('test_404'):
-            self.assert_bot_response(
-                message = {'content': 'zulip/zulip#0'},
-                response = {'content': bot_response},
-                expected_method='send_reply'
-            )
+            with self.mock_config_info(self.mock_config):
+                self.verify_reply(request, bot_response)
 
     def test_random_text(self: Any) -> None:
+        request = 'some random text'
         bot_response = 'Failed to find any issue or PR.'
-        # This message calls the `send_reply` function of BotHandlerApi
-        self.assert_bot_response(
-            message = {'content': 'some random text'},
-            response = {'content': bot_response},
-            expected_method='send_reply'
-        )
+        with self.mock_config_info(self.mock_config):
+            self.verify_reply(request, bot_response)
 
     def test_help_text(self: Any) -> None:
+        request = 'help'
         bot_response = 'This plugin displays details on github issues and pull requests. '\
                        'To reference an issue or pull request usename mention the bot then '\
                        'anytime in the message type its id, for example:\n@**Github detail** '\
                        '#3212 zulip#3212 zulip/zulip#3212\nThe default owner is zulip and '\
                        'the default repo is zulip.'
-        # This message calls the `send_reply` function of BotHandlerApi
 
         with self.mock_config_info(self.mock_config):
-            self.initialize_bot()
-            self.assert_bot_response(
-                message = {'content': 'help'},
-                response = {'content': bot_response},
-                expected_method='send_reply'
-            )
+            self.verify_reply(request, bot_response)
