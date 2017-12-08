@@ -83,6 +83,16 @@ class TestGoogleTranslateBot(BotTestCase):
             expected_method = 'send_reply'
         )
 
+    def test_help_too_many_args(self):
+        with self.mock_config_info({'key': 'abcdefg'}), \
+                self.mock_http_conversation('test_languages'):
+            self.initialize_bot()
+        self.assert_bot_response(
+            message = {'content': '"hello" de english foo bar', 'sender_full_name': 'tester'},
+            response = {'content': help_text},
+            expected_method = 'send_reply'
+        )
+
     def test_help_no_langs(self):
         with self.mock_config_info({'key': 'abcdefg'}), \
                 self.mock_http_conversation('test_languages'):
