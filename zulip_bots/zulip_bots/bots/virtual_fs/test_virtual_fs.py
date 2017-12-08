@@ -6,6 +6,8 @@ from __future__ import print_function
 from zulip_bots.test_lib import BotTestCase
 from zulip_bots.lib import StateHandler
 
+from typing import Any
+
 class TestVirtualFsBot(BotTestCase):
     bot_name = "virtual_fs"
     help_txt = ('foo_sender@zulip.com:\n\nThis bot implements a virtual file system for a stream.\n'
@@ -24,7 +26,7 @@ class TestVirtualFsBot(BotTestCase):
                 '```\n'
                 'Use commands like `@mention-bot help write` for more details on specific\ncommands.\n')
 
-    def test_commands_1(self):
+    def test_commands_1(self) -> None:
         expected = [
             ("cd /home", "foo_sender@zulip.com:\nERROR: invalid path"),
             ("mkdir home", "foo_sender@zulip.com:\ndirectory created"),
@@ -35,7 +37,7 @@ class TestVirtualFsBot(BotTestCase):
         ]
         self.check_expected_responses(expected)
 
-    def test_commands_2(self):
+    def test_commands_2(self) -> None:
         expected = [
             ("help", self.help_txt),
             ("help ls", "foo_sender@zulip.com:\nsyntax: ls <optional_path>"),
