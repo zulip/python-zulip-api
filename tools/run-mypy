@@ -48,6 +48,8 @@ force_include = [
     "zulip_bots/zulip_bots/bots/help/test_help.py",
     "zulip_bots/zulip_bots/bots/virtual_fs/virtual_fs.py",
     "zulip_bots/zulip_bots/bots/virtual_fs/test_virtual_fs.py",
+    "zulip_bots/zulip_bots/bots/weather/test_weather.py",
+    "zulip_bots/zulip_bots/bots/weather/weather.py",
 ]
 
 parser = argparse.ArgumentParser(description="Run mypy on files tracked by git.")
