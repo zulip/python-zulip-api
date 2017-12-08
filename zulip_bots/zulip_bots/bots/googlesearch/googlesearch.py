@@ -87,7 +87,7 @@ class GoogleSearchHandler(object):
     with @mentioned-bot.
     '''
 
-    def usage(self: Any) -> str:
+    def usage(self) -> str:
         return '''
             This plugin will allow users to search
             for a given search term on Google from
@@ -97,7 +97,7 @@ class GoogleSearchHandler(object):
             @mentioned-bot.
             '''
 
-    def handle_message(self: Any, message: Dict[str, str], bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
         original_content = message['content']
         result = get_google_result(original_content)
         bot_handler.send_reply(message, result)
