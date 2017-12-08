@@ -51,7 +51,7 @@ class WikipediaHandler(object):
             return
 
         if data.status_code != 200:
-            logging.error('unsuccessful data')
+            logging.error('Page not found.')
             return
 
         new_content = 'For search term "' + query
