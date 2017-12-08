@@ -16,11 +16,7 @@ class TestXkcdBot(BotTestCase):
                         "payloads can only be launched within launch vehicles which do not launch "
                         "themselves.](https://imgs.xkcd.com/comics/russells_teapot.png)")
         with self.mock_http_conversation('test_latest'):
-            self.assert_bot_response(
-                message = {'content': 'latest'},
-                response = {'content': bot_response},
-                expected_method='send_reply'
-            )
+            self.verify_reply('latest', bot_response)
 
     def test_random_command(self):
         bot_response = ("#1800: **Chess Notation**\n"
@@ -32,22 +28,13 @@ class TestXkcdBot(BotTestCase):
                 mock_rand_value = mock.MagicMock()
                 mock_rand_value.return_value = 1800
                 randint.return_value = mock_rand_value.return_value
+                self.verify_reply('random', bot_response)
 
-                self.assert_bot_response(
-                    message = {'content': 'random'},
-                    response = {'content': bot_response},
-                    expected_method='send_reply'
-                )
-
-    def test_numeric_comic_id_command(self):
+    def test_numeric_comic_id_command_1(self):
         bot_response = ("#1: **Barrel - Part 1**\n[Don't we all.]"
                         "(https://imgs.xkcd.com/comics/barrel_cropped_(1).jpg)")
         with self.mock_http_conversation('test_specific_id'):
-            self.assert_bot_response(
-                message = {'content': '1'},
-                response = {'content': bot_response},
-                expected_method='send_reply'
-            )
+            self.verify_reply('1', bot_response)
 
     @mock.patch('logging.exception')
     def test_invalid_comic_ids(self, mock_logging_exception):
@@ -55,19 +42,11 @@ class TestXkcdBot(BotTestCase):
 
         bot_response = invalid_id_txt + "999999999"
         with self.mock_http_conversation('test_not_existing_id'):
-            self.assert_bot_response(
-                message = {'content': '999999999'},
-                response = {'content': bot_response},
-                expected_method='send_reply'
-            )
+            self.verify_reply('999999999', bot_response)
 
         bot_response = invalid_id_txt + "0"
         with self.mock_http_conversation('test_not_existing_id_2'):
-            self.assert_bot_response(
-                message = {'content': '0'},
-                response = {'content': bot_response},
-                expected_method='send_reply'
-            )
+            self.verify_reply('0', bot_response)
 
     def test_help_responses(self):
         help_txt = "xkcd bot supports these commands:"
@@ -79,24 +58,12 @@ class TestXkcdBot(BotTestCase):
 * `@xkcd <comic id>` to fetch a comic strip based on `<comic id>` e.g `@xkcd 1234`.'''
         # Empty query, no request made to the Internet.
         bot_response = err_txt.format('')+commands
-        self.assert_bot_response(
-            message = {'content': ''},
-            response = {'content': bot_response},
-            expected_method='send_reply'
-        )
+        self.verify_reply('', bot_response)
 
         # 'help' command.
         bot_response = help_txt+commands
-        self.assert_bot_response(
-            message = {'content': 'help'},
-            response = {'content': bot_response},
-            expected_method='send_reply'
-        )
+        self.verify_reply('help', bot_response)
 
         # wrong command.
         bot_response = err_txt.format('x')+commands
-        self.assert_bot_response(
-            message = {'content': 'x'},
-            response = {'content': bot_response},
-            expected_method='send_reply'
-        )
+        self.verify_reply('x', bot_response)
