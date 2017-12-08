@@ -40,13 +40,10 @@ class TestXkcdBot(BotTestCase):
     def test_invalid_comic_ids(self, mock_logging_exception):
         invalid_id_txt = "Sorry, there is likely no xkcd comic strip with id: #"
 
-        bot_response = invalid_id_txt + "999999999"
-        with self.mock_http_conversation('test_not_existing_id'):
-            self.verify_reply('999999999', bot_response)
-
-        bot_response = invalid_id_txt + "0"
-        with self.mock_http_conversation('test_not_existing_id_2'):
-            self.verify_reply('0', bot_response)
+        for comic_id, fixture in (('0', 'test_not_existing_id_2'),
+                                  ('999999999', 'test_not_existing_id')):
+            with self.mock_http_conversation(fixture):
+                self.verify_reply(comic_id, invalid_id_txt + comic_id)
 
     def test_help_responses(self):
         help_txt = "xkcd bot supports these commands:"
@@ -56,14 +53,7 @@ class TestXkcdBot(BotTestCase):
 * `@xkcd latest` to fetch the latest comic strip from xkcd.
 * `@xkcd random` to fetch a random comic strip from xkcd.
 * `@xkcd <comic id>` to fetch a comic strip based on `<comic id>` e.g `@xkcd 1234`.'''
-        # Empty query, no request made to the Internet.
-        bot_response = err_txt.format('')+commands
-        self.verify_reply('', bot_response)
-
-        # 'help' command.
-        bot_response = help_txt+commands
-        self.verify_reply('help', bot_response)
-
-        # wrong command.
-        bot_response = err_txt.format('x')+commands
-        self.verify_reply('x', bot_response)
+        self.verify_reply('', err_txt.format('') + commands)
+        self.verify_reply('help', help_txt + commands)
+        # Example invalid command
+        self.verify_reply('x', err_txt.format('x') + commands)
