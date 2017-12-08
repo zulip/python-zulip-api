@@ -13,7 +13,7 @@ class TestGithubDetailBot(StubBotTestCase):
     mock_config = {'owner': 'zulip', 'repo': 'zulip'}
 
     # Overrides default test_bot_usage().
-    def test_bot_usage(self: Any) -> None:
+    def test_bot_usage(self) -> None:
         bot = get_bot_message_handler(self.bot_name)
         bot_handler = StubBotHandler()
 
@@ -22,7 +22,7 @@ class TestGithubDetailBot(StubBotTestCase):
 
         self.assertIn('displays details on github issues', bot.usage())
 
-    def test_issue(self: Any) -> None:
+    def test_issue(self) -> None:
         request = 'zulip/zulip#5365'
         bot_response = '**[zulip/zulip#5365](https://github.com/zulip/zulip/issues/5365)'\
                        ' - frontend: Enable hot-reloading of CSS in development**\n'\
@@ -38,7 +38,7 @@ class TestGithubDetailBot(StubBotTestCase):
             with self.mock_config_info(self.mock_config):
                 self.verify_reply(request, bot_response)
 
-    def test_pull_request(self: Any) -> None:
+    def test_pull_request(self) -> None:
         request = 'zulip/zulip#5345'
         bot_response = '**[zulip/zulip#5345](https://github.com/zulip/zulip/pull/5345)'\
                        ' - [WIP] modal: Replace bootstrap modal with custom modal class**\n'\
@@ -55,20 +55,20 @@ class TestGithubDetailBot(StubBotTestCase):
             with self.mock_config_info(self.mock_config):
                 self.verify_reply(request, bot_response)
 
-    def test_404(self: Any) -> None:
+    def test_404(self) -> None:
         request = 'zulip/zulip#0'
         bot_response = 'Failed to find issue/pr: zulip/zulip#0'
         with self.mock_http_conversation('test_404'):
             with self.mock_config_info(self.mock_config):
                 self.verify_reply(request, bot_response)
 
-    def test_random_text(self: Any) -> None:
+    def test_random_text(self) -> None:
         request = 'some random text'
         bot_response = 'Failed to find any issue or PR.'
         with self.mock_config_info(self.mock_config):
             self.verify_reply(request, bot_response)
 
-    def test_help_text(self: Any) -> None:
+    def test_help_text(self) -> None:
         request = 'help'
         bot_response = 'This plugin displays details on github issues and pull requests. '\
                        'To reference an issue or pull request usename mention the bot then '\

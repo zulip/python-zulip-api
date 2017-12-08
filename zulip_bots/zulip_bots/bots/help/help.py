@@ -2,7 +2,7 @@
 from typing import Any, Dict
 
 class HelpHandler(object):
-    def usage(self: Any) -> str:
+    def usage(self) -> str:
         return '''
             This plugin will give info about Zulip to
             any user that types a message saying "help".
@@ -12,7 +12,7 @@ class HelpHandler(object):
             your Zulip instance.
             '''
 
-    def handle_message(self: Any, message: Dict[str, str], bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
         help_content = "Info on Zulip can be found here:\nhttps://github.com/zulip/zulip"
         bot_handler.send_reply(message, help_content)
 
