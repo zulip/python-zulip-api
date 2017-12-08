@@ -5,7 +5,7 @@ from zulip_bots.test_lib import StubBotTestCase
 class TestDefineBot(StubBotTestCase):
     bot_name = "define"
 
-    def test_bot(self):
+    def test_bot(self) -> None:
 
         # Only one type(noun) of word.
         bot_response = ("**cat**:\n\n* (**noun**) a small domesticated carnivorous mammal "
