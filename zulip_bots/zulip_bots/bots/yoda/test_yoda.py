@@ -17,7 +17,7 @@ class TestYodaBot(StubBotTestCase):
             @mention-bot You will learn how to speak like me someday.
             '''
 
-    def _test(self, message, response, fixture=None):
+    def _test(self, message: str, response: str, fixture: str=None) -> None:
         with self.mock_config_info({'api_key': '12345678'}):
             if fixture is not None:
                 with self.mock_http_conversation(fixture):
@@ -26,11 +26,10 @@ class TestYodaBot(StubBotTestCase):
                 self.verify_reply(message, response)
 
     # Override default function in StubBotTestCase
-    def test_bot_responds_to_empty_message(self):
+    def test_bot_responds_to_empty_message(self) -> None:
         self._test('', self.help_text)
 
-    def test_bot(self):
-
+    def test_bot(self) -> None:
         # Test normal sentence (1).
         self._test('You will learn how to speak like me someday.',
                    "Learn how to speak like me someday, you will. Yes, hmmm.",
