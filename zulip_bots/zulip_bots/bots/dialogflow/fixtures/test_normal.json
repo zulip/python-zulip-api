@@ -1,0 +1,15 @@
+{
+  "response": {
+    "result": {
+      "fulfillment": {
+        "speech": "how are you?"
+      }
+    },
+    "status": {
+      "errorType": "success"
+    }
+  },
+  "request": {
+    "query": "hello"
+  }
+}

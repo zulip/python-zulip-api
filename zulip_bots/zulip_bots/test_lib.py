@@ -114,6 +114,7 @@ class StubBotTestCase(TestCase):
             display_recipient='foo_stream',
             sender_email='foo@example.com',
             sender_full_name='Foo Test User',
+            sender_id='123',
             content=content,
         )
         return message

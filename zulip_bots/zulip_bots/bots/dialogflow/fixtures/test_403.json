@@ -1,0 +1,12 @@
+{
+    "response": {
+      "status": {
+        "errorType": "fail",
+        "code": "403",
+        "errorDetails": "Access Denied"
+      }
+    },
+    "request": {
+      "query": "hello"
+    }
+  }
