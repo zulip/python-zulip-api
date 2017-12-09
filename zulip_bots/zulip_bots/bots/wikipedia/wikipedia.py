@@ -4,6 +4,8 @@ import requests
 import logging
 import re
 from six.moves import urllib
+from zulip_bots.lib import ExternalBotHandler
+from typing import Optional
 
 # See readme.md for instructions on running this code.
 
@@ -24,7 +26,7 @@ class WikipediaHandler(object):
         'description': 'Searches Wikipedia for a term and returns the top 3 articles.',
     }
 
-    def usage(self):
+    def usage(self) -> str:
         return '''
             This plugin will allow users to directly search
             Wikipedia for a specific key term and get the top 3
@@ -32,11 +34,11 @@ class WikipediaHandler(object):
             should preface searches with "@mention-bot".
             @mention-bot <name of article>'''
 
-    def handle_message(self, message, bot_handler):
+    def handle_message(self, message: dict, bot_handler: ExternalBotHandler) -> None:
         bot_response = self.get_bot_wiki_response(message, bot_handler)
         bot_handler.send_reply(message, bot_response)
 
-    def get_bot_wiki_response(self, message, bot_handler):
+    def get_bot_wiki_response(self, message: dict, bot_handler: ExternalBotHandler) -> Optional[str]:
         '''This function returns the URLs of the requested topic.'''
 
         help_text = 'Please enter your search term after @mention-bot'
@@ -54,12 +56,12 @@ class WikipediaHandler(object):
 
         except requests.exceptions.RequestException:
             logging.error('broken link')
-            return
+            return None
 
         # Checking if the bot accessed the link.
         if data.status_code != 200:
             logging.error('Page not found.')
-            return
+            return None
         new_content = 'For search term:' + query + '\n'
 
         # Checking if there is content for the searched term
