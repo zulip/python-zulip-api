@@ -53,7 +53,8 @@ setuptools_info = dict(
         'BeautifulSoup4',  # for bots/googlesearch
         'lxml',  # for bots/googlesearch
         'requests',  # for bots/link_shortener
-        'python-chess[engine,gaviota]'  # for bots/chess
+        'python-chess[engine,gaviota]',  # for bots/chess
+        'apiai'  # for bots/dialogflow
     ],
 )
 
