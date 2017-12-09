@@ -63,7 +63,8 @@ class TestGoogleTranslateBot(BotTestCase):
                         expected_method = 'send_reply'
                     )
 
-    def test_help_empty(self):
+    # Override default function in StubBotTestCase
+    def test_bot_responds_to_empty_message(self):
         with self.mock_config_info({'key': 'abcdefg'}), \
                 self.mock_http_conversation('test_languages'):
             self.initialize_bot()

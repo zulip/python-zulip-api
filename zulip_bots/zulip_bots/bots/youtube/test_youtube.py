@@ -13,6 +13,21 @@ class TestYoutubeBot(StubBotTestCase):
                       'number_of_results': '5',
                       'video_region': 'US'}  # type: Dict[str,str]
 
+    help_content = "*Help for YouTube bot* :robot_face: : \n\n" \
+                   "The bot responds to messages starting with @mention-bot.\n\n" \
+                   "`@mention-bot <search terms>` will return top Youtube video for the given `<search term>`.\n" \
+                   "`@mention-bot top <search terms>` also returns the top Youtube result.\n" \
+                   "`@mention-bot list <search terms>` will return a list Youtube videos for the given <search term>.\n \n" \
+                   "Example:\n" \
+                   " * @mention-bot funny cats\n" \
+                   " * @mention-bot list funny dogs"
+
+    # Override default function in StubBotTestCase
+    def test_bot_responds_to_empty_message(self) -> None:
+        with self.mock_config_info(self.normal_config), \
+                self.mock_http_conversation('test_keyok'):
+                    self.verify_reply('', self.help_content)
+
     def test_single(self) -> None:
         bot_response = 'Here is what I found for `funny cats` : \n'\
                        'Cats are so funny you will die laughing - ' \
@@ -55,22 +70,13 @@ class TestYoutubeBot(StubBotTestCase):
             self.verify_reply('somethingrandomwithnoresult', bot_response,)
 
     def test_help(self) -> None:
-        help_content = "*Help for YouTube bot* :robot_face: : \n\n" \
-                       "The bot responds to messages starting with @mention-bot.\n\n" \
-                       "`@mention-bot <search terms>` will return top Youtube video for the given `<search term>`.\n" \
-                       "`@mention-bot top <search terms>` also returns the top Youtube result.\n" \
-                       "`@mention-bot list <search terms>` will return a list Youtube videos for the given <search term>.\n \n" \
-                       "Example:\n" \
-                       " * @mention-bot funny cats\n" \
-                       " * @mention-bot list funny dogs"
-
+        help_content = self.help_content
         with self.mock_config_info(self.normal_config), \
                 self.mock_http_conversation('test_keyok'):
                     self.verify_reply('help', help_content)
                     self.verify_reply('list', help_content)
                     self.verify_reply('help list', help_content)
                     self.verify_reply('top', help_content)
-                    self.verify_reply('', help_content)
 
     def test_connection_error(self) -> None:
         with self.mock_config_info(self.normal_config), \

@@ -22,6 +22,11 @@ class TestGithubDetailBot(StubBotTestCase):
 
         self.assertIn('displays details on github issues', bot.usage())
 
+    # Override default function in StubBotTestCase
+    def test_bot_responds_to_empty_message(self) -> None:
+        with self.mock_config_info(self.mock_config):
+            self.verify_reply('', 'Failed to find any issue or PR.')
+
     def test_issue(self) -> None:
         request = 'zulip/zulip#5365'
         bot_response = '**[zulip/zulip#5365](https://github.com/zulip/zulip/issues/5365)'\
