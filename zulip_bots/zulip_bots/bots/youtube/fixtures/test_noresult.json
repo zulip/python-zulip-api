@@ -1,0 +1,28 @@
+{
+  "request": {
+    "api_url": "https://www.googleapis.com/youtube/v3/search",
+    "params": {
+      "part": "id,snippet",
+      "maxResults": 1,
+      "key": "12345678",
+      "q": "somethingrandomwithnoresult",
+      "alt": "json",
+      "type": "video",
+      "regionCode": "US"
+    }
+  },
+  "response": {
+    "kind": "youtube#searchListResponse",
+    "etag": "\"7991kDR-QPaa9r0pePmDjBEa2h8/-f6JA5_OcXz2RWuH1mpAA2_9mM8\"",
+    "regionCode": "US",
+    "pageInfo": {
+      "totalResults": 0,
+      "resultsPerPage": 5
+    },
+    "items": []
+  },
+  "response-headers": {
+    "status": 200,
+    "content-type": "application/json; charset=utf-8"
+  }
+}

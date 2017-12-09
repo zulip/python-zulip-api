@@ -1,0 +1,64 @@
+{
+  "request": {
+    "api_url": "https://www.googleapis.com/youtube/v3/search",
+    "params": {
+      "part": "id,snippet",
+      "maxResults": 1,
+      "key": "12345678",
+      "q": "test",
+      "alt": "json",
+      "type": "video",
+      "regionCode": "US"
+    }
+  },
+  "response": {
+
+ "kind": "youtube#searchListResponse",
+ "etag": "\"etag\"",
+ "nextPageToken": "CAEQAA",
+ "regionCode": "IN",
+ "pageInfo": {
+  "totalResults": 1000000,
+  "resultsPerPage": 1
+ },
+ "items": [
+  {
+   "kind": "youtube#searchResult",
+   "etag": "\"etag\"",
+   "id": {
+    "kind": "youtube#video",
+    "videoId": "randomID"
+   },
+   "snippet": {
+    "publishedAt": "2016-12-24T10:30:00.000Z",
+    "channelId": "randomChannelID",
+    "title": "some random title",
+    "description": "This would be the description of the video",
+    "thumbnails": {
+     "default": {
+      "url": "https://i.ytimg.com/vi/randomID/default.jpg",
+      "width": 120,
+      "height": 90
+     },
+     "medium": {
+      "url": "https://i.ytimg.com/vi/randomID/mqdefault.jpg",
+      "width": 320,
+      "height": 180
+     },
+     "high": {
+      "url": "https://i.ytimg.com/vi/randomID/hqdefault.jpg",
+      "width": 480,
+      "height": 360
+     }
+    },
+    "channelTitle": "title",
+    "liveBroadcastContent": "none"
+   }
+  }
+ ]
+},
+  "response-headers": {
+    "status": 200,
+    "content-type": "application/json; charset=utf-8"
+  }
+}

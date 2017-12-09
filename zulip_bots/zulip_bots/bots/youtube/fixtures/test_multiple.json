@@ -1,0 +1,195 @@
+{
+  "request": {
+    "api_url": "https://www.googleapis.com/youtube/v3/search",
+    "params": {
+      "part": "id,snippet",
+      "maxResults": 5,
+      "key": "12345678",
+      "q": "marvel",
+      "alt": "json",
+      "type": "video",
+      "regionCode": "US"
+    }
+  },
+  "response": {
+    "kind": "youtube#searchListResponse",
+    "etag": "\"7991kDR-QPaa9r0pePmDjBEa2h8/G9CmYGTc8DpRgZib1bcD0ZeBW2o\"",
+    "nextPageToken": "CAUQAA",
+    "regionCode": "US",
+    "pageInfo": {
+      "totalResults": 1000000,
+      "resultsPerPage": 5
+    },
+    "items": [
+      {
+        "kind": "youtube#searchResult",
+        "etag": "\"7991kDR-QPaa9r0pePmDjBEa2h8/HSKDFkwbVuEgNHxkHX5mHYrnwJU\"",
+        "id": {
+          "kind": "youtube#video",
+          "videoId": "6ZfuNTqbHE8"
+        },
+        "snippet": {
+          "publishedAt": "2017-11-29T13:26:24.000Z",
+          "channelId": "UCvC4D8onUfXzvjTOM-dBfEA",
+          "title": "Marvel Studios' Avengers: Infinity War Official Trailer",
+          "description": "\"There was an idea…\" Avengers: Infinity War. In theaters May 4. ▻ Subscribe to Marvel: http://bit.ly/WeO3YJ Follow Marvel on Twitter:   https://twitter.com/marvel Like Marvel on FaceBook:...",
+          "thumbnails": {
+            "default": {
+              "url": "https://i.ytimg.com/vi/6ZfuNTqbHE8/default.jpg",
+              "width": 120,
+              "height": 90
+            },
+            "medium": {
+              "url": "https://i.ytimg.com/vi/6ZfuNTqbHE8/mqdefault.jpg",
+              "width": 320,
+              "height": 180
+            },
+            "high": {
+              "url": "https://i.ytimg.com/vi/6ZfuNTqbHE8/hqdefault.jpg",
+              "width": 480,
+              "height": 360
+            }
+          },
+          "channelTitle": "Marvel Entertainment",
+          "liveBroadcastContent": "none"
+        }
+      },
+      {
+        "kind": "youtube#searchResult",
+        "etag": "\"7991kDR-QPaa9r0pePmDjBEa2h8/lPJT_xBo3mCrT-XHBvtwkKLT-hw\"",
+        "id": {
+          "kind": "youtube#video",
+          "videoId": "xjDjIWPwcPU"
+        },
+        "snippet": {
+          "publishedAt": "2017-10-16T13:00:07.000Z",
+          "channelId": "UCvC4D8onUfXzvjTOM-dBfEA",
+          "title": "Marvel Studios' Black Panther - Official Trailer",
+          "description": "Long live the king. Watch the new trailer for Marvel Studios #BlackPanther. In theaters February 16! ▻ Subscribe to Marvel: http://bit.ly/WeO3YJ Follow Marvel on Twitter:   https://twitter.com/...",
+          "thumbnails": {
+            "default": {
+              "url": "https://i.ytimg.com/vi/xjDjIWPwcPU/default.jpg",
+              "width": 120,
+              "height": 90
+            },
+            "medium": {
+              "url": "https://i.ytimg.com/vi/xjDjIWPwcPU/mqdefault.jpg",
+              "width": 320,
+              "height": 180
+            },
+            "high": {
+              "url": "https://i.ytimg.com/vi/xjDjIWPwcPU/hqdefault.jpg",
+              "width": 480,
+              "height": 360
+            }
+          },
+          "channelTitle": "Marvel Entertainment",
+          "liveBroadcastContent": "none"
+        }
+      },
+      {
+        "kind": "youtube#searchResult",
+        "etag": "\"7991kDR-QPaa9r0pePmDjBEa2h8/vuAgL_ymZ4dpC95w3-5JcrrqERM\"",
+        "id": {
+          "kind": "youtube#video",
+          "videoId": "6HTPCTtkWoA"
+        },
+        "snippet": {
+          "publishedAt": "2017-12-07T19:00:01.000Z",
+          "channelId": "UCxwitsUVNzwS5XBSC5UQV8Q",
+          "title": "MARVEL RISING BEGINS! | The Next Generation of Marvel Heroes (EXCLUSIVE)",
+          "description": "With “Marvel Rising,” the next generation of Marvel heroes has arrived. Rising 2018. --- Cast: Kathleen Khavari – Kamala Khan/Ms. Marvel Milana Vayntrub – Doreen Green/Squirrel Girl...",
+          "thumbnails": {
+            "default": {
+              "url": "https://i.ytimg.com/vi/6HTPCTtkWoA/default.jpg",
+              "width": 120,
+              "height": 90
+            },
+            "medium": {
+              "url": "https://i.ytimg.com/vi/6HTPCTtkWoA/mqdefault.jpg",
+              "width": 320,
+              "height": 180
+            },
+            "high": {
+              "url": "https://i.ytimg.com/vi/6HTPCTtkWoA/hqdefault.jpg",
+              "width": 480,
+              "height": 360
+            }
+          },
+          "channelTitle": "Marvel HQ",
+          "liveBroadcastContent": "none"
+        }
+      },
+      {
+        "kind": "youtube#searchResult",
+        "etag": "\"7991kDR-QPaa9r0pePmDjBEa2h8/NC5lIdIK3cIT6mlmTtw8YSUUf2A\"",
+        "id": {
+          "kind": "youtube#video",
+          "videoId": "-8uqxdcJ9WM"
+        },
+        "snippet": {
+          "publishedAt": "2017-12-07T16:00:00.000Z",
+          "channelId": "UCvC4D8onUfXzvjTOM-dBfEA",
+          "title": "Marvel Contest of Champions Taskmaster Spotlight",
+          "description": "Subscribe to Marvel: http://bit.ly/WeO3YJ Follow Marvel on Twitter:   https://twitter.com/marvel Like Marvel on FaceBook:   https://www.facebook.com/Marvel For even more news, stay...",
+          "thumbnails": {
+            "default": {
+              "url": "https://i.ytimg.com/vi/-8uqxdcJ9WM/default.jpg",
+              "width": 120,
+              "height": 90
+            },
+            "medium": {
+              "url": "https://i.ytimg.com/vi/-8uqxdcJ9WM/mqdefault.jpg",
+              "width": 320,
+              "height": 180
+            },
+            "high": {
+              "url": "https://i.ytimg.com/vi/-8uqxdcJ9WM/hqdefault.jpg",
+              "width": 480,
+              "height": 360
+            }
+          },
+          "channelTitle": "Marvel Entertainment",
+          "liveBroadcastContent": "none"
+        }
+      },
+      {
+        "kind": "youtube#searchResult",
+        "etag": "\"7991kDR-QPaa9r0pePmDjBEa2h8/O3fss6u7H9TJ8My3sTMgB1Y4SzU\"",
+        "id": {
+          "kind": "youtube#video",
+          "videoId": "l7rrsGKJ_O4"
+        },
+        "snippet": {
+          "publishedAt": "2017-12-07T20:59:49.000Z",
+          "channelId": "UCesCyJp53gCYwhr8fGYEpNw",
+          "title": "5* Crystal Opening! SO LUCKY! - Marvel Contest Of Champions",
+          "description": "yoooooooooo i cannot beleive this man.... i honestly dont know why but i decided to open up a basic 5* Crystal...",
+          "thumbnails": {
+            "default": {
+              "url": "https://i.ytimg.com/vi/l7rrsGKJ_O4/default.jpg",
+              "width": 120,
+              "height": 90
+            },
+            "medium": {
+              "url": "https://i.ytimg.com/vi/l7rrsGKJ_O4/mqdefault.jpg",
+              "width": 320,
+              "height": 180
+            },
+            "high": {
+              "url": "https://i.ytimg.com/vi/l7rrsGKJ_O4/hqdefault.jpg",
+              "width": 480,
+              "height": 360
+            }
+          },
+          "channelTitle": "Lagacy69",
+          "liveBroadcastContent": "none"
+        }
+      }
+    ]
+  },
+  "response-headers": {
+    "status": 200,
+    "content-type": "application/json; charset=utf-8"
+  }
+}

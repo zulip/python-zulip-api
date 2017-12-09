@@ -1,0 +1,64 @@
+{
+  "request": {
+    "api_url": "https://www.googleapis.com/youtube/v3/search",
+    "params": {
+      "part": "id,snippet",
+      "maxResults": 1,
+      "key": "12345678",
+      "q": "funny cats",
+      "alt": "json",
+      "type": "video",
+      "regionCode": "US"
+    }
+  },
+  "response": {
+
+ "kind": "youtube#searchListResponse",
+ "etag": "\"7991kDR-QPaa9r0pePmDjBEa2h8/XGKpndf94WPFq2HVzaP1-nslXCQ\"",
+ "nextPageToken": "CAEQAA",
+ "regionCode": "IN",
+ "pageInfo": {
+  "totalResults": 1000000,
+  "resultsPerPage": 1
+ },
+ "items": [
+  {
+   "kind": "youtube#searchResult",
+   "etag": "\"7991kDR-QPaa9r0pePmDjBEa2h8/u2n3wez7ljBkwPSV6WkGrkhsBlI\"",
+   "id": {
+    "kind": "youtube#video",
+    "videoId": "5dsGWM5XGdg"
+   },
+   "snippet": {
+    "publishedAt": "2016-12-24T10:30:00.000Z",
+    "channelId": "UCKy3MG7_If9KlVuvw3rPMfw",
+    "title": "Cats are so funny you will die laughing - Funny cat compilation",
+    "description": "Cats are simply the funniest and most hilarious pets, they make us laugh all the time! Just look how all these cats & kittens play, fail, get along with dogs and ...",
+    "thumbnails": {
+     "default": {
+      "url": "https://i.ytimg.com/vi/5dsGWM5XGdg/default.jpg",
+      "width": 120,
+      "height": 90
+     },
+     "medium": {
+      "url": "https://i.ytimg.com/vi/5dsGWM5XGdg/mqdefault.jpg",
+      "width": 320,
+      "height": 180
+     },
+     "high": {
+      "url": "https://i.ytimg.com/vi/5dsGWM5XGdg/hqdefault.jpg",
+      "width": 480,
+      "height": 360
+     }
+    },
+    "channelTitle": "Tiger Productions",
+    "liveBroadcastContent": "none"
+   }
+  }
+ ]
+},
+  "response-headers": {
+    "status": 200,
+    "content-type": "application/json; charset=utf-8"
+  }
+}
