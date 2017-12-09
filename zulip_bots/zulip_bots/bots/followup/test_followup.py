@@ -43,8 +43,8 @@ class TestFollowUpBot(StubBotTestCase):
         )
         with self.mock_config_info({'stream': 'followup'}):
             response = self.get_response(message)
-            self.assertEqual(response['content'], 'from foo@example.com: foo')
-            self.assertEqual(response['to'], 'followup')
+        self.assertEqual(response['content'], 'from foo@example.com: foo')
+        self.assertEqual(response['to'], 'followup')
 
     def test_different_stream(self) -> None:
         message = dict(
@@ -54,5 +54,5 @@ class TestFollowUpBot(StubBotTestCase):
         )
         with self.mock_config_info({'stream': 'issue'}):
             response = self.get_response(message)
-            self.assertEqual(response['content'], 'from foo@example.com: foo')
-            self.assertEqual(response['to'], 'issue')
+        self.assertEqual(response['content'], 'from foo@example.com: foo')
+        self.assertEqual(response['to'], 'issue')
