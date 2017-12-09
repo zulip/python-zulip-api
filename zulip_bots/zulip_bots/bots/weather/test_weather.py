@@ -10,6 +10,25 @@ from typing import Any
 class TestWeatherBot(BotTestCase):
     bot_name = "weather"
 
+    help_content = '''
+            This bot returns weather info for specified city.
+            You specify city in the following format:
+            city, state/country
+            state and country parameter is optional(useful when there are many cities with the same name)
+            For example:
+            @**Weather Bot** Portland
+            @**Weather Bot** Portland, Me
+            '''.strip()
+
+    # Override default function in StubBotTestCase
+    def test_bot_responds_to_empty_message(self) -> None:
+        bot_response = self.help_content
+        self.assert_bot_response(
+            message = {'content': ''},
+            response = {'content': bot_response},
+            expected_method='send_reply'
+        )
+
     def test_bot(self) -> None:
 
         # City query
@@ -55,28 +74,11 @@ class TestWeatherBot(BotTestCase):
                 response = {'content': bot_response},
                 expected_method='send_reply'
             )
-        help_content = '''
-            This bot returns weather info for specified city.
-            You specify city in the following format:
-            city, state/country
-            state and country parameter is optional(useful when there are many cities with the same name)
-            For example:
-            @**Weather Bot** Portland
-            @**Weather Bot** Portland, Me
-            '''.strip()
 
         # help message
-        bot_response = help_content
+        bot_response = self.help_content
         self.assert_bot_response(
             message = {'content': 'help'},
-            response = {'content': bot_response},
-            expected_method='send_reply'
-        )
-
-        # empty message
-        bot_response = help_content
-        self.assert_bot_response(
-            message = {'content': ''},
             response = {'content': bot_response},
             expected_method='send_reply'
         )
