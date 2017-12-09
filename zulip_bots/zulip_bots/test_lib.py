@@ -101,6 +101,7 @@ class StubBotTestCase(TestCase):
     bot_name = ''
 
     def get_response(self, message):
+        # type: (Dict[str, Any]) -> Dict[str, Any]
         bot = get_bot_message_handler(self.bot_name)
         bot_handler = StubBotHandler()
 
