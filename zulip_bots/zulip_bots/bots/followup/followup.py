@@ -28,14 +28,11 @@ class FollowupHandler(object):
         self.stream = self.config_info.get("stream", 'followup')
 
     def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
-        # Send help message
-        if message['content'] == 'help':
-            bot_handler.send_reply(message, self.usage())
-            return
-
         if message['content'] == '':
             bot_response = "Please specify the message you want to send to followup stream after @mention-bot"
             bot_handler.send_reply(message, bot_response)
+        elif message['content'] == 'help':
+            bot_handler.send_reply(message, self.usage())
         else:
             bot_response = self.get_bot_followup_response(message)
             bot_handler.send_message(dict(
