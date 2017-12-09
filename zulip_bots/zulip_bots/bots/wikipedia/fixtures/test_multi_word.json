@@ -9,8 +9,15 @@
         "query": {
             "search": [
                 {
-                    "title":"Sky blue"
+                    "title":"Sky_blue"
+                },
+                {
+                    "title":"Sky_Blue_Sky"
+                },
+                {
+                    "title":"Blue_Sky"
                 }
+
             ]
         }
     },
