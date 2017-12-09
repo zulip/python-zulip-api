@@ -10,7 +10,7 @@ from zulip_bots.test_lib import (
 class TestIncrementorBot(StubBotTestCase):
     bot_name = "incrementor"
 
-    def test_bot(self):
+    def test_bot(self) -> None:
         bot = get_bot_message_handler(self.bot_name)
         bot_handler = StubBotHandler()
 
