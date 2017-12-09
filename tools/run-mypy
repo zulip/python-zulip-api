@@ -36,6 +36,12 @@ exclude = [
 force_include = [
     # Include bots that we migrate to mypy.
     "zulip_bots/zulip_bots/bots/helloworld/helloworld.py",
+    "zulip_bots/zulip_bots/bots/converter/converter.py",
+    "zulip_bots/zulip_bots/bots/converter/test_converter.py",
+    "zulip_bots/zulip_bots/bots/define/define.py",
+    "zulip_bots/zulip_bots/bots/define/test_define.py",
+    "zulip_bots/zulip_bots/bots/encrypt/encrypt.py",
+    "zulip_bots/zulip_bots/bots/encrypt/test_encrypt.py"
     "zulip_bots/zulip_bots/bots/followup/followup.py",
     "zulip_bots/zulip_bots/bots/followup/test_followup.py",
     "zulip_bots/zulip_bots/bots/giphy/giphy.py",

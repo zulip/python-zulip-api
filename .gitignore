@@ -47,3 +47,6 @@ flaskbotrc
 
 # mypy
 .mypy_cache
+
+
+.vscode/
