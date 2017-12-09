@@ -4,6 +4,7 @@ from __future__ import print_function
 import logging
 import ssl
 import sys
+from zulip_bots.lib import ExternalBotHandler
 try:
     import requests
 except ImportError as e:
@@ -37,10 +38,10 @@ class YodaSpeakHandler(object):
     This bot will allow users to translate a sentence into 'Yoda speak'.
     It looks for messages starting with '@mention-bot'.
     '''
-    def initialize(self, bot_handler):
+    def initialize(self, bot_handler: ExternalBotHandler) -> None:
         self.api_key = bot_handler.get_config_info('yoda')['api_key']
 
-    def usage(self):
+    def usage(self) -> str:
         return '''
             This bot will allow users to translate a sentence into
             'Yoda speak'.
@@ -54,10 +55,10 @@ class YodaSpeakHandler(object):
             @mention-bot You will learn how to speak like me someday.
             '''
 
-    def handle_message(self, message, bot_handler):
+    def handle_message(self, message: dict, bot_handler: ExternalBotHandler) -> None:
         self.handle_input(message, bot_handler)
 
-    def send_to_yoda_api(self, sentence):
+    def send_to_yoda_api(self, sentence: str) -> str:
         # function for sending sentence to api
         response = requests.get("https://yoda.p.mashape.com/yoda?sentence=" + sentence,
                                 headers={
@@ -73,22 +74,21 @@ class YodaSpeakHandler(object):
         if response.status_code == 503:
             raise ServiceUnavailableError
         else:
-            error_message = response.text['message']
+            error_message = response.json()['message']
             logging.error(error_message)
             error_code = response.status_code
             error_message = error_message + 'Error code: ' + error_code +\
                 ' Did you follow the instructions in the `readme.md` file?'
             return error_message
 
-    def format_input(self, original_content):
+    def format_input(self, original_content: str) -> str:
         # gets rid of whitespace around the edges, so that they aren't a problem in the future
         message_content = original_content.strip()
         # replaces all spaces with '+' to be in the format the api requires
         sentence = message_content.replace(' ', '+')
         return sentence
 
-    def handle_input(self, message, bot_handler):
-
+    def handle_input(self, message: dict, bot_handler: ExternalBotHandler) -> None:
         original_content = message['content']
 
         if self.is_help(original_content) or (original_content == ""):
@@ -113,7 +113,7 @@ class YodaSpeakHandler(object):
 
             bot_handler.send_reply(message, reply_message)
 
-    def send_message(self, bot_handler, message, stream, subject):
+    def send_message(self, bot_handler: ExternalBotHandler, message: str, stream: str, subject: str) -> None:
         # function for sending a message
         bot_handler.send_message(dict(
             type='stream',
@@ -122,7 +122,7 @@ class YodaSpeakHandler(object):
             content=message
         ))
 
-    def is_help(self, original_content):
+    def is_help(self, original_content: str) -> bool:
         # gets rid of whitespace around the edges, so that they aren't a problem in the future
         message_content = original_content.strip()
         if message_content == 'help':

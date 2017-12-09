@@ -11,7 +11,7 @@ class TestYodaBot(BotTestCase):
     bot_name = "yoda"
 
     # Override default function in StubBotTestCase
-    def test_bot_responds_to_empty_message(self):
+    def test_bot_responds_to_empty_message(self) -> None:
         bot_response = '''
             This bot allows users to translate a sentence into
             'Yoda speak'.
@@ -31,8 +31,7 @@ class TestYodaBot(BotTestCase):
             expected_method='send_reply'
         )
 
-    def test_bot(self):
-
+    def test_bot(self) -> None:
         # Test normal sentence (1).
         bot_response = "Learn how to speak like me someday, you will. Yes, hmmm."
 
