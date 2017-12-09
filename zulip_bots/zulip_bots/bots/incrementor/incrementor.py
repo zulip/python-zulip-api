@@ -1,5 +1,6 @@
 # See readme.md for instructions on running this code.
 
+from zulip_bots.lib import ExternalBotHandler
 
 class IncrementorHandler(object):
     META = {
@@ -7,7 +8,7 @@ class IncrementorHandler(object):
         'description': 'Example bot to test the update_message() function.',
     }
 
-    def usage(self):
+    def usage(self) -> str:
         return '''
         This is a boilerplate bot that makes use of the
         update_message function. For the first @-mention, it initially
@@ -15,23 +16,28 @@ class IncrementorHandler(object):
         is @-mentioned, this number will be incremented in the same message.
         '''
 
-    def initialize(self, bot_handler):
+    def initialize(self, bot_handler: ExternalBotHandler) -> None:
         storage = bot_handler.storage
         if not storage.contains('number') or not storage.contains('message_id'):
             storage.put('number', 0)
             storage.put('message_id', None)
 
-    def handle_message(self, message, bot_handler):
+    def handle_message(self, message: dict, bot_handler: ExternalBotHandler) -> None:
         storage = bot_handler.storage
         num = storage.get('number')
-        storage.put('number', num + 1)
+
+        # num should already be an int, but we do `int()` to force an
+        # explicit type check
+        num = int(num) + 1
+
+        storage.put('number', num)
         if storage.get('message_id') is None:
-            result = bot_handler.send_reply(message, str(storage.get('number')))
+            result = bot_handler.send_reply(message, str(num))
             storage.put('message_id', result['id'])
         else:
             bot_handler.update_message(dict(
-                message_id = storage.get('message_id'),
-                content = str(storage.get('number'))
+                message_id=storage.get('message_id'),
+                content=str(num)
             ))
 
 
