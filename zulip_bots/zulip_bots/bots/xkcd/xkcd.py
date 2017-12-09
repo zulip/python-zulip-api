@@ -2,6 +2,7 @@ import random
 
 import logging
 import requests
+from zulip_bots.lib import ExternalBotHandler
 
 XKCD_TEMPLATE_URL = 'https://xkcd.com/%s/info.0.json'
 LATEST_XKCD_URL = 'https://xkcd.com/info.0.json'
@@ -19,7 +20,7 @@ class XkcdHandler(object):
         'description': 'Fetches comic strips from https://xkcd.com.',
     }
 
-    def usage(self):
+    def usage(self) -> str:
         return '''
             This plugin allows users to fetch a comic strip provided by
             https://xkcd.com. Users should preface the command with "@mention-bot".
@@ -32,7 +33,7 @@ class XkcdHandler(object):
             `<comic_id>`, e.g `@mention-bot 1234`.
             '''
 
-    def handle_message(self, message, bot_handler):
+    def handle_message(self, message: dict, bot_handler: ExternalBotHandler) -> None:
         xkcd_bot_response = get_xkcd_bot_response(message)
         bot_handler.send_reply(message, xkcd_bot_response)
 
@@ -47,7 +48,7 @@ class XkcdNotFoundError(Exception):
 class XkcdServerError(Exception):
     pass
 
-def get_xkcd_bot_response(message):
+def get_xkcd_bot_response(message: dict) -> str:
     original_content = message['content'].strip()
     command = original_content.strip()
 
@@ -82,7 +83,7 @@ def get_xkcd_bot_response(message):
                                            fetched['alt'],
                                            fetched['img']))
 
-def fetch_xkcd_query(mode, comic_id=None):
+def fetch_xkcd_query(mode: int, comic_id: str = None) -> dict:
     try:
         if mode == XkcdBotCommand.LATEST:  # Fetch the latest comic strip.
             url = LATEST_XKCD_URL
@@ -111,7 +112,7 @@ def fetch_xkcd_query(mode, comic_id=None):
 
         xkcd_json = fetched.json()
     except requests.exceptions.ConnectionError as e:
-        logging.warning(e)
+        logging.exception("Connection Error")
         raise
 
     return xkcd_json
