@@ -5,7 +5,7 @@ from zulip_bots.test_lib import StubBotTestCase
 class TestWikipediaBot(StubBotTestCase):
     bot_name = "wikipedia"
 
-    def test_bot(self):
+    def test_bot(self) -> None:
 
         # Single-word query
         bot_request = 'happy'
