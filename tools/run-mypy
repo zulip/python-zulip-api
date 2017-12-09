@@ -39,9 +39,23 @@ force_include = [
     "zulip_bots/zulip_bots/bots/converter/converter.py",
     "zulip_bots/zulip_bots/bots/converter/test_converter.py",
     "zulip_bots/zulip_bots/bots/define/define.py",
+    "zulip_bots/zulip_bots/bots/define/test_define.py",
     "zulip_bots/zulip_bots/bots/encrypt/encrypt.py",
     "zulip_bots/zulip_bots/bots/encrypt/test_encrypt.py"
-
+    "zulip_bots/zulip_bots/bots/followup/followup.py",
+    "zulip_bots/zulip_bots/bots/followup/test_followup.py",
+    "zulip_bots/zulip_bots/bots/giphy/giphy.py",
+    "zulip_bots/zulip_bots/bots/giphy/test_giphy.py",
+    "zulip_bots/zulip_bots/bots/github_detail/github_detail.py",
+    "zulip_bots/zulip_bots/bots/github_detail/test_github_detail.py",
+    "zulip_bots/zulip_bots/bots/googlesearch/googlesearch.py",
+    "zulip_bots/zulip_bots/bots/googlesearch/test_googlesearch.py",
+    "zulip_bots/zulip_bots/bots/help/help.py",
+    "zulip_bots/zulip_bots/bots/help/test_help.py",
+    "zulip_bots/zulip_bots/bots/virtual_fs/virtual_fs.py",
+    "zulip_bots/zulip_bots/bots/virtual_fs/test_virtual_fs.py",
+    "zulip_bots/zulip_bots/bots/weather/test_weather.py",
+    "zulip_bots/zulip_bots/bots/weather/weather.py",
 ]
 
 parser = argparse.ArgumentParser(description="Run mypy on files tracked by git.")

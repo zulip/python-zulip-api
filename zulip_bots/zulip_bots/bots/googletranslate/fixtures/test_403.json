@@ -1,0 +1,31 @@
+{
+  "request": {
+    "method": "POST",
+    "api_url": "https://translation.googleapis.com/language/translate/v2",
+    "params": {
+      "q": "hello",
+      "key": "abcdefg",
+      "target": "de",
+      "source": "en"
+    }
+  },
+  "response": {
+    "error": {
+      "code": 403,
+      "message": "Invalid API Key.",
+      "errors": [
+        {
+          "message": "Invalid API Key",
+          "domain": "usageLimits",
+          "reason": "accessNotConfigured",
+          "extendedHelp": "https://console.developers.google.com"
+        }
+      ],
+      "status": "PERMISSION_DENIED"
+    }
+  },
+  "response-headers": {
+    "status": 403,
+    "content-type": "application/json; charset=utf-8"
+  }
+}

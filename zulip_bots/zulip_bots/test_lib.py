@@ -59,6 +59,10 @@ class StubBotHandler:
         # type: (Dict[str, Any]) -> None
         self.message_server.update(message)
 
+    def get_config_info(self, bot_name, optional=False):
+        # type: (str, bool) -> Dict[str, Any]
+        return None
+
     def unique_reply(self):
         # type: () -> Dict[str, Any]
         responses = [
@@ -103,6 +107,9 @@ class StubBotTestCase(TestCase):
         bot = get_bot_message_handler(self.bot_name)
         bot_handler = StubBotHandler()
 
+        if hasattr(bot, 'initialize'):
+            bot.initialize(bot_handler)
+
         message = dict(
             sender_email='foo@example.com',
             content=request,
@@ -122,6 +129,7 @@ class StubBotTestCase(TestCase):
         for (request, expected_response) in conversation:
             message = dict(
                 sender_email='foo@example.com',
+                sender_full_name='Foo Test User',
                 content=request,
             )
             bot_handler.reset_transcript()
@@ -139,6 +147,10 @@ class StubBotTestCase(TestCase):
         assert test_name is not None
         http_data = read_bot_fixture_data(self.bot_name, test_name)
         return mock_http_conversation(http_data)
+
+    def mock_config_info(self, config_info):
+        # type: (Dict[str, str]) -> Any
+        return patch('zulip_bots.test_lib.StubBotHandler.get_config_info', return_value=config_info)
 
 def get_bot_message_handler(bot_name):
     # type: (str) -> Any

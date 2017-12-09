@@ -5,10 +5,12 @@ from __future__ import print_function
 
 from zulip_bots.test_lib import BotTestCase
 
+from typing import Any
+
 class TestFollowUpBot(BotTestCase):
     bot_name = "followup"
 
-    def test_bot(self):
+    def test_bot(self) -> None:
         expected_send_reply = [
             ("", 'Please specify the message you want to send to followup stream after @mention-bot')
         ]

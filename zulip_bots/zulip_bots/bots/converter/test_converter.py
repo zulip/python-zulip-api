@@ -1,15 +1,12 @@
 #!/usr/bin/env python
 
-from __future__ import absolute_import
-from __future__ import print_function
+from zulip_bots.test_lib import StubBotTestCase
 
-from zulip_bots.test_lib import BotTestCase
-
-class TestConverterBot(BotTestCase):
+class TestConverterBot(StubBotTestCase):
     bot_name = "converter"
 
-    def test_bot(self) -> None:
-        expected = [
+    def test_bot(self):
+        dialog = [
             ("", 'Too few arguments given. Enter `@convert help` '
                  'for help on using the converter.\n'),
             ("foo bar", 'Too few arguments given. Enter `@convert help` '
@@ -19,4 +16,4 @@ class TestConverterBot(BotTestCase):
             ("0.002 kilometer millimile", "0.002 kilometer = 1.2427424 millimile\n"),
             ("3 megabyte kilobit", "3.0 megabyte = 24576.0 kilobit\n"),
         ]
-        self.check_expected_responses(expected)
+        self.verify_dialog(dialog)

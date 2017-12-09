@@ -1,19 +1,16 @@
 #!/usr/bin/env python
 
-from __future__ import absolute_import
-from __future__ import print_function
+from zulip_bots.test_lib import StubBotTestCase
 
-from zulip_bots.test_lib import BotTestCase
-
-class TestEncryptBot(BotTestCase):
+class TestEncryptBot(StubBotTestCase):
     bot_name = "encrypt"
 
-    def test_bot(self) -> None:
-        expected = [
+    def test_bot(self):
+        dialog = [
             ("", "Encrypted/Decrypted text: "),
             ("Let\'s Do It", "Encrypted/Decrypted text: Yrg\'f Qb Vg"),
             ("me&mom together..!!", "Encrypted/Decrypted text: zr&zbz gbtrgure..!!"),
             ("foo bar", "Encrypted/Decrypted text: sbb one"),
             ("Please encrypt this", "Encrypted/Decrypted text: Cyrnfr rapelcg guvf"),
         ]
-        self.check_expected_responses(expected)
+        self.verify_dialog(dialog)

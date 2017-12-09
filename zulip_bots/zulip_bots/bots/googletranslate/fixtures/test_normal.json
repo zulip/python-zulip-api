@@ -1,0 +1,25 @@
+{
+  "request": {
+    "method": "POST",
+    "api_url": "https://translation.googleapis.com/language/translate/v2",
+    "params": {
+      "q": "hello",
+      "key": "abcdefg",
+      "target": "de"
+    }
+  },
+  "response": {
+    "data": {
+      "translations": [
+        {
+          "translatedText": "Hallo",
+          "detectedSourceLanguage": "en"
+        }
+      ]
+    }
+  },
+  "response-headers": {
+    "status": 200,
+    "content-type": "application/json; charset=utf-8"
+  }
+}
