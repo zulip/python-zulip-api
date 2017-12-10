@@ -5,7 +5,7 @@ import logging
 import re
 from six.moves import urllib
 
-# See readme.md for instructions on running this code.
+# See doc.md for instructions on running this code.
 
 class WikipediaHandler(object):
     '''
