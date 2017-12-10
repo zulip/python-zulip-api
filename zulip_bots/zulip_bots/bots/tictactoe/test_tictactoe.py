@@ -44,7 +44,13 @@ class TestTictactoeBot(StubBotTestCase):
                          "My turn:\n[ x o x ]\n[ x o _ ]\n[ o x o ]\n"
                          "Your turn! Enter a coordinate or type help."),
             after_2_3_draw = ("[ x o x ]\n[ x o x ]\n[ o x o ]\n"
-                              "It's a draw! Neither of us was able to win.")
+                              "It's a draw! Neither of us was able to win."),
+            after_2_3_try_lose = ("[ x _ _ ]\n[ _ o x ]\n[ _ _ _ ]\n"
+                                  "My turn:\n[ x _ _ ]\n[ _ o x ]\n[ _ o _ ]\n"
+                                  "Your turn! Enter a coordinate or type help."),
+            after_2_1_lost = ("[ x _ _ ]\n[ x o x ]\n[ _ o _ ]\n"
+                              "My turn:\n[ x o _ ]\n[ x o x ]\n[ _ o _ ]\n"
+                              "Game over! I've won!"),
         )
 
         conversation = [
@@ -86,6 +92,12 @@ class TestTictactoeBot(StubBotTestCase):
             ("(1,3)", msg['after_1_3']),
             ("3,2", msg['after_3_2']),
             ("2,3", msg['after_2_3_draw']),
+            # Game already over; can't quit FIXME improve response?
+            ("quit", msg['didnt_understand']),
+            ("new", msg['new_game']),
+            ("1,1", msg['after_1_1']),
+            ("2,3", msg['after_2_3_try_lose']),
+            ("2,1", msg['after_2_1_lost']),
             # Game already over; can't quit FIXME improve response?
             ("quit", msg['didnt_understand']),
         ]
