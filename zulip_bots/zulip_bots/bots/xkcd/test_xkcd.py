@@ -1,13 +1,10 @@
 #!/usr/bin/env python
 
-from __future__ import absolute_import
-from __future__ import print_function
-
 import mock
 from mock import MagicMock, patch
-from zulip_bots.test_lib import BotTestCase
+from zulip_bots.test_lib import StubBotTestCase
 
-class TestXkcdBot(BotTestCase):
+class TestXkcdBot(StubBotTestCase):
     bot_name = "xkcd"
 
     def test_latest_command(self):
