@@ -224,7 +224,7 @@ class TicTacToeGame(object):
 
         if board[row][column] != "_":
             return_string += output_mode("That space is already filled, sorry!", mode)
-            return return_string
+            return ("filled",return_string)
         else:
             board[row][column] = "x"
 
@@ -233,11 +233,11 @@ class TicTacToeGame(object):
         # Check to see if the user won/drew after they made their move. If not, it's the computer's turn.
         if self.win_conditions(board, self.triplets):
             return_string += output_mode("Game over! You've won!", mode)
-            return return_string
+            return ("player_win", return_string)
 
         if self.board_is_full(board):
             return_string += output_mode("It's a draw! Neither of us was able to win.", mode)
-            return return_string
+            return ("draw", return_string)
 
         return_string += output_mode("My turn:\n", mode)
         self.computer_move(board)
@@ -247,10 +247,10 @@ class TicTacToeGame(object):
         # in checking.) If the computer didn't win, the user gets another turn.
         if self.win_conditions(board, self.triplets):
             return_string += output_mode("Game over! I've won!", mode)
-            return return_string
+            return ("computer_win", return_string)
 
         return_string += output_mode("Your turn! Enter a coordinate or type help.", mode)
-        return return_string
+        return ("next_turn", return_string)
 
 # -------------------------------------
 flat_initial = sum(initial_board, [])
@@ -288,6 +288,7 @@ class ticTacToeHandler(object):
             storage.put(original_sender, user_board)
         user_game = TicTacToeGame(user_board) if user_board else None
 
+        move = None
         if command == 'new':
             if user_game and not first_time(user_game.board):
                 return_content = "You're already playing a game! Type **@tictactoe help** or **@ttt help** to see valid inputs."
@@ -297,16 +298,20 @@ class ticTacToeHandler(object):
         elif command == 'help':
             return_content = TicTacToeGame.detailed_help_message
         elif (user_game) and TicTacToeGame.check_validity(user_game, TicTacToeGame.sanitize_move(user_game, command)):
-            return_content = TicTacToeGame.tictactoe(user_game, user_board, command)
-            storage.put(original_sender, user_board)
+            move, return_content = TicTacToeGame.tictactoe(user_game, user_board, command)
         elif (user_game) and command == 'quit':
-            storage.put(original_sender, None)
+            move = "quit"
             return_content = "You've successfully quit the game."
         else:
             return_content = "Hmm, I didn't understand your input. Type **@tictactoe help** or **@ttt help** to see valid inputs."
 
-        if "Game over" in return_content or "draw" in return_content:
-            storage.put(original_sender, None)
+        if move is not None:
+            if any(reset_text in move for reset_text in ("win", "draw", "quit")):
+                storage.put(original_sender, None)
+            elif move is "next_turn":
+                storage.put(original_sender, user_board)
+            else:  # "filled" => no change, user_board remains the same
+                pass
 
         bot_handler.send_message(dict(
             type = 'private',
