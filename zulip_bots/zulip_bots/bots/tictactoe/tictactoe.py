@@ -6,13 +6,6 @@ initial_board = [["_", "_", "_"],
                  ["_", "_", "_"],
                  ["_", "_", "_"]]
 
-mode = 'r'  # default, can change for debugging to 'p'
-def output_mode(string_to_print, mode):
-    if mode == "p":
-        print(string_to_print)
-    elif mode == "r":
-        return string_to_print
-
 # -------------------------------------
 class TicTacToeGame(object):
     smarter = True
@@ -215,7 +208,7 @@ class TicTacToeGame(object):
         return move
 
     def tictactoe(self, board, input_string):
-        return_string = ""
+        printed_boards = dict(after_player = "", after_computer = "")
         move = self.sanitize_move(input_string)
 
         # Subtraction must be done to convert to the right indices, since computers start numbering at 0.
@@ -223,34 +216,28 @@ class TicTacToeGame(object):
         column = (int(move[-1])) - 1
 
         if board[row][column] != "_":
-            return_string += output_mode("That space is already filled, sorry!", mode)
-            return ("filled",return_string)
+            return ("filled", printed_boards)
         else:
             board[row][column] = "x"
 
-        return_string += self.display_board(board)
+        printed_boards['after_player'] = self.display_board(board)
 
         # Check to see if the user won/drew after they made their move. If not, it's the computer's turn.
         if self.win_conditions(board, self.triplets):
-            return_string += output_mode("Game over! You've won!", mode)
-            return ("player_win", return_string)
+            return ("player_win", printed_boards)
 
         if self.board_is_full(board):
-            return_string += output_mode("It's a draw! Neither of us was able to win.", mode)
-            return ("draw", return_string)
+            return ("draw", printed_boards)
 
-        return_string += output_mode("My turn:\n", mode)
         self.computer_move(board)
-        return_string += self.display_board(board)
+        printed_boards['after_computer'] = self.display_board(board)
 
         # Checks to see if the computer won after it makes its move. (The computer can't draw, so there's no point
         # in checking.) If the computer didn't win, the user gets another turn.
         if self.win_conditions(board, self.triplets):
-            return_string += output_mode("Game over! I've won!", mode)
-            return ("computer_win", return_string)
+            return ("computer_win", printed_boards)
 
-        return_string += output_mode("Your turn! Enter a coordinate or type help.", mode)
-        return ("next_turn", return_string)
+        return ("next_turn", printed_boards)
 
 # -------------------------------------
 class ticTacToeHandler(object):
@@ -280,6 +267,13 @@ class ticTacToeHandler(object):
         user_board = storage.get(original_sender)
         user_game = TicTacToeGame(user_board) if user_board else None
 
+        end_of_move_text = {
+            "filled": "That space is already filled, sorry!",
+            "next_turn": "Your turn! Enter a coordinate or type help.",
+            "computer_win": "Game over! I've won!",
+            "player_win": "Game over! You've won!",
+            "draw": "It's a draw! Neither of us was able to win.",
+        }
         move = None
         if command == 'new':
             if not user_board:
@@ -294,7 +288,11 @@ class ticTacToeHandler(object):
         elif command == 'help':
             return_content = TicTacToeGame.detailed_help_message
         elif (user_game) and TicTacToeGame.check_validity(user_game, TicTacToeGame.sanitize_move(user_game, command)):
-            move, return_content = TicTacToeGame.tictactoe(user_game, user_board, command)
+            move, printed_boards = TicTacToeGame.tictactoe(user_game, user_board, command)
+            mid_text = "My turn:\n" if printed_boards['after_computer'] else ""
+            return_content = "".join([printed_boards['after_player'], mid_text,
+                                      printed_boards['after_computer'],
+                                      end_of_move_text[move]])
         elif (user_game) and command == 'quit':
             move = "quit"
             return_content = "You've successfully quit the game."
