@@ -100,14 +100,19 @@ class StubBotTestCase(TestCase):
 
     bot_name = ''
 
-    def get_response(self, message):
-        # type: (Dict[str, Any]) -> Dict[str, Any]
+    def _get_handlers(self):
+        # type: () -> Tuple[Any, StubBotHandler]
         bot = get_bot_message_handler(self.bot_name)
         bot_handler = StubBotHandler()
 
         if hasattr(bot, 'initialize'):
             bot.initialize(bot_handler)
 
+        return (bot, bot_handler)
+
+    def get_response(self, message):
+        # type: (Dict[str, Any]) -> Dict[str, Any]
+        bot, bot_handler = self._get_handlers()
         bot_handler.reset_transcript()
         bot.handle_message(message, bot_handler)
         return bot_handler.unique_response()
@@ -115,12 +120,7 @@ class StubBotTestCase(TestCase):
     def verify_reply(self, request, response):
         # type: (str, str) -> None
 
-        # Start a new message handler for the full conversation.
-        bot = get_bot_message_handler(self.bot_name)
-        bot_handler = StubBotHandler()
-
-        if hasattr(bot, 'initialize'):
-            bot.initialize(bot_handler)
+        bot, bot_handler = self._get_handlers()
 
         message = dict(
             sender_email='foo@example.com',
@@ -135,8 +135,7 @@ class StubBotTestCase(TestCase):
         # type: (List[Tuple[str, str]]) -> None
 
         # Start a new message handler for the full conversation.
-        bot = get_bot_message_handler(self.bot_name)
-        bot_handler = StubBotHandler()
+        bot, bot_handler = self._get_handlers()
 
         for (request, expected_response) in conversation:
             message = dict(
