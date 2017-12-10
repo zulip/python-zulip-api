@@ -1,5 +1,7 @@
 from zulip_bots.test_lib import StubBotTestCase
 
+from mock import patch
+
 class TestTictactoeBot(StubBotTestCase):
     bot_name = 'tictactoe'
 
@@ -39,8 +41,10 @@ class TestTictactoeBot(StubBotTestCase):
                          "My turn:\n[ x o x ]\n[ x o _ ]\n[ o _ _ ]\n"
                          "Your turn! Enter a coordinate or type help."),
             after_3_2 = ("[ x o x ]\n[ x o _ ]\n[ o x _ ]\n"
-                         "My turn:\n[ x o x ]\n[ x o o ]\n[ o x _ ]\n"
+                         "My turn:\n[ x o x ]\n[ x o _ ]\n[ o x o ]\n"
                          "Your turn! Enter a coordinate or type help."),
+            after_2_3_draw = ("[ x o x ]\n[ x o x ]\n[ o x o ]\n"
+                              "It's a draw! Neither of us was able to win.")
         )
 
         conversation = [
@@ -80,8 +84,12 @@ class TestTictactoeBot(StubBotTestCase):
             ("1,1", msg['after_1_1']),
             ("2, 1", msg['after_2_1']),
             ("(1,3)", msg['after_1_3']),
-            ("quit", msg['successful_quit']),
-            # Can't test 'after_3_2' as it's random!
+            ("3,2", msg['after_3_2']),
+            ("2,3", msg['after_2_3_draw']),
+            # Game already over; can't quit FIXME improve response?
+            ("quit", msg['didnt_understand']),
         ]
 
-        self.verify_dialog(conversation)
+        with patch('zulip_bots.bots.tictactoe.tictactoe.random.choice') as choice:
+            choice.return_value = [2, 2]
+            self.verify_dialog(conversation)
