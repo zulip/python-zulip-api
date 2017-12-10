@@ -283,14 +283,15 @@ class ticTacToeHandler(object):
         if not storage.contains(original_sender):
             storage.put(original_sender, None)
         user_board = storage.get(original_sender)
-        if (not user_board) and command == "new":
-            user_board = copy.deepcopy(initial_board)
-            storage.put(original_sender, user_board)
         user_game = TicTacToeGame(user_board) if user_board else None
 
         move = None
         if command == 'new':
-            if user_game and not first_time(user_game.board):
+            if not user_board:
+                user_board = copy.deepcopy(initial_board)
+                user_game = TicTacToeGame(user_board)
+                move = "new"
+            if not first_time(user_game.board):
                 return_content = "You're already playing a game! Type **@tictactoe help** or **@ttt help** to see valid inputs."
             else:
                 return_content = "Welcome to tic-tac-toe! You'll be x's and I'll be o's. Your move first!\n"
@@ -308,7 +309,7 @@ class ticTacToeHandler(object):
         if move is not None:
             if any(reset_text in move for reset_text in ("win", "draw", "quit")):
                 storage.put(original_sender, None)
-            elif move is "next_turn":
+            elif any(keep_text == move for keep_text in ("new", "next_turn")):
                 storage.put(original_sender, user_board)
             else:  # "filled" => no change, user_board remains the same
                 pass
