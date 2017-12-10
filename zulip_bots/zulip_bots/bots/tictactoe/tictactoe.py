@@ -253,11 +253,6 @@ class TicTacToeGame(object):
         return ("next_turn", return_string)
 
 # -------------------------------------
-flat_initial = sum(initial_board, [])
-def first_time(board):
-    flat = sum(board, [])
-    return flat == flat_initial
-
 class ticTacToeHandler(object):
     '''
     You can play tic-tac-toe in a private message with
@@ -291,7 +286,7 @@ class ticTacToeHandler(object):
                 user_board = copy.deepcopy(initial_board)
                 user_game = TicTacToeGame(user_board)
                 move = "new"
-            if not first_time(user_game.board):
+            if user_game.board != initial_board:
                 return_content = "You're already playing a game! Type **@tictactoe help** or **@ttt help** to see valid inputs."
             else:
                 return_content = "Welcome to tic-tac-toe! You'll be x's and I'll be o's. Your move first!\n"
