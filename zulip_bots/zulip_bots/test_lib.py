@@ -155,22 +155,17 @@ class StubBotTestCase(TestCase):
         self.assertNotEqual(bot.usage(), '')
 
     def test_bot_responds_to_empty_message(self) -> None:
-        # TODO get_response should be usable here once it's merged?
-        bot = get_bot_message_handler(self.bot_name)
-        bot_handler = StubBotHandler()
-
-        if hasattr(bot, 'initialize'):
-            bot.initialize(bot_handler)
-
         message = dict(
             sender_email='foo@example.com',
             display_recipient='foo',
             content='',
         )
-        bot_handler.reset_transcript()
-        bot.handle_message(message, bot_handler)
-        empty_response = bot_handler.unique_response()
-        self.assertIsNotNone(empty_response)
+
+        # get_response will fail if we don't respond at all
+        response = self.get_response(message)
+
+        # we also want a non-blank response
+        self.assertTrue(len(response['content']) >= 1)
 
     def mock_http_conversation(self, test_name):
         # type: (str) -> Any
