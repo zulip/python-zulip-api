@@ -21,24 +21,6 @@ class TicTacToeGame(object):
                 [(0, 2), (1, 1), (2, 0)]   # Diagonal 2
                 ]
 
-    positions = "Coordinates are entered in a (row, column) format. Numbering is from top to bottom and left to right.\n" \
-                "Here are the coordinates of each position. (Parentheses and spaces are optional.) \n" \
-                "(1, 1)  (1, 2)  (1, 3) \n(2, 1)  (2, 2)  (2, 3) \n(3, 1) (3, 2) (3, 3) \n " \
-                "Your move would be one of these. To make a move, type @mention-bot " \
-                "followed by a space and the coordinate."
-
-    detailed_help_message = "*Help for Tic-Tac-Toe bot* \n" \
-                            "The bot responds to messages starting with @mention-bot.\n" \
-                            "**@mention-bot new** will start a new game (but not if you're " \
-                            "already in the middle of a game). You must type this first to start playing!\n" \
-                            "**@mention-bot help** will return this help function.\n" \
-                            "**@mention-bot quit** will quit from the current game.\n" \
-                            "**@mention-bot <coordinate>** will make a move at the given coordinate.\n" \
-                            "Coordinates are entered in a (row, column) format. Numbering is from " \
-                            "top to bottom and left to right. \n" \
-                            "Here are the coordinates of each position. (Parentheses and spaces are optional). \n" \
-                            "(1, 1)  (1, 2)  (1, 3) \n(2, 1)  (2, 2)  (2, 3) \n(3, 1) (3, 2) (3, 3) \n"
-
     def __init__(self, board):
         self.board = board
 
@@ -240,6 +222,41 @@ class TicTacToeGame(object):
         return ("next_turn", printed_boards)
 
 # -------------------------------------
+long_help_text = ("*Help for Tic-Tac-Toe bot* \n"
+                  "The bot responds to messages starting with @mention-bot.\n"
+                  "**@mention-bot new** will start a new game (but not if you're "
+                  "already in the middle of a game). You must type this first to start playing!\n"
+                  "**@mention-bot help** will return this help function.\n"
+                  "**@mention-bot quit** will quit from the current game.\n"
+                  "**@mention-bot <coordinate>** will make a move at the given coordinate.\n"
+                  "Coordinates are entered in a (row, column) format. Numbering is from "
+                  "top to bottom and left to right. \n"
+                  "Here are the coordinates of each position. (Parentheses and spaces are optional). \n"
+                  "(1, 1)  (1, 2)  (1, 3) \n(2, 1)  (2, 2)  (2, 3) \n(3, 1) (3, 2) (3, 3) \n")
+
+short_help_text = "Type **@tictactoe help** or **@ttt help** to see valid inputs."
+
+new_game_text = ("Welcome to tic-tac-toe! You'll be x's and I'll be o's."
+                 " Your move first!\n"
+                 "Coordinates are entered in a (row, column) format. "
+                 "Numbering is from top to bottom and left to right.\n"
+                 "Here are the coordinates of each position. (Parentheses and spaces are optional.) \n"
+                 "(1, 1)  (1, 2)  (1, 3) \n(2, 1)  (2, 2)  (2, 3) \n(3, 1) (3, 2) (3, 3) \n "
+                 "Your move would be one of these. To make a move, type @mention-bot "
+                 "followed by a space and the coordinate.")
+quit_game_text = "You've successfully quit the game."
+unknown_message_text = "Hmm, I didn't understand your input."
+already_playing_text = "You're already playing a game!"
+
+mid_move_text = "My turn:"
+end_of_move_text = {
+    "filled": "That space is already filled, sorry!",
+    "next_turn": "Your turn! Enter a coordinate or type help.",
+    "computer_win": "Game over! I've won!",
+    "player_win": "Game over! You've won!",
+    "draw": "It's a draw! Neither of us was able to win.",
+}
+# -------------------------------------
 class ticTacToeHandler(object):
     '''
     You can play tic-tac-toe in a private message with
@@ -267,13 +284,6 @@ class ticTacToeHandler(object):
         user_board = storage.get(original_sender)
         user_game = TicTacToeGame(user_board) if user_board else None
 
-        end_of_move_text = {
-            "filled": "That space is already filled, sorry!",
-            "next_turn": "Your turn! Enter a coordinate or type help.",
-            "computer_win": "Game over! I've won!",
-            "player_win": "Game over! You've won!",
-            "draw": "It's a draw! Neither of us was able to win.",
-        }
         move = None
         if command == 'new':
             if not user_board:
@@ -281,23 +291,22 @@ class ticTacToeHandler(object):
                 user_game = TicTacToeGame(user_board)
                 move = "new"
             if user_game.board != initial_board:
-                return_content = "You're already playing a game! Type **@tictactoe help** or **@ttt help** to see valid inputs."
+                response = " ".join([already_playing_text, short_help_text])
             else:
-                return_content = "Welcome to tic-tac-toe! You'll be x's and I'll be o's. Your move first!\n"
-                return_content += TicTacToeGame.positions
+                response = new_game_text
         elif command == 'help':
-            return_content = TicTacToeGame.detailed_help_message
+            response = long_help_text
         elif (user_game) and user_game.check_validity(user_game.sanitize_move(command)):
             move, printed_boards = user_game.tictactoe(user_board, command)
-            mid_text = "My turn:\n" if printed_boards['after_computer'] else ""
-            return_content = "".join([printed_boards['after_player'], mid_text,
-                                      printed_boards['after_computer'],
-                                      end_of_move_text[move]])
+            mid_text = mid_move_text+"\n" if printed_boards['after_computer'] else ""
+            response = "".join([printed_boards['after_player'], mid_text,
+                                printed_boards['after_computer'],
+                                end_of_move_text[move]])
         elif (user_game) and command == 'quit':
             move = "quit"
-            return_content = "You've successfully quit the game."
+            response = quit_game_text
         else:
-            return_content = "Hmm, I didn't understand your input. Type **@tictactoe help** or **@ttt help** to see valid inputs."
+            response = " ".join([unknown_message_text, short_help_text])
 
         if move is not None:
             if any(reset_text in move for reset_text in ("win", "draw", "quit")):
@@ -311,7 +320,7 @@ class ticTacToeHandler(object):
             type = 'private',
             to = original_sender,
             subject = message['sender_email'],
-            content = return_content,
+            content = response,
         ))
 
 handler_class = ticTacToeHandler
