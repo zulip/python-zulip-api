@@ -124,6 +124,7 @@ class StubBotTestCase(TestCase):
 
         message = dict(
             sender_email='foo@example.com',
+            sender_full_name='Foo Test User',
             content=request,
         )
         bot_handler.reset_transcript()
