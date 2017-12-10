@@ -287,8 +287,8 @@ class ticTacToeHandler(object):
                 return_content += TicTacToeGame.positions
         elif command == 'help':
             return_content = TicTacToeGame.detailed_help_message
-        elif (user_game) and TicTacToeGame.check_validity(user_game, TicTacToeGame.sanitize_move(user_game, command)):
-            move, printed_boards = TicTacToeGame.tictactoe(user_game, user_board, command)
+        elif (user_game) and user_game.check_validity(user_game.sanitize_move(command)):
+            move, printed_boards = user_game.tictactoe(user_board, command)
             mid_text = "My turn:\n" if printed_boards['after_computer'] else ""
             return_content = "".join([printed_boards['after_player'], mid_text,
                                       printed_boards['after_computer'],
