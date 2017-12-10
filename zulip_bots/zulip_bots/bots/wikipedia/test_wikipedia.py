@@ -41,3 +41,15 @@ class TestWikipediaBot(StubBotTestCase):
         bot_request = ''
         bot_response = "Please enter your message after @mention-bot"
         self.verify_reply(bot_request, bot_response)
+
+        # Incorrect status code
+        bot_request = 'Zulip'
+        bot_response = None
+        with self.mock_http_conversation('test_status_code'):
+            self.verify_reply(bot_request, bot_response)
+
+        # Request Exception
+        bot_request = 'Z'
+        bot_response = None
+        with self.mock_request_exception():
+            self.verify_reply(bot_request, bot_response)
