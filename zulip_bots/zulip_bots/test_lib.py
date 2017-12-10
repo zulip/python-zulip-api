@@ -147,6 +147,10 @@ class StubBotTestCase(TestCase):
         http_data = read_bot_fixture_data(self.bot_name, test_name)
         return mock_http_conversation(http_data)
 
+    def mock_request_exception(self):
+        # type: () -> Any
+        return mock_request_exception()
+
     def mock_config_info(self, config_info):
         # type: (Dict[str, str]) -> Any
         return patch('zulip_bots.test_lib.StubBotHandler.get_config_info', return_value=config_info)
@@ -230,6 +234,19 @@ def mock_http_conversation(http_data):
                 http_request,
                 ['params', 'headers', 'json']
             )
+
+@contextmanager
+def mock_request_exception():
+    # type: () -> Any
+    def assert_mock_called(mock_result):
+        # type: (Any) -> None
+        mock_result.assert_called()
+
+    with patch('requests.get') as mock_get:
+        mock_get.return_value = True
+        mock_get.side_effect = requests.exceptions.RequestException
+        yield
+        assert_mock_called(mock_get)
 
 class BotTestCase(StubBotTestCase):
     """Test class for common Bot test helper methods"""
