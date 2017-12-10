@@ -1,0 +1,22 @@
+
+{
+    "request": {
+        "api_url":"https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=Zulip&format=json"
+    },
+    "response": {
+        "data": {
+            "status_code":404
+        },
+        "query": {
+            "search": [
+                {
+                    "title":"Number sign"
+                }
+            ]
+        }
+    },
+    "response-headers":{
+        "status":404,
+        "content-type":"text/html"
+    }
+}
