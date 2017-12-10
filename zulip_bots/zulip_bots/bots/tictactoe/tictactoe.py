@@ -276,11 +276,9 @@ class ticTacToeHandler(object):
             '''
 
     def handle_message(self, message, bot_handler):
-        command_list = message['content']
-        command = ""
-        for val in command_list:
-            command += val
+        command = message['content']
         original_sender = message['sender_email']
+
         storage = bot_handler.storage
         if not storage.contains(original_sender):
             storage.put(original_sender, None)
