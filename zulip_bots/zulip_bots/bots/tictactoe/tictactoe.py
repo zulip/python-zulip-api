@@ -1,6 +1,5 @@
 import copy
 import random
-from six.moves import range
 
 initial_board = [["_", "_", "_"],
                  ["_", "_", "_"],
