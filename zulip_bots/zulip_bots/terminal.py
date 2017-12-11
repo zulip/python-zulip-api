@@ -69,7 +69,7 @@ def main():
                 message=message,
                 bot_handler=bot_handler,
             )
-    except KeyboardException:
+    except KeyboardInterrupt:
         print("\n\nOk, if you're happy with your terminal-based testing, try it out with a Zulip server.",
               "\nYou can refer to https://zulipchat.com/api/running-bots#running-a-bot.")
         sys.exit(1)
