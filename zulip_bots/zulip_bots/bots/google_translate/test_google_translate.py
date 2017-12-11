@@ -2,7 +2,7 @@ from unittest.mock import patch
 from requests.exceptions import ConnectionError
 
 from zulip_bots.test_lib import StubBotTestCase
-from zulip_bots.bots.googletranslate.googletranslate import TranslateError
+from zulip_bots.bots.google_translate.google_translate import TranslateError
 
 help_text = '''
 Google translate bot
@@ -12,7 +12,7 @@ Visit [here](https://cloud.google.com/translate/docs/languages) for all language
 '''
 
 class TestGoogleTranslateBot(StubBotTestCase):
-    bot_name = "googletranslate"
+    bot_name = "google_translate"
 
     def _test(self, message, response, http_config_fixture, http_fixture=None):
         with self.mock_config_info({'key': 'abcdefg'}), \
@@ -62,7 +62,7 @@ class TestGoogleTranslateBot(StubBotTestCase):
                    'test_languages', 'test_quotation')
 
     def test_exception(self):
-        with patch('zulip_bots.bots.googletranslate.googletranslate.translate',
+        with patch('zulip_bots.bots.google_translate.google_translate.translate',
                    side_effect=Exception):
             self._test('"hello" de', 'Error. .', 'test_languages')
 
