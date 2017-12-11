@@ -71,14 +71,14 @@ class StateHandler(object):
             raise StateHandlerError("Error initializing state: {}".format(str(response)))
 
     def put(self, key, value):
-        # type: (Text, Text) -> None
+        # type: (Text, Any) -> None
         self.state_[key] = self.marshal(value)
         response = self._client.update_storage({'storage': {key: self.state_[key]}})
         if response['result'] != 'success':
             raise StateHandlerError("Error updating state: {}".format(str(response)))
 
     def get(self, key):
-        # type: (Text) -> Text
+        # type: (Text) -> Any
         return self.demarshal(self.state_[key])
 
     def contains(self, key):
