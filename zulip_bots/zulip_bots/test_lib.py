@@ -1,7 +1,4 @@
-import mock
-
 from mock import patch
-
 from unittest import TestCase
 
 from typing import List, Dict, Any, Tuple
