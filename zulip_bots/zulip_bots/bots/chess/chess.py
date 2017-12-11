@@ -2,8 +2,7 @@ import chess
 import chess.uci
 import re
 import copy
-from typing import Any, Optional
-from zulip_bots.lib import ExternalBotHandler
+from typing import Any, Optional, Dict
 
 START_REGEX = re.compile('start with other user$')
 START_COMPUTER_REGEX = re.compile(
@@ -23,7 +22,7 @@ class ChessHandler(object):
             'Stockfish program on this computer.'
         )
 
-    def initialize(self, bot_handler: ExternalBotHandler) -> None:
+    def initialize(self, bot_handler: Any) -> None:
         self.config_info = bot_handler.get_config_info('chess')
 
         try:
@@ -38,8 +37,8 @@ class ChessHandler(object):
 
     def handle_message(
         self,
-        message: dict,
-        bot_handler: ExternalBotHandler
+        message: Dict[str, str],
+        bot_handler: Any
     ) -> None:
         content = message['content']
 
@@ -94,7 +93,7 @@ class ChessHandler(object):
                 last_fen
             )
 
-    def start(self, message: dict, bot_handler: ExternalBotHandler) -> None:
+    def start(self, message: Dict[str, str], bot_handler: Any) -> None:
         """Starts a game with another user, with the current user as white.
         Replies to the bot handler.
 
@@ -115,8 +114,8 @@ class ChessHandler(object):
 
     def start_computer(
         self,
-        message: dict,
-        bot_handler: ExternalBotHandler,
+        message: Dict[str, str],
+        bot_handler: Any,
         is_white_user: bool
     ) -> None:
         """Starts a game with the computer. Replies to the bot handler.
@@ -151,8 +150,8 @@ class ChessHandler(object):
 
     def validate_board(
         self,
-        message: dict,
-        bot_handler: ExternalBotHandler,
+        message: Dict[str, str],
+        bot_handler: Any,
         fen: str
     ) -> Optional[chess.Board]:
         """Validates a board based on its FEN string. Replies to the bot
@@ -179,8 +178,8 @@ class ChessHandler(object):
 
     def validate_move(
         self,
-        message: dict,
-        bot_handler: ExternalBotHandler,
+        message: Dict[str, str],
+        bot_handler: Any,
         last_board: chess.Board,
         move_san: str,
         is_computer: object
@@ -223,8 +222,8 @@ class ChessHandler(object):
 
     def check_game_over(
         self,
-        message: dict,
-        bot_handler: ExternalBotHandler,
+        message: Dict[str, str],
+        bot_handler: Any,
         new_board: chess.Board
     ) -> bool:
         """Checks if a game is over due to
@@ -280,8 +279,8 @@ class ChessHandler(object):
 
     def move(
         self,
-        message: dict,
-        bot_handler: ExternalBotHandler,
+        message: Dict[str, str],
+        bot_handler: Any,
         last_fen: str,
         move_san: str
     ) -> None:
@@ -325,8 +324,8 @@ class ChessHandler(object):
 
     def move_computer(
         self,
-        message: dict,
-        bot_handler: ExternalBotHandler,
+        message: Dict[str, str],
+        bot_handler: Any,
         last_fen: str,
         move_san: str
     ) -> None:
@@ -396,8 +395,8 @@ class ChessHandler(object):
 
     def move_computer_first(
         self,
-        message: dict,
-        bot_handler: ExternalBotHandler,
+        message: Dict[str, str],
+        bot_handler: Any,
         last_fen: str
     ) -> None:
         """Preforms a move for the computer without having the user go first in
@@ -447,8 +446,8 @@ class ChessHandler(object):
 
     def resign(
         self,
-        message: dict,
-        bot_handler: ExternalBotHandler,
+        message: Dict[str, str],
+        bot_handler: Any,
         last_fen: str
     ) -> None:
         """Resigns the game for the current player.

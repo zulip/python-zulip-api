@@ -2,7 +2,8 @@ import random
 
 import logging
 import requests
-from zulip_bots.lib import ExternalBotHandler
+
+from typing import Any, Dict
 
 XKCD_TEMPLATE_URL = 'https://xkcd.com/%s/info.0.json'
 LATEST_XKCD_URL = 'https://xkcd.com/info.0.json'
@@ -33,7 +34,7 @@ class XkcdHandler(object):
             `<comic_id>`, e.g `@mention-bot 1234`.
             '''
 
-    def handle_message(self, message: dict, bot_handler: ExternalBotHandler) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
         xkcd_bot_response = get_xkcd_bot_response(message)
         bot_handler.send_reply(message, xkcd_bot_response)
 
@@ -48,7 +49,7 @@ class XkcdNotFoundError(Exception):
 class XkcdServerError(Exception):
     pass
 
-def get_xkcd_bot_response(message: dict) -> str:
+def get_xkcd_bot_response(message: Dict[str, str]) -> str:
     original_content = message['content'].strip()
     command = original_content.strip()
 
@@ -83,7 +84,7 @@ def get_xkcd_bot_response(message: dict) -> str:
                                            fetched['alt'],
                                            fetched['img']))
 
-def fetch_xkcd_query(mode: int, comic_id: str = None) -> dict:
+def fetch_xkcd_query(mode: int, comic_id: str = None) -> Dict[str, str]:
     try:
         if mode == XkcdBotCommand.LATEST:  # Fetch the latest comic strip.
             url = LATEST_XKCD_URL

@@ -301,10 +301,10 @@ class ZulipToJabberBot(object):
 def get_rooms(zulipToJabber):
     # type: (ZulipToJabberBot) -> List[str]
     def get_stream_infos(key, method):
-        # type: (str, Callable) -> Any
+        # type: (str, Callable[[], Dict[str, Any]]) -> Any
         ret = method()
         if ret.get("result") != "success":
-            logging.error(ret)
+            logging.error(str(ret))
             sys.exit("Could not get initial list of Zulip %s" % (key,))
         return ret[key]
 

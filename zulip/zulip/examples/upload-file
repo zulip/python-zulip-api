@@ -25,7 +25,7 @@ from __future__ import print_function
 import argparse
 
 from six.moves import StringIO as _StringIO
-from typing import IO
+from typing import IO, Any
 import zulip
 
 class StringIO(_StringIO):
@@ -47,7 +47,7 @@ options = parser.parse_args()
 
 client = zulip.init_from_options(options)
 
-file = None  # type: IO
+file = None  # type: IO[Any]
 if options.file_path:
     file = open(options.file_path, 'rb')
 else:
