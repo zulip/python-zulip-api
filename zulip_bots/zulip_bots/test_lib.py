@@ -1,10 +1,7 @@
-import json
 import mock
-import os
 
 from mock import patch
 
-from importlib import import_module
 from unittest import TestCase
 
 from typing import List, Dict, Any, Tuple
@@ -17,6 +14,11 @@ from zulip_bots.request_test_lib import (
 from zulip_bots.simple_lib import (
     SimpleStorage,
     SimpleMessageServer,
+)
+
+from zulip_bots.test_file_utils import (
+    get_bot_message_handler,
+    read_bot_fixture_data,
 )
 
 class StubBotHandler:
@@ -169,22 +171,3 @@ class StubBotTestCase(TestCase):
     def mock_config_info(self, config_info):
         # type: (Dict[str, str]) -> Any
         return patch('zulip_bots.test_lib.StubBotHandler.get_config_info', return_value=config_info)
-
-def get_bot_message_handler(bot_name):
-    # type: (str) -> Any
-    # message_handler is of type 'Any', since it can contain any bot's
-    # handler class. Eventually, we want bot's handler classes to
-    # inherit from a common prototype specifying the handle_message
-    # function.
-    lib_module = import_module('zulip_bots.bots.{bot}.{bot}'.format(bot=bot_name))  # type: Any
-    return lib_module.handler_class()
-
-def read_bot_fixture_data(bot_name, test_name):
-    # type: (str, str) -> Dict[str, Any]
-    base_path = os.path.realpath(os.path.join(os.path.dirname(
-        os.path.abspath(__file__)), 'bots', bot_name, 'fixtures'))
-    http_data_path = os.path.join(base_path, '{}.json'.format(test_name))
-    with open(http_data_path) as f:
-        content = f.read()
-    http_data = json.loads(content)
-    return http_data
