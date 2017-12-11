@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from zulip_bots.test_lib import StubBotTestCase
+from zulip_bots.request_test_lib import mock_request_exception
 
 class TestWikipediaBot(StubBotTestCase):
     bot_name = "wikipedia"
@@ -65,5 +66,5 @@ class TestWikipediaBot(StubBotTestCase):
         # Request Exception
         bot_request = 'Z'
         bot_response = None
-        with self.mock_request_exception():
+        with mock_request_exception():
             self.verify_reply(bot_request, bot_response)
