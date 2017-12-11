@@ -1,8 +1,8 @@
-from zulip_bots.test_lib import BotTestCase
+from zulip_bots.test_lib import StubBotTestCase
 
-class TestVirtualFsBot(BotTestCase):
+class TestVirtualFsBot(StubBotTestCase):
     bot_name = "virtual_fs"
-    help_txt = ('foo_sender@zulip.com:\n\nThis bot implements a virtual file system for a stream.\n'
+    help_txt = ('foo@example.com:\n\nThis bot implements a virtual file system for a stream.\n'
                 'The locations of text are persisted for the lifetime of the bot\n'
                 'running, and if you rename a stream, you will lose the info.\n'
                 'Example commands:\n\n```\n'
@@ -20,23 +20,23 @@ class TestVirtualFsBot(BotTestCase):
 
     def test_commands_1(self) -> None:
         expected = [
-            ("cd /home", "foo_sender@zulip.com:\nERROR: invalid path"),
-            ("mkdir home", "foo_sender@zulip.com:\ndirectory created"),
-            ("pwd", "foo_sender@zulip.com:\n/"),
+            ("cd /home", "foo@example.com:\nERROR: invalid path"),
+            ("mkdir home", "foo@example.com:\ndirectory created"),
+            ("pwd", "foo@example.com:\n/"),
             ("help", self.help_txt),
-            ("help ls", "foo_sender@zulip.com:\nsyntax: ls <optional_path>"),
+            ("help ls", "foo@example.com:\nsyntax: ls <optional_path>"),
             ("", self.help_txt),
         ]
-        self.check_expected_responses(expected)
+        self.verify_dialog(expected)
 
     def test_commands_2(self) -> None:
         expected = [
             ("help", self.help_txt),
-            ("help ls", "foo_sender@zulip.com:\nsyntax: ls <optional_path>"),
+            ("help ls", "foo@example.com:\nsyntax: ls <optional_path>"),
             ("", self.help_txt),
-            ("pwd", "foo_sender@zulip.com:\n/"),
-            ("cd /home", "foo_sender@zulip.com:\nERROR: invalid path"),
-            ("mkdir home", "foo_sender@zulip.com:\ndirectory created"),
-            ("cd /home", "foo_sender@zulip.com:\nCurrent path: /home/"),
+            ("pwd", "foo@example.com:\n/"),
+            ("cd /home", "foo@example.com:\nERROR: invalid path"),
+            ("mkdir home", "foo@example.com:\ndirectory created"),
+            ("cd /home", "foo@example.com:\nCurrent path: /home/"),
         ]
-        self.check_expected_responses(expected)
+        self.verify_dialog(expected)
