@@ -5,7 +5,7 @@ from zulip_bots.test_lib import StubBotTestCase
 from unittest.mock import patch
 
 class TestGoogleSearchBot(StubBotTestCase):
-    bot_name = 'googlesearch'
+    bot_name = 'google_search'
 
     # Simple query
     def test_normal(self) -> None:
