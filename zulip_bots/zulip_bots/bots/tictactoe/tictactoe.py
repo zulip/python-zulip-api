@@ -51,26 +51,20 @@ class TicTacToeGame(object):
 
     def board_is_full(self, board):
         ''' Determines if the board is full or not. '''
-        full = False
-        board_state = ""
         for row in board:
             for element in row:
                 if element == "_":
-                    board_state += "_"
-        if "_" not in board_state:
-            full = True
-        return full
+                    return False
+        return True
 
-    def win_conditions(self, board, triplets):
+    def contains_winning_move(self, board):  # Used for current board & trial computer board
         ''' Returns true if all coordinates in a triplet have the same value in them (x or o) and no coordinates
         in the triplet are blank. '''
-        won = False
-        for triplet in triplets:
+        for triplet in self.triplets:
             if (self.get_value(board, triplet[0]) == self.get_value(board, triplet[1]) ==
                     self.get_value(board, triplet[2]) != "_"):
-                won = True
-                break
-        return won
+                return True
+        return False
 
     def get_locations_of_char(self, board, char):
         ''' Gets the locations of the board that have char in them. '''
@@ -128,7 +122,7 @@ class TicTacToeGame(object):
         # The check is done by replacing the blank locations with o's and seeing if the computer would win in each case.
         for row, col in blank_locations:
             my_board[row][col] = "o"
-            if self.win_conditions(my_board, self.triplets):
+            if self.contains_winning_move(my_board):
                 board[row][col] = "o"
                 return board
             else:
@@ -139,7 +133,7 @@ class TicTacToeGame(object):
         # The check is done by replacing the blank locations with x's and seeing if the user would win in each case.
         for row, col in blank_locations:
             my_board[row][col] = "x"
-            if self.win_conditions(my_board, self.triplets):
+            if self.contains_winning_move(my_board):
                 board[row][col] = "o"
                 return board
             else:
@@ -180,21 +174,20 @@ class TicTacToeGame(object):
             board[row][col] = 'o'
             return board
 
-    def check_validity(self, move):
+    def is_valid_move(self, move):
         ''' Checks the validity of the coordinate input passed in to make sure it's not out-of-bounds (ex. 5, 5) '''
         try:
             split_move = move.split(",")
             row = split_move[0].strip()
             col = split_move[1].strip()
             valid = False
-            if row == "1" or row == "2" or row == "3":
-                if col == "1" or col == "2" or col == "3":
-                    valid = True
+            if row in ("1", "2", "3") and col in ("1", "2", "3"):
+                valid = True
         except IndexError:
             valid = False
         return valid
 
-    def sanitize_move(self, move):
+    def sanitized_move(self, move):
         ''' As there are various ways to input a coordinate (with/without parentheses, with/without spaces, etc.) the
         input is stripped to just the numbers before being used in the program. '''
         move = move.replace("(", "")
@@ -205,7 +198,7 @@ class TicTacToeGame(object):
     def tictactoe(self, input_string):
         board = self.board
         printed_boards = dict(after_player = "", after_computer = "")
-        move = self.sanitize_move(input_string)
+        move = self.sanitized_move(input_string)
 
         # Subtraction must be done to convert to the right indices, since computers start numbering at 0.
         row = (int(move[0])) - 1
@@ -219,7 +212,7 @@ class TicTacToeGame(object):
         printed_boards['after_player'] = self.display_board(board)
 
         # Check to see if the user won/drew after they made their move. If not, it's the computer's turn.
-        if self.win_conditions(board, self.triplets):
+        if self.contains_winning_move(board):
             return ("player_win", printed_boards)
 
         if self.board_is_full(board):
@@ -230,7 +223,7 @@ class TicTacToeGame(object):
 
         # Checks to see if the computer won after it makes its move. (The computer can't draw, so there's no point
         # in checking.) If the computer didn't win, the user gets another turn.
-        if self.win_conditions(board, self.triplets):
+        if self.contains_winning_move(board):
             return ("computer_win", printed_boards)
 
         return ("next_turn", printed_boards)
@@ -309,7 +302,7 @@ class ticTacToeHandler(object):
                 response = new_game_text
         elif command == 'help':
             response = long_help_text
-        elif (user_game) and user_game.check_validity(user_game.sanitize_move(command)):
+        elif (user_game) and user_game.is_valid_move(user_game.sanitized_move(command)):
             move, printed_boards = user_game.tictactoe(command)
             mid_text = mid_move_text+"\n" if printed_boards['after_computer'] else ""
             response = "".join([printed_boards['after_player'], mid_text,
