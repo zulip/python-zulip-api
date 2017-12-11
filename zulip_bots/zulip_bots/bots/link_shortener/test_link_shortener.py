@@ -5,7 +5,7 @@ from zulip_bots.test_lib import BotTestCase
 class TestLinkShortenerBot(BotTestCase):
     bot_name = "link_shortener"
 
-    def test_bot(self):
+    def test_bot(self) -> None:
         MESSAGE = 'Shorten https://www.github.com/zulip/zulip please.'
         RESPONSE = 'https://www.github.com/zulip/zulip: https://goo.gl/6uoWKb'
 
@@ -19,7 +19,7 @@ class TestLinkShortenerBot(BotTestCase):
                 expected_method='send_reply'
             )
 
-    def test_bot_empty(self):
+    def test_bot_empty(self) -> None:
         MESSAGE = 'Shorten nothing please.'
         RESPONSE = 'No links found. Send "help" to see usage instructions.'
 
@@ -35,7 +35,7 @@ class TestLinkShortenerBot(BotTestCase):
                 expected_method='send_reply'
             )
 
-    def test_bot_help(self):
+    def test_bot_help(self) -> None:
         MESSAGE = 'help'
         RESPONSE = (
             'Mention the link shortener bot in a conversation and then enter '

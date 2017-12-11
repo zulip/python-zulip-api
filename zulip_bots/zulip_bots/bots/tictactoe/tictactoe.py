@@ -4,17 +4,21 @@ from __future__ import print_function
 import copy
 import random
 from six.moves import range
+from zulip_bots.lib import ExternalBotHandler
+from typing import Optional
 
 initial_board = [["_", "_", "_"],
                  ["_", "_", "_"],
                  ["_", "_", "_"]]
 
 mode = 'r'  # default, can change for debugging to 'p'
-def output_mode(string_to_print, mode):
+def output_mode(string_to_print: str, mode: str) -> Optional[str]:
     if mode == "p":
         print(string_to_print)
     elif mode == "r":
         return string_to_print
+
+    return None
 
 # -------------------------------------
 class TicTacToeGame(object):
@@ -49,22 +53,22 @@ class TicTacToeGame(object):
                             "Here are the coordinates of each position. (Parentheses and spaces are optional). \n" \
                             "(1, 1)  (1, 2)  (1, 3) \n(2, 1)  (2, 2)  (2, 3) \n(3, 1) (3, 2) (3, 3) \n"
 
-    def __init__(self, board):
+    def __init__(self, board: list) -> None:
         self.board = board
 
-    def display_row(self, row):
+    def display_row(self, row: list) -> str:
         ''' Takes the row passed in as a list and returns it as a string. '''
         row_string = " ".join([e.strip() for e in row])
         return("[ {} ]\n".format(row_string))
 
-    def display_board(self, board):
+    def display_board(self, board: list) -> str:
         ''' Takes the board as a nested list and returns a nice version for the user. '''
         return "".join([self.display_row(r) for r in board])
 
-    def get_value(self, board, position):
+    def get_value(self, board: list, position: list) -> str:
         return board[position[0]][position[1]]
 
-    def board_is_full(self, board):
+    def board_is_full(self, board: list) -> bool:
         ''' Determines if the board is full or not. '''
         full = False
         board_state = ""
@@ -76,7 +80,7 @@ class TicTacToeGame(object):
             full = True
         return full
 
-    def win_conditions(self, board, triplets):
+    def win_conditions(self, board: list, triplets: list) -> bool:
         ''' Returns true if all coordinates in a triplet have the same value in them (x or o) and no coordinates
         in the triplet are blank. '''
         won = False
@@ -87,7 +91,7 @@ class TicTacToeGame(object):
                 break
         return won
 
-    def get_locations_of_char(self, board, char):
+    def get_locations_of_char(self, board: list, char: str) -> list:
         ''' Gets the locations of the board that have char in them. '''
         locations = []
         for row in range(3):
@@ -96,7 +100,7 @@ class TicTacToeGame(object):
                     locations.append([row, col])
         return locations
 
-    def two_blanks(self, triplet, board):
+    def two_blanks(self, triplet: list, board: list) -> list:
         ''' Determines which rows/columns/diagonals have two blank spaces and an 'o' already in them. It's more advantageous
         for the computer to move there. This is used when the computer makes its move. '''
 
@@ -115,7 +119,9 @@ class TicTacToeGame(object):
             if len(blanks_list) == 2:
                 return blanks_list
 
-    def computer_move(self, board):
+        return None
+
+    def computer_move(self, board: list) -> list:
         ''' The computer's logic for making its move. '''
         my_board = copy.deepcopy(board)  # First the board is copied; used later on
         blank_locations = self.get_locations_of_char(my_board, "_")
@@ -172,7 +178,7 @@ class TicTacToeGame(object):
         # there are two blanks and an 'o' in each row, column, and diagonal (done in two_blanks).
         # If smarter is False, all blank locations can be chosen.
         if self.smarter:
-            blanks = []
+            blanks = []  # type: list
             for triplet in self.triplets:
                 result = self.two_blanks(triplet, board)
                 if result:
@@ -195,7 +201,7 @@ class TicTacToeGame(object):
             board[row][col] = 'o'
             return board
 
-    def check_validity(self, move):
+    def check_validity(self, move: str) -> bool:
         ''' Checks the validity of the coordinate input passed in to make sure it's not out-of-bounds (ex. 5, 5) '''
         try:
             split_move = move.split(",")
@@ -209,7 +215,7 @@ class TicTacToeGame(object):
             valid = False
         return valid
 
-    def sanitize_move(self, move):
+    def sanitize_move(self, move: str) -> str:
         ''' As there are various ways to input a coordinate (with/without parentheses, with/without spaces, etc.) the
         input is stripped to just the numbers before being used in the program. '''
         move = move.replace("(", "")
@@ -217,7 +223,7 @@ class TicTacToeGame(object):
         move = move.strip()
         return move
 
-    def tictactoe(self, board, input_string):
+    def tictactoe(self, board: list, input_string: str) -> str:
         return_string = ""
         move = self.sanitize_move(input_string)
 
@@ -257,7 +263,7 @@ class TicTacToeGame(object):
 
 # -------------------------------------
 flat_initial = sum(initial_board, [])
-def first_time(board):
+def first_time(board: list) -> bool:
     flat = sum(board, [])
     return flat == flat_initial
 
@@ -272,13 +278,13 @@ class ticTacToeHandler(object):
         'description': 'Lets you play Tic-tac-toe against a computer.',
     }
 
-    def usage(self):
+    def usage(self) -> str:
         return '''
             You can play tic-tac-toe with the computer now! Make sure your
             message starts with @mention-bot.
             '''
 
-    def handle_message(self, message, bot_handler):
+    def handle_message(self, message: dict, bot_handler: ExternalBotHandler) -> None:
         command_list = message['content']
         command = ""
         for val in command_list:
@@ -287,11 +293,17 @@ class ticTacToeHandler(object):
         storage = bot_handler.storage
         if not storage.contains(original_sender):
             storage.put(original_sender, None)
+
+        # Some types are ignored later because `storage.get` is annotated to
+        # return a string only. However, it can actually return other types,
+        # like the board. For this reason, MyPy thinks `user_board`'s type is a
+        # `str` when it's actually a `list`, so `type: ignore` is used.
         user_board = storage.get(original_sender)
+
         if (not user_board) and command == "new":
-            user_board = copy.deepcopy(initial_board)
+            user_board = copy.deepcopy(initial_board)  # type: ignore
             storage.put(original_sender, user_board)
-        user_game = TicTacToeGame(user_board) if user_board else None
+        user_game = TicTacToeGame(user_board) if user_board else None  # type: ignore
 
         if command == 'new':
             if user_game and not first_time(user_game.board):
@@ -302,7 +314,7 @@ class ticTacToeHandler(object):
         elif command == 'help':
             return_content = TicTacToeGame.detailed_help_message
         elif (user_game) and TicTacToeGame.check_validity(user_game, TicTacToeGame.sanitize_move(user_game, command)):
-            return_content = TicTacToeGame.tictactoe(user_game, user_board, command)
+            return_content = TicTacToeGame.tictactoe(user_game, user_board, command)  # type: ignore
             storage.put(original_sender, user_board)
         elif (user_game) and command == 'quit':
             storage.put(original_sender, None)

@@ -1,21 +1,22 @@
 import re
 import requests
+from zulip_bots.lib import ExternalBotHandler
 
 class LinkShortenerHandler(object):
     '''A Zulip bot that will shorten URLs ("links") in a conversation using the
     goo.gl URL shortener.
     '''
 
-    def usage(self):
+    def usage(self) -> str:
         return (
             'Mention the link shortener bot in a conversation and then enter '
             'any URLs you want to shorten in the body of the message. \n\n'
             '`key` must be set in `link_shortener.conf`.')
 
-    def initialize(self, bot_handler):
+    def initialize(self, bot_handler: ExternalBotHandler) -> None:
         self.config_info = bot_handler.get_config_info('link_shortener')
 
-    def handle_message(self, message, bot_handler):
+    def handle_message(self, message: dict, bot_handler: ExternalBotHandler) -> None:
         REGEX_STR = (
             '('
             '(?:http|https):\/\/'  # This allows for the HTTP or HTTPS
@@ -58,7 +59,7 @@ class LinkShortenerHandler(object):
 
         bot_handler.send_reply(message, final_response)
 
-    def shorten_link(self, long_url):
+    def shorten_link(self, long_url: str) -> str:
         '''Shortens a link using goo.gl Link Shortener and returns it, or
         returns an empty string if something goes wrong.
 

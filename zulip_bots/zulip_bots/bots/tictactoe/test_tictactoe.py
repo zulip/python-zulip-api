@@ -4,7 +4,7 @@ from zulip_bots.test_lib import StubBotTestCase
 class TestTictactoeBot(StubBotTestCase):
     bot_name = 'tictactoe'
 
-    def test_bot(self):
+    def test_bot(self) -> None:
         messages = [  # Template for message inputs to test, absent of message content
             {
                 'type': 'stream',
