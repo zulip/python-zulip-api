@@ -140,6 +140,7 @@ class StubBotTestCase(TestCase):
 
         for (request, expected_response) in conversation:
             message = dict(
+                display_recipient='foo_stream',
                 sender_email='foo@example.com',
                 sender_full_name='Foo Test User',
                 content=request,
