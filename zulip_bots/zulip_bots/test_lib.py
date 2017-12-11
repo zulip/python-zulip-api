@@ -1,15 +1,18 @@
 import json
 import mock
 import os
-import requests
 
 from mock import patch
 
-from contextlib import contextmanager
 from importlib import import_module
 from unittest import TestCase
 
 from typing import List, Dict, Any, Tuple
+
+from zulip_bots.request_test_lib import (
+    mock_http_conversation,
+    mock_request_exception,
+)
 
 from zulip_bots.simple_lib import (
     SimpleStorage,
@@ -185,77 +188,3 @@ def read_bot_fixture_data(bot_name, test_name):
         content = f.read()
     http_data = json.loads(content)
     return http_data
-
-@contextmanager
-def mock_http_conversation(http_data):
-    # type: (Dict[str, Any]) -> Any
-    """
-    Use this context manager to mock and verify a bot's HTTP
-    requests to the third-party API (and provide the correct
-    third-party API response. This allows us to test things
-    that would require the Internet without it).
-
-    http_data should be fixtures data formatted like the data
-    in zulip_bots/zulip_bots/bots/giphy/fixtures/test_normal.json
-    """
-    def get_response(http_response, http_headers):
-        # type: (Dict[str, Any], Dict[str, Any]) -> Any
-        """Creates a fake `requests` Response with a desired HTTP response and
-        response headers.
-        """
-        mock_result = requests.Response()
-        mock_result._content = json.dumps(http_response).encode()  # type: ignore # This modifies a "hidden" attribute.
-        mock_result.status_code = http_headers.get('status', 200)
-        return mock_result
-
-    def assert_called_with_fields(mock_result, http_request, fields):
-        # type: (Any, Dict[str, Any], List[str]) -> None
-        """Calls `assert_called_with` on a mock object using an HTTP request.
-        Uses `fields` to determine which keys to look for in HTTP request and
-        to test; if a key is in `fields`, e.g., 'headers', it will be used in
-        the assertion.
-        """
-        args = {}
-
-        for field in fields:
-            if field in http_request:
-                args[field] = http_request[field]
-
-        mock_result.assert_called_with(http_request['api_url'], **args)
-
-    http_request = http_data.get('request')
-    http_response = http_data.get('response')
-    http_headers = http_data.get('response-headers')
-    http_method = http_request.get('method', 'GET')
-
-    if http_method == 'GET':
-        with patch('requests.get') as mock_get:
-            mock_get.return_value = get_response(http_response, http_headers)
-            yield
-            assert_called_with_fields(
-                mock_get,
-                http_request,
-                ['params', 'headers']
-            )
-    else:
-        with patch('requests.post') as mock_post:
-            mock_post.return_value = get_response(http_response, http_headers)
-            yield
-            assert_called_with_fields(
-                mock_post,
-                http_request,
-                ['params', 'headers', 'json']
-            )
-
-@contextmanager
-def mock_request_exception():
-    # type: () -> Any
-    def assert_mock_called(mock_result):
-        # type: (Any) -> None
-        mock_result.assert_called()
-
-    with patch('requests.get') as mock_get:
-        mock_get.return_value = True
-        mock_get.side_effect = requests.exceptions.RequestException
-        yield
-        assert_mock_called(mock_get)
