@@ -435,7 +435,7 @@ class Client(object):
         )
 
     def do_api_query(self, orig_request, url, method="POST", longpolling=False, files=None):
-        # type: (Mapping[str, Any], str, str, bool, List[IO]) -> Dict[str, Any]
+        # type: (Mapping[str, Any], str, str, bool, List[IO[Any]]) -> Dict[str, Any]
         if files is None:
             files = []
 
@@ -568,14 +568,14 @@ class Client(object):
                     "status_code": res.status_code}
 
     def call_endpoint(self, url=None, method="POST", request=None, longpolling=False, files=None):
-        # type: (str, str, Dict[str, Any], bool, List[IO]) -> Dict[str, Any]
+        # type: (str, str, Dict[str, Any], bool, List[IO[Any]]) -> Dict[str, Any]
         if request is None:
             request = dict()
         return self.do_api_query(request, API_VERSTRING + url, method=method,
                                  longpolling=longpolling, files=files)
 
     def call_on_each_event(self, callback, event_types=None, narrow=None):
-        # type: (Callable, Optional[List[str]], Any) -> None
+        # type: (Callable[[Any], None], Optional[List[str]], Any) -> None
         if narrow is None:
             narrow = []
 
@@ -635,7 +635,7 @@ class Client(object):
                 callback(event)
 
     def call_on_each_message(self, callback):
-        # type: (Callable) -> None
+        # type: (Callable[[Any], None]) -> None
         def event_callback(event):
             # type: (Dict[str, str]) -> None
             if event['type'] == 'message':
@@ -653,7 +653,7 @@ class Client(object):
         )
 
     def upload_file(self, file):
-        # type: (IO) -> Dict[str, Any]
+        # type: (IO[Any]) -> Dict[str, Any]
         '''
             See examples/upload-file for example usage.
         '''

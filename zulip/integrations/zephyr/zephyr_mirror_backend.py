@@ -252,7 +252,7 @@ def maybe_restart_mirroring_script():
                 time.sleep(1)
 
 def process_loop(log):
-    # type: (IO) -> None
+    # type: (IO[Any]) -> None
     restart_check_count = 0
     last_check_time = time.time()
     while True:
@@ -362,7 +362,7 @@ def decrypt_zephyr(zephyr_class, instance, body):
     return decrypted
 
 def process_notice(notice, log):
-    # type: (zulip, IO) -> None
+    # type: (zulip, IO[Any]) -> None
     (zsig, body) = parse_zephyr_body(notice.message, notice.format)
     is_personal = False
     is_huddle = False
@@ -579,7 +579,7 @@ def zephyr_to_zulip(options):
         process_loop(None)
 
 def send_zephyr(zwrite_args, content):
-    # type: (List, str) -> Tuple[int, str]
+    # type: (List[str], str) -> Tuple[int, str]
     p = subprocess.Popen(zwrite_args, stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = p.communicate(input=content.encode("utf-8"))
@@ -969,7 +969,7 @@ def configure_logger(logger, direction_name):
         handler.setFormatter(formatter)
 
 def parse_args():
-    # type: () -> Tuple
+    # type: () -> Tuple[Any, ...]
     parser = optparse.OptionParser()
     parser.add_option('--forward-class-messages',
                       default=False,
