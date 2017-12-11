@@ -56,12 +56,15 @@ class WikipediaHandler(object):
 
         except requests.exceptions.RequestException:
             logging.error('broken link')
-            return None
+            return 'Uh-Oh ! Sorry ,couldn\'t process the request right now.:slightly_frowning_face:\n' \
+                   'Please try again later.'
 
         # Checking if the bot accessed the link.
         if data.status_code != 200:
             logging.error('Page not found.')
-            return None
+            return 'Uh-Oh ! Sorry ,couldn\'t process the request right now.:slightly_frowning_face:\n' \
+                   'Please try again later.'
+
         new_content = 'For search term:' + query + '\n'
 
         # Checking if there is content for the searched term
