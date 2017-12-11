@@ -59,12 +59,13 @@ class TestWikipediaBot(StubBotTestCase):
 
         # Incorrect status code
         bot_request = 'Zulip'
-        bot_response = None
+        bot_response = 'Uh-Oh ! Sorry ,couldn\'t process the request right now.:slightly_frowning_face:\n' \
+                       'Please try again later.'
+
         with self.mock_http_conversation('test_status_code'):
             self.verify_reply(bot_request, bot_response)
 
         # Request Exception
         bot_request = 'Z'
-        bot_response = None
         with mock_request_exception():
             self.verify_reply(bot_request, bot_response)
