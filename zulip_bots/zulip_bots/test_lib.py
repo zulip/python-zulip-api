@@ -1,28 +1,15 @@
-#!/usr/bin/env python
-
-from __future__ import absolute_import
-from __future__ import print_function
-
-import os
-
 import json
-import logging
 import mock
+import os
 import requests
-import unittest
 
-from mock import MagicMock, patch, call
-
-from zulip_bots.lib import StateHandler
-import zulip_bots.lib
-from six.moves import zip
+from mock import patch
 
 from contextlib import contextmanager
 from importlib import import_module
 from unittest import TestCase
 
-from typing import List, Dict, Any, Optional, Callable, Tuple
-from types import ModuleType
+from typing import List, Dict, Any, Tuple
 
 from zulip_bots.simple_lib import (
     SimpleStorage,
