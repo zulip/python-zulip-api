@@ -187,18 +187,9 @@ class TicTacToeGame(object):
             valid = False
         return valid
 
-    def sanitized_move(self, move):
-        ''' As there are various ways to input a coordinate (with/without parentheses, with/without spaces, etc.) the
-        input is stripped to just the numbers before being used in the program. '''
-        move = move.replace("(", "")
-        move = move.replace(")", "")
-        move = move.strip()
-        return move
-
-    def tictactoe(self, input_string):
+    def tictactoe(self, move):
         board = self.board
         printed_boards = dict(after_player = "", after_computer = "")
-        move = self.sanitized_move(input_string)
 
         # Subtraction must be done to convert to the right indices, since computers start numbering at 0.
         row = (int(move[0])) - 1
@@ -302,8 +293,8 @@ class ticTacToeHandler(object):
                 response = new_game_text
         elif command == 'help':
             response = long_help_text
-        elif (user_game) and user_game.is_valid_move(user_game.sanitized_move(command)):
-            move, printed_boards = user_game.tictactoe(command)
+        elif (user_game) and user_game.is_valid_move(coords_from_command(command)):
+            move, printed_boards = user_game.tictactoe(coords_from_command(command))
             mid_text = mid_move_text+"\n" if printed_boards['after_computer'] else ""
             response = "".join([printed_boards['after_player'], mid_text,
                                 printed_boards['after_computer'],
@@ -328,5 +319,16 @@ class ticTacToeHandler(object):
             subject = message['sender_email'],
             content = response,
         ))
+
+def coords_from_command(cmd):
+    # This function translates the input command into a TicTacToeGame move.
+    # It should return two indices, each one of (1,2,3), separated by a comma, eg. "3,2"
+    ''' As there are various ways to input a coordinate (with/without parentheses, with/without spaces, etc.) the
+    input is stripped to just the numbers before being used in the program. '''
+    cmd = cmd.replace("(", "")
+    cmd = cmd.replace(")", "")
+    cmd = cmd.replace(" ", "")
+    cmd = cmd.strip()
+    return cmd
 
 handler_class = ticTacToeHandler
