@@ -103,16 +103,25 @@ class StubBotTestCase(TestCase):
         bot.handle_message(message, bot_handler)
         return bot_handler.unique_response()
 
-    def verify_reply(self, request, response):
-        # type: (str, str) -> None
-
-        bot, bot_handler = self._get_handlers()
-
+    def make_request_message(self, content):
+        # type: (str) -> Dict[str, Any]
+        '''
+        This is mostly used internally but
+        tests can override this behavior by
+        mocking/subclassing.
+        '''
         message = dict(
+            display_recipient='foo_stream',
             sender_email='foo@example.com',
             sender_full_name='Foo Test User',
-            content=request,
+            content=content,
         )
+        return message
+
+    def verify_reply(self, request, response):
+        # type: (str, str) -> None
+        bot, bot_handler = self._get_handlers()
+        message = self.make_request_message(request)
         bot_handler.reset_transcript()
         bot.handle_message(message, bot_handler)
         reply = bot_handler.unique_reply()
@@ -125,12 +134,7 @@ class StubBotTestCase(TestCase):
         bot, bot_handler = self._get_handlers()
 
         for (request, expected_response) in conversation:
-            message = dict(
-                display_recipient='foo_stream',
-                sender_email='foo@example.com',
-                sender_full_name='Foo Test User',
-                content=request,
-            )
+            message = self.make_request_message(request)
             bot_handler.reset_transcript()
             bot.handle_message(message, bot_handler)
             response = bot_handler.unique_response()
@@ -142,11 +146,7 @@ class StubBotTestCase(TestCase):
         self.assertNotEqual(bot.usage(), '')
 
     def test_bot_responds_to_empty_message(self) -> None:
-        message = dict(
-            sender_email='foo@example.com',
-            display_recipient='foo',
-            content='',
-        )
+        message = self.make_request_message('')
 
         # get_response will fail if we don't respond at all
         response = self.get_response(message)
