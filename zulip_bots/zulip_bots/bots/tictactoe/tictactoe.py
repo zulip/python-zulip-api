@@ -1,11 +1,12 @@
 import copy
 import random
 
-initial_board = [["_", "_", "_"],
-                 ["_", "_", "_"],
-                 ["_", "_", "_"]]
+from typing import List
 
 # -------------------------------------
+
+State = List[List[str]]
+
 class TicTacToeGame(object):
     smarter = True
     # If smarter is True, the computer will do some extra thinking - it'll be harder for the user.
@@ -20,8 +21,21 @@ class TicTacToeGame(object):
                 [(0, 2), (1, 1), (2, 0)]   # Diagonal 2
                 ]
 
-    def __init__(self, board):
-        self.board = board
+    initial_board = [["_", "_", "_"],
+                     ["_", "_", "_"],
+                     ["_", "_", "_"]]
+
+    def __init__(self, board=None):
+        if board is not None:
+            self.board = board
+        else:
+            self.board = copy.deepcopy(self.initial_board)
+
+    def get_state(self) -> State:
+        return self.board
+
+    def is_new_game(self) -> bool:
+        return self.board == self.initial_board
 
     def display_row(self, row):
         ''' Takes the row passed in as a list and returns it as a string. '''
@@ -188,7 +202,8 @@ class TicTacToeGame(object):
         move = move.strip()
         return move
 
-    def tictactoe(self, board, input_string):
+    def tictactoe(self, input_string):
+        board = self.board
         printed_boards = dict(after_player = "", after_computer = "")
         move = self.sanitize_move(input_string)
 
@@ -280,23 +295,22 @@ class ticTacToeHandler(object):
         storage = bot_handler.storage
         if not storage.contains(original_sender):
             storage.put(original_sender, None)
-        user_board = storage.get(original_sender)
-        user_game = TicTacToeGame(user_board) if user_board else None
+        state = storage.get(original_sender)
+        user_game = TicTacToeGame(state) if state else None
 
         move = None
         if command == 'new':
-            if not user_board:
-                user_board = copy.deepcopy(initial_board)
-                user_game = TicTacToeGame(user_board)
+            if not user_game:
+                user_game = TicTacToeGame()
                 move = "new"
-            if user_game.board != initial_board:
+            if not user_game.is_new_game():
                 response = " ".join([already_playing_text, short_help_text])
             else:
                 response = new_game_text
         elif command == 'help':
             response = long_help_text
         elif (user_game) and user_game.check_validity(user_game.sanitize_move(command)):
-            move, printed_boards = user_game.tictactoe(user_board, command)
+            move, printed_boards = user_game.tictactoe(command)
             mid_text = mid_move_text+"\n" if printed_boards['after_computer'] else ""
             response = "".join([printed_boards['after_player'], mid_text,
                                 printed_boards['after_computer'],
@@ -311,8 +325,8 @@ class ticTacToeHandler(object):
             if any(reset_text in move for reset_text in ("win", "draw", "quit")):
                 storage.put(original_sender, None)
             elif any(keep_text == move for keep_text in ("new", "next_turn")):
-                storage.put(original_sender, user_board)
-            else:  # "filled" => no change, user_board remains the same
+                storage.put(original_sender, user_game.get_state())
+            else:  # "filled" => no change, state remains the same
                 pass
 
         bot_handler.send_message(dict(
