@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from zulip_bots.test_lib import StubBotTestCase
+from unittest.mock import patch
 
 class TestDefineBot(StubBotTestCase):
     bot_name = "define"
@@ -46,3 +47,10 @@ class TestDefineBot(StubBotTestCase):
         # Empty messages are returned with a prompt to reply. No request is sent to the Internet.
         bot_response = "Please enter a word to define."
         self.verify_reply('', bot_response)
+
+    def test_connection_error(self) -> None:
+        with patch('requests.get', side_effect=Exception), \
+                patch('logging.exception'):
+            self.verify_reply(
+                'aeroplane',
+                '**aeroplane**:\nCould not load definition.')
