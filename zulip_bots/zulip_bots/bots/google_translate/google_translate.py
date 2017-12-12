@@ -1,9 +1,6 @@
 # To use this plugin, you need to set up the Google Cloud API key for this bot in
 # googletranslate.conf in this (zulip_bots/bots/googletranslate/) directory.
 
-from __future__ import absolute_import
-from __future__ import print_function
-
 import requests
 
 class GoogleTranslateHandler(object):

@@ -1,6 +1,4 @@
 # See readme.md for instructions on running this code.
-
-from __future__ import print_function
 import logging
 import ssl
 import sys

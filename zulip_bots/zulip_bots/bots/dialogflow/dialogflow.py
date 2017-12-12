@@ -1,5 +1,4 @@
 # See readme.md for instructions on running this code.
-from __future__ import print_function
 import logging
 from six.moves.urllib import parse
 import json

@@ -1,8 +1,3 @@
-# To use this plugin, you need to set up the Giphy API key for this bot in
-# giphy.conf in this (zulip_bots/bots/giphy/giphy/) directory.
-
-from __future__ import absolute_import
-from __future__ import print_function
 from six.moves.configparser import SafeConfigParser
 from typing import Dict, Any, Union
 import requests

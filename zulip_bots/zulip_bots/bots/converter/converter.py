@@ -1,8 +1,5 @@
 # See readme.md for instructions on running this code.
 
-from __future__ import absolute_import
-from __future__ import division
-
 import copy
 import importlib
 from math import log10, floor
