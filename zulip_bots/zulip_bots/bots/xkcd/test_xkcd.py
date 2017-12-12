@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import mock
 from mock import MagicMock, patch
 from zulip_bots.test_lib import StubBotTestCase

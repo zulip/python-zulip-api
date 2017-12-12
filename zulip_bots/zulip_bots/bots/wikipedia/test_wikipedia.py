@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 from zulip_bots.test_lib import StubBotTestCase
 from zulip_bots.request_test_lib import mock_request_exception
 

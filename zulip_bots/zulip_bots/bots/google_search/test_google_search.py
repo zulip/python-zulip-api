@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 from zulip_bots.test_lib import StubBotTestCase
 
 from unittest.mock import patch

@@ -166,7 +166,11 @@ def build_custom_checkers(by_lang):
         # and comments which should be rewritten to avoid use of "python2", "python3", etc.
         {'pattern': 'python[23]',
          'exclude': set(['tools/provision']),
+         'include_only': set(['zulip/', 'tools/', 'zulip_botserver/']),
          'description': 'Explicit python invocations should not include a version'},
+        {'pattern': '#!/usr/bin/env python$',
+         'include_only': set(['zulip_bots/']),
+         'description': 'Python shebangs must be python3'},
         {'pattern': '(^|\s)open\s*\(',
          'description': 'open() should not be used in Zulip\'s bots. Use functions'
                         ' provided by the bots framework to access the filesystem.',
