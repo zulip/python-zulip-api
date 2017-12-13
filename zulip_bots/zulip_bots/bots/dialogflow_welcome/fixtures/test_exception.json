@@ -1,0 +1,15 @@
+{
+    "response": {
+      "foo": {
+        "fulfillment": {
+          "speech": "how are you?"
+        }
+      },
+      "bar": {
+        "errorType": "success"
+      }
+    },
+    "request": {
+      "query": "hello"
+    }
+  }
