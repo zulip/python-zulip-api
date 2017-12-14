@@ -1,6 +1,6 @@
-from zulip_bots.test_lib import StubBotTestCase
+from zulip_bots.test_lib import BotTestCase
 
-class TestVirtualFsBot(StubBotTestCase):
+class TestVirtualFsBot(BotTestCase):
     bot_name = "virtual_fs"
     help_txt = ('foo@example.com:\n\nThis bot implements a virtual file system for a stream.\n'
                 'The locations of text are persisted for the lifetime of the bot\n'

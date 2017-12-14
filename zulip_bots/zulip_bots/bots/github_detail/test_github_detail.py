@@ -1,12 +1,12 @@
 from zulip_bots.test_lib import (
     StubBotHandler,
-    StubBotTestCase,
+    BotTestCase,
     get_bot_message_handler,
 )
 
 from typing import Any
 
-class TestGithubDetailBot(StubBotTestCase):
+class TestGithubDetailBot(BotTestCase):
     bot_name = "github_detail"
     mock_config = {'owner': 'zulip', 'repo': 'zulip'}
 
@@ -20,7 +20,7 @@ class TestGithubDetailBot(StubBotTestCase):
 
         self.assertIn('displays details on github issues', bot.usage())
 
-    # Override default function in StubBotTestCase
+    # Override default function in BotTestCase
     def test_bot_responds_to_empty_message(self) -> None:
         with self.mock_config_info(self.mock_config):
             self.verify_reply('', 'Failed to find any issue or PR.')

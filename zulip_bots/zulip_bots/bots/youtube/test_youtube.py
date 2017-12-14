@@ -1,9 +1,9 @@
 from unittest.mock import patch
 from requests.exceptions import HTTPError, ConnectionError
 
-from zulip_bots.test_lib import StubBotHandler, StubBotTestCase, get_bot_message_handler
+from zulip_bots.test_lib import StubBotHandler, BotTestCase, get_bot_message_handler
 from typing import Any, Union, Dict
-class TestYoutubeBot(StubBotTestCase):
+class TestYoutubeBot(BotTestCase):
     bot_name = "youtube"
     normal_config  = {'key': '12345678',
                       'number_of_results': '5',
@@ -18,7 +18,7 @@ class TestYoutubeBot(StubBotTestCase):
                    " * @mention-bot funny cats\n" \
                    " * @mention-bot list funny dogs"
 
-    # Override default function in StubBotTestCase
+    # Override default function in BotTestCase
     def test_bot_responds_to_empty_message(self) -> None:
         with self.mock_config_info(self.normal_config), \
                 self.mock_http_conversation('test_keyok'):

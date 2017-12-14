@@ -1,6 +1,6 @@
-from zulip_bots.test_lib import StubBotTestCase
+from zulip_bots.test_lib import BotTestCase
 
-class TestLinkShortenerBot(StubBotTestCase):
+class TestLinkShortenerBot(BotTestCase):
     bot_name = "link_shortener"
 
     def _test(self, message: str, response: str) -> None:

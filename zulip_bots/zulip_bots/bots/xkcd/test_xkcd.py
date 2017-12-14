@@ -1,8 +1,8 @@
 import mock
 from mock import MagicMock, patch
-from zulip_bots.test_lib import StubBotTestCase
+from zulip_bots.test_lib import BotTestCase
 
-class TestXkcdBot(StubBotTestCase):
+class TestXkcdBot(BotTestCase):
     bot_name = "xkcd"
 
     def test_latest_command(self) -> None:

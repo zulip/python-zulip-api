@@ -1,6 +1,6 @@
-from zulip_bots.test_lib import StubBotTestCase
+from zulip_bots.test_lib import BotTestCase
 
-class TestYodaBot(StubBotTestCase):
+class TestYodaBot(BotTestCase):
     bot_name = "yoda"
 
     help_text = '''
@@ -25,7 +25,7 @@ class TestYodaBot(StubBotTestCase):
             else:
                 self.verify_reply(message, response)
 
-    # Override default function in StubBotTestCase
+    # Override default function in BotTestCase
     def test_bot_responds_to_empty_message(self) -> None:
         self._test('', self.help_text)
 

@@ -1,7 +1,7 @@
 from unittest.mock import patch
 from requests.exceptions import ConnectionError
 
-from zulip_bots.test_lib import StubBotTestCase
+from zulip_bots.test_lib import BotTestCase
 from zulip_bots.bots.google_translate.google_translate import TranslateError
 
 help_text = '''
@@ -11,7 +11,7 @@ Please format your message like:
 Visit [here](https://cloud.google.com/translate/docs/languages) for all languages
 '''
 
-class TestGoogleTranslateBot(StubBotTestCase):
+class TestGoogleTranslateBot(BotTestCase):
     bot_name = "google_translate"
 
     def _test(self, message, response, http_config_fixture, http_fixture=None):
@@ -43,7 +43,7 @@ class TestGoogleTranslateBot(StubBotTestCase):
                    'Translate Error. Invalid API Key..',
                    'test_languages', 'test_403')
 
-    # Override default function in StubBotTestCase
+    # Override default function in BotTestCase
     def test_bot_responds_to_empty_message(self):
         self._test('', help_text, 'test_languages')
 

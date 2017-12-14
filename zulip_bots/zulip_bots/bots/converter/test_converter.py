@@ -1,6 +1,6 @@
-from zulip_bots.test_lib import StubBotTestCase
+from zulip_bots.test_lib import BotTestCase
 
-class TestConverterBot(StubBotTestCase):
+class TestConverterBot(BotTestCase):
     bot_name = "converter"
 
     def test_bot(self) -> None:

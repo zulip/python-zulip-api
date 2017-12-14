@@ -1,8 +1,8 @@
-from zulip_bots.test_lib import StubBotTestCase
+from zulip_bots.test_lib import BotTestCase
 
 from typing import Optional
 
-class TestWeatherBot(StubBotTestCase):
+class TestWeatherBot(BotTestCase):
     bot_name = "weather"
 
     help_content = '''
@@ -23,7 +23,7 @@ class TestWeatherBot(StubBotTestCase):
             else:
                 self.verify_reply(message, response)
 
-    # Override default function in StubBotTestCase
+    # Override default function in BotTestCase
     def test_bot_responds_to_empty_message(self) -> None:
         self._test('', self.help_content)
 
