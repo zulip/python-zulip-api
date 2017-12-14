@@ -81,3 +81,11 @@ class TestGithubDetailBot(BotTestCase):
 
         with self.mock_config_info(self.mock_config):
             self.verify_reply(request, bot_response)
+
+    def test_too_many_request(self) -> None:
+        request = 'zulip/zulip#1 zulip/zulip#1 zulip/zulip#1 zulip/zulip#1 '\
+                  'zulip/zulip#1 zulip/zulip#1 zulip/zulip#1 zulip/zulip#1'
+        bot_response = 'Please ask for <=5 links in any one request'
+
+        with self.mock_config_info(self.mock_config):
+            self.verify_reply(request, bot_response)
