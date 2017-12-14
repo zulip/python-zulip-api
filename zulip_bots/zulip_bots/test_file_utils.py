@@ -29,7 +29,7 @@ def read_bot_fixture_data(bot_name, test_name):
     base_path = os.path.realpath(os.path.join(os.path.dirname(
         os.path.abspath(__file__)), 'bots', bot_name, 'fixtures'))
     http_data_path = os.path.join(base_path, '{}.json'.format(test_name))
-    with open(http_data_path) as f:
+    with open(http_data_path, encoding='utf-8') as f:
         content = f.read()
     http_data = json.loads(content)
     return http_data
