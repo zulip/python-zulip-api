@@ -1,7 +1,7 @@
-from zulip_bots.test_lib import StubBotTestCase
+from zulip_bots.test_lib import BotTestCase
 from zulip_bots.request_test_lib import mock_request_exception
 
-class TestWikipediaBot(StubBotTestCase):
+class TestWikipediaBot(BotTestCase):
     bot_name = "wikipedia"
 
     def test_bot(self) -> None:

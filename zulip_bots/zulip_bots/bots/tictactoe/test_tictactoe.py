@@ -1,8 +1,8 @@
-from zulip_bots.test_lib import StubBotTestCase
+from zulip_bots.test_lib import BotTestCase
 
 from mock import patch
 
-class TestTictactoeBot(StubBotTestCase):
+class TestTictactoeBot(BotTestCase):
     bot_name = 'tictactoe'
 
     def test_bot(self):

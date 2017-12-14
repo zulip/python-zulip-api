@@ -2,12 +2,12 @@ from unittest.mock import patch
 from requests.exceptions import HTTPError, ConnectionError
 
 from typing import Any, Union
-from zulip_bots.test_lib import StubBotHandler, StubBotTestCase, get_bot_message_handler
+from zulip_bots.test_lib import StubBotHandler, BotTestCase, get_bot_message_handler
 
-class TestGiphyBot(StubBotTestCase):
+class TestGiphyBot(BotTestCase):
     bot_name = "giphy"
 
-    # Override default function in StubBotTestCase
+    # Override default function in BotTestCase
     def test_bot_responds_to_empty_message(self) -> None:
         # FIXME?: Giphy does not respond to empty messages
         pass

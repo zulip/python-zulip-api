@@ -77,13 +77,7 @@ class StubBotHandler:
         if len(responses) > 1:
             raise Exception('The bot is giving too many responses for some reason.')
 
-class StubBotTestCase(TestCase):
-    '''
-    The goal for this class is to eventually replace
-    BotTestCase for places where we may want more
-    fine-grained control and less heavy setup.
-    '''
-
+class BotTestCase(TestCase):
     bot_name = ''
 
     def _get_handlers(self):

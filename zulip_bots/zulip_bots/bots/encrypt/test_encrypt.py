@@ -1,6 +1,6 @@
-from zulip_bots.test_lib import StubBotTestCase
+from zulip_bots.test_lib import BotTestCase
 
-class TestEncryptBot(StubBotTestCase):
+class TestEncryptBot(BotTestCase):
     bot_name = "encrypt"
 
     def test_bot(self) -> None:

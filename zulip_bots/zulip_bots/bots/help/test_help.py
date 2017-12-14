@@ -1,8 +1,8 @@
-from zulip_bots.test_lib import StubBotTestCase
+from zulip_bots.test_lib import BotTestCase
 
 from typing import Any
 
-class TestHelpBot(StubBotTestCase):
+class TestHelpBot(BotTestCase):
     bot_name = "help"
 
     def test_bot(self) -> None:
