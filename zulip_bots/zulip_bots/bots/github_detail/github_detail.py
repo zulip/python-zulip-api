@@ -74,9 +74,15 @@ class GithubHandler(object):
             return
 
         # Capture owner, repo, id
-        issue_prs = re.finditer(
-            self.HANDLE_MESSAGE_REGEX, message['content'])
+        issue_prs = list(re.finditer(
+            self.HANDLE_MESSAGE_REGEX, message['content']))
         bot_messages = []
+        if len(issue_prs) > 5:
+            # We limit to 5 requests to prevent denial-of-service
+            bot_message = 'Please ask for <=5 links in any one request'
+            bot_handler.send_reply(message, bot_message)
+            return
+
         for issue_pr in issue_prs:
             owner, repo = self.get_owner_and_repo(issue_pr)
             if owner and repo:
