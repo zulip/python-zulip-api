@@ -25,7 +25,7 @@ GIPHY API key.
    and change the value of the `key` attribute to the API key
    you generated above.
 
-{!running-a-bot.md!}
+Run this bot as described in [here](https://zulipchat.com/api/running-bots#running-a-bot).
 
 ## Usage
 
