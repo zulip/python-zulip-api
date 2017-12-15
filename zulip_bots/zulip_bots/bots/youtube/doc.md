@@ -29,7 +29,6 @@ To obtain a API key, follow the following steps :
     you generated above.
 
  6. And that's it ! See Configuration section on configuring the bot.
-{!running-a-bot.md!}
 
 ## Configuration
 
@@ -41,6 +40,8 @@ This section explains the usage of options `youtube.conf` file in configuring th
 
  - `video_region` - The location to be used for searching.
    The bot shows only the videos that are available in the given `<video_region>`
+
+Run this bot as described in [here](https://zulipchat.com/api/running-bots#running-a-bot).
 
 ## Usage
 

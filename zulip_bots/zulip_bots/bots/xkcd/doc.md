@@ -8,7 +8,7 @@ like so:
 @xkcd <command>
 ```
 
-{!running-a-bot.md!}
+Run this bot as described in [here](https://zulipchat.com/api/running-bots#running-a-bot).
 
 ## Usage
 
