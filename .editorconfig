@@ -1,0 +1,23 @@
+# This file was copied from the zulip/zulip repository
+# - not all file types are present here, but this ensures
+#   future files will be consistent with those in zulip/zulip
+
+root = true
+
+[*]
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.{sh,py,pyi,js,json,yml,xml,css,md,markdown,handlebars,html}]
+indent_style = space
+indent_size = 4
+
+[*.{svg,rb,pp,pl}]
+indent_style = space
+indent_size = 2
+
+[*.{cfg}]
+indent_style = space
+indent_size = 8
