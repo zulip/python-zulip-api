@@ -1,0 +1,20 @@
+{
+  "request": {
+    "api_url": "https://beta.idonethis.com/api/v2/entries",
+    "params": {
+      "number": "2",
+      "team_id": "1234",
+      "api_key": "12345678"
+    }
+  },
+  "response": {
+    "meta": {
+      "status": 200
+    },
+    "data": []
+  },
+  "response-headers": {
+    "status": 200,
+    "content-type": "application/json; charset=utf-8"
+  }
+}
