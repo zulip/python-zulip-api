@@ -54,6 +54,7 @@ setuptools_info = dict(
         'lxml',  # for bots/googlesearch
         'requests',  # for bots/link_shortener
         'python-chess[engine,gaviota]',  # for bots/chess
+        'wit',  # for bots/witai
         'apiai'  # for bots/dialogflow
     ],
 )
