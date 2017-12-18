@@ -21,9 +21,8 @@ sys.path.append(os.path.dirname(TOOLS_DIR))
 exclude = [
     # Excluded because it's third-party code.
     "zulip/integrations/perforce/git_p4.py",
-    # Excluded because we don't want to require bot authors to
-    # fully annotate their bots.
-    "zulip_bots/zulip_bots/bots",
+    # Exclude unmaintained bots; maintained bots are checked *only* if a
+    # 'type_check' file exists in the bot directory, as implemented below
     "zulip_bots/zulip_bots/bots_unmaintained",
     # Excluded out of laziness:
     "zulip_bots/zulip_bots/terminal.py",
@@ -116,6 +115,12 @@ for inpath in force_include:
 pyi_files = set(files_dict['pyi'])
 python_files = [fpath for fpath in files_dict['py']
                 if not fpath.endswith('.py') or fpath + 'i' not in pyi_files]
+
+# Exclude bots unless they explicitly ask to be checked using a 'type_check' file
+bots_files_to_exclude = [fpath for fpath in python_files
+                         if "/bots/" in fpath and not fpath.endswith("/bots/__init__.py")
+                         and not os.path.isfile("/".join(fpath.split("/")[:-1])+"/type_check")]
+python_files = [fpath for fpath in python_files if fpath not in bots_files_to_exclude]
 
 repo_python_files = OrderedDict([('zulip', []), ('zulip_bots', []), ('zulip_botserver', [])])
 for file_path in python_files:
