@@ -67,18 +67,22 @@ def cleanup(package_dir):
         package_dir,
         '{}.egg-info'.format(os.path.basename(package_dir))
     )
-    version_symlink = os.path.join(package_dir, 'version.py')
 
     def _rm_if_it_exists(directory):
         if os.path.isdir(directory):
             print(crayons.green('Removing {}/*.'.format(directory), bold=True))
             shutil.rmtree(directory)
 
-    map(_rm_if_it_exists, [build_dir, temp_dir, dist_dir, egg_info])
+    if package_dir.endswith("zulip_bots"):
+        manifest_file = os.path.join(package_dir, 'MANIFEST.in')
+        if os.path.isfile(manifest_file):
+            print(crayons.green('Removing {}/*.'.format(manifest_file), bold=True))
+            os.remove(manifest_file)
 
-    if os.path.islink(version_symlink):
-        print(crayons.green('Removing {}.'.format(version_symlink), bold=True))
-        os.remove(version_symlink)
+    _rm_if_it_exists(build_dir)
+    _rm_if_it_exists(temp_dir)
+    _rm_if_it_exists(dist_dir)
+    _rm_if_it_exists(egg_info)
 
 def set_variable(fp, variable, value):
     fh, temp_abs_path = tempfile.mkstemp()
@@ -258,18 +262,15 @@ The above command would accomplish the following (in order):
 """
     parser = argparse.ArgumentParser(usage=usage)
 
-    parser.add_argument('release_version',
-                        help='The new version number of the packages.')
-
     parser.add_argument('--cleanup', '-c',
                         action='store_true',
                         default=False,
                         help='Remove build directories (dist/, build/, egg-info/, etc).')
 
     parser.add_argument('--build', '-b',
-                        action='store_true',
-                        default=False,
-                        help=('Build sdists and wheels for all packages.'
+                        metavar='VERSION_NUM',
+                        help=('Build sdists and wheels for all packages with the'
+                              'specified version number.'
                               ' sdists and wheels are stored in <package_name>/dist/*.'))
 
     parser.add_argument('--release', '-r',
@@ -303,18 +304,27 @@ The above command would accomplish the following (in order):
 def main():
     options = parse_args()
 
-    zulip_init = os.path.join(REPO_DIR, 'zulip', 'zulip', '__init__.py')
-    set_variable(zulip_init, '__version__', options.release_version)
-    bots_setup = os.path.join(REPO_DIR, 'zulip_bots', 'setup.py')
-    set_variable(bots_setup, 'ZULIP_BOTS_VERSION', options.release_version)
-    set_variable(bots_setup, 'IS_PYPA_PACKAGE', True)
-    botserver_setup = os.path.join(REPO_DIR, 'zulip_botserver', 'setup.py')
-    set_variable(botserver_setup, 'ZULIP_BOTSERVER_VERSION', options.release_version)
-
     glob_pattern = os.path.join(REPO_DIR, '*', 'setup.py')
     setup_py_files = glob.glob(glob_pattern)
 
+    if options.cleanup:
+        package_dirs = map(os.path.dirname, setup_py_files)
+        for package_dir in package_dirs:
+            cleanup(package_dir)
+
+
     if options.build:
+        package_dirs = map(os.path.dirname, setup_py_files)
+        map(cleanup, package_dirs)
+
+        zulip_init = os.path.join(REPO_DIR, 'zulip', 'zulip', '__init__.py')
+        set_variable(zulip_init, '__version__', options.build)
+        bots_setup = os.path.join(REPO_DIR, 'zulip_bots', 'setup.py')
+        set_variable(bots_setup, 'ZULIP_BOTS_VERSION', options.build)
+        set_variable(bots_setup, 'IS_PYPA_PACKAGE', True)
+        botserver_setup = os.path.join(REPO_DIR, 'zulip_botserver', 'setup.py')
+        set_variable(botserver_setup, 'ZULIP_BOTSERVER_VERSION', options.build)
+
         for setup_file in setup_py_files:
             package_name = os.path.basename(os.path.dirname(setup_file))
             if package_name == 'zulip_bots':
@@ -323,6 +333,8 @@ def main():
                 )
             generate_sdist(setup_file, package_name)
             generate_bdist_wheel_universal(setup_file, package_name)
+
+        set_variable(bots_setup, 'IS_PYPA_PACKAGE', False)
 
     if options.release:
         dist_dirs = glob.glob(os.path.join(REPO_DIR, '*', 'dist', '*'))
@@ -353,10 +365,6 @@ def main():
         push_release_tag(options.release_version, options.push)
         commit_and_push_version_changes(options.release_version,
                                         init_files, options.push)
-
-    if options.cleanup:
-        package_dirs = map(os.path.dirname, setup_py_files)
-        map(cleanup, package_dirs)
 
 if __name__ == '__main__':
     main()
