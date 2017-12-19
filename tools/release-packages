@@ -4,7 +4,6 @@ from __future__ import print_function
 from contextlib import contextmanager
 import os
 import argparse
-import functools
 import glob
 import shutil
 import tempfile
@@ -102,9 +101,9 @@ def set_variable(fp, variable, value):
     print(crayons.white(message, bold=True))
 
 def update_requirements_in_zulip_repo(zulip_repo_dir, version, hash_or_tag):
-    common = os.path.join(zulip_repo_dir, 'requirements', 'common.txt')
-    prod_lock = os.path.join(zulip_repo_dir, 'requirements', 'prod_lock.txt')
-    dev_lock = os.path.join(zulip_repo_dir, 'requirements', 'dev_lock.txt')
+    common = os.path.join(zulip_repo_dir, 'requirements', 'common.in')
+    prod = os.path.join(zulip_repo_dir, 'requirements', 'prod.txt')
+    dev = os.path.join(zulip_repo_dir, 'requirements', 'dev.txt')
 
     def _edit_reqs_file(reqs, zulip_bots_line, zulip_line):
         fh, temp_abs_path = tempfile.mkstemp()
@@ -127,11 +126,8 @@ def update_requirements_in_zulip_repo(zulip_repo_dir, version, hash_or_tag):
     zulip_line = url_zulip.format(tag=hash_or_tag, name='zulip',
                                   version=version)
 
-    map(functools.partial(
-        _edit_reqs_file,
-        zulip_bots_line=zulip_bots_line,
-        zulip_line=zulip_line,
-    ), [prod_lock, dev_lock])
+    _edit_reqs_file(prod, zulip_bots_line, zulip_line)
+    _edit_reqs_file(dev, zulip_bots_line, zulip_line)
 
     editable_zulip = '-e "{}"\n'.format(url_zulip.rstrip())
     editable_zulip_bots = '-e "{}"\n'.format(url_zulip_bots.rstrip())
@@ -194,10 +190,14 @@ The above command would accomplish the following (in order):
                         default=False,
                         help='Upload the packages to PyPA using twine.')
 
-    parser.add_argument('--update-zulip-main-repo',
-                        metavar='PATH_TO_ZULIP_DIR',
-                        help='Update requirements/* in the main zulip repo and'
-                             ' increment PROVISION_VERSION.')
+    subparsers = parser.add_subparsers(dest='subcommand')
+    parser_main_repo = subparsers.add_parser(
+        'update-main-repo',
+        help='Update the zulip/requirements/* in the main zulip repo.'
+    )
+    parser_main_repo.add_argument('repo', metavar='PATH_TO_ZULIP_DIR')
+    parser_main_repo.add_argument('version', metavar='version number of the packages')
+    parser_main_repo.add_argument('--hash', metavar='COMMIT_HASH')
 
     return parser.parse_args()
 
@@ -212,10 +212,10 @@ def main():
         for package_dir in package_dirs:
             cleanup(package_dir)
 
-
     if options.build:
         package_dirs = map(os.path.dirname, setup_py_files)
-        map(cleanup, package_dirs)
+        for package_dir in package_dirs:
+            cleanup(package_dir)
 
         zulip_init = os.path.join(REPO_DIR, 'zulip', 'zulip', '__init__.py')
         set_variable(zulip_init, '__version__', options.build)
@@ -239,6 +239,14 @@ def main():
     if options.release:
         dist_dirs = glob.glob(os.path.join(REPO_DIR, '*', 'dist', '*'))
         twine_upload(dist_dirs)
+
+    if options.subcommand == 'update-main-repo':
+        if options.hash:
+            update_requirements_in_zulip_repo(options.repo, options.version,
+                                              options.hash)
+        else:
+            update_requirements_in_zulip_repo(options.repo, options.version,
+                                              options.version)
 
 if __name__ == '__main__':
     main()
