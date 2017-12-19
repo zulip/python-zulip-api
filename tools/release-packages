@@ -146,31 +146,39 @@ def parse_args():
 Script to automate the PyPA release of the zulip, zulip_bots and
 zulip_botserver packages.
 
-To make a release, execute the following steps in order:
+For example, to make a release for version 0.4.0, execute the
+following steps in order:
 
 1. Run ./tools/provision
+
 2. Activate the virtualenv created by tools/provision
-3. For example, to make a release for version 0.3.5, run the
+
+3. To make a release for version 0.4.0, run the
    following command:
 
-./tools/release-packages 0.3.5 --build --release --push origin \
-    --update-zulip-main-repo "/home/username/zulip"
+     ./tools/release-packages --build 0.4.0 --release
 
-The above command would accomplish the following (in order):
+4. After Step 3, commit the outstanding changes in your python-zulip-api
+   repo.
 
-1. Increment the __version__ in zulip/__init__.py,
-   zulip_bots/__init__.py and zulip_botserver/__init__.py.
-2. --build: Build sdists and universal wheels for all packages.
-   The sdists and wheels for a specific package are under
-   <package_name>/dist/.
-3. --release: Upload all dists under <package_name>/dist/* to
-   PyPA using twine.
-4. --update-zulip-main-repo: Update the requirements/ in the main
-   zulip repo to install off of the newest version of the packages.
-   Also increments PROVISION_VERSION in the main repo.
-5. --push origin: Commit the changes produced in Step 1 and 4,
-   checkout a new branch named release-<version>, generate a commit
-   message, commit the changes and push the branch to origin.
+5. Create a release tag "0.4.0".
+
+6. Push the commit and the release tag.
+
+7. To update the zulip/requirements/* in the main zulip repo, run (this
+   will update the requirements to install the packages off of the release
+   tag "0.4.0"):
+
+     ./tools/release-packages update-main-repo PATH_TO_ZULIP_DIR 0.4.0
+
+   You can also update the requirements to install the packages from a
+   specific commit, like so:
+
+     ./tools/release-packages update-main-repo PATH_TO_ZULIP_DIR 0.4.0 --hash abcedef
+
+8. Commit and push the outstanding changes in your zulip/ repo.
+
+And you're done! Congrats!
 """
     parser = argparse.ArgumentParser(usage=usage)
 
