@@ -34,16 +34,12 @@ class GenerateManifest(distutils.cmd.Command):
         # type: () -> None
         if self.release:
             generate_release_manifest()
-            self.announce(  # type: ignore # https://github.com/zulip/python-zulip-api/issues/142
-                'Generating a MANIFEST for a PyPA release of zulip_bots.',
-                level=distutils.log.INFO  # type: ignore # https://github.com/zulip/python-zulip-api/issues/142
-            )
+            self.announce('Generating a MANIFEST for a PyPA release of zulip_bots.',
+                          level=distutils.log.INFO)
         else:
             generate_dev_manifest()
-            self.announce(  # type: ignore # https://github.com/zulip/python-zulip-api/issues/142
-                'Generating a MANIFEST for zulip_bots\' development.',
-                level=distutils.log.INFO  # type: ignore # https://github.com/zulip/python-zulip-api/issues/142
-            )
+            self.announce('Generating a MANIFEST for zulip_bots\' development.',
+                          level=distutils.log.INFO)
 
 def get_test_fixtures():
     # type: () -> Iterator[str]
