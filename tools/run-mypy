@@ -128,7 +128,7 @@ mypy_command = "mypy"
 extra_args = ["--check-untyped-defs",
               "--follow-imports=silent",
               "--scripts-are-modules",
-              "--disallow-any=generics",
+              "--disallow-any-generics",
               "-i"]
 if args.disallow_untyped_defs:
     extra_args.append("--disallow-untyped-defs")
