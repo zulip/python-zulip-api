@@ -36,7 +36,10 @@ def import_module_from_source(path, name=None):
         import importlib.util
         spec = importlib.util.spec_from_file_location(name, path)
         module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
+        loader = spec.loader
+        if loader is None:
+            return None
+        loader.exec_module(module)
 
     return module
 
@@ -123,7 +126,11 @@ def main():
         bot_name = args.bot
     if args.provision:
         provision_bot(os.path.dirname(bot_path), args.force)
+
     lib_module = import_module_from_source(bot_path, bot_name)
+    if lib_module is None:
+        print("ERROR: Could not load bot module. Exiting now.")
+        sys.exit(1)
 
     if not args.quiet:
         logging.basicConfig(stream=sys.stdout, level=logging.INFO)
