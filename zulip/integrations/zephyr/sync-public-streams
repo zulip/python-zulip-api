@@ -11,10 +11,10 @@ import unicodedata
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'api'))
 import zulip
 
-from typing import Set
+from typing import Set, Optional
 
 def fetch_public_streams():
-    # type: () -> Set[bytes]
+    # type: () -> Optional[Set[bytes]]
     public_streams = set()
 
     try:

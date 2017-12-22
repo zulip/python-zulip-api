@@ -21,7 +21,7 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 from __future__ import absolute_import
-from typing import IO, Any, Dict, List, Text, Union, Set, Tuple
+from typing import IO, Any, Dict, List, Text, Union, Set, Tuple, Optional
 from types import FrameType
 
 import sys
@@ -309,7 +309,7 @@ def parse_zephyr_body(zephyr_data, notice_format):
     return (zsig, body)
 
 def parse_crypt_table(zephyr_class, instance):
-    # type: (Text, str) -> str
+    # type: (Text, str) -> Optional[str]
     try:
         crypt_table = open(os.path.join(os.environ["HOME"], ".crypt-table"))
     except IOError:
@@ -604,7 +604,7 @@ def send_unauthed_zephyr(zwrite_args, content):
     return send_zephyr(zwrite_args + ["-d"], content)
 
 def zcrypt_encrypt_content(zephyr_class, instance, content):
-    # type: (str, str, str) -> str
+    # type: (str, str, str) -> Optional[str]
     keypath = parse_crypt_table(zephyr_class, instance)
     if keypath is None:
         return None

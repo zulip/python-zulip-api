@@ -286,10 +286,10 @@ def run_mirror():
     try:
         sleepInterval = 1
         while True:
-            events = make_api_call("activity")[::-1]
+            events = make_api_call("activity")
             if events is not None:
                 sleepInterval = 1
-                for event in events:
+                for event in events[::-1]:
                     timestamp = event.get('event', {}).get('timestamp', '')
                     event_date = dateutil.parser.parse(timestamp)
                     if event_date > since:
