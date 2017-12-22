@@ -571,7 +571,8 @@ class Client(object):
         # type: (str, str, Dict[str, Any], bool, List[IO[Any]]) -> Dict[str, Any]
         if request is None:
             request = dict()
-        return self.do_api_query(request, API_VERSTRING + url, method=method,
+        versioned_url = API_VERSTRING + (url if url is not None else "")
+        return self.do_api_query(request, versioned_url, method=method,
                                  longpolling=longpolling, files=files)
 
     def call_on_each_event(self, callback, event_types=None, narrow=None):
