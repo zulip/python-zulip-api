@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from typing import Dict, Text
+from typing import Dict, Text, Optional
 
 # Change these values to configure authentication for the plugin
 ZULIP_USER = "git-bot@example.com"
@@ -42,7 +42,7 @@ ZULIP_API_KEY = "0123456789abcdef0123456789abcdef"
 # * topic "master"
 # And similarly for branch "test-post-receive" (for use when testing).
 def commit_notice_destination(repo, branch, commit):
-    # type: (Text, Text, Text) -> Dict[Text, Text]
+    # type: (Text, Text, Text) -> Optional[Dict[Text, Text]]
     if branch in ["master", "test-post-receive"]:
         return dict(stream  = "commits",
                     subject = u"%s" % (branch,))

@@ -21,7 +21,7 @@
 # THE SOFTWARE.
 
 # https://github.com/python/mypy/issues/1141
-from typing import Dict, Text
+from typing import Dict, Text, Optional
 
 # Change these values to configure authentication for the plugin
 ZULIP_USER = 'openshift-bot@example.com'
@@ -42,7 +42,7 @@ ZULIP_API_KEY = '0123456789abcdef0123456789abcdef'
 # * topic "master"
 # And similarly for branch "test-post-receive" (for use when testing).
 def deployment_notice_destination(branch):
-    # type: (str) -> Dict[str, Text]
+    # type: (str) -> Optional[Dict[str, Text]]
     if branch in ['master', 'test-post-receive']:
         return dict(stream  = 'deployments',
                     subject = u'%s' % (branch,))
@@ -69,7 +69,7 @@ def format_deployment_message(
 
 ## If properly installed, the Zulip API should be in your import
 ## path, but if not, set a custom path below
-ZULIP_API_PATH = None  # type: str
+ZULIP_API_PATH = None  # type: Optional[str]
 
 # Set this to your Zulip server's API URI
 ZULIP_SITE = 'https://zulip.example.com'
