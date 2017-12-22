@@ -97,8 +97,8 @@ parser.add_argument('--no-disallow-untyped-defs', dest='disallow_untyped_defs', 
                     help="""Don't throw errors when functions are not annotated""")
 parser.add_argument('--scripts-only', dest='scripts_only', action='store_true', default=False,
                     help="""Only type check extensionless python scripts""")
-parser.add_argument('--strict-optional', dest='strict_optional', action='store_true', default=False,
-                    help="""Use the --strict-optional flag with mypy""")
+parser.add_argument('--no-strict-optional', dest='strict_optional', action='store_false', default=True,
+                    help="""Don't use the --strict-optional flag with mypy""")
 parser.add_argument('--warn-unused-ignores', dest='warn_unused_ignores', action='store_true', default=False,
                     help="""Use the --warn-unused-ignores flag with mypy""")
 parser.add_argument('--no-ignore-missing-imports', dest='ignore_missing_imports', action='store_false', default=True,
