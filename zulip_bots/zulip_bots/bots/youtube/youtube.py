@@ -3,7 +3,7 @@ import logging
 import sys
 
 from requests.exceptions import HTTPError, ConnectionError
-from typing import Dict, Any, Union, List, Tuple
+from typing import Dict, Any, Union, List, Tuple, Optional
 
 commands_list = ('list', 'top', 'help')
 
@@ -82,7 +82,7 @@ def search_youtube(query: str, key: str,
     return videos
 
 
-def get_command_query(message: Dict[str, str]) -> Tuple[Union[None, str], str]:
+def get_command_query(message: Dict[str, str]) -> Tuple[Optional[str], str]:
     blocks = message['content'].lower().split()
     command = blocks[0]
     if command in commands_list:
@@ -92,12 +92,11 @@ def get_command_query(message: Dict[str, str]) -> Tuple[Union[None, str], str]:
         return None, message['content']
 
 
-def get_bot_response(query: Union[str, None], command: Union[str, None], config_info: Dict[str, str]) -> str:
+def get_bot_response(query: Optional[str], command: Optional[str], config_info: Dict[str, str]) -> str:
 
     key = config_info['key']
     max_results = int(config_info['number_of_results'])
     region = config_info['video_region']
-    reply = 'Here is what I found for `' + query + '` : '
     video_list = []   # type: List[List[str]]
     try:
         if query == '' or query is None:
@@ -114,6 +113,8 @@ def get_bot_response(query: Union[str, None], command: Union[str, None], config_
     except (ConnectionError, HTTPError):
         return 'Uh-Oh, couldn\'t process the request ' \
                'right now.\nPlease again later'
+
+    reply = 'Here is what I found for `' + query + '` : '
 
     if len(video_list) == 0:
         return 'Oops ! Sorry I couldn\'t find any video for  `' + query + '` :slightly_frowning_face:'
