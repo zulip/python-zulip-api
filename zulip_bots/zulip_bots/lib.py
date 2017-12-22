@@ -215,7 +215,7 @@ class ExternalBotHandler(object):
         sys.exit(message)
 
 def extract_query_without_mention(message, client):
-    # type: (Dict[str, Any], ExternalBotHandler) -> str
+    # type: (Dict[str, Any], ExternalBotHandler) -> Optional[str]
     """
     If the bot is the first @mention in the message, then this function returns
     the stripped message with the bot's @mention removed.  Otherwise, it returns None.
