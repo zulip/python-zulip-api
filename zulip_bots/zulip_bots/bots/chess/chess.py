@@ -162,7 +162,7 @@ class ChessHandler(object):
              - bot_handler: The Zulip Bots bot handler object.
              - fen: The FEN string of the board.
 
-        Returns: `False` if the board didn't pass, or the board object itself
+        Returns: `None` if the board didn't pass, or the board object itself
                  if it did.
         """
         try:
@@ -172,7 +172,7 @@ class ChessHandler(object):
                 message,
                 make_copied_wrong_response()
             )
-            return False
+            return None
 
         return last_board
 
@@ -417,7 +417,7 @@ class ChessHandler(object):
             self.engine
         )
 
-        new_board_after_computer_move = copy.copy(last_board)
+        new_board_after_computer_move = copy.copy(last_board)  # type: chess.Board
         new_board_after_computer_move.push(computer_move)
 
         if self.check_game_over(
