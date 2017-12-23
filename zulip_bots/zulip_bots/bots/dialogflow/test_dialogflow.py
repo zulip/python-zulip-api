@@ -27,8 +27,12 @@ class MockHttplibRequest():
 @contextmanager
 def mock_dialogflow(test_name: str, bot_name: str) -> Any:
     response_data = read_bot_fixture_data(bot_name, test_name)
-    df_request = response_data.get('request')
-    df_response = response_data.get('response')
+    try:
+        df_request = response_data['request']
+        df_response = response_data['response']
+    except KeyError:
+        print("ERROR: 'request' or 'response' field not found in fixture.")
+        raise
 
     with patch('apiai.ApiAI.text_request') as mock_text_request:
         request = MockTextRequest()
