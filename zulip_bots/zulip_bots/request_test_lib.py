@@ -43,9 +43,14 @@ def mock_http_conversation(http_data):
 
         mock_result.assert_called_with(http_request['api_url'], **args)
 
-    http_request = http_data.get('request')
-    http_response = http_data.get('response')
-    http_headers = http_data.get('response-headers')
+    try:
+        http_request = http_data['request']
+        http_response = http_data['response']
+        http_headers = http_data['response-headers']
+    except KeyError:
+        print("ERROR: Failed to find 'request', 'response' or 'response-headers' fields in fixture")
+        raise
+
     http_method = http_request.get('method', 'GET')
 
     if http_method == 'GET':
