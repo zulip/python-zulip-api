@@ -1,7 +1,7 @@
 from unittest import TestCase
 import zulip_botserver.server
 import json
-from typing import Any, List, Dict, Mapping
+from typing import Any, List, Dict, Mapping, Optional
 
 class BotServerTestCase(TestCase):
 
@@ -19,10 +19,10 @@ class BotServerTestCase(TestCase):
                                    message=dict(message={'key': "test message"}),
                                    check_success=False,
                                    ):
-        # type: (List[str], Dict[str, Any], Dict[str, Any], Dict[str, Any], str, Dict[str, Dict[str, Any]], bool) -> None
+        # type: (Optional[List[str]], Optional[Dict[str, Any]], Optional[Dict[str, Any]], Optional[Dict[str, Any]], str, Dict[str, Dict[str, Any]], bool) -> None
         if available_bots is not None:
             zulip_botserver.server.available_bots = available_bots
-            zulip_botserver.server.bots_config = bots_config
+            zulip_botserver.server.bots_config = bots_config  # type: ignore # monkey-patching
             zulip_botserver.server.load_lib_modules()
             zulip_botserver.server.load_bot_handlers()
 
