@@ -54,7 +54,7 @@ class StubBotHandler:
 
     def get_config_info(self, bot_name, optional=False):
         # type: (str, bool) -> Dict[str, Any]
-        return None
+        return {}
 
     def unique_reply(self):
         # type: () -> Dict[str, Any]
