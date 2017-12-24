@@ -3,7 +3,7 @@ from zulip_bots.bots.connect_four.controller import ConnectFourModel
 
 class ConnectFourMessageHandler(object):
     tokens = [':blue_circle:', ':red_circle:']
-    
+
     def parse_board(self, board):
         # Header for the top of the board
         board_str = ':one: :two: :three: :four: :five: :six: :seven:'
@@ -19,7 +19,7 @@ class ConnectFourMessageHandler(object):
                     board_str += ':red_circle: '
 
         return board_str
-        
+
     def get_player_color(self, turn):
         return self.tokens[turn]
 
@@ -41,16 +41,16 @@ class ConnectFourBotHandler(GameAdapter):
     or the comptuer in a game of Connect
     Four
     '''
-    
+
     def __init__(self):
         game_name = 'Connect Four'
         bot_name = 'connect_four'
-        move_help_message = '* To make your move during a game, type\n' + \
-           '```move <column-number>```'
+        move_help_message = '* To make your move during a game, type\n' \
+                            '```move <column-number>```'
         move_regex = 'move (\d)$'
         model = ConnectFourModel
         gameMessageHandler = ConnectFourMessageHandler
-        
+
         super(ConnectFourBotHandler, self).__init__(game_name, bot_name, move_help_message, move_regex, model, gameMessageHandler)
 
 handler_class = ConnectFourBotHandler

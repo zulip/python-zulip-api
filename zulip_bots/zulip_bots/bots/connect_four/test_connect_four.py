@@ -137,7 +137,7 @@ class TestConnectFourBot(BotTestCase):
 
     def test_move(self):
         self.verify_response('move 8', 'That\'s an invalid move. Please specify a column '
-            'between 1 and 7 with at least one open spot.', 0, data=self.start_two_player_data)
+                             'between 1 and 7 with at least one open spot.', 0, data=self.start_two_player_data)
         self.verify_response('move 1', 'You placed your token in column 1.', 0, data=self.start_two_player_data)
         self.verify_response('move 1', '**the Computer moved in column 1**.', 3, data=self.start_one_player_data, computer_move=0)
 
@@ -149,9 +149,11 @@ class TestConnectFourBot(BotTestCase):
     def test_quit(self):
         self.verify_response('quit', 'Are you sure you want to quit? You will forfeit the game!\n'
                              'Type ```confirm quit``` to forfeit.', 0, data=self.start_two_player_data)
-
-    def test_confirm_quit(self):
         self.verify_response('confirm quit', '**You have forfeit the game**\nSorry, but you lost :cry:', 0, data=self.start_two_player_data)
+
+    def test_force_reset(self):
+        with self.mock_config_info({'superusers': '["foo@example.com"]'}):
+            self.verify_response('force reset', 'The game has been force reset', 1, data=self.start_one_player_data)
 
     def test_privilege_check(self):
         self.verify_response('move 4', 'Sorry, but you can\'t run the command ```move 4```', 0, data=self.inviting_two_player_data)
@@ -159,6 +161,7 @@ class TestConnectFourBot(BotTestCase):
                              'Type ```status``` to see the current status of the bot.', 0, data=self.inviting_two_player_data, user = 'foo3@example.com')
         self.verify_response('quit', 'Sorry, but you can\'t run the command ```quit```', 0)
         self.verify_response('accept', 'Sorry, but you can\'t run the command ```accept```', 0, data=self.end_two_player_data)
+        self.verify_response('force reset', 'Sorry, but you can\'t run the command ```force reset```', 0)
 
     def test_connect_four_logic(self):
         def confirmAvailableMoves(good_moves, bad_moves, board):

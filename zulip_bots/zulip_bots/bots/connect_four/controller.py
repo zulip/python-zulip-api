@@ -17,10 +17,10 @@ class ConnectFourModel(object):
         [0, 0, 0, 0, 0, 0, 0]]
 
     current_board = blank_board
-    
+
     def parse_move(self, move):
         return int(move) - 1
-    
+
     def update_board(self, board):
         self.current_board = deepcopy(board)
 
