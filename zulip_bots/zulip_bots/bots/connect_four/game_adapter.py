@@ -1,11 +1,9 @@
-# @TODO: place bot owner name in config file, allow bot owner to run special commands
-
 import re
+import json
 from copy import deepcopy
 
-# @TODO: allow superusers
 class InputVerification(object):
-    def __init__(self, move_regex):
+    def __init__(self, move_regex, superusers):
         self.move_regex = move_regex
         self.verified_commands = {
             'waiting': ['start game with computer', 'start game with \w+@\w+\.\w+'],
@@ -13,17 +11,16 @@ class InputVerification(object):
             'playing': [[move_regex, 'quit', 'confirm quit'], ['quit', 'confirm quit']]
         }
         self.all_valid_commands = ['help', 'status', 'start game with computer', 'start game with \w+@\w+\.\w+',
-                          'withdraw invitation', 'accept', 'decline', self.move_regex, 'quit', 'confirm quit']
-    
-    verified_users = []
+                                   'withdraw invitation', 'accept', 'decline', self.move_regex, 'quit', 'confirm quit', 'force reset']
+        self.superusers = superusers
 
-    
+    verified_users = []
 
     def permission_lacking_message(self, command):
         return 'Sorry, but you can\'t run the command ```' + command + '```'
 
     def update_commands(self, turn):
-        self.verified_commands['playing'][-1 * turn + 1].remove(self.move_regex)
+        self.verified_commands['playing'] = [['quit', 'confirm quit'], ['quit', 'confirm quit']]
         self.verified_commands['playing'][turn].append(self.move_regex)
 
     def reset_commands(self):
@@ -49,6 +46,9 @@ class InputVerification(object):
             command_array = self.verified_commands[state]
 
         return self.regex_match_in_array(command_array, command)
+
+    def verify_superuser(self, user):
+        return user in self.superusers
 
 class StateManager(object):
     def __init__(self, main_bot_handler):
@@ -331,11 +331,9 @@ class GameAdapter(object):
         self.move_help_message = move_help_message
         self.model = model
         self.gameMessageHandler = gameMessageHandler()
-        self.inputVerification = InputVerification(move_regex)
+        self.inputVerification = InputVerification(move_regex, [])
 
     def get_stored_data(self):
-        # @TODO: remove this comment when you create super users
-        # return self.data # Uncomment and rerun bot to reset data if users are abusing the bot
         return self.bot_handler.storage.get(self.bot_name)
 
     def update_data(self):
@@ -343,13 +341,17 @@ class GameAdapter(object):
 
         if 'users' in self.data:
             self.inputVerification.verified_users = self.data['users']
+        else:
+            self.inputVerification.verified_users = []
 
         if self.state == 'inviting':
             self.invitationHandler = InvitationHandler(self)
             self.gameHandler = GameHandler(self, self.data['game_type'], self.model())
 
         elif self.state == 'playing':
-            self.gameHandler = GameHandler(self, self.data['game_type'], self.model(), board = self.data['board'], turn = self.data['turn'], )
+            self.gameHandler = GameHandler(self, self.data['game_type'], self.model(),
+                                           board = self.data['board'], turn = self.data['turn'])
+            self.inputVerification.update_commands(self.data['turn'])
 
     def put_stored_data(self):
         self.data = {}
@@ -470,10 +472,25 @@ class GameAdapter(object):
         '''
 
     def initialize(self, bot_handler):
+        self.config_info = bot_handler.get_config_info('connect_four')
+        if self.config_info:
+            self.inputVerification.superusers = json.loads(self.config_info['superusers'])
         self.gameCreator = GameCreator(self)
         self.inputVerification.reset_commands()
+
         if not bot_handler.storage.contains(self.bot_name):
             bot_handler.storage.put(self.bot_name, self.data)
+
+    def force_reset(self, sender):
+        for user in self.inputVerification.verified_users:
+            self.send_message(user, 'A bot moderator determined you were abusing the bot, and quit your game.'
+                                    ' Please make sure you finish all your games in a timely fashion.')
+
+        self.send_message(sender, 'The game has been force reset')
+
+        self.data = data = {'state': 'waiting'}
+        self.update_data()
+        self.put_stored_data()
 
     def handle_message(self, message, bot_handler):
         self.bot_handler = bot_handler
@@ -489,7 +506,10 @@ class GameAdapter(object):
                                       'Type ```help``` to see a full list of commands.')
             return
 
-        # Messages that can be sent regardless of state or user
+        elif self.inputVerification.verify_superuser(sender) and content.lower() == 'force reset':
+            self.force_reset(sender)
+            return
+
         elif content.lower() == 'help' or content == '':
             self.send_message(sender, self.help_message())
             return

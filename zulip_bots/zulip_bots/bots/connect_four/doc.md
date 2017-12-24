@@ -25,8 +25,12 @@ can only run a single game at a time*
 
 ## Setup
 
-The Connect Four Bot does not require a config file or API key.
-It can be used without setup.
+To set moderators for the bot, modify the connect_four.conf
+file as shown:
+
+superusers = ["user@example.com", "user@example2.com", ...]
+
+Moderators can run ```force reset``` in case any user abuse the bot
 
 ## Usage
 
@@ -61,7 +65,7 @@ another user.
 player to decline an invitation to play Connect Four against
 another user.
 
-7. ```withdraw invitation``` : a command that can only be run by the
+7. ```cancel game``` : a command that can only be run by the
 inviter to withdraw their invitation to play. Especially
 useful if a player does not respond to an invitation for a
 long period of time.
@@ -75,3 +79,7 @@ the user to confirm they wish to forfeit the game.
 
 10. ```confirm quit``` : causes the user that runs this command
 to forfeit the game.
+
+11. ```force reset``` : a command that can only be run by the bot
+owner and moderators (see 'Usage' for specifying). Destroys any
+game currently being run if users are abusing the bot
