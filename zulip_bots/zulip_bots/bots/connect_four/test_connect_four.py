@@ -56,12 +56,12 @@ class TestConnectFourBot(BotTestCase):
             '```start game with computer```\n' + \
             '* To start a game against another player, type\n' + \
             '```start game with user@example.com```\n' + \
-            '* To make your move during a game, type\n' + \
-            '```move <column-number>```\n' + \
             '* To quit a game at any time, type\n' + \
             '```quit```\n' + \
             '* To withdraw an invitation, type\n' + \
-            '```cancel game```'
+            '```cancel game```\n' +\
+            '* To make your move during a game, type\n' + \
+            '```move <column-number>```'
 
     def no_game_status(self):
         return '**Connect Four Game Status**\n' + \
@@ -136,8 +136,8 @@ class TestConnectFourBot(BotTestCase):
         self.verify_response('withdraw invitation', 'Your invitation to play foo2@example.com has been withdrawn', 0, data=self.inviting_two_player_data)
 
     def test_move(self):
-        self.verify_response('move 8', 'That\'s an invalid move. Please specify a column' +
-                             ' with at least one blank space, between 1 and 7', 0, data=self.start_two_player_data)
+        self.verify_response('move 8', 'That\'s an invalid move. Please specify a column '
+            'between 1 and 7 with at least one open spot.', 0, data=self.start_two_player_data)
         self.verify_response('move 1', 'You placed your token in column 1.', 0, data=self.start_two_player_data)
         self.verify_response('move 1', '**the Computer moved in column 1**.', 3, data=self.start_one_player_data, computer_move=0)
 
