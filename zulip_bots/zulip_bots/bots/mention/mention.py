@@ -1,0 +1,103 @@
+# See readme.md for instructions on running this code.
+
+import requests
+from typing import Any, List
+
+class MentionHandler(object):
+    def initialize(self, bot_handler: Any) -> None:
+        self.config_info = bot_handler.get_config_info('mention')
+        self.access_token = self.config_info['access_token']
+        self.account_id = ''
+
+    def usage(self) -> str:
+        return '''
+        This is a Mention API Bot which will find mentions
+        of the given keyword throughout the web.
+        Version 1.00
+        '''
+
+    def handle_message(self, message: Any, bot_handler: Any) -> None:
+        message['content'] = message['content'].strip()
+
+        if message['content'].lower() == 'help':
+            bot_handler.send_reply(message, self.usage())
+            return
+
+        if message['content'] == '':
+            bot_handler.send_reply(message, 'Empty Mention Query')
+            return
+
+        keyword = message['content']
+        content = self.generate_response(keyword)
+        bot_handler.send_reply(message, content)
+
+    def get_account_id(self) -> str:
+        get_ac_id_header = {
+            'Authorization': 'Bearer ' + self.access_token,
+            'Accept-Version': '1.15',
+        }
+        response = requests.get(
+            'https://api.mention.net/api/accounts/me', headers=get_ac_id_header)
+        data_json = response.json()
+        account_id = data_json['account']['id']
+        return account_id
+
+    def get_alert_id(self, keyword: str) -> str:
+        create_alert_header = {
+            'Authorization': 'Bearer ' + self.access_token,
+            'Content-Type': 'application/json',
+            'Accept-Version': '1.15',
+        }
+
+        create_alert_data = {
+            'name': keyword,
+            'query': {
+                'type': 'basic',
+                'included_keywords': [keyword]
+            },
+            'languages': ['en'],
+            'sources': ['web']
+        }  # type: Any
+
+        response = requests.post('https://api.mention.net/api/accounts/' + self.account_id +
+                                 '/alerts', data=create_alert_data, headers=create_alert_header)
+        data_json = response.json()
+        alert_id = data_json['alert']['id']
+        return alert_id
+
+    def get_mentions(self, alert_id: str) -> List[Any]:
+        get_mentions_header = {
+            'Authorization': 'Bearer ' + self.access_token,
+            'Accept-Version': '1.15',
+        }
+        response = requests.get('https://api.mention.net/api/accounts/' + self.account_id +
+                                '/alerts/' + alert_id + '/mentions', headers=get_mentions_header)
+        data_json = response.json()
+        mentions = data_json['mentions']
+        return mentions
+
+    def generate_response(self, keyword: str) -> str:
+        if self.account_id == '':
+            self.account_id = self.get_account_id()
+
+        try:
+            alert_id = self.get_alert_id(keyword)
+        except (TypeError, KeyError):
+            # Usually triggered by invalid token or json parse error when account quote is finished.
+            raise MentionNoResponseException()
+
+        try:
+            mentions = self.get_mentions(alert_id)
+        except (TypeError, KeyError):
+            # Usually triggered by no response or json parse error when account quota is finished.
+            raise MentionNoResponseException()
+
+        reply = 'The most recent mentions of `' + keyword + '` on the web are: \n'
+        for mention in mentions:
+            reply += "[{title}]({id})\n".format(title=mention['title'], id=mention['original_url'])
+        return reply
+
+handler_class = MentionHandler
+
+class MentionNoResponseException(Exception):
+    pass
