@@ -1,8 +1,9 @@
 from unittest import TestCase
-from mock import MagicMock
+from mock import MagicMock, patch, ANY
 from zulip_bots.lib import (
     ExternalBotHandler,
     StateHandler,
+    run_message_handler_for_bot,
 )
 
 class FakeClient:
@@ -81,3 +82,48 @@ class LibTest(TestCase):
             client.send_message = MagicMock()
             handler.send_reply(test[0], response_text)
             client.send_message.assert_called_once_with(dict(test[1], content=response_text))
+
+    def test_content_and_full_content(self):
+        client = FakeClient()
+        profile = client.get_profile()
+        handler = ExternalBotHandler(
+            client=client,
+            root_dir=None,
+            bot_details=None,
+            bot_config_file=None
+        )
+        to = {'email': 'Some@User'}
+
+    def test_run_message_handler_for_bot(self):
+        with patch('zulip_bots.lib.Client', new=FakeClient) as fake_client:
+            mock_lib_module = MagicMock()
+            # __file__ is not mocked by MagicMock(), so we assign a mock value manually.
+            mock_lib_module.__file__ = "foo"
+            mock_bot_handler = MagicMock()
+            mock_lib_module.handler_class.return_value = mock_bot_handler
+
+            def call_on_each_event_mock(self, callback, event_types=None, narrow=None):
+                def test_message(message, flags):
+                    event = {'message': message,
+                             'flags': flags,
+                             'type': 'message'}
+                    callback(event)
+
+                # In the following test, expected_message is the dict that we expect
+                # to be passed to the bot's handle_message function.
+                original_message = {'content': '@**Alice** bar',
+                                    'type': 'stream'}
+                expected_message = {'type': 'stream',
+                                    'content': 'bar'}
+                test_message(original_message, {'mentioned'})
+                mock_bot_handler.handle_message.assert_called_with(
+                    message=expected_message,
+                    bot_handler=ANY)
+
+            fake_client.call_on_each_event = call_on_each_event_mock.__get__(
+                fake_client, fake_client.__class__)
+            run_message_handler_for_bot(lib_module=mock_lib_module,
+                                        quiet=True,
+                                        config_file=None,
+                                        bot_config_file=None,
+                                        bot_name='testbot')
