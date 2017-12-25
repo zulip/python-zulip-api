@@ -114,7 +114,8 @@ class LibTest(TestCase):
                 original_message = {'content': '@**Alice** bar',
                                     'type': 'stream'}
                 expected_message = {'type': 'stream',
-                                    'content': 'bar'}
+                                    'content': 'bar',
+                                    'full_content': '@**Alice** bar'}
                 test_message(original_message, {'mentioned'})
                 mock_bot_handler.handle_message.assert_called_with(
                     message=expected_message,
