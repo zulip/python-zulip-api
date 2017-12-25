@@ -6,7 +6,7 @@ from zulip_bots.lib import (
 )
 
 class FakeClient:
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         self.storage = dict()
 
     def get_profile(self):
