@@ -1,0 +1,42 @@
+{
+    "customers": [
+        {
+            "oid": "customer_1",
+            "source_id": "source_1",
+            "source": "stripe",
+            "created": 1492605754,
+            "email": "customer_1@baremetrics.com",
+            "name": "Customer 1",
+            "display_image": "https://logo.clearbit.com/baremetrics.com",
+            "display_name": "Customer 1",
+            "notes": "Here are some notes",
+            "ltv": 50000,
+            "is_active": true,
+            "is_canceled": false,
+            "current_mrr": 1000,
+            "current_plans": [
+                {
+                    "oid": "plan_1",
+                    "source_id": "source_1",
+                    "source": "stripe",
+                    "name": "Plan 1",
+                    "interval": "month",
+                    "interval_count": 1,
+                    "trial_duration": null,
+                    "trial_duration_unit": null,
+                    "created": 1492605754,
+                    "active": true,
+                    "setup_fees": 0,
+                    "amounts": [
+                        {
+                            "currency": "USD",
+                            "symbol": "$",
+                            "symbol_right": false,
+                            "amount": 1000
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
