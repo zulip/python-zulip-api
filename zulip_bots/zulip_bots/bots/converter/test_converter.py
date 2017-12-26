@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from zulip_bots.test_lib import BotTestCase
 
 class TestConverterBot(BotTestCase):

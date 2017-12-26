@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import mock
 from mock import MagicMock, patch
 from zulip_bots.test_lib import BotTestCase
