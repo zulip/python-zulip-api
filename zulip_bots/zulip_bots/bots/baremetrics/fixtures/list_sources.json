@@ -1,0 +1,14 @@
+{
+  "sources": [
+    {
+      "id": "source_id",
+      "provider": "stripe",
+      "provider_id": "<stripe_account_id>"
+    },
+    {
+      "id": "source_id",
+      "provider": "baremetrics",
+      "provider_id": null
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+    "account": {
+        "id": "account_id",
+        "default_currency": {
+            "id": "usd",
+            "alternate_symbols": [
+                "US$"
+            ],
+            "decimal_mark": ".",
+            "disambiguate_symbol": "US$",
+            "html_entity": "$",
+            "iso_code": "USD",
+            "iso_numeric": "840",
+            "name": "United States Dollar",
+            "priority": 1,
+            "smallest_denomination": 1,
+            "subunit": "Cent",
+            "subunit_to_unit": 100,
+            "symbol": "$",
+            "symbol_first": true,
+            "thousands_separator": ","
+        },
+        "company": "Example Company",
+        "created_at": 123456789
+    }
+}
