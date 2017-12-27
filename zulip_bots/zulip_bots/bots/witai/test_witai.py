@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from mock import patch
 import sys
 from typing import Dict, Any, Optional

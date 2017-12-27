@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from unittest.mock import patch
 from requests.exceptions import HTTPError, ConnectionError
 
