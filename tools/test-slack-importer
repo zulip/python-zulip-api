@@ -5,7 +5,7 @@ set -ev
 wget https://github.com/houstondatavis/slack-export/archive/master.zip
 
 mv master.zip slack-export-master.zip
-zulip/integrations/slack/slackdata2zulipdata.py $PWD/slack-export-master.zip
+zulip/integrations/slack/slackdata2zulipdata.py $PWD/slack-export-master.zip "realm name"
 
 mv zulip_data.tar.gz $HOME
 cd
