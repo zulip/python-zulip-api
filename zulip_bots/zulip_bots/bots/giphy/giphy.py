@@ -5,6 +5,7 @@ import logging
 import sys
 import os
 import re
+from requests.exceptions import HTTPError, ConnectionError
 
 GIPHY_TRANSLATE_API = 'http://api.giphy.com/v1/gifs/translate'
 
@@ -25,6 +26,19 @@ class GiphyHandler(object):
 
     def initialize(self, bot_handler: Any) -> None:
         self.config_info = bot_handler.get_config_info('giphy')
+        query = {'test': 'keyword',
+             'api_key': self.config_info['key']}
+        try:
+            data = requests.get(GIPHY_TRANSLATE_API, params=query)
+        except HTTPError as e:
+            if (e.response.json()['error']['errors'][0]['reason'] == 'keyInvalid'):
+                logging.error('Invalid key.'
+                              'Follow the instructions in doc.md for setting API key.')
+                sys.exit(1)
+            else:
+                raise
+        except ConnectionError:
+            logging.warning('Bad connection')
 
     def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
         bot_response = get_bot_giphy_response(
