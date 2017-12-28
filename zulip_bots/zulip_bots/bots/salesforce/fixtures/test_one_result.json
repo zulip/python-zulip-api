@@ -1,0 +1,17 @@
+{
+    "response": {
+        "totalSize": 1,
+        "done": true,
+        "records": [
+            {
+                "attributes": {
+                    "type": "Contact",
+                    "url": ""
+                },
+                "Id": "foo_id",
+                "Name": "foo",
+                "Phone": "020 1234 5678"
+            }
+        ]
+    }
+}
