@@ -2,6 +2,7 @@
 # googletranslate.conf in this (zulip_bots/bots/googletranslate/) directory.
 
 import requests
+from requests.exceptions import HTTPError, ConnectionError
 
 class GoogleTranslateHandler(object):
     '''
@@ -19,6 +20,19 @@ class GoogleTranslateHandler(object):
     def initialize(self, bot_handler):
         self.config_info = bot_handler.get_config_info('googletranslate')
         self.supported_languages = get_supported_languages(self.config_info['key'])
+        query = {'key': self.config_info['key'],
+                 'target': 'en'}
+        try:
+            data = requests.get(api_url + '/languages', params = query)
+        except HTTPError as e:
+            if (e.response.json()['error']['errors'][0]['reason'] == 'keyInvalid'):
+                logging.error('Invalid key.'
+                              'Follow the instructions in doc.md for setting API key.')
+                sys.exit(1)
+            else:
+                raise
+        except ConnectionError:
+            logging.warning('Bad connection')
 
     def handle_message(self, message, bot_handler):
         bot_response = get_translate_bot_response(message['content'],
