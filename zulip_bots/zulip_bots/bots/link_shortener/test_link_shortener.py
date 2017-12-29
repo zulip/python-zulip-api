@@ -7,6 +7,9 @@ class TestLinkShortenerBot(BotTestCase):
         with self.mock_config_info({'key': 'qwertyuiop'}):
             self.verify_reply(message, response)
 
+    def test_bot_responds_to_empty_message(self) -> None:
+        self._test('', 'No links found. Send "help" to see usage instructions.')
+
     def test_normal(self) -> None:
         with self.mock_http_conversation('test_normal'):
             self._test('Shorten https://www.github.com/zulip/zulip please.',
