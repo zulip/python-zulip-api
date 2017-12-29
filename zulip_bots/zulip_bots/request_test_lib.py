@@ -64,7 +64,7 @@ def mock_http_conversation(http_data):
             assert_called_with_fields(
                 mock_post,
                 http_request,
-                ['params', 'headers', 'json']
+                ['params', 'headers', 'json', 'data']
             )
 
 @contextmanager
