@@ -2,12 +2,30 @@
 
 import requests
 from typing import Any, List
+import logging
 
 class MentionHandler(object):
     def initialize(self, bot_handler: Any) -> None:
         self.config_info = bot_handler.get_config_info('mention')
         self.access_token = self.config_info['access_token']
         self.account_id = ''
+
+        self.check_access_token()
+
+    def check_access_token(self) -> None:
+        test_query_header = {
+            'Authorization': 'Bearer ' + self.access_token,
+            'Accept-Version': '1.15',
+        }
+        test_query_response = requests.get('https://api.mention.net/api/accounts/me', headers=test_query_header)
+
+        try:
+            test_query_data = test_query_response.json()
+            if test_query_data['error'] == 'invalid_grant' and \
+               test_query_data['error_description'] == 'The access token provided is invalid.':
+                logging.error('Access Token Invalid. Please see doc.md to find out how to get it.')
+        except KeyError:
+            pass
 
     def usage(self) -> str:
         return '''
