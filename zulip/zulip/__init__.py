@@ -673,6 +673,17 @@ class Client(object):
             request=message_data,
         )
 
+    def mark_bot_listening(self, bot_name, is_listening):
+        # type: (str, bool) -> Dict[str, Any]
+        return self.call_endpoint(
+            url='realm/mark_bot_listening',
+            method='POST',
+            request={
+                'bot_name': bot_name,
+                'is_listening': is_listening
+            }
+        )
+
     def get_events(self, **request):
         # type: (**Any) -> Dict[str, Any]
         '''
