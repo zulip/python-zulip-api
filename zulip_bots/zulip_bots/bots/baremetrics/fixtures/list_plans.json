@@ -6,14 +6,50 @@
         }
     },
     "response": {
-        "plans": [],
-        "meta": {
-            "pagination": {
-                "has_more": false,
-                "page": 0,
-                "per_page": 30
+        "plans": [
+            {
+                "oid": "plan_1",
+                "source_id": "123",
+                "source": "baremetrics",
+                "name": "Plan 1",
+                "interval": "year",
+                "interval_count": 1,
+                "trial_duration": null,
+                "trial_duration_unit": null,
+                "created": null,
+                "active": true,
+                "setup_fees": 0,
+                "amounts": [
+                    {
+                        "currency": "USD",
+                        "symbol": "$",
+                        "symbol_right": false,
+                        "amount": 450000
+                    }
+                ]
+            },
+            {
+                "oid": "plan_2",
+                "source_id": "123",
+                "source": "baremetrics",
+                "name": "Plan 2",
+                "interval": "year",
+                "interval_count": 1,
+                "trial_duration": null,
+                "trial_duration_unit": null,
+                "created": null,
+                "active": true,
+                "setup_fees": 0,
+                "amounts": [
+                    {
+                        "currency": "USD",
+                        "symbol": "$",
+                        "symbol_right": false,
+                        "amount": 450000
+                    }
+                ]
             }
-        }
+        ]
     },
     "response-headers": {
         "X-TokenExpires": "0",
