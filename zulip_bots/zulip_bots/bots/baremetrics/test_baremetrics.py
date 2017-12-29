@@ -55,6 +55,10 @@ class TestBaremetricsBot(BotTestCase):
                 self.verify_reply('list-customers TEST', r)
 
     def test_list_subscriptions_command(self) -> None:
+        r = '**Listing subscriptions:** \n1.Customer Name: Customer 1\nCustomer Display Name: Customer 1\n' \
+            'Customer OID: customer_1\nCustomer Email: customer_1@baremetrics.com\nActive: True\n' \
+            'Plan Name: Plan 1\nPlan Amounts: \n - 1000 $\n\n'
+
         with self.mock_config_info({'api_key': 'TEST'}):
             with self.mock_http_conversation('list_subscriptions'):
-                self.verify_reply('list-subscriptions TEST', '**Listing subscriptions:** \n')
+                self.verify_reply('list-subscriptions TEST', r)
