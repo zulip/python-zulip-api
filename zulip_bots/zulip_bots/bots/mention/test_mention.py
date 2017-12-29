@@ -1,3 +1,4 @@
+from zulip_bots.bots.mention.mention import MentionHandler
 from zulip_bots.test_lib import BotTestCase
 
 class TestMentionBot(BotTestCase):
@@ -14,3 +15,10 @@ class TestMentionBot(BotTestCase):
         of the given keyword throughout the web.
         Version 1.00
         ''')
+
+    def test_get_account_id(self) -> None:
+        bot_test_instance = MentionHandler()
+        bot_test_instance.access_token = 'TEST'
+
+        with self.mock_http_conversation('get_account_id'):
+            self.assertEqual(bot_test_instance.get_account_id(), 'TEST')

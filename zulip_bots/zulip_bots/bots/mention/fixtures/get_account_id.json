@@ -1,0 +1,57 @@
+{
+    "request": {
+        "api_url": "https://api.mention.net/api/accounts/me",
+        "headers": {
+            "Authorization": "Bearer TEST",
+            "Accept-Version": "1.15"
+        }
+    },
+    "response": {
+        "account": {
+            "id": "TEST",
+            "name": "John Smith",
+            "email": "j.smith@nasa.com",
+            "language_code": "en",
+            "created_at": "2016-01-18T14:49:37.0+00:00",
+            "updated_at": "2016-01-18T14:49:37.0+00:00",
+            "grouped_email_notification": false,
+            "default_email_notification_frequency": "daily",
+            "default_desktop_notification_frequency": "hourly",
+            "default_push_notification_frequency": "hourly",
+            "default_trending_email_notification_frequency": "occasionally",
+            "permissions": {
+                "create_alert": true,
+                "read_teammembers": true,
+                "read_teamrequests": true,
+                "read_quotastats": true
+            },
+            "email_subscriptions": {
+                "quota_exceeded": true
+            }
+        },
+        "_links": {
+            "self": {
+                "href": "\/api\/accounts\/630929_4wgkw0o0go4wco40wos4gww44tbrsluiajok04g4gsscw8wssk"
+            }
+        }
+    },
+    "response-headers": {
+        "X-XSS-Protection": "1; mode=block",
+        "X-Upstream2": "mention_backend",
+        "X-Content-Type-Options": "nosniff",
+        "X-Protected-By": "Sqreen",
+        "Transfer-Encoding": "chunked",
+        "X-Api-Version": "1.15",
+        "Content-Encoding": "gzip",
+        "Connection": "keep-alive",
+        "Server": "nginx",
+        "Content-Type": "application/json",
+        "Vary": "Accept-Encoding, Accept-Language, X-Accept-Language",
+        "Set-Cookie": "www_bucket=55; Expires=Tue, 30 Jan 2018 10:59:52 GMT; Domain=mention.com; Path=/",
+        "Date": "Sun, 31 Dec 2017 10:59:52 GMT",
+        "X-Frame-Options": "SAMEORIGIN",
+        "Cache-Control": "no-cache, private",
+        "Referrer-Policy": "same-origin",
+        "X-S": "web16"
+    }
+}
