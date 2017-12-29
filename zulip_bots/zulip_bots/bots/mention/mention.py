@@ -54,8 +54,7 @@ class MentionHandler(object):
             'Authorization': 'Bearer ' + self.access_token,
             'Accept-Version': '1.15',
         }
-        response = requests.get(
-            'https://api.mention.net/api/accounts/me', headers=get_ac_id_header)
+        response = requests.get('https://api.mention.net/api/accounts/me', headers=get_ac_id_header)
         data_json = response.json()
         account_id = data_json['account']['id']
         return account_id
