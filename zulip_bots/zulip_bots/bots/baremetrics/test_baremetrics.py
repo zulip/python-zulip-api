@@ -38,9 +38,13 @@ class TestBaremetricsBot(BotTestCase):
                                                   'baremetrics\nProvider ID: None\n\n')
 
     def test_list_plans_command(self) -> None:
+        r = '**Listing plans:** \n1.Name: Plan 1\nActive: True\nInterval: year\nInterval Count: 1\nAmounts: \n' \
+            ' - 450000 USD\n\n2.Name: Plan 2\nActive: True\nInterval: year\nInterval Count: 1\nAmounts: \n' \
+            ' - 450000 USD\n\n'
+
         with self.mock_config_info({'api_key': 'TEST'}):
             with self.mock_http_conversation('list_plans'):
-                self.verify_reply('list-plans TEST', '**Listing plans:** \n')
+                self.verify_reply('list-plans TEST', r)
 
     def test_list_customers_command(self) -> None:
         with self.mock_config_info({'api_key': 'TEST'}):
