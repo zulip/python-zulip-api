@@ -21,6 +21,21 @@ class WeatherHandler(object):
         except KeyError:
             pass
 
+        self.check_api_key()
+
+    def check_api_key(self) -> None:
+        url = 'http://api.openweathermap.org/data/2.5/weather?q=nyc&APPID=' + self.api_key
+        test_response = requests.get(url)
+
+        try:
+            test_response_data = test_response.json()
+
+            error_response = 'Invalid API key. Please see http://openweathermap.org/faq#error401 for more info.'
+            if test_response_data['cod'] == 401 and test_response_data['message'] == error_response:
+                logging.error('API Key not valid. Please see doc.md to find out how to get it.')
+        except KeyError:
+            pass
+
     def usage(self) -> str:
         return '''
             This plugin will give info about weather in a specified city
