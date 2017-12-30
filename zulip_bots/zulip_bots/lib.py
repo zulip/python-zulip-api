@@ -210,6 +210,10 @@ class ExternalBotHandler(object):
             raise PermissionError("Cannot open file \"{}\". Bots may only access "
                                   "files in their local directory.".format(abs_filepath))
 
+    def quit(self, message = ""):
+        # type: (str) -> None
+        sys.exit(message)
+
 def extract_query_without_mention(message, client):
     # type: (Dict[str, Any], ExternalBotHandler) -> str
     """
