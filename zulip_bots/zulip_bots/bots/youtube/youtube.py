@@ -31,9 +31,8 @@ class YoutubeHandler(object):
             search_youtube('test', self.config_info['key'], self.config_info['video_region'])
         except HTTPError as e:
             if (e.response.json()['error']['errors'][0]['reason'] == 'keyInvalid'):
-                logging.error('Invalid key.'
-                              'Follow the instructions in doc.md for setting API key.')
-                sys.exit(1)
+                bot_handler.quit('Invalid key.'
+                                 'Follow the instructions in doc.md for setting API key.')
             else:
                 raise
         except ConnectionError:

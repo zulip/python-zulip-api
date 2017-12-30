@@ -39,7 +39,7 @@ class TestYoutubeBot(BotTestCase):
 
         with self.mock_config_info({'key': 'somethinginvalid', 'number_of_results': '5', 'video_region': 'US'}), \
                 self.mock_http_conversation('test_invalid_key'), \
-                self.assertRaises(SystemExit) as se:  # type: ignore
+                self.assertRaises(bot_handler.BotQuitException):
                     bot.initialize(bot_handler)
 
     def test_multiple(self) -> None:
