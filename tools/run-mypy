@@ -78,7 +78,9 @@ force_include = [
     "zulip_bots/zulip_bots/bots/mention/mention.py",
     "zulip_bots/zulip_bots/bots/mention/test_mention.py",
     "zulip_bots/zulip_bots/bots/baremetrics/baremetrics.py",
-    "zulip_bots/zulip_bots/bots/baremetrics/test_baremetrics.py"
+    "zulip_bots/zulip_bots/bots/baremetrics/test_baremetrics.py",
+    "zulip_bots/zulip_bots/bots/salesforce/salesforce.py",
+    "zulip_bots/zulip_bots/bots/salesforce/test_salesforce.py"
 ]
 
 parser = argparse.ArgumentParser(description="Run mypy on files tracked by git.")

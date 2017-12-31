@@ -1,0 +1,26 @@
+{
+    "response": {
+        "totalSize": 2,
+        "done": true,
+        "records": [
+            {
+                "attributes": {
+                    "type": "Opportunity",
+                    "url": ""
+                },
+                "Id": "foo_id",
+                "Name": "foo",
+                "Amount": 2
+            },
+            {
+                "attributes": {
+                    "type": "Opportunity",
+                    "url": ""
+                },
+                "Id": "bar_id",
+                "Name": "bar",
+                "Amount": 1
+            }
+        ]
+    }
+}
