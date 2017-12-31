@@ -34,6 +34,9 @@ class FakeClient:
     def send_message(self, message):
         pass
 
+    def mark_bot_listening(realm, bot_name, is_listening):
+        pass
+
 class LibTest(TestCase):
     def test_basics(self):
         client = FakeClient()

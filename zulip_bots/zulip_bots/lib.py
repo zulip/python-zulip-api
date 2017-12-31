@@ -7,6 +7,7 @@ import signal
 import sys
 import time
 import re
+import atexit
 
 from six.moves import configparser
 
@@ -308,6 +309,14 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_config_file,
     signal.signal(signal.SIGINT, exit_gracefully)
 
     logging.info('starting message handling...')
+
+    client.mark_bot_listening(bot_name, True)
+
+    def mark_bot_is_not_listening():
+        # type: () -> None
+        client.mark_bot_listening(bot_name, False)
+
+    atexit.register(mark_bot_is_not_listening)
 
     def event_callback(event):
         # type: (Dict[str, Any]) -> None
