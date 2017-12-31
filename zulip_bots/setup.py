@@ -55,7 +55,8 @@ setuptools_info = dict(
         'requests',  # for bots/link_shortener and bots/jira
         'python-chess[engine,gaviota]',  # for bots/chess
         'wit',  # for bots/witai
-        'apiai'  # for bots/dialogflow
+        'apiai',  # for bots/dialogflow
+        'simple_salesforce'  # for bots/salesforce
     ],
 )
 
