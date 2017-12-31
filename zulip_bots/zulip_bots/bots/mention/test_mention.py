@@ -30,3 +30,13 @@ class TestMentionBot(BotTestCase):
 
         with self.mock_http_conversation('get_alert_id'):
             self.assertEqual(bot_test_instance.get_alert_id('TEST'), 'TEST')
+
+    def test_get_mentions(self) -> None:
+        bot_test_instance = MentionHandler()
+        bot_test_instance.access_token = 'TEST'
+        bot_test_instance.account_id = 'TEST'
+
+        with self.mock_http_conversation('get_mentions'):
+            bot_response = bot_test_instance.get_mentions('TEST')[0]
+            self.assertEqual(bot_response['title'], 'TEST')
+            self.assertEqual(bot_response['original_url'], 'TEST')
