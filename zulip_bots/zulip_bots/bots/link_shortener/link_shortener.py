@@ -1,5 +1,6 @@
 import re
 import requests
+import logging
 
 from typing import Any, Dict
 
@@ -16,6 +17,20 @@ class LinkShortenerHandler(object):
 
     def initialize(self, bot_handler: Any) -> None:
         self.config_info = bot_handler.get_config_info('link_shortener')
+        self.check_api_key()
+
+    def check_api_key(self) -> None:
+        test_request = requests.post(
+            'https://www.googleapis.com/urlshortener/v1/url',
+            json={'longUrl': 'www.youtube.com/watch'},
+            params={'key': self.config_info['key']}
+        )  # type: Any
+        test_request_data = test_request.json()
+        try:
+            if test_request_data['error']['errors'][0]['reason'] == 'keyInvalid':
+                logging.error('Invalid key. Follow the instructions in doc.md for setting API key.')
+        except KeyError:
+            pass
 
     def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
         REGEX_STR = (

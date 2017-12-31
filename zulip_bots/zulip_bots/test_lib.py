@@ -45,6 +45,13 @@ class StubBotHandler:
         # type: (Dict[str, Any]) -> None
         self.message_server.update(message)
 
+    class BotQuitException(Exception):
+        pass
+
+    def quit(self, message = ""):
+        # type: (str) -> None
+        raise self.BotQuitException()
+
     def get_config_info(self, bot_name, optional=False):
         # type: (str, bool) -> Dict[str, Any]
         return None
