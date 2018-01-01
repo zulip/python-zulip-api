@@ -1,0 +1,64 @@
+{
+    "request": {
+        "method": "POST",
+        "api_url": "https://api.baremetrics.com/v1/TEST/plans",
+        "headers": {
+            "Authorization": "Bearer TEST"
+        },
+        "data": {
+            "oid": "1",
+            "name": "TEST",
+            "currency": "USD",
+            "amount": 123,
+            "interval": "TEST",
+            "interval_count": 123
+        }
+    },
+    "response": {
+        "plan": {
+            "oid": "1",
+            "source_id": "TEST",
+            "source": "TEST",
+            "name": "TEST",
+            "interval": "TEST",
+            "interval_count": 123,
+            "trial_duration": null,
+            "trial_duration_unit": null,
+            "created": null,
+            "active": true,
+            "setup_fees": 0,
+            "amounts": [
+                {
+                    "currency": "USD",
+                    "symbol": "$",
+                    "symbol_right": false,
+                    "amount": 1
+                }
+            ]
+        }
+    },
+    "response-headers": {
+        "X-TokenExpires": "0",
+        "Server": "cloudflare-nginx",
+        "X-RateLimit-Remaining": "3593",
+        "X-Powered-By": "Phusion Passenger 5.0.30",
+        "Set-Cookie": "__cfduid=dd26464e3e6779b6a05b27d2681aea0851514374567; expires=Thu, 27-Dec-18 11:36:07 GMT; path=/; domain=.baremetrics.com; HttpOnly; Secure, LSW_WEB=\"LSW_WEB1\"; path=/",
+        "X-Runtime": "0.031730",
+        "Access-Control-Allow-Credentials": "false",
+        "Access-Control-Allow-Methods": "GET, OPTIONS, POST, PUT, DELETE",
+        "Content-Encoding": "gzip",
+        "Connection": "keep-alive",
+        "ETag": "W/\"110de39b319ed195bf1414ac4f3c9a01\"",
+        "Date": "Wed, 27 Dec 2017 11:36:08 GMT",
+        "X-RateLimit-Limit": "3600",
+        "X-Version": "721",
+        "X-Commit": "2dcec7190a2bd01c8d3d8527d386486c4bb5474c",
+        "Status": "200 OK",
+        "Content-Type": "application/json; charset=utf-8",
+        "Transfer-Encoding": "chunked",
+        "Access-Control-Allow-Headers": "Authorization,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type",
+        "Cache-Control": "max-age=0, private, must-revalidate",
+        "X-Request-Id": "0b292131-81bb-4df2-bdb9-089a50b17e63",
+        "CF-RAY": "3d3bfaf6feee2eff-DEL"
+    }
+}

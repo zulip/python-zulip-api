@@ -2,7 +2,6 @@
 
 from typing import Any, List
 import requests
-import logging
 
 class BaremetricsHandler(object):
     def initialize(self, bot_handler: Any) -> None:
@@ -13,11 +12,14 @@ class BaremetricsHandler(object):
             'Authorization': 'Bearer ' + self.api_key
         }
 
-        self.commands = ['help', 'list-commands', 'account-info', 'list-sources', 'list-plans <source_id>',
-                         'list-customers <source_id>', 'list-subscriptions <source_id>', 'create-plan <source_id> '
-                                                                                         '<oid> <name> <currency> '
-                                                                                         '<amount> <interval> '
-                                                                                         '<interval_count>']
+        self.commands = ['help',
+                         'list-commands',
+                         'account-info',
+                         'list-sources',
+                         'list-plans <source_id>',
+                         'list-customers <source_id>',
+                         'list-subscriptions <source_id>',
+                         'create-plan <source_id> <oid> <name> <currency> <amount> <interval> <interval_count>']
 
         self.descriptions = ['Display bot info', 'Display the list of available commands', 'Display the account info',
                              'List the sources', 'List the plans for the source', 'List the customers in the source',
@@ -199,7 +201,7 @@ class BaremetricsHandler(object):
             'amount': int(parameters[4]),
             'interval': parameters[5],
             'interval_count': int(parameters[6])
-        }
+        }  # type: Any
 
         url = 'https://api.baremetrics.com/v1/{}/plans'.format(parameters[0])
         create_plan_response = requests.post(url, data=data_header, headers=self.auth_header)
