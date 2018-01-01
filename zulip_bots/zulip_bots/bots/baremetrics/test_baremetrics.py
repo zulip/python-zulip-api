@@ -24,12 +24,17 @@ class TestBaremetricsBot(BotTestCase):
     def test_list_commands_command(self) -> None:
         with self.mock_config_info({'api_key': 'TEST'}), \
                 patch('requests.get'):
-            self.verify_reply('list-commands', '**Available Commands:** \n - help : Display bot info\n - list-commands '
-                                               ': Display the list of available commands\n - account-info : Display '
-                                               'the account info\n - list-sources : List the sources\n - list-plans '
-                                               '<source_id> : List the plans for the source\n - list-customers '
-                                               '<source_id> : List the customers in the source\n - list-subscriptions '
-                                               '<source_id> : List the subscriptions in the source\n')
+            self.verify_reply('list-commands', '**Available Commands:** \n'
+                                               ' - help : Display bot info\n'
+                                               ' - list-commands : Display the list of available commands\n'
+                                               ' - account-info : Display the account info\n'
+                                               ' - list-sources : List the sources\n'
+                                               ' - list-plans <source_id> : List the plans for the source\n'
+                                               ' - list-customers <source_id> : List the customers in the source\n'
+                                               ' - list-subscriptions <source_id> : List the subscriptions in the '
+                                               'source\n'
+                                               ' - create-plan <source_id> <oid> <name> <currency> <amount> <interval> '
+                                               '<interval_count> : Create a plan in the given source\n')
 
     def test_account_info_command(self) -> None:
         with self.mock_config_info({'api_key': 'TEST'}):
@@ -91,3 +96,9 @@ class TestBaremetricsBot(BotTestCase):
                 patch('requests.get'):
             with self.mock_http_conversation('test_key_error'):
                 self.verify_reply('list-plans TEST', 'Invalid Response From API.')
+
+    def test_create_plan_command(self) -> None:
+        with self.mock_config_info({'api_key': 'TEST'}), \
+                patch('requests.get'):
+            with self.mock_http_conversation('create_plan'):
+                self.verify_reply('create-plan TEST 1 TEST USD 123 TEST 123', 'Plan Created.')
