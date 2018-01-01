@@ -1,6 +1,6 @@
 # See readme.md for instructions on running this code.
 
-from typing import Any
+from typing import Any, List
 import requests
 import logging
 
@@ -14,12 +14,14 @@ class BaremetricsHandler(object):
         }
 
         self.commands = ['help', 'list-commands', 'account-info', 'list-sources', 'list-plans <source_id>',
-                         'list-customers <source_id>',
-                         'list-subscriptions <source_id>']
+                         'list-customers <source_id>', 'list-subscriptions <source_id>', 'create-plan <source_id> '
+                                                                                         '<oid> <name> <currency> '
+                                                                                         '<amount> <interval> '
+                                                                                         '<interval_count>']
 
         self.descriptions = ['Display bot info', 'Display the list of available commands', 'Display the account info',
                              'List the sources', 'List the plans for the source', 'List the customers in the source',
-                             'List the subscriptions in the source']
+                             'List the subscriptions in the source', 'Create a plan in the given source']
 
         self.check_api_key(bot_handler)
 
@@ -83,6 +85,12 @@ class BaremetricsHandler(object):
 
                 if part_commands[0].lower() == 'list-subscriptions':
                     return self.get_subscriptions(part_commands[1])
+
+                if part_commands[0].lower() == 'create-plan':
+                    if len(part_commands) == 8:
+                        return self.create_plan(part_commands[1:])
+                    else:
+                        return 'Invalid number of arguments.'
 
             except IndexError:
                 return 'Missing Params.'
@@ -182,5 +190,23 @@ class BaremetricsHandler(object):
             response += '\n'
 
         return response
+
+    def create_plan(self, parameters: List[str]) -> str:
+        data_header = {
+            'oid': parameters[1],
+            'name': parameters[2],
+            'currency': parameters[3],
+            'amount': int(parameters[4]),
+            'interval': parameters[5],
+            'interval_count': int(parameters[6])
+        }
+
+        url = 'https://api.baremetrics.com/v1/{}/plans'.format(parameters[0])
+        create_plan_response = requests.post(url, data=data_header, headers=self.auth_header)
+
+        if 'error' not in create_plan_response.json():
+            return 'Plan Created.'
+        else:
+            return 'Some Error Occurred. Maybe the passed arguments are invalid.'
 
 handler_class = BaremetricsHandler
