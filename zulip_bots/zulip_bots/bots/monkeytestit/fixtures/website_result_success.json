@@ -1,0 +1,38 @@
+{
+  "request": {
+    "api_url": "https://monkeytest.it/test",
+    "params": {
+      "on_load": "true",
+      "seo": "true",
+      "secret": "None",
+      "broken_links": "true",
+      "url": "https://website.com",
+      "on_click": "true",
+      "page_weight": "true",
+      "asset_count": "true"
+    }
+  },
+  "response": {
+    "enabled_checkers":{
+      "asset_count":false,
+      "broken_links":true,
+      "on_click":false,
+      "on_load":false,
+      "page_weight":false,
+      "seo":false
+    },
+    "status":"success",
+    "test_id":"a7c33bc6-35de-468c-81c1-7317162c02ab"
+  },
+  "response-headers": {
+    "Content-Type":"application/json",
+    "Server":"cloudflare",
+    "Date":"Tue, 02 Jan 2018 15:08:03 GMT",
+    "Transfer-Encoding":"chunked",
+    "CF-RAY":"3d6e9f90c8c5080b-SIN",
+    "Connection":"keep-alive",
+    "Content-Encoding":"gzip",
+    "Set-Cookie":"__cfduid=d709afa5ead1c50719f24ddf7266655791514905597; expires=Wed, 02-Jan-19 15:06:37 GMT; path=/; domain=.monkeytest.it; HttpOnly"
+  }
+}
+
