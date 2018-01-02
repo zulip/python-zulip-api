@@ -1,0 +1,56 @@
+{
+  "request": {
+    "api_url": "https://monkeytest.it/test",
+    "params": {
+      "on_load": "true",
+      "seo": "true",
+      "secret": "None",
+      "broken_links": "true",
+      "url": "https://website.com",
+      "on_click": "true",
+      "page_weight": "true",
+      "asset_count": "true"
+    }
+  },
+  "response": {
+    "results_url": "https://monkeytest.it/test/33ffc164-cccd-4466-8008-3de00ba787e8",
+    "status": "tests_failed",
+    "enabled_checkers": {
+      "seo": true,
+      "asset_count": true,
+      "on_click": true,
+      "on_load": true,
+      "page_weight": true,
+      "broken_links": true
+    },
+    "failures": {
+      "seo": {
+        "Images missing alt": [
+          "div#site-header > header > div > div.logo.box > a > img",
+          "div#site-header > header > div > div.menu-button.box > a > img",
+          "div#homeTemplateCarousel > div > div > div.slick-slide.slick-cloned > img",
+          "div#homeTemplateCarousel > div > div > div.slick-slide.slick-cloned > img",
+          "div#homeTemplateCarousel > div > div > div.slick-slide.slick-current.slick-active.slick-center > img",
+          "div#homeTemplateCarousel > div > div > div:nth-child(4) > img",
+          "div#homeTemplateCarousel > div > div > div:nth-child(5) > img",
+          "div#homeTemplateCarousel > div > div > div.slick-slide.slick-cloned.slick-center > img",
+          "div#homeTemplateCarousel > div > div > div.slick-slide.slick-cloned > img"
+        ],
+        "Too many H1 tags": [
+          "div#banner > div > h1",
+          "html > body > div.ui-loader.ui-corner-all.ui-body-a.ui-loader-default > h1"
+        ]
+      }
+    }
+  },
+  "response-headers": {
+    "Content-Type":"application/json",
+    "Server":"cloudflare",
+    "Date":"Tue, 02 Jan 2018 14:29:18 GMT",
+    "Content-Length":"1280",
+    "CF-RAY":"3d6e6815a83817bc-SIN",
+    "Connection":"keep-alive",
+    "Set-Cookie":"__cfduid=dd7e2a746cf1abadd1348ba6411ad21391514903325; expires=Wed, 02-Jan-19 14:28:45 GMT; path=/; domain=.monkeytest.it; HttpOnly"
+  }
+}
+
