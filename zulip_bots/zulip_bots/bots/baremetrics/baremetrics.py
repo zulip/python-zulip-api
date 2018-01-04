@@ -21,16 +21,16 @@ class BaremetricsHandler(object):
                              'List the sources', 'List the plans for the source', 'List the customers in the source',
                              'List the subscriptions in the source']
 
-        self.check_api_key()
+        self.check_api_key(bot_handler)
 
-    def check_api_key(self) -> None:
+    def check_api_key(self, bot_handler) -> None:
         url = "https://api.baremetrics.com/v1/account"
         test_query_response = requests.get(url, headers=self.auth_header)
         test_query_data = test_query_response.json()
 
         try:
             if test_query_data['error'] == "Unauthorized. Token not found":
-                logging.error('API Key not valid. Please see doc.md to find out how to get it.')
+                bot_handler.quit('API Key not valid. Please see doc.md to find out how to get it.')
         except KeyError:
             pass
 
