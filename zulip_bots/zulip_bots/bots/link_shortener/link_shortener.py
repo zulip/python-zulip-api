@@ -17,9 +17,9 @@ class LinkShortenerHandler(object):
 
     def initialize(self, bot_handler: Any) -> None:
         self.config_info = bot_handler.get_config_info('link_shortener')
-        self.check_api_key()
+        self.check_api_key(bot_handler)
 
-    def check_api_key(self) -> None:
+    def check_api_key(self, bot_handler) -> None:
         test_request = requests.post(
             'https://www.googleapis.com/urlshortener/v1/url',
             json={'longUrl': 'www.youtube.com/watch'},
@@ -28,7 +28,7 @@ class LinkShortenerHandler(object):
         test_request_data = test_request.json()
         try:
             if test_request_data['error']['errors'][0]['reason'] == 'keyInvalid':
-                logging.error('Invalid key. Follow the instructions in doc.md for setting API key.')
+                bot_handler.quit('Invalid key. Follow the instructions in doc.md for setting API key.')
         except KeyError:
             pass
 
