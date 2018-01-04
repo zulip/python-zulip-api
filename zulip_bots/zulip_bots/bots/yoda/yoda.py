@@ -2,11 +2,7 @@
 import logging
 import ssl
 import sys
-try:
-    import requests
-except ImportError as e:
-    logging.error("Dependency missing!!\n{}".format(e))
-    sys.exit(0)
+import requests
 
 from typing import Any, Dict
 
