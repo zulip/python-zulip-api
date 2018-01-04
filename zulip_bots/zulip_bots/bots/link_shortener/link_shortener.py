@@ -19,7 +19,7 @@ class LinkShortenerHandler(object):
         self.config_info = bot_handler.get_config_info('link_shortener')
         self.check_api_key(bot_handler)
 
-    def check_api_key(self, bot_handler) -> None:
+    def check_api_key(self, bot_handler: Any) -> None:
         test_request = requests.post(
             'https://www.googleapis.com/urlshortener/v1/url',
             json={'longUrl': 'www.youtube.com/watch'},

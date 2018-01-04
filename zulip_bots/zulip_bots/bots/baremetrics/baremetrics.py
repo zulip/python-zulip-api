@@ -23,7 +23,7 @@ class BaremetricsHandler(object):
 
         self.check_api_key(bot_handler)
 
-    def check_api_key(self, bot_handler) -> None:
+    def check_api_key(self, bot_handler: Any) -> None:
         url = "https://api.baremetrics.com/v1/account"
         test_query_response = requests.get(url, headers=self.auth_header)
         test_query_data = test_query_response.json()

@@ -12,7 +12,7 @@ class MentionHandler(object):
 
         self.check_access_token(bot_handler)
 
-    def check_access_token(self, bot_handler) -> None:
+    def check_access_token(self, bot_handler: Any) -> None:
         test_query_header = {
             'Authorization': 'Bearer ' + self.access_token,
             'Accept-Version': '1.15',
