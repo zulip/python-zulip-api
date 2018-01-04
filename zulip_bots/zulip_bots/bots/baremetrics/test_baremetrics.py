@@ -1,14 +1,17 @@
+from unittest.mock import patch
 from zulip_bots.test_lib import BotTestCase
 
 class TestBaremetricsBot(BotTestCase):
     bot_name = "baremetrics"
 
     def test_bot_responds_to_empty_message(self) -> None:
-        with self.mock_config_info({'api_key': 'TEST'}):
+        with self.mock_config_info({'api_key': 'TEST'}), \
+                patch('requests.get'):
             self.verify_reply('', 'No Command Specified')
 
     def test_help_query(self) -> None:
-        with self.mock_config_info({'api_key': 'TEST'}):
+        with self.mock_config_info({'api_key': 'TEST'}), \
+                patch('requests.get'):
             self.verify_reply('help', '''
         This bot gives updates about customer behavior, financial performance, and analytics
         for an organization using the Baremetrics Api.\n
@@ -17,7 +20,8 @@ class TestBaremetricsBot(BotTestCase):
         ''')
 
     def test_list_commands_command(self) -> None:
-        with self.mock_config_info({'api_key': 'TEST'}):
+        with self.mock_config_info({'api_key': 'TEST'}), \
+                patch('requests.get'):
             self.verify_reply('list-commands', '**Available Commands:** \n - help : Display bot info\n - list-commands '
                                                ': Display the list of available commands\n - account-info : Display '
                                                'the account info\n - list-sources : List the sources\n - list-plans '
