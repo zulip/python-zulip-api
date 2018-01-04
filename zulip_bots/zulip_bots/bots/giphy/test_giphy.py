@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from requests.exceptions import HTTPError, ConnectionError
 
 from typing import Any, Union
@@ -33,21 +33,14 @@ class TestGiphyBot(BotTestCase):
         bot = get_bot_message_handler(self.bot_name)
         bot_handler = StubBotHandler()
 
-        with self.mock_config_info({'key': '12345678'}):
+        with self.mock_config_info({'key': '12345678'}), \
+                self.mock_http_conversation('test_403'),  \
+                self.assertRaises(bot_handler.BotQuitException):
             bot.initialize(bot_handler)
 
-        mock_message = {'content': 'Hello'}
-
-        with self.mock_http_conversation('test_403'):
-            with self.assertRaises(HTTPError):
-                # Call the native  handle_message here,
-                # since we don't want to assert a response,
-                # but an exception.
-                bot.handle_message(mock_message, bot_handler)
-
-    def test_connection_error(self) -> None:
+    def test_connection_error_while_running(self) -> None:
         with self.mock_config_info({'key': '12345678'}), \
-                patch('requests.get', side_effect=ConnectionError()), \
+                patch('requests.get', side_effect=[MagicMock(), ConnectionError()]), \
                 patch('logging.exception'):
             self.verify_reply(
                 'world without chocolate',

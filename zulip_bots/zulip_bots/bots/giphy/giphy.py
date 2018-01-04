@@ -26,18 +26,19 @@ class GiphyHandler(object):
 
     def initialize(self, bot_handler: Any) -> None:
         self.config_info = bot_handler.get_config_info('giphy')
-        query = {'test': 'keyword',
+        query = {'s': 'Hello',
                  'api_key': self.config_info['key']}
         try:
             data = requests.get(GIPHY_TRANSLATE_API, params=query)
+            data.raise_for_status()
+        except ConnectionError as e:
+            bot_handler.quit(str(e))
         except HTTPError as e:
-            if (e.response.json()['error']['errors'][0]['reason'] == 'keyInvalid'):
-                bot_handler.quit('Invalid key.'
-                                 'Follow the instructions in doc.md for setting API key.')
-            else:
-                raise
-        except ConnectionError:
-            logging.warning('Bad connection')
+            error_message = str(e)
+            if (data.status_code == 403):
+                error_message += ('This is likely due to an invalid key.\n'
+                                  'Follow the instructions in doc.md for setting an API key.')
+            bot_handler.quit(error_message)
 
     def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
         bot_response = get_bot_giphy_response(
