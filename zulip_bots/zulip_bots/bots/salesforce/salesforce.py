@@ -163,9 +163,7 @@ class SalesforceHandler(object):
                 security_token=self.config_info['security_token']
             )
         except simple_salesforce.exceptions.SalesforceAuthenticationFailed as err:
-            logging.error(
-                'Failed to log in to Salesforce. {} {}'.format(err.code, err.message))
-            quit()
+            bot_handler.quit('Failed to log in to Salesforce. {} {}'.format(err.code, err.message))
 
     def handle_message(self, message: Any, bot_handler: Any) -> None:
         try:
