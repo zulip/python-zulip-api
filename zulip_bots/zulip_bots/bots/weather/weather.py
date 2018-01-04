@@ -9,15 +9,15 @@ class WeatherHandler(object):
     def initialize(self, bot_handler: Any) -> None:
         self.api_key = bot_handler.get_config_info('weather')['key']
         self.response_pattern = 'Weather in {}, {}:\n{:.2f} F / {:.2f} C\n{}'
-        self.check_api_key()
+        self.check_api_key(bot_handler)
 
-    def check_api_key(self) -> None:
+    def check_api_key(self, bot_handler: Any) -> None:
         url = 'http://api.openweathermap.org/data/2.5/weather?q=nyc&APPID=' + self.api_key
         test_response = requests.get(url)
         try:
             test_response_data = test_response.json()
             if test_response_data['cod'] == 401:
-                logging.error('API Key not valid. Please see doc.md to find out how to get it.')
+                bot_handler.quit('API Key not valid. Please see doc.md to find out how to get it.')
         except KeyError:
             pass
 

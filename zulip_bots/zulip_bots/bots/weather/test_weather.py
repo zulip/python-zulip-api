@@ -1,3 +1,4 @@
+from unittest.mock import patch
 from zulip_bots.test_lib import BotTestCase
 
 from typing import Optional
@@ -25,7 +26,8 @@ class TestWeatherBot(BotTestCase):
 
     # Override default function in BotTestCase
     def test_bot_responds_to_empty_message(self) -> None:
-        self._test('', self.help_content)
+        with patch('requests.get'):
+            self._test('', self.help_content)
 
     def test_bot(self) -> None:
 
@@ -46,4 +48,5 @@ class TestWeatherBot(BotTestCase):
         self._test('fghjklasdfgh', bot_response, 'test_city_not_found')
 
         # help message
-        self._test('help', self.help_content)
+        with patch('requests.get'):
+            self._test('help', self.help_content)
