@@ -10,9 +10,9 @@ class MentionHandler(object):
         self.access_token = self.config_info['access_token']
         self.account_id = ''
 
-        self.check_access_token()
+        self.check_access_token(bot_handler)
 
-    def check_access_token(self) -> None:
+    def check_access_token(self, bot_handler) -> None:
         test_query_header = {
             'Authorization': 'Bearer ' + self.access_token,
             'Accept-Version': '1.15',
@@ -23,7 +23,7 @@ class MentionHandler(object):
             test_query_data = test_query_response.json()
             if test_query_data['error'] == 'invalid_grant' and \
                test_query_data['error_description'] == 'The access token provided is invalid.':
-                logging.error('Access Token Invalid. Please see doc.md to find out how to get it.')
+                bot_handler.quit('Access Token Invalid. Please see doc.md to find out how to get it.')
         except KeyError:
             pass
 
