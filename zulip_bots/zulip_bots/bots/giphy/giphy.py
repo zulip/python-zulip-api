@@ -32,9 +32,8 @@ class GiphyHandler(object):
             data = requests.get(GIPHY_TRANSLATE_API, params=query)
         except HTTPError as e:
             if (e.response.json()['error']['errors'][0]['reason'] == 'keyInvalid'):
-                logging.error('Invalid key.'
-                              'Follow the instructions in doc.md for setting API key.')
-                sys.exit(1)
+                bot_handler.quit('Invalid key.'
+                                 'Follow the instructions in doc.md for setting API key.')
             else:
                 raise
         except ConnectionError:
