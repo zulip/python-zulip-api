@@ -1,0 +1,28 @@
+{
+  "request": {
+    "method": "GET",
+    "api_url": "https://translation.googleapis.com/language/translate/v2/languages",
+    "params": {
+      "key": "abcdefg",
+      "target": "en"
+    }
+  },
+  "response": {
+    "error":{  
+      "status": "INVALID_ARGUMENT",
+      "message": "API key not valid. Please pass a valid API key.",
+      "code": 400,
+      "errors": [  
+        {  
+          "domain":"global",
+          "message":"API key not valid. Please pass a valid API key.",
+          "reason":"badRequest"
+        }
+      ]
+    }
+  },
+  "response-headers": {
+    "status": 400,
+    "content-type": "application/json; charset=utf-8"
+  }
+}
