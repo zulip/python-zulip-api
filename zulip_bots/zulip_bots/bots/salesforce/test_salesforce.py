@@ -1,4 +1,4 @@
-from zulip_bots.test_lib import BotTestCase, read_bot_fixture_data
+from zulip_bots.test_lib import BotTestCase, StubBotHandler, read_bot_fixture_data
 import simple_salesforce
 from simple_salesforce.exceptions import SalesforceAuthenticationFailed
 from contextlib import contextmanager
@@ -174,11 +174,8 @@ class TestSalesforceBot(BotTestCase):
                    'Usage: find contact <name> [arguments]')
 
     def test_bad_auth(self) -> None:
-        with self.assertLogs(level='ERROR') as log, \
-                patch('builtins.quit'):
+        with self.assertRaises(StubBotHandler.BotQuitException):
             self._test_initialize(auth_success=False)
-            self.assertIn(
-                'ERROR:root:Failed to log in to Salesforce. 403 auth failed', log.output)
 
     def test_callback(self) -> None:
         self._test('test_one_result', 'echo hello', 'hello')
