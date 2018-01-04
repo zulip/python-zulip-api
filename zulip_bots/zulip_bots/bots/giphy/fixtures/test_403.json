@@ -7,16 +7,7 @@
     }
   },
   "response": {
-    "meta": {
-      "status": 200
-    },
-    "data": {
-      "images": {
-        "original": {
-          "url": "https://media4.giphy.com/media/3o6ZtpxSZbQRRnwCKQ/giphy.gif"
-        }
-      }
-    }
+    "message": "Invalid authentication credentials"
   },
   "response-headers": {
     "status": 403,
