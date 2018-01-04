@@ -1,3 +1,4 @@
+from unittest.mock import patch
 from zulip_bots.test_lib import BotTestCase
 
 class TestLinkShortenerBot(BotTestCase):
@@ -8,7 +9,8 @@ class TestLinkShortenerBot(BotTestCase):
             self.verify_reply(message, response)
 
     def test_bot_responds_to_empty_message(self) -> None:
-        self._test('', 'No links found. Send "help" to see usage instructions.')
+        with patch('requests.post'):
+            self._test('', 'No links found. Send "help" to see usage instructions.')
 
     def test_normal(self) -> None:
         with self.mock_http_conversation('test_normal'):
@@ -19,13 +21,15 @@ class TestLinkShortenerBot(BotTestCase):
         # No `mock_http_conversation` is necessary because the bot will
         # recognize that no links are in the message and won't make any HTTP
         # requests.
-        self._test('Shorten nothing please.',
-                   'No links found. Send "help" to see usage instructions.')
+        with patch('requests.post'):
+            self._test('Shorten nothing please.',
+                       'No links found. Send "help" to see usage instructions.')
 
     def test_help(self) -> None:
         # No `mock_http_conversation` is necessary because the bot will
         # recognize that the message is 'help' and won't make any HTTP
         # requests.
-        self._test('help',
-                   ('Mention the link shortener bot in a conversation and then '
-                    'enter any URLs you want to shorten in the body of the message.'))
+        with patch('requests.post'):
+            self._test('help',
+                       ('Mention the link shortener bot in a conversation and then '
+                        'enter any URLs you want to shorten in the body of the message.'))
