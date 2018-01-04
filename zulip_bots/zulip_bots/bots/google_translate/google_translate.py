@@ -19,20 +19,12 @@ class GoogleTranslateHandler(object):
 
     def initialize(self, bot_handler):
         self.config_info = bot_handler.get_config_info('googletranslate')
-        self.supported_languages = get_supported_languages(self.config_info['key'])
-        query = {'key': self.config_info['key'],
-                 'target': 'en'}
+        # Retrieving the supported languages also serves as a check whether
+        # the bot is properly connected to the Google Translate API.
         try:
-            data = requests.get(api_url + '/languages', params = query)
-        except HTTPError as e:
-            if (e.response.json()['error']['errors'][0]['reason'] == 'keyInvalid'):
-                logging.error('Invalid key.'
-                              'Follow the instructions in doc.md for setting API key.')
-                sys.exit(1)
-            else:
-                raise
-        except ConnectionError:
-            logging.warning('Bad connection')
+            self.supported_languages = get_supported_languages(self.config_info['key'])
+        except TranslateError as e:
+            bot_handler.quit(str(e))
 
     def handle_message(self, message, bot_handler):
         bot_response = get_translate_bot_response(message['content'],

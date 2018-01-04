@@ -1,7 +1,7 @@
 from unittest.mock import patch
 from requests.exceptions import ConnectionError
 
-from zulip_bots.test_lib import BotTestCase
+from zulip_bots.test_lib import BotTestCase, StubBotHandler
 from zulip_bots.bots.google_translate.google_translate import TranslateError
 
 help_text = '''
@@ -66,9 +66,9 @@ class TestGoogleTranslateBot(BotTestCase):
                    side_effect=Exception):
             self._test('"hello" de', 'Error. .', 'test_languages')
 
-    def test_get_language_403(self):
-        with self.assertRaises(TranslateError):
-            self._test(None, None, 'test_language_403')
+    def test_api_access_not_configured(self):
+        with self.assertRaises(StubBotHandler.BotQuitException):
+            self._test(None, None, 'test_api_access_not_configured')
 
     def test_connection_error(self):
         with patch('requests.post', side_effect=ConnectionError()), \
