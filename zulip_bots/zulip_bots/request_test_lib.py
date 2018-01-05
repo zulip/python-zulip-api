@@ -2,7 +2,7 @@ import json
 import requests
 
 from contextlib import contextmanager
-from mock import patch
+from unittest.mock import patch
 
 from typing import Any, Dict, List
 
@@ -77,7 +77,7 @@ def mock_request_exception():
     # type: () -> Any
     def assert_mock_called(mock_result):
         # type: (Any) -> None
-        mock_result.assert_called()
+        assert mock_result.called
 
     with patch('requests.get') as mock_get:
         mock_get.return_value = True
