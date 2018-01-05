@@ -1,0 +1,74 @@
+{
+  "request": {
+    "api_url": "https://beta.idonethis.com/api/v2/entries?team_id=31415926535",
+    "headers": {
+        "Authorization": "Token 12345678"
+    }
+  },
+  "response": [
+    {
+      "body": "TESTING<>",
+      "created_at": "2018-01-04T21:10:13.084+11:00",
+      "updated_at": "2018-01-04T21:10:13.084+11:00",
+      "occurred_on": "2018-01-04",
+      "status": "done",
+      "hash_id": "65e1b21fd8f63adede1daae0bdf28c0e47b84923",
+      "completed_on": null,
+      "archived_at": null,
+      "body_formatted": "TESTING",
+      "team": {
+        "name": "testing team 1",
+        "hash_id": "31415926535"
+      },
+      "user": {
+        "email_address": "john.doe@generic.name",
+        "full_name": "John Doe",
+        "hash_id": "deadbeef"
+      }
+    },
+    {
+     "body": "Grabbing some more data...",
+      "created_at": "2018-01-04T20:07:58.078+11:00",
+      "updated_at": "2018-01-04T20:07:58.078+11:00",
+      "occurred_on": "2018-01-04",
+      "status": "done",
+      "hash_id": "fa974ad8c1acb9e81361a051a697f9dae22908d6",
+      "completed_on": null,
+      "archived_at": null,
+      "body_formatted": "Grabbing some more data...",
+      "team": {
+        "name": "testing team 1",
+        "hash_id": "31415926535"
+      },
+      "user": {
+        "email_address": "john.doe@generic.name",
+        "full_name": "John Doe",
+        "hash_id": "deadbeef"
+      }
+    },
+    {
+      "body": "GRABBING HTTP DATA",
+      "created_at": "2018-01-04T19:07:17.214+11:00",
+      "updated_at": "2018-01-04T19:07:17.214+11:00",
+      "occurred_on": "2018-01-04",
+      "status": "done",
+      "hash_id": "72c8241d2218464433268c5abd6625ac104e3d8f",
+      "completed_on": null,
+      "archived_at": null,
+      "body_formatted": "GRABBING HTTP DATA",
+      "team": {
+        "name": "testing team 1",
+        "hash_id": "31415926535"
+      },
+      "user": {
+        "email_address": "john.doe@generic.name",
+        "full_name": "John Doe",
+        "hash_id": "deadbeef"
+      }
+    }
+  ],
+  "response-headers": {
+    "status": 200,
+    "content-type": "application/json; charset=utf-8"
+  }
+}

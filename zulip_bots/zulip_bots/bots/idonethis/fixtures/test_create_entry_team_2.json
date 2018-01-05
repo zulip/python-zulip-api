@@ -1,0 +1,37 @@
+{
+  "request": {
+    "api_url": "https://beta.idonethis.com/api/v2/entries",
+    "method": "POST",
+    "json": {
+      "body": "something and something else",
+      "team_id": "8979deadbeef"
+    },
+    "headers": {
+        "Authorization": "Token 12345678"
+    }
+  },
+  "response": {
+    "body": "something and something else",
+    "created_at": "2018-01-04T20:07:58.078+11:00",
+    "updated_at": "2018-01-04T20:07:58.078+11:00",
+    "occurred_on": "2018-01-04",
+    "status": "done",
+    "hash_id": "fa974ad8c1acb9e81361a051a697f9dae22908d6",
+    "completed_on": null,
+    "archived_at": null,
+    "body_formatted": "something and something else",
+    "team": {
+        "name": "test_team_2",
+        "hash_id": "8979deadbeef"
+    },
+    "user": {
+        "email_address": "xavier.cooney03@gmail.com",
+        "full_name": "Benji Franklin",
+        "hash_id": "f22a944f"
+    }
+  },
+  "response-headers": {
+    "status": 200,
+    "content-type": "application/json; charset=utf-8"
+  }
+}
