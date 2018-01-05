@@ -1,4 +1,4 @@
-from mock import patch
+from unittest.mock import patch
 import sys
 from typing import Dict, Any, Optional
 from zulip_bots.test_lib import BotTestCase, get_bot_message_handler, StubBotHandler

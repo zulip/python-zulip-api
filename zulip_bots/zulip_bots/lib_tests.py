@@ -1,5 +1,5 @@
 from unittest import TestCase
-from mock import MagicMock, patch, ANY
+from unittest.mock import MagicMock, patch, ANY
 from zulip_bots.lib import (
     ExternalBotHandler,
     StateHandler,

@@ -1,6 +1,6 @@
 from zulip_bots.test_lib import BotTestCase
 
-from mock import patch
+from unittest.mock import patch
 
 class TestTictactoeBot(BotTestCase):
     bot_name = 'tictactoe'

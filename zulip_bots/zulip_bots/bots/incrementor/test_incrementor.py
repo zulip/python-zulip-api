@@ -1,4 +1,4 @@
-import mock
+from unittest import mock
 
 from zulip_bots.test_lib import (
     get_bot_message_handler,
