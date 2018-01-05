@@ -13,16 +13,12 @@ from typing import Iterator
 def provision_bot(path_to_bot, force):
     # type: (str, bool) -> None
     req_path = os.path.join(path_to_bot, 'requirements.txt')
-    install_path = os.path.join(path_to_bot, 'bot_dependencies')
-
     if os.path.isfile(req_path):
         bot_name = os.path.basename(path_to_bot)
         logging.info('Installing dependencies for {}...'.format(bot_name))
-        if not os.path.isdir(install_path):
-            os.makedirs(install_path)
 
         # pip install -r $BASEDIR/requirements.txt -t $BASEDIR/bot_dependencies --quiet
-        rcode = pip.main(['install', '-r', req_path, '-t', install_path, '--quiet'])
+        rcode = pip.main(['install', '-r', req_path, '--quiet'])
 
         if rcode != 0:
             logging.error('Error. Check output of `pip install` above for details.')
@@ -31,8 +27,6 @@ def provision_bot(path_to_bot, force):
                 sys.exit(rcode)  # Use pip's exit code
         else:
             logging.info('Installed dependencies successfully.')
-
-        sys.path.insert(0, install_path)
 
 
 def parse_args(available_bots):
