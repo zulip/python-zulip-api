@@ -10,6 +10,14 @@ import glob
 import pip
 from typing import Iterator
 
+def get_bot_paths():
+    # type: () -> Iterator[str]
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    bots_dir = os.path.join(current_dir, "bots")
+    bots_subdirs = map(lambda d: os.path.abspath(d), glob.glob(bots_dir + '/*'))
+    paths = filter(lambda d: os.path.isdir(d), bots_subdirs)
+    return paths
+
 def provision_bot(path_to_bot, force):
     # type: (str, bool) -> None
     req_path = os.path.join(path_to_bot, 'requirements.txt')
@@ -66,18 +74,13 @@ Example: ./provision.py helloworld xkcd wikipedia
 
 def main():
     # type: () -> None
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    bots_dir = os.path.join(current_dir, "bots")
-    bots_subdirs = map(lambda d: os.path.abspath(d), glob.glob(bots_dir + '/*'))
-    available_bots = filter(lambda d: os.path.isdir(d), bots_subdirs)
-
-    options = parse_args(available_bots)
+    options = parse_args(available_bots=get_bot_paths())
 
     if not options.quiet:
         logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
     for bot in options.bots_to_provision:
-        provision_bot(os.path.join(bots_dir, bot), options.force)
+        provision_bot(bot, options.force)
 
 if __name__ == '__main__':
     main()
