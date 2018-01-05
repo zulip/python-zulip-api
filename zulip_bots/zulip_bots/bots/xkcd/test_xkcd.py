@@ -1,5 +1,5 @@
-import mock
-from mock import MagicMock, patch
+from unittest import mock
+from unittest.mock import MagicMock, patch
 from zulip_bots.test_lib import BotTestCase
 
 class TestXkcdBot(BotTestCase):

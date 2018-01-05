@@ -15,7 +15,7 @@ from unittest import TestCase
 
 if six.PY2:
     import mock
-    from mock import patch
+    from unittest.mock import patch
 else:
     from unittest import mock
     from unittest.mock import patch

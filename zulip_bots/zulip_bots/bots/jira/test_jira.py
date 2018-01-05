@@ -1,4 +1,4 @@
-from mock import patch
+from unittest.mock import patch
 from zulip_bots.test_lib import BotTestCase
 
 class TestJiraBot(BotTestCase):

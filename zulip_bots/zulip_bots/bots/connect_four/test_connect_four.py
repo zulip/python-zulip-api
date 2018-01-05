@@ -1,7 +1,7 @@
 from zulip_bots.test_lib import BotTestCase
 
 from contextlib import contextmanager
-from mock import MagicMock
+from unittest.mock import MagicMock
 from zulip_bots.bots.connect_four.connect_four import *
 
 class TestConnectFourBot(BotTestCase):
