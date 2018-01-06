@@ -12,7 +12,7 @@ if False:
 
 import generate_manifest
 
-ZULIP_BOTS_VERSION = "0.3.9"
+ZULIP_BOTS_VERSION = "0.4.0"
 IS_PYPA_PACKAGE = False
 
 # IS_PYPA_PACKAGE is set to True by tools/release-packages
