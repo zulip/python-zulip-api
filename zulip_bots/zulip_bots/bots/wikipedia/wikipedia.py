@@ -1,7 +1,7 @@
 import requests
 import logging
 import re
-from six.moves import urllib
+import urllib
 from zulip_bots.lib import Any
 
 from typing import Optional, Any, Dict

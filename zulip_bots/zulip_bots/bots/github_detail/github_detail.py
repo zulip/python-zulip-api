@@ -2,7 +2,7 @@ import re
 import os
 import sys
 import logging
-import six.moves.configparser
+import configparser
 
 import requests
 

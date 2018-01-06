@@ -5,7 +5,6 @@ import importlib
 import os
 import zulip_bots.run
 from zulip_bots.lib import extract_query_without_mention
-import six
 import unittest
 import zulip
 
@@ -13,12 +12,8 @@ from importlib import import_module
 from typing import Optional
 from unittest import TestCase
 
-if six.PY2:
-    import mock
-    from unittest.mock import patch
-else:
-    from unittest import mock
-    from unittest.mock import patch
+from unittest import mock
+from unittest.mock import patch
 
 class TestDefaultArguments(TestCase):
 
