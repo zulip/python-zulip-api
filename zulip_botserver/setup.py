@@ -38,6 +38,7 @@ setuptools_info = dict(
         'zulip',
         'zulip_bots',
         'flask>=0.12.2',
+        'mock',
     ],
 )
 
