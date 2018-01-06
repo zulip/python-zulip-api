@@ -72,7 +72,7 @@ class YodaSpeakHandler(object):
             error_message = response.json()['message']
             logging.error(error_message)
             error_code = response.status_code
-            error_message = error_message + 'Error code: ' + error_code +\
+            error_message = error_message + 'Error code: ' + str(error_code) +\
                 ' Did you follow the instructions in the `readme.md` file?'
             return error_message
 
