@@ -77,6 +77,15 @@ def get_assets():
     )
     return assets_files
 
+def get_config_templates():
+    # type: () -> Iterator[str]
+    glob_pattern = os.path.join(BOTS_DIR, '*', '*.conf',)
+    assets_files = map(
+        lambda fp: os.path.join(*fp.split(os.path.sep)[-4:]).replace(os.path.sep, '/'),
+        glob.glob(glob_pattern)
+    )
+    return assets_files
+
 def generate_and_write(filepaths, file_obj):
     # type: (Iterator[str], IO[str]) -> None
     template = 'include {line}\n'
@@ -92,12 +101,14 @@ def generate_dev_manifest():
         generate_and_write(get_logos(), fp)
         generate_and_write(get_docs(), fp)
         generate_and_write(get_assets(), fp)
+        generate_and_write(get_config_templates(), fp)
 
 def generate_release_manifest():
     # type: () -> None
     with open(MANIFEST_PATH, 'w') as fp:
         generate_and_write(get_docs(), fp)
         generate_and_write(get_assets(), fp)
+        generate_and_write(get_config_templates(), fp)
 
 def parse_args():
     # type: () -> argparse.Namespace
