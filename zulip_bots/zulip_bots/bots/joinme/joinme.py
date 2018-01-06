@@ -42,4 +42,3 @@ class JoinmeHandler(object):
         bot_handler.send_reply(message, content)
 
 handler_class = JoinmeHandler
-
