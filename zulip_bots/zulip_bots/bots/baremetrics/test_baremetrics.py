@@ -1,5 +1,7 @@
 from unittest.mock import patch
 from zulip_bots.test_lib import BotTestCase
+from zulip_bots.test_lib import StubBotHandler
+from zulip_bots.bots.baremetrics.baremetrics import BaremetricsHandler
 
 class TestBaremetricsBot(BotTestCase):
     bot_name = "baremetrics"
@@ -66,3 +68,26 @@ class TestBaremetricsBot(BotTestCase):
         with self.mock_config_info({'api_key': 'TEST'}):
             with self.mock_http_conversation('list_subscriptions'):
                 self.verify_reply('list-subscriptions TEST', r)
+
+    def test_exception_when_api_key_is_invalid(self)-> None:
+        bot_test_instance = BaremetricsHandler()
+
+        with self.mock_config_info({'api_key': 'TEST'}):
+            with self.assertRaises(StubBotHandler.BotQuitException):
+                bot_test_instance.initialize(StubBotHandler())
+
+    def test_invalid_command(self) -> None:
+        with self.mock_config_info({'api_key': 'TEST'}), \
+                patch('requests.get'):
+            self.verify_reply('abcd', 'Invalid Command.')
+
+    def test_missing_params(self) -> None:
+        with self.mock_config_info({'api_key': 'TEST'}), \
+                patch('requests.get'):
+            self.verify_reply('list-plans', 'Missing Params.')
+
+    def test_key_error(self) -> None:
+        with self.mock_config_info({'api_key': 'TEST'}), \
+                patch('requests.get'):
+            with self.mock_http_conversation('test_key_error'):
+                self.verify_reply('list-plans TEST', 'Invalid Response From API.')
