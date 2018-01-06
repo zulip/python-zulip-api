@@ -1,13 +1,13 @@
-#Joinme bot
+# Joinme bot
 
 The Joinme bot posts a link to a Joinme call when being mentioned.
 
-##Setup
+## Setup
 
 See [here](https://zulipchat.com/api/running-bots#running-a-bot) for description
 on how to run a bot.
 
-##Usage
+## Usage
 
 1. @-mention it first and it will give out a link which asks for permission
    to view the personal url and to start a new meeting. Login is required.
