@@ -1,0 +1,19 @@
+{
+  "requests": {
+    "api_url": "https://secure.join.me/api/public/v1/auth/oauth2",
+    "params": {
+      "client_id": "fvg6qhpans4z2jryq45crb69",
+      "scope": "user_info scheduler start_meeting",
+      "redirect_uri": "https://developer.join.me/io-docs/oauth2callback",
+      "state": "ZISSHUDBEUNIq",
+      "response_type": "code"
+      }
+     },
+  "response": {
+      "status": 200,
+      "url": "https://login.com"
+      },
+  "response-headers": {
+    "Content-Type": "application/json"
+   }
+}
