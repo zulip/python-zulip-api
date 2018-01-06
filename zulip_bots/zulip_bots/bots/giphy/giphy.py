@@ -1,4 +1,4 @@
-from six.moves.configparser import SafeConfigParser
+from configparser import SafeConfigParser
 from typing import Dict, Any, Union
 import requests
 import logging

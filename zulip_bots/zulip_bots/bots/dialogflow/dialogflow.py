@@ -1,6 +1,6 @@
 # See readme.md for instructions on running this code.
 import logging
-from six.moves.urllib import parse
+from urllib import parse
 import json
 
 import apiai

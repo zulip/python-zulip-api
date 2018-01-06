@@ -8,7 +8,7 @@ import sys
 import time
 import re
 
-from six.moves import configparser
+import configparser
 
 from contextlib import contextmanager
 
