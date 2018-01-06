@@ -1,3 +1,4 @@
+from zulip_bots.bots.yoda.yoda import ServiceUnavailableError
 from zulip_bots.test_lib import BotTestCase
 
 class TestYodaBot(BotTestCase):
@@ -51,3 +52,19 @@ class TestYodaBot(BotTestCase):
         self._test('@#$%^&*',
                    "Invalid input, please check the sentence you have entered.",
                    'test_invalid_input')
+
+        # Test 403 response.
+        self._test('You will learn how to speak like me someday.',
+                   "Invalid Api Key. Did you follow the instructions in the `readme.md` file?",
+                   'test_api_key_error')
+
+        # Test 503 response.
+        with self.assertRaises(ServiceUnavailableError):
+            self._test('You will learn how to speak like me someday.',
+                       "The service is temporarily unavailable, please try again.",
+                       'test_service_unavailable_error')
+
+        # Test unknown response.
+        self._test('You will learn how to speak like me someday.',
+                   "Unknown Error.Error code: 123 Did you follow the instructions in the `readme.md` file?",
+                   'test_unknown_error')
