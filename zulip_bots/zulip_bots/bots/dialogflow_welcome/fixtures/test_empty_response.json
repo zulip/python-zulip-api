@@ -1,0 +1,20 @@
+{
+    "response": {
+      "result": {
+        "fulfillment": {
+          "speech": ""
+        }
+      },
+      "alternateResult": {
+        "fulfillment": {
+            "speech": ""
+        }
+      },
+      "status": {
+        "errorType": "success"
+      }
+    },
+    "request": {
+      "query": "hello"
+    }
+  }
