@@ -106,12 +106,13 @@ def send_zulip(email, api_key, site, stream, subject, content):
     client.send_message(message_data)
 
 def get_config(ui, item):
-    # type: (ui, str) -> Optional[str]
+    # type: (ui, str) -> str
     try:
         # configlist returns everything in lists.
         return ui.configlist('zulip', item)[0]
     except IndexError:
-        return None
+        ui.warn("Zulip: Could not find required item {} in hg config.".format(item))
+        exit(1)
 
 def hook(ui, repo, **kwargs):
     # type: (ui, repo, **Text) -> None
