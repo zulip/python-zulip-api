@@ -461,6 +461,7 @@ class Client(object):
             req_files.append((f.name, f))
 
         self.ensure_session()
+        assert(self.session is not None)
 
         query_state = {
             'had_error_retry': False,
