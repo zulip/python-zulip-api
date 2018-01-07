@@ -28,6 +28,7 @@
 from __future__ import absolute_import
 
 import zulip
+import sys
 from six.moves import range
 from typing import Any, Optional, Text
 from mercurial import ui, repo
@@ -112,7 +113,7 @@ def get_config(ui, item):
         return ui.configlist('zulip', item)[0]
     except IndexError:
         ui.warn("Zulip: Could not find required item {} in hg config.".format(item))
-        exit(1)
+        sys.exit(1)
 
 def hook(ui, repo, **kwargs):
     # type: (ui, repo, **Text) -> None
@@ -126,7 +127,7 @@ def hook(ui, repo, **kwargs):
 
     if hooktype != "changegroup":
         ui.warn("Zulip: {hooktype} not supported\n".format(hooktype=hooktype))
-        exit(1)
+        sys.exit(1)
 
     ctx = repo.changectx(node)
     branch = ctx.branch()
@@ -140,14 +141,14 @@ def hook(ui, repo, **kwargs):
         watched_branches = [b.lower().strip() for b in branch_whitelist.split(",")]
         if branch.lower() not in watched_branches:
             ui.debug("Zulip: ignoring event for {branch}\n".format(branch=branch))
-            exit(0)
+            sys.exit(0)
 
     if branch_blacklist:
         # Don't send notifications for branches we've ignored.
         ignored_branches = [b.lower().strip() for b in branch_blacklist.split(",")]
         if branch.lower() in ignored_branches:
             ui.debug("Zulip: ignoring event for {branch}\n".format(branch=branch))
-            exit(0)
+            sys.exit(0)
 
     # The first and final commits in the changeset.
     base = repo[node].rev()
@@ -160,7 +161,7 @@ def hook(ui, repo, **kwargs):
     if not (email and api_key):
         ui.warn("Zulip: missing email or api_key configurations\n")
         ui.warn("in the [zulip] section of your .hg/hgrc.\n")
-        exit(1)
+        sys.exit(1)
 
     stream = get_config(ui, "stream")
     # Give a default stream if one isn't provided.
