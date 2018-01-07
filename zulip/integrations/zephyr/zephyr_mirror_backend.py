@@ -252,7 +252,7 @@ def maybe_restart_mirroring_script():
                 time.sleep(1)
 
 def process_loop(log):
-    # type: (IO[Any]) -> None
+    # type: (Optional[IO[Any]]) -> None
     restart_check_count = 0
     last_check_time = time.time()
     while True:
@@ -362,7 +362,7 @@ def decrypt_zephyr(zephyr_class, instance, body):
     return decrypted
 
 def process_notice(notice, log):
-    # type: (zulip, IO[Any]) -> None
+    # type: (zulip, Optional[IO[Any]]) -> None
     (zsig, body) = parse_zephyr_body(notice.message, notice.format)
     is_personal = False
     is_huddle = False
@@ -954,7 +954,7 @@ def open_logger():
     return logger
 
 def configure_logger(logger, direction_name):
-    # type: (logging.Logger, str) -> None
+    # type: (logging.Logger, Optional[str]) -> None
     if direction_name is None:
         log_format = "%(message)s"
     else:
@@ -1162,7 +1162,7 @@ or specify the --api-key-file option.""" % (options.api_key_file,))))
         options.session_path = "/var/tmp/%s" % (options.user,)
 
     if options.forward_from_zulip:
-        child_pid = os.fork()  # type: int
+        child_pid = os.fork()  # type: Optional[int]
         if child_pid == 0:
             CURRENT_STATE = States.ZulipToZephyr
             # Run the zulip => zephyr mirror in the child
