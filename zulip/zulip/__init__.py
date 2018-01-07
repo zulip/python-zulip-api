@@ -588,7 +588,7 @@ class Client(object):
                 else:
                     res = self.register(event_types=event_types, narrow=narrow)
 
-                if 'error' in res.get('result'):
+                if 'error' in res['result']:
                     if self.verbose:
                         print("Server returned error:\n%s" % res['msg'])
                     time.sleep(1)
@@ -604,7 +604,7 @@ class Client(object):
                 (queue_id, last_event_id) = do_register()
 
             res = self.get_events(queue_id=queue_id, last_event_id=last_event_id)
-            if 'error' in res.get('result'):
+            if 'error' in res['result']:
                 if res["result"] == "http-error":
                     if self.verbose:
                         print("HTTP error fetching events -- probably a server restart")
