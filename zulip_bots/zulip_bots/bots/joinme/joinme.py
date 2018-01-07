@@ -12,7 +12,8 @@ class JoinmeHandler(object):
     def handle_message(self, message: Any, bot_handler: Any) -> None:
         if 'ZISSHUDBUNIq' not in message['content']:
             payload = {'client_id': 'fvg6qhpans4z2jryq45crb69', 'scope': 'user_info scheduler start_meeting',
-                       'redirect_uri': 'https://developer.join.me/io-docs/oauth2callback', 'state': 'ZISSHUDBUNIq', 'response_type': 'code'}
+                       'redirect_uri': 'https://developer.join.me/io-docs/oauth2callback',
+                       'state': 'ZISSHUDBUNIq', 'response_type': 'code'}
             r = requests.get('https://secure.join.me/api/public/v1/auth/oauth2', params=payload)
             content = "Please click the link below to log in and authorise Joinme:\n {} \nAnd please copy and " \
                       "send the url shown in browser after clicking accept. Don't forget to @ me!".format(r.url)
@@ -21,7 +22,9 @@ class JoinmeHandler(object):
             authorisation_code = authorisation_code.split('=')
             authorisation_code = authorisation_code[1].split('&')
 
-            payload = {"client_id": "fvg6qhpans4z2jryq45crb69", "client_secret": "3BsfF8wRe5", "code": authorisation_code[0], "redirect_uri": "https://developer.join.me/io-docs/oauth2callback", "grant_type": "authorization_code"}
+            payload = {"client_id": "fvg6qhpans4z2jryq45crb69", "client_secret": "3BsfF8wRe5",
+                       "code": authorisation_code[0], "redirect_uri": "https://developer.join.me/io-docs/oauth2callback",
+                       "grant_type": "authorization_code"}
             req = requests.post('https://secure.join.me/api/public/v1/auth/token', data = payload)
 
             token = json.loads(req.text)
