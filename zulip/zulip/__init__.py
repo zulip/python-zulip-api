@@ -397,7 +397,8 @@ class Client(object):
 
         # Build a client cert object for requests
         if self.client_cert_key is not None:
-            client_cert = (self.client_cert, self.client_cert_key)  # type: Union[str, Tuple[str, str]]
+            assert(self.client_cert is not None)  # Otherwise RuntimeError near end of __init__
+            client_cert = (self.client_cert, self.client_cert_key)  # type: Union[None, str, Tuple[str, str]]
         else:
             client_cert = self.client_cert
 
