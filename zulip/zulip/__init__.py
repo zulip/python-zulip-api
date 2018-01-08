@@ -337,6 +337,7 @@ class Client(object):
             raise RuntimeError("api_key or email not specified and file %s does not exist"
                                % (config_file,))
 
+        assert(api_key is not None and email is not None)
         self.api_key = api_key
         self.email = email
         self.verbose = verbose
