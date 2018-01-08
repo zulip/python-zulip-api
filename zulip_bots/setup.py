@@ -10,15 +10,19 @@ import pip
 if False:
     from typing import Any, Dict, Optional
 
-import generate_manifest
-
 ZULIP_BOTS_VERSION = "0.4.0"
 IS_PYPA_PACKAGE = False
+
+
+package_data = {
+    '': ['doc.md', '*.conf', 'assets/*']
+}
 
 # IS_PYPA_PACKAGE is set to True by tools/release-packages
 # before making a PyPA release.
 if not IS_PYPA_PACKAGE:
-    generate_manifest.generate_dev_manifest()
+    package_data[''].append('fixtures/*.json')
+    package_data[''].append('logo.*')
 
 # We should be installable with either setuptools or distutils.
 package_info = dict(
@@ -42,9 +46,6 @@ package_info = dict(
         ],
     },
     include_package_data=True,
-    cmdclass={
-        'gen_manifest': generate_manifest.GenerateManifest,
-    },
 )  # type: Dict[str, Any]
 
 setuptools_info = dict(
@@ -58,6 +59,7 @@ try:
     from setuptools import setup, find_packages
     package_info.update(setuptools_info)
     package_info['packages'] = find_packages()
+    package_info['package_data'] = package_data
 
 except ImportError:
     from distutils.core import setup

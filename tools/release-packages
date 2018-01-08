@@ -235,10 +235,6 @@ def main():
 
         for setup_file in setup_py_files:
             package_name = os.path.basename(os.path.dirname(setup_file))
-            if package_name == 'zulip_bots':
-                setuptools.sandbox.run_setup(
-                    setup_file, ['gen_manifest', '--release']
-                )
             generate_sdist(setup_file, package_name)
             generate_bdist_wheel_universal(setup_file, package_name)
 
