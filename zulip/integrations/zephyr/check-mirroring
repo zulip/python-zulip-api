@@ -125,7 +125,7 @@ def send_zephyr(zwrite_args, content):
 # Subscribe to Zulip
 try:
     res = zulip_client.register(event_types=["message"])
-    if 'error' in res.get('result'):
+    if 'error' in res['result']:
         logging.error("Error subscribing to Zulips!")
         logging.error(res['msg'])
         print_status_and_exit(1)
@@ -263,8 +263,8 @@ logger.info("Starting receiving messages!")
 
 # receive zulips
 res = zulip_client.get_events(queue_id=queue_id, last_event_id=last_event_id)
-if 'error' in res.get('result'):
-    logging.error("Error subscribing to Zulips!")
+if 'error' in res['result']:
+    logging.error("Error receiving Zulips!")
     logging.error(res['msg'])
     print_status_and_exit(1)
 messages = [event['message'] for event in res['events']]
