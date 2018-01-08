@@ -21,7 +21,7 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 from __future__ import absolute_import
-from typing import IO, Any, Dict, List, Text, Union, Set, Tuple, Optional
+from typing import IO, Any, Dict, List, Text, Union, Set, Tuple, Optional, cast
 from types import FrameType
 
 import sys
@@ -48,7 +48,7 @@ class States(object):
     Startup, ZulipToZephyr, ZephyrToZulip, ChildSending = list(range(4))
 CURRENT_STATE = States.Startup
 
-logger = None  # type: logging.Logger
+logger = cast(logging.Logger, None)  # type: logging.Logger  # FIXME cast should not be needed?
 
 def to_zulip_username(zephyr_username):
     # type: (str) -> str
