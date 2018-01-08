@@ -94,7 +94,7 @@ class JabberToZulipBot(ClientXMPP):
         self.rooms_to_join = rooms
         self.add_event_handler("session_start", self.session_start)
         self.add_event_handler("message", self.message)
-        self.zulip = None  # type: Client
+        self.zulip = None
         self.use_ipv6 = False
 
         self.register_plugin('xep_0045')  # Jabber chatrooms
@@ -216,7 +216,7 @@ class ZulipToJabberBot(object):
     def __init__(self, zulip_client):
         # type: (Client) -> None
         self.client = zulip_client
-        self.jabber = None  # type: JabberToZulipBot
+        self.jabber = None
 
     def set_jabber_client(self, client):
         # type: (JabberToZulipBot) -> None
@@ -243,6 +243,7 @@ class ZulipToJabberBot(object):
 
     def stream_message(self, msg):
         # type: (Dict[str, str]) -> None
+        assert(self.jabber is not None)
         stream = msg['display_recipient']
         if not stream.endswith("/xmpp"):
             return
@@ -258,6 +259,7 @@ class ZulipToJabberBot(object):
 
     def private_message(self, msg):
         # type: (Dict[str, Any]) -> None
+        assert(self.jabber is not None)
         for recipient in msg['display_recipient']:
             if recipient["email"] == self.client.email:
                 continue
@@ -274,6 +276,7 @@ class ZulipToJabberBot(object):
 
     def process_subscription(self, event):
         # type: (Dict[str, Any]) -> None
+        assert(self.jabber is not None)
         if event['op'] == 'add':
             streams = [s['name'].lower() for s in event['subscriptions']]
             streams = [s for s in streams if s.endswith("/xmpp")]
@@ -287,6 +290,7 @@ class ZulipToJabberBot(object):
 
     def process_stream(self, event):
         # type: (Dict[str, Any]) -> None
+        assert(self.jabber is not None)
         if event['op'] == 'occupy':
             streams = [s['name'].lower() for s in event['streams']]
             streams = [s for s in streams if s.endswith("/xmpp")]
