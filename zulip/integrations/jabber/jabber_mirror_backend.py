@@ -405,7 +405,11 @@ option does not affect login credentials.'''.replace("\n", " "))
                         format='%(levelname)-8s %(message)s')
 
     if options.zulip_config_file is None:
-        config_file = zulip.get_default_config_filename()
+        default_config_file = zulip.get_default_config_filename()
+        if default_config_file is not None:
+            config_file = default_config_file
+        else:
+            config_error("Config file not found via --zulip-config_file or environment variable.")
     else:
         config_file = options.zulip_config_file
 
