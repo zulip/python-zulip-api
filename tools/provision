@@ -11,8 +11,6 @@ CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 ZULIP_BOTS_DIR = os.path.join(CURRENT_DIR, '..', 'zulip_bots')
 sys.path.append(ZULIP_BOTS_DIR)
 
-import generate_manifest
-
 red = '\033[91m'
 green = '\033[92m'
 end_format = '\033[0m'
