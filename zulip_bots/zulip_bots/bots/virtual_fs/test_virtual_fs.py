@@ -36,7 +36,11 @@ class TestVirtualFsBot(BotTestCase):
             ("", self.help_txt),
             ("pwd", "foo@example.com:\n/"),
             ("cd /home", "foo@example.com:\nERROR: invalid path"),
+            ("mkdir etc", "foo@example.com:\ndirectory created"),
             ("mkdir home", "foo@example.com:\ndirectory created"),
             ("cd /home", "foo@example.com:\nCurrent path: /home/"),
+            ("mkdir steve", "foo@example.com:\ndirectory created"),
+            ("rmdir /home", "foo@example.com:\nremoved"),
+            ("ls", "foo@example.com:\nERROR: file does not exist"),
         ]
         self.verify_dialog(expected)

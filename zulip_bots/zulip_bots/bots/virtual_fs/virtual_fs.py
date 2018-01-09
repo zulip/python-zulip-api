@@ -252,7 +252,7 @@ def fs_rmdir(fs: Dict[str, Any], user: str, fn: str) -> Tuple[Dict[str, Any], An
     new_fs.pop(path)
     directory = get_directory(path)
     new_fs[directory]['fns'].remove(path)
-    for sub_path in new_fs.keys():
+    for sub_path in list(new_fs.keys()):
         if sub_path.startswith(path+'/'):
             new_fs.pop(sub_path)
     msg = 'removed'
