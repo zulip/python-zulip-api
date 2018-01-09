@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from __future__ import print_function
 from contextlib import contextmanager
@@ -41,9 +41,13 @@ def _generate_dist(dist_type, setup_file, package_name, setup_args):
     )
     print(crayons.green(message, bold=True))
 
-def generate_bdist_wheel_universal(setup_file, package_name):
-    _generate_dist('bdist_wheel', setup_file, package_name,
-                   ['bdist_wheel', '--universal'])
+def generate_bdist_wheel(setup_file, package_name, universal=False):
+    if universal:
+        _generate_dist('bdist_wheel', setup_file, package_name,
+                       ['bdist_wheel', '--universal'])
+    else:
+        _generate_dist('bdist_wheel', setup_file, package_name,
+                       ['bdist_wheel'])
 
 def twine_upload(dist_dirs):
     message = 'Uploading distributions under the following directories:'
@@ -226,7 +230,10 @@ def main():
 
         for setup_file in setup_py_files:
             package_name = os.path.basename(os.path.dirname(setup_file))
-            generate_bdist_wheel_universal(setup_file, package_name)
+            if package_name == 'zulip_bots':
+                generate_bdist_wheel(setup_file, package_name)
+            else:
+                generate_bdist_wheel(setup_file, package_name, universal=True)
 
         set_variable(bots_setup, 'IS_PYPA_PACKAGE', False)
 
