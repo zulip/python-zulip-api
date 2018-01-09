@@ -41,9 +41,6 @@ def _generate_dist(dist_type, setup_file, package_name, setup_args):
     )
     print(crayons.green(message, bold=True))
 
-def generate_sdist(setup_file, package_name):
-    _generate_dist('sdist', setup_file, package_name, ['sdist'])
-
 def generate_bdist_wheel_universal(setup_file, package_name):
     _generate_dist('bdist_wheel', setup_file, package_name,
                    ['bdist_wheel', '--universal'])
@@ -68,12 +65,6 @@ def cleanup(package_dir):
         if os.path.isdir(directory):
             print(crayons.green('Removing {}/*'.format(directory), bold=True))
             shutil.rmtree(directory)
-
-    if package_dir.endswith("zulip_bots"):
-        manifest_file = os.path.join(package_dir, 'MANIFEST.in')
-        if os.path.isfile(manifest_file):
-            print(crayons.green('Removing {}'.format(manifest_file), bold=True))
-            os.remove(manifest_file)
 
     _rm_if_it_exists(build_dir)
     _rm_if_it_exists(temp_dir)
@@ -235,7 +226,6 @@ def main():
 
         for setup_file in setup_py_files:
             package_name = os.path.basename(os.path.dirname(setup_file))
-            generate_sdist(setup_file, package_name)
             generate_bdist_wheel_universal(setup_file, package_name)
 
         set_variable(bots_setup, 'IS_PYPA_PACKAGE', False)
