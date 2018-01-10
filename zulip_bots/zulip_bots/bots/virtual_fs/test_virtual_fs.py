@@ -1,4 +1,5 @@
 from zulip_bots.test_lib import BotTestCase
+from zulip_bots.bots.virtual_fs.virtual_fs import sample_conversation
 
 class TestVirtualFsBot(BotTestCase):
     bot_name = "virtual_fs"
@@ -27,6 +28,18 @@ class TestVirtualFsBot(BotTestCase):
         self.assertTrue(content.startswith(frag))
         frag = 'read home/stuff/file1\nERROR: file does not exist\n\n'
         self.assertIn(frag, content)
+
+    def test_sample_conversation(self) -> None:
+        # The function sample_conversation is actually part of the
+        # bot's implementation, because we render a sample conversation
+        # for the user's benefit if they ask.  But then we can also
+        # use it to test that the bot works as advertised.
+        expected = [
+            (request, 'foo@example.com:\n' + reply)
+            for (request, reply)
+            in sample_conversation()
+        ]
+        self.verify_dialog(expected)
 
     def test_commands_1(self) -> None:
         expected = [
