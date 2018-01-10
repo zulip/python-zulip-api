@@ -108,9 +108,6 @@ def sample_conversation() -> List[str]:
         ('ls /\n* /*bar*\n* /*foo*\n* /yo/\n\n'),
         ('invalid command\nERROR: unrecognized command\n\n'),
         ('write\nERROR: syntax: write <path> <some_text>\n\n'),
-        ('help' + get_help() + '\n\n'),
-        ('help ls\nsyntax: ls <optional_path>\n\n'),
-        ('help invalid_command' + get_help() + '\n\n'),
     ]
 
 REGEXES = dict(
