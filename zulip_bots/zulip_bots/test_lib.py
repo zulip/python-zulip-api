@@ -120,13 +120,18 @@ class BotTestCase(TestCase):
         )
         return message
 
-    def verify_reply(self, request, response):
-        # type: (str, str) -> None
+    def get_reply_dict(self, request):
+        # type: (str) -> Dict[str, Any]
         bot, bot_handler = self._get_handlers()
         message = self.make_request_message(request)
         bot_handler.reset_transcript()
         bot.handle_message(message, bot_handler)
         reply = bot_handler.unique_reply()
+        return reply
+
+    def verify_reply(self, request, response):
+        # type: (str, str) -> None
+        reply = self.get_reply_dict(request)
         self.assertEqual(response, reply['content'])
 
     def verify_dialog(self, conversation):
