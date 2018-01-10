@@ -18,6 +18,16 @@ class TestVirtualFsBot(BotTestCase):
                 '```\n'
                 'Use commands like `@mention-bot help write` for more details on specific\ncommands.\n')
 
+    def test_sample_conversation_help(self) -> None:
+        # There's nothing terribly tricky about the "sample conversation,"
+        # so we just do a quick sanity check.
+        reply = self.get_reply_dict('sample_conversation')
+        content = reply['content']
+        frag = 'foo@example.com:\ncd /\nCurrent path: /\n\n'
+        self.assertTrue(content.startswith(frag))
+        frag = 'read home/stuff/file1\nERROR: file does not exist\n\n'
+        self.assertIn(frag, content)
+
     def test_commands_1(self) -> None:
         expected = [
             ("cd /home", "foo@example.com:\nERROR: invalid path"),
