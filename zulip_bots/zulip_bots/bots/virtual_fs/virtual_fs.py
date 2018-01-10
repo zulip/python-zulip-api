@@ -123,7 +123,6 @@ REGEXES = dict(
 def get_commands() -> Dict[str, Tuple[Any, List[str]]]:
     return {
         'help': (fs_help, ['command']),
-        'sample_conversation': (fs_sample_conversation, ['command']),
         'ls': (fs_ls, ['optional_path']),
         'mkdir': (fs_mkdir, ['path']),
         'read': (fs_read, ['path']),
@@ -176,9 +175,6 @@ def fs_new() -> Dict[str, Any]:
     return fs
 
 def fs_help(fs: Dict[str, Any], user: str, cmd_name: str) -> Tuple[Dict[str, Any], Any]:
-    return fs, syntax_help(cmd_name)
-
-def fs_sample_conversation(fs: Dict[str, Any], user: str, cmd_name: str) -> Tuple[Dict[str, str], str]:
     return fs, syntax_help(cmd_name)
 
 def fs_mkdir(fs: Dict[str, Any], user: str, fn: str) -> Tuple[Dict[str, Any], Any]:
