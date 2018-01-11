@@ -43,4 +43,4 @@ options = parser.parse_args()
 
 client = zulip.init_from_options(options)
 
-print(client.remove_subscriptions(options.streams.split()))
+print(client.update_subscriptions(delete=options.streams.split()))
