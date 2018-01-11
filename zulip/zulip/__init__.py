@@ -810,15 +810,18 @@ class Client(object):
             request=request,
         )
 
-    def remove_subscriptions(self, streams):
-        # type: (Iterable[str]) -> Dict[str, Any]
+    def remove_subscriptions(self, streams, principals=[]):
+        # type: (Iterable[str], Optional[Iterable[str]]) -> Dict[str, Any]
         '''
             See examples/unsubscribe for example usage.
         '''
-        request = dict(delete=streams)
+        request = dict(
+            subscriptions=streams,
+            principals=principals
+        )
         return self.call_endpoint(
             url='users/me/subscriptions',
-            method='PATCH',
+            method='DELETE',
             request=request,
         )
 
