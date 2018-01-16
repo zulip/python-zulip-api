@@ -35,7 +35,6 @@ import optparse
 import os
 import datetime
 import textwrap
-import time
 import signal
 import logging
 import hashlib
