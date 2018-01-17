@@ -12,7 +12,7 @@ class JoinmeHandler(object):
 
     def handle_message(self, message: Any, bot_handler: Any) -> None:
         self.config_info = bot_handler.get_config_info('joinme')
-        if 'ZISSHUDBUNIq' not in message['content']:
+        if 'ZISSHUDBUNIq' not in message['content']: #The state, a special string to identify which type of url it is.
             payload = {'client_id': self.config_info['key'], 'scope': 'user_info scheduler start_meeting',
                        'redirect_uri': self.config_info['callback_url'],
                        'state': 'ZISSHUDBUNIq', 'response_type': 'code'}
