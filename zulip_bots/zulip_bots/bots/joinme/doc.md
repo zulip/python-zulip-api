@@ -26,3 +26,5 @@ The Joinme bot posts a link to a Joinme call when being mentioned.
 3. The url will expire in one minute, if it happens repeat step 1.
 
 4. Finally the bot will post a link to the new meeting created.
+
+See [example](https://github.com/itstakenalr/python-zulip-api/blob/task-joinme/zulip_bots/zulip_bots/bots/joinme/assets/1.JPG)
