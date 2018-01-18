@@ -1,0 +1,17 @@
+{
+    "request": {
+        "api_url": "https://www.beeminder.com/api/v1/users/aaron/goals/goal/datapoints.json",
+        "method": "POST",
+        "json": {
+            "auth_token": "XXXXXX",
+            "value": "5"
+        }
+    },
+    "response": {
+        "help_message": "This is help message."
+    },
+    "response-headers": {
+        "status": 200,
+        "content-type": "application/json; charset=utf-8"
+    }
+}

@@ -1,0 +1,20 @@
+{
+    "request": {
+        "api_url": "https://www.beeminder.com/api/v1/users/aaron/goals/goal/datapoints.json",
+        "method": "POST",
+        "json": {
+            "auth_token": "someInvalidKey",
+            "value": "5"
+        }
+    },
+    "response": {
+        "errors": {
+            "auth_token": "bad_token",
+            "message": "No such auth_token found. (Did you mix up auth_token and access_token?)"
+        }
+    },
+    "response-headers": {
+        "status": 401,
+        "content-type": "application/json; charset=utf-8"
+    }
+}
