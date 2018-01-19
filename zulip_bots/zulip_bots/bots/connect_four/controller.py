@@ -1,6 +1,8 @@
 from copy import deepcopy
 from random import randint
 from functools import reduce
+from zulip_bots.game_handler import BadMoveException
+
 
 class ConnectFourModel(object):
     '''
@@ -8,18 +10,17 @@ class ConnectFourModel(object):
     Four logic for the Connect Four Bot
     '''
 
-    blank_board = [
-        [0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0]]
+    def __init__(self):
+        self.blank_board = [
+            [0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0]
+        ]
 
-    current_board = blank_board
-
-    def parse_move(self, move):
-        return int(move) - 1
+        self.current_board = self.blank_board
 
     def update_board(self, board):
         self.current_board = deepcopy(board)
@@ -42,12 +43,18 @@ class ConnectFourModel(object):
 
         return available_moves
 
-    def make_move(self, column_number, token_number):
+    def make_move(self, move, player_number, is_computer=False):
+        if player_number == 1:
+            token_number = -1
+        if player_number == 0:
+            token_number = 1
         finding_move = True
         row = 5
-        column = column_number
+        column = int(move.replace('move ', '')) - 1
 
         while finding_move:
+            if row < 0:
+                raise BadMoveException('Make sure your move is in a column with free space.')
             if self.current_board[row][column] == 0:
                 self.current_board[row][column] = token_number
                 finding_move = False
@@ -56,7 +63,7 @@ class ConnectFourModel(object):
 
         return deepcopy(self.current_board)
 
-    def determine_game_over(self, first_player, second_player):
+    def determine_game_over(self, players):
         def get_horizontal_wins(board):
             horizontal_sum = 0
 
@@ -111,8 +118,9 @@ class ConnectFourModel(object):
 
             return 0
 
+        first_player, second_player = players[0], players[1]
         # If all tokens in top row are filled (its a draw), product != 0
-        top_row_multiple = reduce(lambda x, y: x*y, self.current_board[0])
+        top_row_multiple = reduce(lambda x, y: x * y, self.current_board[0])
 
         if top_row_multiple != 0:
             return 'draw'
@@ -126,12 +134,4 @@ class ConnectFourModel(object):
         elif winner == -1:
             return second_player
 
-        return False
-
-    def computer_move(self):
-        # @TODO: Make the computer more intelligent
-        # perhaps by implementing minimax
-        available_moves = deepcopy(self.available_moves())
-        final_move = available_moves[randint(0, len(available_moves) - 1)]
-
-        return final_move
+        return ''

@@ -1,10 +1,12 @@
-from zulip_bots.bots.connect_four.game_adapter import GameAdapter
+from zulip_bots.game_handler import GameAdapter
 from zulip_bots.bots.connect_four.controller import ConnectFourModel
+from typing import Any
+
 
 class ConnectFourMessageHandler(object):
     tokens = [':blue_circle:', ':red_circle:']
 
-    def parse_board(self, board):
+    def parse_board(self, board: Any) -> str:
         # Header for the top of the board
         board_str = ':one: :two: :three: :four: :five: :six: :seven:'
 
@@ -20,19 +22,17 @@ class ConnectFourMessageHandler(object):
 
         return board_str
 
-    def get_player_color(self, turn):
+    def get_player_color(self, turn: int) -> str:
         return self.tokens[turn]
 
-    def alert_move_message(self, original_player, move_info):
-        column_number = move_info
-        return '**' + original_player + ' moved in column ' + str(column_number + 1) + '**.'
+    def alert_move_message(self, original_player: str, move_info: str) -> str:
+        column_number = move_info.replace('move ', '')
+        return original_player + ' moved in column ' + column_number
 
-    def confirm_move_message(self, move_info):
-        column_number = move_info
-        return 'You placed your token in column ' + str(column_number + 1) + '.'
+    def game_start_message(self) -> str:
+        return 'Type `move <column>` to place a token.\n\
+The first player to get 4 in a row wins!\n Good Luck!'
 
-    def invalid_move_message(self):
-        return 'Please specify a column between 1 and 7 with at least one open spot.'
 
 class ConnectFourBotHandler(GameAdapter):
     '''
@@ -42,7 +42,7 @@ class ConnectFourBotHandler(GameAdapter):
     Four
     '''
 
-    def __init__(self):
+    def __init__(self) -> None:
         game_name = 'Connect Four'
         bot_name = 'connect_four'
         move_help_message = '* To make your move during a game, type\n' \
@@ -51,6 +51,15 @@ class ConnectFourBotHandler(GameAdapter):
         model = ConnectFourModel
         gameMessageHandler = ConnectFourMessageHandler
 
-        super(ConnectFourBotHandler, self).__init__(game_name, bot_name, move_help_message, move_regex, model, gameMessageHandler)
+        super(ConnectFourBotHandler, self).__init__(
+            game_name,
+            bot_name,
+            move_help_message,
+            move_regex,
+            model,
+            gameMessageHandler,
+            max_players=2
+        )
+
 
 handler_class = ConnectFourBotHandler

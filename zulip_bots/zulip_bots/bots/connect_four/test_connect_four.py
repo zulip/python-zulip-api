@@ -3,19 +3,27 @@ from zulip_bots.test_lib import BotTestCase
 from contextlib import contextmanager
 from unittest.mock import MagicMock
 from zulip_bots.bots.connect_four.connect_four import *
+from typing import Dict, Any, List
+
 
 class TestConnectFourBot(BotTestCase):
     bot_name = 'connect_four'
 
-    def make_request_message(self, content, user='foo@example.com'):
+    def make_request_message(
+        self,
+        content: str,
+        user: str='foo@example.com',
+        user_name: str='foo'
+    ) -> Dict[str, str]:
         message = dict(
             sender_email=user,
             content=content,
+            sender_full_name=user_name
         )
         return message
 
     # Function that serves similar purpose to BotTestCase.verify_dialog, but allows for multiple responses to be handled
-    def verify_response(self, request, expected_response, response_number, data=None, computer_move=None, user = 'foo@example.com'):
+    def verify_response(self, request: str, expected_response: str, response_number: int, user: str='foo@example.com') -> None:
         '''
         This function serves a similar purpose
         to BotTestCase.verify_dialog, but allows
@@ -26,13 +34,6 @@ class TestConnectFourBot(BotTestCase):
         bot, bot_handler = self._get_handlers()
         message = self.make_request_message(request, user)
         bot_handler.reset_transcript()
-        stash = ConnectFourModel.computer_move
-
-        if data:
-            bot.get_stored_data = MagicMock(return_value = data)
-
-        if computer_move is not None:
-            ConnectFourModel.computer_move = MagicMock(return_value = computer_move)
 
         bot.handle_message(message, bot_handler)
 
@@ -45,47 +46,53 @@ class TestConnectFourBot(BotTestCase):
         first_response = responses[response_number]
         self.assertEqual(expected_response, first_response['content'])
 
-        ConnectFourModel.computer_move = stash
+    def help_message(self) -> str:
+        return '''** Connect Four Bot Help:**
+*Preface all commands with @**test-bot***
+* To start a game in a stream (*recommended*), type
+`start game`
+* To start a game against another player, type
+`start game with @<player-name>`
+* To quit a game at any time, type
+`quit`
+* To end a game with a draw, type
+`draw`
+* To forfeit a game, type
+`forfeit`
+* To see the leaderboard, type
+`leaderboard`
+* To withdraw an invitation, type
+`cancel game`
+* To make your move during a game, type
+```move <column-number>```'''
 
-    def help_message(self):
-        return '**Connect Four Bot Help:**\n' + \
-            '*Preface all commands with @bot-name*\n\n' + \
-            '* To see the current status of the game, type\n' + \
-            '```status```\n' + \
-            '* To start a game against the computer, type\n' + \
-            '```start game with computer```\n' + \
-            '* To start a game against another player, type\n' + \
-            '```start game with user@example.com```\n' + \
-            '* To quit a game at any time, type\n' + \
-            '```quit```\n' + \
-            '* To withdraw an invitation, type\n' + \
-            '```cancel game```\n' +\
-            '* To make your move during a game, type\n' + \
-            '```move <column-number>```'
+    def test_static_responses(self) -> None:
+        self.verify_response('help', self.help_message(), 0)
 
-    def no_game_status(self):
-        return '**Connect Four Game Status**\n' + \
-            '*If you suspect users are abusing the bot, please alert the bot owner*\n\n' +\
-            '**The bot is not running a game right now!**\n' +\
-            'Type ```start game with user@example.com``` to start a game with another user,\n' +\
-            'or type ```start game with computer``` to start a game with the computer'
-
-    def inviting_status(self):
-        return '**Connect Four Game Status**\n' +\
-            '*If you suspect users are abusing the bot, please alert the bot owner*\n\n' +\
-            'foo@example.com\'s invitation to play foo2@example.com' +\
-            ' is still pending. Wait for the game to finish to play a game.'
-
-    def one_player_status(self):
-        return '**Connect Four Game Status**\n' +\
-            '*If you suspect users are abusing the bot, please alert the bot owner*\n\n' +\
-            'The bot is currently running a single player game for foo@example.com.'
-
-    def two_player_status(self):
-        return '**Connect Four Game Status**\n' +\
-            '*If you suspect users are abusing the bot, please alert the bot owner*\n\n' +\
-            'The bot is currently running a two player game ' +\
-            'between foo@example.com and foo2@example.com.'
+    def test_game_message_handler_responses(self) -> None:
+        board = ':one: :two: :three: :four: :five: :six: :seven:\n\n' + '\
+:heavy_large_circle: :heavy_large_circle: :heavy_large_circle: :heavy_large_circle: \
+:heavy_large_circle: :heavy_large_circle: :heavy_large_circle: \n\n\
+:heavy_large_circle: :heavy_large_circle: :heavy_large_circle: :heavy_large_circle: \
+:heavy_large_circle: :heavy_large_circle: :heavy_large_circle: \n\n\
+:heavy_large_circle: :heavy_large_circle: :heavy_large_circle: :heavy_large_circle: \
+:heavy_large_circle: :heavy_large_circle: :heavy_large_circle: \n\n\
+:blue_circle: :red_circle: :heavy_large_circle: :heavy_large_circle: :heavy_large_circle: \
+:heavy_large_circle: :heavy_large_circle: \n\n\
+:blue_circle: :red_circle: :heavy_large_circle: :heavy_large_circle: :heavy_large_circle: \
+:heavy_large_circle: :heavy_large_circle: \n\n\
+:blue_circle: :red_circle: :heavy_large_circle: :heavy_large_circle: :heavy_large_circle: \
+:heavy_large_circle: :heavy_large_circle: '
+        bot, bot_handler = self._get_handlers()
+        self.assertEqual(bot.gameMessageHandler.parse_board(
+            self.almost_win_board), board)
+        self.assertEqual(
+            bot.gameMessageHandler.get_player_color(1), ':red_circle:')
+        self.assertEqual(bot.gameMessageHandler.alert_move_message(
+            'foo', 'move 6'), 'foo moved in column 6')
+        self.assertEqual(bot.gameMessageHandler.game_start_message(
+        ), 'Type `move <column>` to place a token.\n\
+The first player to get 4 in a row wins!\n Good Luck!')
 
     blank_board = [
         [0, 0, 0, 0, 0, 0, 0],
@@ -111,60 +118,12 @@ class TestConnectFourBot(BotTestCase):
         [0, 0, 0, 0, 0, 0, -1],
         [0, 0, 0, 0, 0, 0, 1]]
 
-    start_two_player_data = {'state': 'playing', 'game_type': 'two_player', 'board': blank_board, 'users': ['foo@example.com', 'foo2@example.com'], 'turn': 0}
-    start_one_player_data = {'state': 'playing', 'game_type': 'one_player', 'board': blank_board, 'users': ['foo@example.com'], 'turn': 0}
-    end_two_player_data = {'state': 'playing', 'game_type': 'two_player', 'board': almost_win_board, 'users': ['foo@example.com', 'foo2@example.com'], 'turn': 0}
-    end_one_player_data = {'state': 'playing', 'game_type': 'one_player', 'board': almost_win_board, 'users': ['foo@example.com'], 'turn': 0}
-    inviting_two_player_data = {'state': 'inviting', 'game_type': 'two_player', 'board': blank_board, 'users': ['foo@example.com', 'foo2@example.com'], 'turn': 0}
-    draw_data = {'state': 'playing', 'game_type': 'one_player', 'board': almost_draw_board, 'users': ['foo@example.com', 'foo2@example.com'], 'turn': 0}
-
-    def test_static_messages(self):
-        self.verify_response('help', self.help_message(), 0)
-        self.verify_response('status', self.no_game_status(), 0)
-        self.verify_response('status', self.inviting_status(), 0, data=self.inviting_two_player_data)
-        self.verify_response('status', self.one_player_status(), 0, data=self.start_one_player_data)
-        self.verify_response('status', self.two_player_status(), 0, data=self.start_two_player_data)
-
-    def test_start_game(self):
-        self.verify_response('start game with computer', '**You started a new game with the computer!**', 0)
-        self.verify_response('start game with user@example.com', 'You\'ve sent an invitation to play Connect Four with user@example.com. I\'ll let you know when they respond to the invitation', 0)
-        self.verify_response('start game with foo@example.com', 'You can\'t play against yourself!', 0)
-
-    def test_invitation(self):
-        self.verify_response('accept', 'You accepted the invitation to play with foo@example.com', 0, data=self.inviting_two_player_data, user = 'foo2@example.com')
-        self.verify_response('decline', 'You declined the invitation to play with foo@example.com', 0, data=self.inviting_two_player_data, user = 'foo2@example.com')
-        self.verify_response('withdraw invitation', 'Your invitation to play foo2@example.com has been withdrawn', 0, data=self.inviting_two_player_data)
-
-    def test_move(self):
-        self.verify_response('move 8', 'That\'s an invalid move. Please specify a column '
-                             'between 1 and 7 with at least one open spot.', 0, data=self.start_two_player_data)
-        self.verify_response('move 1', 'You placed your token in column 1.', 0, data=self.start_two_player_data)
-        self.verify_response('move 1', '**the Computer moved in column 1**.', 3, data=self.start_one_player_data, computer_move=0)
-
-    def test_game_over(self):
-        self.verify_response('move 1', '**Congratulations, you win! :tada:**', 2, data=self.end_two_player_data)
-        self.verify_response('move 3', 'Sorry, but the Computer won :cry:', 5, data=self.end_one_player_data, computer_move=1)
-        self.verify_response('move 7', '**It\'s a draw!**', 2, data = self.draw_data)
-
-    def test_quit(self):
-        self.verify_response('quit', 'Are you sure you want to quit? You will forfeit the game!\n'
-                             'Type ```confirm quit``` to forfeit.', 0, data=self.start_two_player_data)
-        self.verify_response('confirm quit', '**You have forfeit the game**\nSorry, but you lost :cry:', 0, data=self.start_two_player_data)
-
-    def test_force_reset(self):
-        with self.mock_config_info({'superusers': '["foo@example.com"]'}):
-            self.verify_response('force reset', 'The game has been force reset', 1, data=self.start_one_player_data)
-
-    def test_privilege_check(self):
-        self.verify_response('move 4', 'Sorry, but you can\'t run the command ```move 4```', 0, data=self.inviting_two_player_data)
-        self.verify_response('start game with computer', 'Sorry, but other users are already using the bot.'
-                             'Type ```status``` to see the current status of the bot.', 0, data=self.inviting_two_player_data, user = 'foo3@example.com')
-        self.verify_response('quit', 'Sorry, but you can\'t run the command ```quit```', 0)
-        self.verify_response('accept', 'Sorry, but you can\'t run the command ```accept```', 0, data=self.end_two_player_data)
-        self.verify_response('force reset', 'Sorry, but you can\'t run the command ```force reset```', 0)
-
-    def test_connect_four_logic(self):
-        def confirmAvailableMoves(good_moves, bad_moves, board):
+    def test_connect_four_logic(self) -> None:
+        def confirmAvailableMoves(
+            good_moves: List[int],
+            bad_moves: List[int],
+            board: List[List[int]]
+        ) -> None:
             connectFourModel.update_board(board)
 
             for move in good_moves:
@@ -173,19 +132,26 @@ class TestConnectFourBot(BotTestCase):
             for move in bad_moves:
                 self.assertFalse(connectFourModel.validate_move(move))
 
-        def confirmMove(column_number, token_number, initial_board, final_board):
+        def confirmMove(
+            column_number: int,
+            token_number: int,
+            initial_board: List[List[int]],
+            final_board: List[List[int]]
+        ) -> None:
             connectFourModel.update_board(initial_board)
-            test_board = connectFourModel.make_move(column_number, token_number)
+            test_board = connectFourModel.make_move(
+                'move ' + str(column_number), token_number)
 
             self.assertEqual(test_board, final_board)
 
-        def confirmGameOver(board, result):
+        def confirmGameOver(board: List[List[int]], result: str) -> None:
             connectFourModel.update_board(board)
-            game_over = connectFourModel.determine_game_over('first_player', 'second_player')
+            game_over = connectFourModel.determine_game_over(
+                ['first_player', 'second_player'])
 
             self.assertEqual(game_over, result)
 
-        def confirmWinStates(array):
+        def confirmWinStates(array: List[List[List[List[int]]]]) -> None:
             for board in array[0]:
                 confirmGameOver(board, 'first_player')
 
@@ -428,7 +394,8 @@ class TestConnectFourBot(BotTestCase):
 
         # Test Available Move Logic
         connectFourModel.update_board(blank_board)
-        self.assertEqual(connectFourModel.available_moves(), [0, 1, 2, 3, 4, 5, 6])
+        self.assertEqual(connectFourModel.available_moves(),
+                         [0, 1, 2, 3, 4, 5, 6])
 
         connectFourModel.update_board(single_column_board)
         self.assertEqual(connectFourModel.available_moves(), [3])
@@ -437,7 +404,7 @@ class TestConnectFourBot(BotTestCase):
         self.assertEqual(connectFourModel.available_moves(), [])
 
         # Test Move Logic
-        confirmMove(0, 1, blank_board,
+        confirmMove(1, 0, blank_board,
                     [[0, 0, 0, 0, 0, 0, 0],
                      [0, 0, 0, 0, 0, 0, 0],
                      [0, 0, 0, 0, 0, 0, 0],
@@ -445,7 +412,7 @@ class TestConnectFourBot(BotTestCase):
                      [0, 0, 0, 0, 0, 0, 0],
                      [1, 0, 0, 0, 0, 0, 0]])
 
-        confirmMove(0, -1, blank_board,
+        confirmMove(1, 1, blank_board,
                     [[0, 0, 0, 0, 0, 0, 0],
                      [0, 0, 0, 0, 0, 0, 0],
                      [0, 0, 0, 0, 0, 0, 0],
@@ -453,7 +420,7 @@ class TestConnectFourBot(BotTestCase):
                      [0, 0, 0, 0, 0, 0, 0],
                      [-1, 0, 0, 0, 0, 0, 0]])
 
-        confirmMove(0, 1, diagonal_board,
+        confirmMove(1, 0, diagonal_board,
                     [[0, 0, 0, 0, 0, 0, 1],
                      [0, 0, 0, 0, 0, 1, 1],
                      [0, 0, 0, 0, 1, 1, 1],
@@ -461,7 +428,7 @@ class TestConnectFourBot(BotTestCase):
                      [0, 0, 1, 1, 1, 1, 1],
                      [1, 1, 1, 1, 1, 1, 1]])
 
-        confirmMove(1, 1, diagonal_board,
+        confirmMove(2, 0, diagonal_board,
                     [[0, 0, 0, 0, 0, 0, 1],
                      [0, 0, 0, 0, 0, 1, 1],
                      [0, 0, 0, 0, 1, 1, 1],
@@ -469,7 +436,7 @@ class TestConnectFourBot(BotTestCase):
                      [0, 1, 1, 1, 1, 1, 1],
                      [0, 1, 1, 1, 1, 1, 1]])
 
-        confirmMove(2, 1, diagonal_board,
+        confirmMove(3, 0, diagonal_board,
                     [[0, 0, 0, 0, 0, 0, 1],
                      [0, 0, 0, 0, 0, 1, 1],
                      [0, 0, 0, 0, 1, 1, 1],
@@ -477,7 +444,7 @@ class TestConnectFourBot(BotTestCase):
                      [0, 0, 1, 1, 1, 1, 1],
                      [0, 1, 1, 1, 1, 1, 1]])
 
-        confirmMove(3, 1, diagonal_board,
+        confirmMove(4, 0, diagonal_board,
                     [[0, 0, 0, 0, 0, 0, 1],
                      [0, 0, 0, 0, 0, 1, 1],
                      [0, 0, 0, 1, 1, 1, 1],
@@ -485,7 +452,7 @@ class TestConnectFourBot(BotTestCase):
                      [0, 0, 1, 1, 1, 1, 1],
                      [0, 1, 1, 1, 1, 1, 1]])
 
-        confirmMove(4, 1, diagonal_board,
+        confirmMove(5, 0, diagonal_board,
                     [[0, 0, 0, 0, 0, 0, 1],
                      [0, 0, 0, 0, 1, 1, 1],
                      [0, 0, 0, 0, 1, 1, 1],
@@ -493,7 +460,7 @@ class TestConnectFourBot(BotTestCase):
                      [0, 0, 1, 1, 1, 1, 1],
                      [0, 1, 1, 1, 1, 1, 1]])
 
-        confirmMove(5, 1, diagonal_board,
+        confirmMove(6, 0, diagonal_board,
                     [[0, 0, 0, 0, 0, 1, 1],
                      [0, 0, 0, 0, 0, 1, 1],
                      [0, 0, 0, 0, 1, 1, 1],
@@ -502,7 +469,7 @@ class TestConnectFourBot(BotTestCase):
                      [0, 1, 1, 1, 1, 1, 1]])
 
         # Test Game Over Logic:
-        confirmGameOver(blank_board, False)
+        confirmGameOver(blank_board, '')
         confirmGameOver(full_board, 'draw')
 
         # Test Win States:
@@ -510,13 +477,3 @@ class TestConnectFourBot(BotTestCase):
         confirmWinStates(vertical_win_boards)
         confirmWinStates(major_diagonal_win_boards)
         confirmWinStates(minor_diagonal_win_boards)
-
-        # Test Computer Move:
-        connectFourModel.update_board(blank_board)
-        self.assertTrue(connectFourModel.computer_move() in [0, 1, 2, 3, 4, 5, 6])
-
-        connectFourModel.update_board(single_column_board)
-        self.assertEqual(connectFourModel.computer_move(), 3)
-
-        connectFourModel.update_board(diagonal_board)
-        self.assertTrue(connectFourModel.computer_move() in [0, 1, 2, 3, 4, 5])
