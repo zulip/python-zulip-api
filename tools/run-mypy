@@ -82,7 +82,13 @@ force_include = [
     "zulip_bots/zulip_bots/bots/salesforce/salesforce.py",
     "zulip_bots/zulip_bots/bots/salesforce/test_salesforce.py",
     "zulip_bots/zulip_bots/bots/idonethis/idonethis.py",
-    "zulip_bots/zulip_bots/bots/idonethis/test_idonethis.py"
+    "zulip_bots/zulip_bots/bots/idonethis/test_idonethis.py",
+    "zulip_bots/zulip_bots/bots/connect_four/connect_four.py",
+    "zulip_bots/zulip_bots/bots/connect_four/test_connect_four.py",
+    "zulip_bots/zulip_bots/bots/tictactoe/tictactoe.py",
+    "zulip_bots/zulip_bots/bots/tictactoe/test_tictactoe.py",
+    "zulip_bots/zulip_bots/bots/game_handler_bot/game_handler_bot.py",
+    "zulip_bots/zulip_bots/bots/game_handler_bot/test_game_handler_bot.py",
 ]
 
 parser = argparse.ArgumentParser(description="Run mypy on files tracked by git.")
