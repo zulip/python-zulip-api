@@ -21,6 +21,8 @@ class StubBotHandler:
     def __init__(self):
         # type: () -> None
         self.storage = SimpleStorage()
+        self.full_name = 'test-bot'
+        self.email = 'test-bot@example.com'
         self.message_server = SimpleMessageServer()
         self.reset_transcript()
 

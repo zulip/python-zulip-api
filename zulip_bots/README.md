@@ -14,6 +14,7 @@ zulip_bots  # This directory
 ├───zulip_bots  # `zulip_bots` package.
 │   ├───bots/  # Actively maintained and tested bots.
 │   ├───bots_unmaintained/  # Unmaintained, potentially broken bots.
+│   ├───game_handler.py  # Handles game-related bots.
 │   ├───lib.py  # Backbone of run.py
 │   ├───provision.py  # Creates a development environment.
 │   ├───run.py  # Used to run bots.
