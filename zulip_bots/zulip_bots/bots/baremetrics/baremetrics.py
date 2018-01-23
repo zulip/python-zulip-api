@@ -33,7 +33,7 @@ class BaremetricsHandler(object):
         test_query_data = test_query_response.json()
 
         try:
-            if test_query_data['error'] == "Unauthorized. Token not found":
+            if test_query_data['error'] == "Unauthorized. Token not found (001)":
                 bot_handler.quit('API Key not valid. Please see doc.md to find out how to get it.')
         except KeyError:
             pass
