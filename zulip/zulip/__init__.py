@@ -267,11 +267,17 @@ def get_default_config_filename():
     config_file = os.path.join(os.environ["HOME"], ".zuliprc")
     if (not os.path.exists(config_file) and
             os.path.exists(os.path.join(os.environ["HOME"], ".humbugrc"))):
-        raise RuntimeError("The Zulip API configuration file is now ~/.zuliprc; please run:\n\n"
-                           "  mv ~/.humbugrc ~/.zuliprc\n")
+        raise ZulipError("The Zulip API configuration file is now ~/.zuliprc; please run:\n\n"
+                         "  mv ~/.humbugrc ~/.zuliprc\n")
     return config_file
 
 class ZulipError(Exception):
+    pass
+
+class ConfigNotFoundError(ZulipError):
+    pass
+
+class MissingURLError(ZulipError):
     pass
 
 class Client(object):
@@ -331,11 +337,11 @@ class Client(object):
                 elif insecure_setting == "false":
                     insecure = False
                 else:
-                    raise RuntimeError("insecure is set to '%s', it must be 'true' or 'false' if it is used in %s"
-                                       % (insecure_setting, config_file))
+                    raise ZulipError("insecure is set to '%s', it must be 'true' or 'false' if it is used in %s"
+                                     % (insecure_setting, config_file))
         elif None in (api_key, email):
-            raise RuntimeError("api_key or email not specified and file %s does not exist"
-                               % (config_file,))
+            raise ConfigNotFoundError("api_key or email not specified and file %s does not exist"
+                                      % (config_file,))
 
         assert(api_key is not None and email is not None)
         self.api_key = api_key
@@ -350,7 +356,7 @@ class Client(object):
             site = site.rstrip("/")
             self.base_url = site
         else:
-            raise RuntimeError("Missing Zulip server URL; specify via --site or ~/.zuliprc.")
+            raise MissingURLError("Missing Zulip server URL; specify via --site or ~/.zuliprc.")
 
         if not self.base_url.endswith("/api"):
             self.base_url += "/api"
@@ -362,8 +368,8 @@ class Client(object):
             self.tls_verification = False  # type: Union[bool, str]
         elif cert_bundle is not None:
             if not os.path.isfile(cert_bundle):
-                raise RuntimeError("tls bundle '%s' does not exist"
-                                   % (cert_bundle,))
+                raise ConfigNotFoundError("tls bundle '%s' does not exist"
+                                          % (cert_bundle,))
             self.tls_verification = cert_bundle
         else:
             # Default behavior: verify against system CA certificates
@@ -371,16 +377,16 @@ class Client(object):
 
         if client_cert is None:
             if client_cert_key is not None:
-                raise RuntimeError("client cert key '%s' specified, but no client cert public part provided"
-                                   % (client_cert_key,))
+                raise ConfigNotFoundError("client cert key '%s' specified, but no client cert public part provided"
+                                          % (client_cert_key,))
         else:  # we have a client cert
             if not os.path.isfile(client_cert):
-                raise RuntimeError("client cert '%s' does not exist"
-                                   % (client_cert,))
+                raise ConfigNotFoundError("client cert '%s' does not exist"
+                                          % (client_cert,))
             if client_cert_key is not None:
                 if not os.path.isfile(client_cert_key):
-                    raise RuntimeError("client cert key '%s' does not exist"
-                                       % (client_cert_key,))
+                    raise ConfigNotFoundError("client cert key '%s' does not exist"
+                                              % (client_cert_key,))
         self.client_cert = client_cert
         self.client_cert_key = client_cert_key
 
@@ -398,7 +404,7 @@ class Client(object):
 
         # Build a client cert object for requests
         if self.client_cert_key is not None:
-            assert(self.client_cert is not None)  # Otherwise RuntimeError near end of __init__
+            assert(self.client_cert is not None)  # Otherwise ZulipError near end of __init__
             client_cert = (self.client_cert, self.client_cert_key)  # type: Union[None, str, Tuple[str, str]]
         else:
             client_cert = self.client_cert
