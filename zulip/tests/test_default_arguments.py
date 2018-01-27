@@ -7,7 +7,7 @@ import unittest
 import zulip
 
 from unittest import TestCase
-
+from zulip import ZulipError
 if six.PY2:
     from mock import patch
 else:
@@ -38,7 +38,7 @@ Zulip API configuration:
         parser = zulip.add_default_arguments(argparse.ArgumentParser(usage="lorem ipsum"))
         test_path = '~/zuliprc'
         args = parser.parse_args(['--config-file', test_path])
-        with self.assertRaises(RuntimeError) as cm:
+        with self.assertRaises(ZulipError) as cm:
             zulip.init_from_options(args)
         expanded_test_path = os.path.abspath(os.path.expanduser(test_path))
         self.assertEqual(str(cm.exception), 'api_key or email not specified and '
