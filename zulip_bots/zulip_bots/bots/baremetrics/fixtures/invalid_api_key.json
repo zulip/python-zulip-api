@@ -1,0 +1,31 @@
+{
+    "request": {
+        "api_url": "https://api.baremetrics.com/v1/account",
+        "headers": {
+            "Authorization": "Bearer TEST"
+        }
+    },
+    "response": {
+        "error": "Unauthorized. Token not found (001)"
+    },
+    "response-headers": {
+        "Cache-Control":"no-cache",
+        "X-Version":"751",
+        "X-Runtime":"0.003459",
+        "Access-Control-Allow-Methods":"GET, OPTIONS, POST, PUT, DELETE",
+        "Transfer-Encoding":"chunked",
+        "Date":"Tue, 06 Feb 2018 14:00:34 GMT",
+        "Connection":"keep-alive",
+        "CF-RAY":"3e8ea2ed2dbe3de4-PRG",
+        "Access-Control-Allow-Credentials":"false",
+        "Content-Type":"application/json; charset=utf-8",
+        "Set-Cookie":"__cfduid=d17cabc42559cc2d84e59a61d199208c11517925634; expires=Wed, 06-Feb-19 14:00:34 GMT; path=/; domain=.baremetrics.com; HttpOnly; Secure, LSW_WEB=\"LSW_WEB1\"; path=/",
+        "Access-Control-Allow-Headers":"Authorization,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type",
+        "X-Request-Id":"4c6d2ef3-2b72-4b7a-b535-991ee8c06fba",
+        "X-Commit":"f5e0698f0a82d2d5040eb00762ff69f6d633eb50",
+        "X-Powered-By":"Phusion Passenger 5.1.11",
+        "Expect-CT":"max-age=604800, report-uri=\"https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct\"",
+        "Server":"cloudflare",
+        "Status":"401 Unauthorized"
+    }
+}
