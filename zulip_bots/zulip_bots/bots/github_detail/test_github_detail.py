@@ -9,6 +9,7 @@ from typing import Any
 class TestGithubDetailBot(BotTestCase):
     bot_name = "github_detail"
     mock_config = {'owner': 'zulip', 'repo': 'zulip'}
+    empty_config = {'owner': '', 'repo': ''}
 
     # Overrides default test_bot_usage().
     def test_bot_usage(self) -> None:
@@ -53,7 +54,8 @@ class TestGithubDetailBot(BotTestCase):
                        ' Reimplement change_email_modal utilizing `Modal` class\r\n[] Dump '\
                        'using bootstrap for the account settings modal and all other modals,'\
                        ' replace with `Modal` class\r\n[] Add hotkey support for closing the'\
-                       ' top modal for `Esc`\r\n\r\nThis should also be a helpful step in removing dependencies from Bootstrap.\n```'
+                       ' top modal for `Esc`\r\n\r\nThis should also be a helpful step in'\
+                       ' removing dependencies from Bootstrap.\n```'
         with self.mock_http_conversation('test_pull'):
             with self.mock_config_info(self.mock_config):
                 self.verify_reply(request, bot_response)
@@ -89,3 +91,45 @@ class TestGithubDetailBot(BotTestCase):
 
         with self.mock_config_info(self.mock_config):
             self.verify_reply(request, bot_response)
+
+    def test_owner_and_repo_not_specified(self) -> None:
+        request = '/#1'
+        bot_response = 'Failed to detect owner and repository name.'
+        with self.mock_config_info(self.empty_config):
+            self.verify_reply(request, bot_response)
+
+    def test_owner_and_repo_specified_in_config_file(self) -> None:
+        request = '/#5345'
+        bot_response = '**[zulip/zulip#5345](https://github.com/zulip/zulip/pull/5345)'\
+                       ' - [WIP] modal: Replace bootstrap modal with custom modal class**\n'\
+                       'Created by **[jackrzhang](https://github.com/jackrzhang)**\n'\
+                       'Status - **Open**\n```quote\nAn interaction bug (#4811)  '\
+                       'between our settings UI and the bootstrap modals breaks hotkey '\
+                       'support for `Esc` when multiple modals are open.\r\n\r\ntodo:\r\n[x]'\
+                       ' Create `Modal` class in `modal.js` (drafted by @brockwhittaker)\r\n[x]'\
+                       ' Reimplement change_email_modal utilizing `Modal` class\r\n[] Dump '\
+                       'using bootstrap for the account settings modal and all other modals,'\
+                       ' replace with `Modal` class\r\n[] Add hotkey support for closing the'\
+                       ' top modal for `Esc`\r\n\r\nThis should also be a helpful step in'\
+                       ' removing dependencies from Bootstrap.\n```'
+        with self.mock_http_conversation('test_pull'):
+            with self.mock_config_info(self.mock_config):
+                self.verify_reply(request, bot_response)
+
+    def test_owner_and_repo_specified_in_message(self) -> None:
+        request = 'zulip/zulip#5345'
+        bot_response = '**[zulip/zulip#5345](https://github.com/zulip/zulip/pull/5345)'\
+                       ' - [WIP] modal: Replace bootstrap modal with custom modal class**\n'\
+                       'Created by **[jackrzhang](https://github.com/jackrzhang)**\n'\
+                       'Status - **Open**\n```quote\nAn interaction bug (#4811)  '\
+                       'between our settings UI and the bootstrap modals breaks hotkey '\
+                       'support for `Esc` when multiple modals are open.\r\n\r\ntodo:\r\n[x]'\
+                       ' Create `Modal` class in `modal.js` (drafted by @brockwhittaker)\r\n[x]'\
+                       ' Reimplement change_email_modal utilizing `Modal` class\r\n[] Dump '\
+                       'using bootstrap for the account settings modal and all other modals,'\
+                       ' replace with `Modal` class\r\n[] Add hotkey support for closing the'\
+                       ' top modal for `Esc`\r\n\r\nThis should also be a helpful step in'\
+                       ' removing dependencies from Bootstrap.\n```'
+        with self.mock_http_conversation('test_pull'):
+            with self.mock_config_info(self.empty_config):
+                self.verify_reply(request, bot_response)
