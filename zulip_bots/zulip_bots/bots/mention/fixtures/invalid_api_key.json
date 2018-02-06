@@ -1,0 +1,32 @@
+{
+    "request": {
+        "api_url": "https://api.mention.net/api/accounts/me",
+        "headers": {
+            "Authorization": "Bearer TEST",
+            "Accept-Version": "1.15"
+        }
+    },
+    "response": {
+        "error_description": "The access token provided is invalid.",
+        "error": "invalid_grant"
+    },
+    "response-headers": {
+        "X-Protected-By":"Sqreen",
+        "X-Content-Type-Options":"nosniff",
+        "Transfer-Encoding":"chunked",
+        "Cache-Control":"no-store, private",
+        "WWW-Authenticate":"Bearer realm=\"Service\", error=\"invalid_grant\", error_description=\"The access token provided is invalid.\"",
+        "Set-Cookie":"www_bucket=23; Expires=Thu, 08 Mar 2018 14:08:36 GMT; Domain=mention.com; Path=/",
+        "Vary":"Accept-Language, X-Accept-Language",
+        "X-Upstream2":"mention_backend",
+        "X-Frame-Options":"SAMEORIGIN",
+        "Connection":"keep-alive",
+        "Content-Type":"application/json",
+        "Referrer-Policy":"same-origin",
+        "X-XSS-Protection":"1; mode=block",
+        "Pragma":"no-cache",
+        "Date":"Tue, 06 Feb 2018 14:08:36 GMT",
+        "Server":"nginx",
+        "X-S":"web14"
+    }
+}
