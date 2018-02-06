@@ -1,5 +1,6 @@
 from zulip_bots.test_lib import BotTestCase
 from zulip_bots.bots.virtual_fs.virtual_fs import sample_conversation
+from unittest.mock import patch
 
 class TestVirtualFsBot(BotTestCase):
     bot_name = "virtual_fs"
@@ -18,6 +19,20 @@ class TestVirtualFsBot(BotTestCase):
                 '@mention-bot rmdir: remove a directory\n'
                 '```\n'
                 'Use commands like `@mention-bot help write` for more details on specific\ncommands.\n')
+
+    def test_multiple_recipient_conversation(self) -> None:
+        expected = [
+            ("mkdir home", "foo@example.com:\ndirectory created"),
+        ]
+        message = dict(
+            display_recipient=[{'email': 'foo@example.com'}, {'email': 'boo@example.com'}],
+            sender_email='foo@example.com',
+            sender_full_name='Foo Test User',
+            sender_id='123',
+            content="mkdir home",
+        )
+        with patch('zulip_bots.test_lib.BotTestCase.make_request_message', return_value=message):
+            self.verify_dialog(expected)
 
     def test_sample_conversation_help(self) -> None:
         # There's nothing terribly tricky about the "sample conversation,"
@@ -56,14 +71,28 @@ class TestVirtualFsBot(BotTestCase):
         expected = [
             ("help", self.help_txt),
             ("help ls", "foo@example.com:\nsyntax: ls <optional_path>"),
+            ("help invalid", self.help_txt),
             ("", self.help_txt),
+            ("write test hello world", "foo@example.com:\nfile written"),
+            ("rmdir test", "foo@example.com:\nERROR: /*test* is a file, directory required"),
+            ("cd test", "foo@example.com:\nERROR: /*test* is a file, directory required"),
+            ("mkdir /foo/boo", "foo@example.com:\nERROR: /foo is not a directory"),
             ("pwd", "foo@example.com:\n/"),
             ("cd /home", "foo@example.com:\nERROR: invalid path"),
             ("mkdir etc", "foo@example.com:\ndirectory created"),
             ("mkdir home", "foo@example.com:\ndirectory created"),
             ("cd /home", "foo@example.com:\nCurrent path: /home/"),
+            ("write test hello world", "foo@example.com:\nfile written"),
+            ("rm test", "foo@example.com:\nremoved"),
             ("mkdir steve", "foo@example.com:\ndirectory created"),
             ("rmdir /home", "foo@example.com:\nremoved"),
+            ("pwd", "foo@example.com:\nERROR: the current directory does not exist"),
             ("ls", "foo@example.com:\nERROR: file does not exist"),
+            ("ls foo/", "foo@example.com:\nERROR: foo/ is not a valid name"),
+            ("rm foo/", "foo@example.com:\nERROR: foo/ is not a valid name"),
+            ("rmdir foo/", "foo@example.com:\nERROR: foo/ is not a valid name"),
+            ("write foo/ a", "foo@example.com:\nERROR: foo/ is not a valid name"),
+            ("read foo/", "foo@example.com:\nERROR: foo/ is not a valid name"),
+            ("rmdir /foo", "foo@example.com:\nERROR: directory does not exist"),
         ]
         self.verify_dialog(expected)
