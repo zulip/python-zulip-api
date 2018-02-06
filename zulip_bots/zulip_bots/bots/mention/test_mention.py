@@ -49,5 +49,6 @@ class TestMentionBot(BotTestCase):
         bot_test_instance = MentionHandler()
 
         with self.mock_config_info({'access_token': 'TEST'}):
-            with self.assertRaises(StubBotHandler.BotQuitException):
-                bot_test_instance.initialize(StubBotHandler())
+            with self.mock_http_conversation('invalid_api_key'):
+                with self.assertRaises(StubBotHandler.BotQuitException):
+                    bot_test_instance.initialize(StubBotHandler())
