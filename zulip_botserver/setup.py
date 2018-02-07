@@ -8,7 +8,7 @@ import sys
 if False:
     from typing import Any, Dict, Optional
 
-ZULIP_BOTSERVER_VERSION = "0.4.0"
+ZULIP_BOTSERVER_VERSION = "0.4.1"
 
 # We should be installable with either setuptools or distutils.
 package_info = dict(

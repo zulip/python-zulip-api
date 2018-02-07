@@ -10,7 +10,7 @@ import pip
 if False:
     from typing import Any, Dict, Optional
 
-ZULIP_BOTS_VERSION = "0.4.0"
+ZULIP_BOTS_VERSION = "0.4.1"
 IS_PYPA_PACKAGE = False
 
 
