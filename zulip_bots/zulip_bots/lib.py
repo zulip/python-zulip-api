@@ -18,6 +18,7 @@ from typing import Any, Optional, List, Dict, IO, Text, Set
 from types import ModuleType
 
 from zulip import Client, ZulipError
+from zulip_bots.custom_exceptions import ConfigValidationError
 
 class NoBotConfigException(Exception):
     pass
@@ -272,6 +273,14 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_config_file,
     restricted_client = ExternalBotHandler(client, bot_dir, bot_details, bot_config_file)
 
     message_handler = lib_module.handler_class()
+    if hasattr(message_handler, 'validate_config'):
+        config_data = restricted_client.get_config_info(bot_name)
+        try:
+            lib_module.handler_class.validate_config(config_data)
+        except ConfigValidationError as e:
+            print("There was a problem validating your config file:\n\n{}".format(e))
+            sys.exit(1)
+
     if hasattr(message_handler, 'initialize'):
         message_handler.initialize(bot_handler=restricted_client)
 
