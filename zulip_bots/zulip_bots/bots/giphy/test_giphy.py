@@ -29,18 +29,22 @@ class TestGiphyBot(BotTestCase):
                 'Sorry, I don\'t have a GIF for "world without zulip"! :astonished:',
             )
 
-    def test_403(self) -> None:
+    def test_invalid_config(self) -> None:
         bot = get_bot_message_handler(self.bot_name)
         bot_handler = StubBotHandler()
+        with self.mock_http_conversation('test_403'):
+            self.validate_invalid_config({'key': '12345678'},
+                                         "This is likely due to an invalid key.\n")
 
-        with self.mock_config_info({'key': '12345678'}), \
-                self.mock_http_conversation('test_403'),  \
-                self.assertRaises(bot_handler.BotQuitException):
-            bot.initialize(bot_handler)
+    def test_valid_config(self) -> None:
+        bot = get_bot_message_handler(self.bot_name)
+        bot_handler = StubBotHandler()
+        with self.mock_http_conversation('test_normal'):
+            self.validate_valid_config({'key': '12345678'})
 
     def test_connection_error_while_running(self) -> None:
         with self.mock_config_info({'key': '12345678'}), \
-                patch('requests.get', side_effect=[MagicMock(), ConnectionError()]), \
+                patch('requests.get', side_effect=[ConnectionError()]), \
                 patch('logging.exception'):
             self.verify_reply(
                 'world without chocolate',

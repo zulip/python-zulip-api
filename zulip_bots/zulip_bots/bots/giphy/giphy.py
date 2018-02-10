@@ -7,6 +7,8 @@ import os
 import re
 from requests.exceptions import HTTPError, ConnectionError
 
+from zulip_bots.custom_exceptions import ConfigValidationError
+
 GIPHY_TRANSLATE_API = 'http://api.giphy.com/v1/gifs/translate'
 
 class GiphyHandler(object):
@@ -24,21 +26,24 @@ class GiphyHandler(object):
             The bot responds also to private messages.
             '''
 
-    def initialize(self, bot_handler: Any) -> None:
-        self.config_info = bot_handler.get_config_info('giphy')
+    @staticmethod
+    def validate_config(config_info: Dict[str, str]) -> None:
         query = {'s': 'Hello',
-                 'api_key': self.config_info['key']}
+                 'api_key': config_info['key']}
         try:
             data = requests.get(GIPHY_TRANSLATE_API, params=query)
             data.raise_for_status()
         except ConnectionError as e:
-            bot_handler.quit(str(e))
+            raise ConfigValidationError(str(e))
         except HTTPError as e:
             error_message = str(e)
             if (data.status_code == 403):
                 error_message += ('This is likely due to an invalid key.\n'
                                   'Follow the instructions in doc.md for setting an API key.')
-            bot_handler.quit(error_message)
+            raise ConfigValidationError(error_message)
+
+    def initialize(self, bot_handler: Any) -> None:
+        self.config_info = bot_handler.get_config_info('giphy')
 
     def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
         bot_response = get_bot_giphy_response(

@@ -3,6 +3,10 @@ from unittest import TestCase
 
 from typing import List, Dict, Any, Tuple
 
+from zulip_bots.custom_exceptions import (
+    ConfigValidationError,
+)
+
 from zulip_bots.request_test_lib import (
     mock_http_conversation,
 )
@@ -148,6 +152,15 @@ class BotTestCase(TestCase):
             bot.handle_message(message, bot_handler)
             response = bot_handler.unique_response()
             self.assertEqual(expected_response, response['content'])
+
+    def validate_invalid_config(self, config_data: Dict[str, str], error_regexp: str) -> None:
+        bot_class = type(get_bot_message_handler(self.bot_name))
+        with self.assertRaisesRegexp(ConfigValidationError, error_regexp):
+            bot_class.validate_config(config_data)
+
+    def validate_valid_config(self, config_data: Dict[str, str]) -> None:
+        bot_class = type(get_bot_message_handler(self.bot_name))
+        bot_class.validate_config(config_data)
 
     def test_bot_usage(self):
         # type: () -> None
