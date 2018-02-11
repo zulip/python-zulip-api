@@ -1,5 +1,5 @@
 from unittest import TestCase
-from unittest.mock import MagicMock, patch, ANY
+from unittest.mock import MagicMock, patch, ANY, create_autospec
 from zulip_bots.lib import (
     ExternalBotHandler,
     StateHandler,
@@ -32,6 +32,16 @@ class FakeClient:
         )
 
     def send_message(self, message):
+        pass
+
+class FakeBotHandler:
+    def usage(self):
+        return '''
+            This is a fake bot handler that is used
+            to spec BotHandler mocks.
+            '''
+
+    def handle_message(self, message, bot_handler):
         pass
 
 class LibTest(TestCase):
@@ -99,7 +109,7 @@ class LibTest(TestCase):
             mock_lib_module = MagicMock()
             # __file__ is not mocked by MagicMock(), so we assign a mock value manually.
             mock_lib_module.__file__ = "foo"
-            mock_bot_handler = MagicMock()
+            mock_bot_handler = create_autospec(FakeBotHandler)
             mock_lib_module.handler_class.return_value = mock_bot_handler
 
             def call_on_each_event_mock(self, callback, event_types=None, narrow=None):
