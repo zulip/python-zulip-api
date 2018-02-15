@@ -27,11 +27,14 @@
 # `hg push`). See https://zulipchat.com/integrations for installation instructions.
 from __future__ import absolute_import
 
+# disable mercurial demandimport or zulip breaks when importing
+from mercurial import demandimport
+demandimport.disable()
+
 import zulip
 import sys
 from six.moves import range
 from typing import Any, Optional, Text
-from mercurial import ui, repo
 
 VERSION = "0.9"
 
@@ -58,7 +61,7 @@ def format_summary_line(web_url, user, base, tip, branch, node):
             revcount=revcount, s=plural)
 
     return u"**{user}** pushed {commits} to **{branch}** (`{tip}:{node}`):\n\n".format(
-        user=user, commits=formatted_commit_count, branch=branch, tip=tip,
+        user=user, commits=formatted_commit_count, branch=branch, tip=tip - 1,
         node=node[:12])
 
 def format_commit_lines(web_url, repo, base, tip):
@@ -108,12 +111,8 @@ def send_zulip(email, api_key, site, stream, subject, content):
 
 def get_config(ui, item):
     # type: (ui, str) -> str
-    try:
-        # configlist returns everything in lists.
-        return ui.configlist('zulip', item)[0]
-    except IndexError:
-        ui.warn("Zulip: Could not find required item {} in hg config.".format(item))
-        sys.exit(1)
+    return ui.config('zulip', item)
+
 
 def hook(ui, repo, **kwargs):
     # type: (ui, repo, **Text) -> None
