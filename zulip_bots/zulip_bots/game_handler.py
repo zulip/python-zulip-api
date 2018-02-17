@@ -16,6 +16,12 @@ class BadMoveException(Exception):
     def __str__(self) -> str:
         return self.message
 
+class SamePlayerMove(Exception):
+    def __init__(self, message: str) -> None:
+        self.message = message
+
+    def __str__(self) -> str:
+        return self.message
 
 class GameAdapter(object):
     '''
@@ -766,6 +772,10 @@ class GameInstance(object):
     def make_move(self, content: str, is_computer: bool) -> None:
         try:
             board = self.model.make_move(content, self.turn, is_computer)
+        # Keep the turn of the same player
+        except SamePlayerMove as smp:
+            self.same_player_turn(content, smp.message, is_computer)
+            return
         except BadMoveException as e:
             self.broadcast(e.message)
             return
@@ -784,6 +794,28 @@ class GameInstance(object):
 
     def is_turn_of(self, player_email: str) -> bool:
         return self.players[self.turn].lower() == player_email.lower()
+
+    def same_player_turn(self, content: str, message: str, is_computer: bool) -> None:
+        if not is_computer:
+            self.current_messages.append(self.gameAdapter.gameMessageHandler.alert_move_message(
+                '**{}**'.format(self.gameAdapter.get_username_by_email(self.players[self.turn])), content))
+        self.current_messages.append(self.parse_current_board())
+        # append custom message the game wants to give for the next move
+        self.current_messages.append(message)
+        game_over = self.model.determine_game_over(self.players)
+        if game_over:
+            self.broadcast_current_message()
+            if game_over == 'current turn':
+                game_over = self.players[self.turn]
+            self.end_game(game_over)
+            return
+        self.current_messages.append('It\'s @**{}**\'s ({}) turn.'.format(
+            self.gameAdapter.get_username_by_email(self.players[self.turn]),
+            self.gameAdapter.gameMessageHandler.get_player_color(self.turn)
+        ))
+        self.broadcast_current_message()
+        if self.players[self.turn] == self.gameAdapter.email:
+            self.make_move('', True)
 
     def next_turn(self) -> None:
         self.turn += 1
