@@ -7,12 +7,12 @@ freely import another modules.
 
 import re
 
+from zulip_bots.game_handler import BadMoveException
+
 from . import database
 from . import mechanics
-
 COMMAND_PATTERN = re.compile(
     "^(\\w*).*(\\d,\\d).*(\\d,\\d)|^(\\w+).*(\\d,\\d)")
-
 
 def getInfo():
     """ Gets the info on starting the game
@@ -22,7 +22,6 @@ def getInfo():
     return "To start a game, mention me and add `create`. A game will start " \
            "in that topic. "
 
-
 def getHelp():
     """ Gets the help message
 
@@ -30,8 +29,6 @@ def getHelp():
     """
 
     return """Commands:
-create: Create a new game if it doesn't exist
-reset: Reset a current game
 put (v,h): Put a man into the grid in phase 1
 move (v,h) -> (v,h): Moves a man from one point to -> another point
 take (v,h): Take an opponent's man from the grid in phase 2/3
@@ -39,125 +36,111 @@ take (v,h): Take an opponent's man from the grid in phase 2/3
 v: vertical position of grid
 h: horizontal position of grid"""
 
-
 def unknown_command():
     """Returns an unknown command info
 
     :return: A string containing info about available commands
     """
-    return "Unknown command. Available commands: create, reset, help, " \
-           "put (v,h), take (v,h), move (v,h) -> (v,h)"
+    message = "Unknown command. Available commands: " \
+              "put (v,h), take (v,h), move (v,h) -> (v,h)"
+    raise BadMoveException(message)
 
-
+# def beat(message, topic_name, merels_storage):
 def beat(message, topic_name, merels_storage):
     """ This gets triggered every time a user send a message in any topic
-
     :param message: User's message
     :param topic_name: User's current topic
     :param merels_storage: Merels' storage
-    :return: A response string to reply to that topic, if any. If not, it
-            returns an empty string
+    :return: a tuple of response string and message, non-empty string
+             we want to keep the turn of the same played,
+             an empty string otherwise.
     """
-
-    merels = database.MerelsStorage(merels_storage)
-
-    if "create" in message.lower():
-        return mechanics.create_room(topic_name, merels_storage)
-
-    if "help" in message.lower():
-        return getHelp()
-
-    if "reset" in message.lower():
-        if merels.get_game_data(topic_name) is not None:
-            return mechanics.reset_game(topic_name, merels_storage)
-        else:
-            return "No game created yet."
-
+    merels = database.MerelsStorage(topic_name, merels_storage)
     match = COMMAND_PATTERN.match(message)
+    same_player_move = ""  # message indicating move of the same player
 
     if match is None:
         return unknown_command()
+    if match.group(1) is not None and match.group(
+            2) is not None and match.group(3) is not None:
 
-    # Matches when user types the command in format of: "command v,h -> v,
-    # h" or something similar that has three arguments
+        responses = ""
+        command = match.group(1)
 
-    if merels.get_game_data(topic_name) is not None:
-        if match.group(1) is not None and match.group(
-                2) is not None and match.group(3) is not None:
+        if command.lower() == "move":
+
+            p1 = [int(x) for x in match.group(2).split(",")]
+            p2 = [int(x) for x in match.group(3).split(",")]
+
+            if mechanics.get_take_status(topic_name, merels_storage) == 1:
+
+                raise BadMoveException("Take is required to proceed."
+                                       " Please try again.\n")
+
+            responses += mechanics.move_man(topic_name, p1, p2,
+                                            merels_storage) + "\n"
+            no_moves = after_event_checkup(responses, topic_name, merels_storage)
+
+            mechanics.update_hill_uid(topic_name, merels_storage)
+
+            responses += mechanics.display_game(topic_name, merels_storage) + "\n"
+
+            if no_moves != "":
+                same_player_move = no_moves
+
+        else:
+            return unknown_command()
+
+        if mechanics.get_take_status(topic_name, merels_storage) == 1:
+                same_player_move = "Take is required to proceed.\n"
+        return responses, same_player_move
+
+    elif match.group(4) is not None and match.group(5) is not None:
+        command = match.group(4)
+        p1 = [int(x) for x in match.group(5).split(",")]
+
+        # put 1,2
+        if command == "put":
             responses = ""
 
-            command = match.group(1)
-            if command.lower() == "move":
-                p1 = [int(x) for x in match.group(2).split(",")]
-                p2 = [int(x) for x in match.group(3).split(",")]
+            if mechanics.get_take_status(topic_name, merels_storage) == 1:
+                raise BadMoveException("Take is required to proceed."
+                                       " Please try again.\n")
+            responses += mechanics.put_man(topic_name, p1[0], p1[1],
+                                           merels_storage) + "\n"
+            no_moves = after_event_checkup(responses, topic_name, merels_storage)
 
-                # Note that it doesn't have to be "move 1,1 -> 1,2".
-                # It can also  just be "move 1,1 1,2"
-                if mechanics.get_take_status(topic_name, merels_storage) == 1:
-                    responses += "Take is required to proceed. Please try " \
-                                 "again.\n"
-                else:
-                    responses += mechanics.move_man(topic_name, p1, p2,
-                                                    merels_storage) + "\n"
-                    responses += after_event_checkup(responses, topic_name,
-                                                     merels_storage)
+            mechanics.update_hill_uid(topic_name, merels_storage)
 
-                mechanics.update_hill_uid(topic_name, merels_storage)
-            else:
-                responses += unknown_command()
+            responses += mechanics.display_game(topic_name, merels_storage) + "\n"
 
-            responses += mechanics.display_game(topic_name,
+            if no_moves != "":
+                same_player_move = no_moves
+            if mechanics.get_take_status(topic_name, merels_storage) == 1:
+                same_player_move = "Take is required to proceed.\n"
+            return responses, same_player_move
+        # take 5,3
+        elif command == "take":
+            responses = ""
+            if mechanics.get_take_status(topic_name, merels_storage) == 1:
+                responses += mechanics.take_man(topic_name, p1[0], p1[1],
                                                 merels_storage) + "\n"
-            return responses
-        elif match.group(4) is not None and match.group(5) is not None:
-            command = match.group(4)
-            p1 = [int(x) for x in match.group(5).split(",")]
-
-            # put 1,2
-            if command == "put":
-                responses = ""
-
-                if mechanics.get_take_status(topic_name, merels_storage) == 1:
-                    responses += "Take is required to proceed. Please try " \
-                                 "again.\n"
-                else:
-                    responses += mechanics.put_man(topic_name, p1[0], p1[1],
-                                                   merels_storage) + "\n"
-                    responses += after_event_checkup(responses, topic_name,
-                                                     merels_storage)
+                if "Failed" in responses:
+                    raise BadMoveException(responses)
+                mechanics.update_toggle_take_mode(topic_name, merels_storage)
+                no_moves = after_event_checkup(responses, topic_name, merels_storage)
 
                 mechanics.update_hill_uid(topic_name, merels_storage)
-                responses += mechanics.display_game(topic_name,
-                                                    merels_storage) + "\n"
-                return responses
-            # take 5,3
-            elif command == "take":
-                responses = ""
-                if mechanics.get_take_status(topic_name, merels_storage) == 1:
-                    responses += mechanics.take_man(topic_name, p1[0], p1[1],
-                                                    merels_storage) + "\n"
-                    if not ("Failed" in responses):
-                        mechanics.update_toggle_take_mode(topic_name,
-                                                          merels_storage)
-                        mechanics.update_change_turn(topic_name,
-                                                     merels_storage)
 
-                    mechanics.update_hill_uid(topic_name, merels_storage)
-                    responses += check_win(topic_name, merels_storage)
-                    if not ("win" in responses.lower()):
-                        responses += mechanics.display_game(topic_name,
-                                                            merels_storage) \
-                            + "\n"
+                responses += mechanics.display_game(topic_name, merels_storage) + "\n"
 
-                    return responses
-                else:
-                    return "Taking is not possible."
+                if no_moves != "":
+                    same_player_move = no_moves
+                return responses, same_player_move
             else:
-                return unknown_command()
-    else:
-        return "No game created yet. You cannot do any of the game commands." \
-               " Create the game first."
-
+                raise BadMoveException("Taking is not possible.")
+        else:
+            return unknown_command()
 
 def check_take_mode(response, topic_name, merels_storage):
     """This checks whether the previous action can result in a take mode for
@@ -175,7 +158,6 @@ def check_take_mode(response, topic_name, merels_storage):
         else:
             mechanics.update_change_turn(topic_name, merels_storage)
 
-
 def check_any_moves(topic_name, merels_storage):
     """Check whether the player can make any moves, if can't switch to another
     player
@@ -191,7 +173,6 @@ def check_any_moves(topic_name, merels_storage):
 
     return ""
 
-
 def after_event_checkup(response, topic_name, merels_storage):
     """After doing certain moves in the game, it will check for take mode
     availability and check for any possible moves
@@ -205,7 +186,6 @@ def after_event_checkup(response, topic_name, merels_storage):
     check_take_mode(response, topic_name, merels_storage)
     return check_any_moves(topic_name, merels_storage)
 
-
 def check_win(topic_name, merels_storage):
     """Checks whether the current grid has a winner, if it does, finish the
     game and remove it from the database
@@ -214,7 +194,7 @@ def check_win(topic_name, merels_storage):
     :param merels_storage: Merels' storage
     :return:
     """
-    merels = database.MerelsStorage(merels_storage)
+    merels = database.MerelsStorage(topic_name, merels_storage)
 
     win = mechanics.who_won(topic_name, merels_storage)
     if win != "None":

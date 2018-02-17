@@ -10,7 +10,7 @@ from . import constants
 from . import database
 from . import game_data
 from . import interface
-
+from zulip_bots.game_handler import BadMoveException
 
 def is_in_grid(vertical_pos, horizontal_pos):
     """Checks whether the cell actually exists or not
@@ -228,7 +228,7 @@ def who_won(topic_name, merels_storage):
             is winning
     """
 
-    merels = database.MerelsStorage(merels_storage)
+    merels = database.MerelsStorage(topic_name, merels_storage)
     data = game_data.GameData(merels.get_game_data(topic_name))
 
     if data.get_phase() > 1:
@@ -275,7 +275,7 @@ def create_room(topic_name, merels_storage):
     :param merels_storage: Merels' storage
     :return: A response string
     """
-    merels = database.MerelsStorage(merels_storage)
+    merels = database.MerelsStorage(topic_name, merels_storage)
 
     if merels.create_new_game(topic_name):
         response = ""
@@ -297,7 +297,7 @@ def display_game(topic_name, merels_storage):
     :param merels_storage:  Merels' storage
     :return: A response string
     """
-    merels = database.MerelsStorage(merels_storage)
+    merels = database.MerelsStorage(topic_name, merels_storage)
 
     data = game_data.GameData(merels.get_game_data(topic_name))
 
@@ -309,9 +309,9 @@ def display_game(topic_name, merels_storage):
         take = "No"
 
     response += interface.graph_grid(data.grid()) + "\n"
-    response += """Phase {}, {}'s turn. Take mode: {}.
+    response += """Phase {}. Take mode: {}.
 X taken: {}, O taken: {}.
-    """.format(data.get_phase(), data.turn, take, data.x_taken, data.o_taken)
+    """.format(data.get_phase(), take, data.x_taken, data.o_taken)
 
     return response
 
@@ -323,7 +323,7 @@ def reset_game(topic_name, merels_storage):
     :param merels_storage: Merels' storage
     :return: A response string
     """
-    merels = database.MerelsStorage(merels_storage)
+    merels = database.MerelsStorage(topic_name, merels_storage)
 
     merels.remove_game(topic_name)
     return "Game removed.\n" + create_room(topic_name,
@@ -339,7 +339,7 @@ def move_man(topic_name, p1, p2, merels_storage):
     :param merels_storage: Merels' storage
     :return: A response string
     """
-    merels = database.MerelsStorage(merels_storage)
+    merels = database.MerelsStorage(topic_name, merels_storage)
     data = game_data.GameData(merels.get_game_data(topic_name))
 
     # Get the grid
@@ -361,8 +361,7 @@ def move_man(topic_name, p1, p2, merels_storage):
         return "Moved a man from ({0}, {1}) -> ({2}, {3}) for {4}.".format(
             p1[0], p1[1], p2[0], p2[1], data.turn)
     else:
-        return "Failed: That's not a legal move. Please try again."
-
+        raise BadMoveException("Failed: That's not a legal move. Please try again.")
 
 def put_man(topic_name, v, h, merels_storage):
     """Puts a man into the specified cell in topic_name
@@ -373,7 +372,7 @@ def put_man(topic_name, v, h, merels_storage):
     :param merels_storage: MerelsDatabase object
     :return: A response string
     """
-    merels = database.MerelsStorage(merels_storage)
+    merels = database.MerelsStorage(topic_name, merels_storage)
     data = game_data.GameData(merels.get_game_data(topic_name))
 
     # Get the grid
@@ -393,7 +392,7 @@ def put_man(topic_name, v, h, merels_storage):
                            data.take_mode)
         return "Put a man to ({0}, {1}) for {2}.".format(v, h, data.turn)
     else:
-        return "Failed: That's not a legal put. Please try again."
+        raise BadMoveException("Failed: That's not a legal put. Please try again.")
 
 
 def take_man(topic_name, v, h, merels_storage):
@@ -405,7 +404,7 @@ def take_man(topic_name, v, h, merels_storage):
     :param merels_storage: Merels' storage
     :return: A response string
     """
-    merels = database.MerelsStorage(merels_storage)
+    merels = database.MerelsStorage(topic_name, merels_storage)
     data = game_data.GameData(merels.get_game_data(topic_name))
 
     # Get the grid
@@ -431,7 +430,7 @@ def take_man(topic_name, v, h, merels_storage):
                            data.take_mode)
         return "Taken a man from ({0}, {1}) for {2}.".format(v, h, data.turn)
     else:
-        return "Failed: That's not a legal take. Please try again."
+        raise BadMoveException("Failed: That's not a legal take. Please try again.")
 
 
 def update_hill_uid(topic_name, merels_storage):
@@ -442,7 +441,7 @@ def update_hill_uid(topic_name, merels_storage):
     :return: None
     """
 
-    merels = database.MerelsStorage(merels_storage)
+    merels = database.MerelsStorage(topic_name, merels_storage)
     data = game_data.GameData(merels.get_game_data(topic_name))
 
     data.hill_uid = get_hills_numbers(data.grid())
@@ -460,7 +459,7 @@ def update_change_turn(topic_name, merels_storage):
     :return: None
     """
 
-    merels = database.MerelsStorage(merels_storage)
+    merels = database.MerelsStorage(topic_name, merels_storage)
     data = game_data.GameData(merels.get_game_data(topic_name))
 
     data.switch_turn()
@@ -478,7 +477,7 @@ def update_toggle_take_mode(topic_name, merels_storage):
     :return: None
     """
 
-    merels = database.MerelsStorage(merels_storage)
+    merels = database.MerelsStorage(topic_name, merels_storage)
     data = game_data.GameData(merels.get_game_data(topic_name))
 
     data.toggle_take_mode()
@@ -496,7 +495,7 @@ def get_take_status(topic_name, merels_storage):
     :return: 1 or 0
     """
 
-    merels = database.MerelsStorage(merels_storage)
+    merels = database.MerelsStorage(topic_name, merels_storage)
     data = game_data.GameData(merels.get_game_data(topic_name))
 
     return data.take_mode
@@ -528,7 +527,7 @@ def can_take_mode(topic_name, merels_storage):
     :return: True if this turn can trigger take mode, False if otherwise
     """
 
-    merels = database.MerelsStorage(merels_storage)
+    merels = database.MerelsStorage(topic_name, merels_storage)
     data = game_data.GameData(merels.get_game_data(topic_name))
 
     current_hill_uid = data.hill_uid
@@ -570,7 +569,7 @@ def can_make_any_move(topic_name, merels_storage):
     :return: True if the player has a way, False if there isn't
     """
 
-    merels = database.MerelsStorage(merels_storage)
+    merels = database.MerelsStorage(topic_name, merels_storage)
     data = game_data.GameData(merels.get_game_data(topic_name))
 
     if data.get_phase() != 1:
