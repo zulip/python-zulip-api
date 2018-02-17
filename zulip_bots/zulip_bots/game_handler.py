@@ -72,6 +72,8 @@ class GameAdapter(object):
 `start game`
 * To start a game against another player, type
 `start game with @<player-name>`{}
+* To play game with the current number of players, type
+`play game`
 * To quit a game at any time, type
 `quit`
 * To end a game with a draw, type
@@ -166,6 +168,9 @@ class GameAdapter(object):
 
             elif content.lower().startswith('start game'):
                 self.command_start_game(message, sender, content)
+
+            elif content.lower().startswith('play game'):
+                self.command_play(message, sender, content)
 
             elif content.lower() == 'accept':
                 self.command_accept(message, sender, content)
@@ -322,6 +327,21 @@ class GameAdapter(object):
                 message, 'There is not a game in this subject. Type `help` for all commands.')
             return
         self.join_game(game_id, sender, message)
+
+    def command_play(self, message: Dict[str, Any], sender: str, content: str) -> None:
+        game_id = self.get_invite_in_subject(
+            message['subject'], message['display_recipient'])
+        if game_id is '':
+            self.send_reply(
+                message, 'There is not a game in this subject. Type `help` for all commands.')
+            return
+        num_players = len(self.get_players(game_id))
+        if num_players >= self.min_players and num_players <= self.max_players:
+            self.start_game(game_id)
+        else:
+            self.send_reply(
+                message, 'Join {} more players to start the game'.format(self.max_players-num_players)
+            )
 
     def command_leaderboard(self, message: Dict[str, Any], sender: str, content: str) -> None:
         stats = self.get_sorted_player_statistics()
