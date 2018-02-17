@@ -53,6 +53,8 @@ class TestConnectFourBot(BotTestCase):
 `start game`
 * To start a game against another player, type
 `start game with @<player-name>`
+* To play game with the current number of players, type
+`play game`
 * To quit a game at any time, type
 `quit`
 * To end a game with a draw, type

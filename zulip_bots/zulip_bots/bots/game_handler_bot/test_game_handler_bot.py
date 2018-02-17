@@ -111,6 +111,8 @@ class TestGameHandlerBot(BotTestCase):
 `start game with @<player-name>`
 * To start a game with the computer, type
 `start game with` @**test-bot**
+* To play game with the current number of players, type
+`play game`
 * To quit a game at any time, type
 `quit`
 * To end a game with a draw, type
