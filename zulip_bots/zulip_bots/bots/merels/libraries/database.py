@@ -14,7 +14,7 @@ from .constants import EMPTY_BOARD
 
 
 class MerelsStorage():
-    def __init__(self, storage):
+    def __init__(self, topic_name, storage):
         """Instantiate storage field.
 
         The current database has this form:
@@ -29,29 +29,6 @@ class MerelsStorage():
         :param name: Name of the storage
         """
         self.storage = storage
-
-    def create_new_game(self, topic_name):
-        """ Creates a new merels game if it doesn't exists yet.
-
-        :param topic_name: Name of the topic
-        :return: True, if the game is successfully created, False if otherwise.
-        """
-
-        parameters = ("X", 0, 0, EMPTY_BOARD, "", 0)
-
-        # Checks whether the game exists yet
-        # If it exists
-
-        try:
-            if not self.storage.contains(topic_name) or self.storage.get(
-                    topic_name) == "":
-                self.storage.put(topic_name, json.dumps(parameters))
-                return True
-            else:
-                return False
-        except KeyError:
-            self.storage.put(topic_name, json.dumps(parameters))
-            return True
 
     def update_game(self, topic_name, turn, x_taken, o_taken, board, hill_uid,
                     take_mode):
