@@ -25,6 +25,13 @@ class ConnectFourModel(object):
     def update_board(self, board):
         self.current_board = deepcopy(board)
 
+    def get_column(self, col):
+        # We use this in tests.
+        return [
+            self.current_board[i][col]
+            for i in range(6)
+        ]
+
     def validate_move(self, column_number):
         if column_number < 0 or column_number > 6:
             return False
