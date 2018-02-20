@@ -3,6 +3,7 @@ from zulip_bots.test_lib import BotTestCase
 from contextlib import contextmanager
 from unittest.mock import MagicMock
 from zulip_bots.bots.connect_four.connect_four import *
+from zulip_bots.game_handler import BadMoveException
 from typing import Dict, Any, List
 
 
@@ -477,3 +478,24 @@ The first player to get 4 in a row wins!\n Good Luck!')
         confirmWinStates(vertical_win_boards)
         confirmWinStates(major_diagonal_win_boards)
         confirmWinStates(minor_diagonal_win_boards)
+
+    def test_more_logic(self) -> None:
+        model = ConnectFourModel()
+        move = 'move 4'
+        col = 3  # zero-indexed
+
+        self.assertEqual(model.get_column(col), [0, 0, 0, 0, 0, 0])
+        model.make_move(move, player_number=0)
+        self.assertEqual(model.get_column(col), [0, 0, 0, 0, 0, 1])
+        model.make_move(move, player_number=0)
+        self.assertEqual(model.get_column(col), [0, 0, 0, 0, 1, 1])
+        model.make_move(move, player_number=1)
+        self.assertEqual(model.get_column(col), [0, 0, 0, -1, 1, 1])
+        model.make_move(move, player_number=1)
+        self.assertEqual(model.get_column(col), [0, 0, -1, -1, 1, 1])
+        model.make_move(move, player_number=1)
+        self.assertEqual(model.get_column(col), [0, -1, -1, -1, 1, 1])
+        model.make_move(move, player_number=0)
+        self.assertEqual(model.get_column(col), [1, -1, -1, -1, 1, 1])
+        with self.assertRaises(BadMoveException):
+            model.make_move(move, player_number=0)
