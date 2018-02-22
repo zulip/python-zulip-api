@@ -1,0 +1,57 @@
+{
+  "request": {
+    "api_url": "https://api.susi.ai/susi/chat.json?q=hi"
+  },
+  "response": {
+      "query": "hi",
+      "count": 1,
+      "client_id": "aG9zdF8xNzIuNjguMTQ0LjI3XzNkZWNmYjA0",
+      "query_date": "2018-02-21T06:45:24.291Z",
+      "answers": [{
+        "data": [
+          {
+            "0": "hi",
+            "1": "",
+            "token_original": "hi",
+            "token_canonical": "hi",
+            "token_categorized": "hi",
+            "timezoneOffset": "0",
+            "language": "en",
+            "answer": "Hello!",
+            "skill_link": "https://github.com/fossasia/susi_server/blob/development/conf/susi/en_0700_ai_play.json",
+            "query": "hi",
+            "skill": "/susi_server/conf/susi/en_0700_ai_play.json",
+            "_username": "ABC"
+          },
+          {
+            "answer": "C is the third letter in the English alphabet and a letter of the alphabets of many other writing systems which inherited it from the Latin alphabet.",
+            "skill_link": "https://github.com/fossasia/susi_server/blob/development/conf/susi/en_0090_fail.json",
+            "query": "c",
+            "skill": "/susi_server/conf/susi/en_0090_fail.json",
+            "_username": "ABC"
+          }
+        ],
+        "metadata": {"count": 5},
+        "actions": [{
+          "type": "answer",
+          "language": "en",
+          "expression": "Hello!"
+        }],
+        "skills": ["/susi_server/conf/susi/en_0700_ai_play.json"],
+        "persona": {}
+      }],
+      "answer_date": "2018-02-21T06:45:24.320Z",
+      "answer_time": 29,
+      "language": "en",
+      "session": {"identity": {
+        "type": "host",
+        "name": "172.68.144.27_3decfb04",
+        "anonymous": true
+      }}
+    },
+  "response-headers": {
+    "status": 200,
+    "ok": true,
+    "content-type": "application/json; charset=utf-8"
+  }
+}
