@@ -62,6 +62,15 @@ def mock_http_conversation(http_data):
                 http_request,
                 ['params', 'headers']
             )
+    elif http_method == 'PATCH':
+        with patch('requests.patch') as mock_patch:
+            mock_patch.return_value = get_response(http_response, http_headers)
+            yield
+            assert_called_with_fields(
+                mock_patch,
+                http_request,
+                ['params', 'headers', 'json', 'data']
+            )
     else:
         with patch('requests.post') as mock_post:
             mock_post.return_value = get_response(http_response, http_headers)
