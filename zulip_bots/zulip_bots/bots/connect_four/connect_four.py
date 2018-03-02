@@ -50,6 +50,7 @@ class ConnectFourBotHandler(GameAdapter):
         move_regex = '(move ([1-7])$)|(([1-7])$)'
         model = ConnectFourModel
         gameMessageHandler = ConnectFourMessageHandler
+        rules = '''Try to get four pieces in row, Diagonals count too!'''
 
         super(ConnectFourBotHandler, self).__init__(
             game_name,
@@ -58,6 +59,7 @@ class ConnectFourBotHandler(GameAdapter):
             move_regex,
             model,
             gameMessageHandler,
+            rules,
             max_players=2
         )
 
