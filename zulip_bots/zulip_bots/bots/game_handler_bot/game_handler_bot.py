@@ -56,6 +56,7 @@ class GameHandlerBotHandler(GameAdapter):
         move_regex = 'move (\d)$'
         model = MockModel
         gameMessageHandler = GameHandlerBotMessageHandler
+        rules = ''
 
         super(GameHandlerBotHandler, self).__init__(
             game_name,
@@ -64,6 +65,7 @@ class GameHandlerBotHandler(GameAdapter):
             move_regex,
             model,
             gameMessageHandler,
+            rules,
             max_players=2,
             supports_computer=True
         )
