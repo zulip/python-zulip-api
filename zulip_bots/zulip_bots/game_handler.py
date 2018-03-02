@@ -39,6 +39,7 @@ class GameAdapter(object):
         move_regex: str,
         model: Any,
         gameMessageHandler: Any,
+        rules: str,
         max_players: int=2,
         min_players: int=2,
         supports_computer: bool=False
@@ -50,6 +51,7 @@ class GameAdapter(object):
         self.model = model
         self.max_players = max_players
         self.min_players = min_players
+        self.is_single_player = self.min_players == self.max_players == 1
         self.supports_computer = supports_computer
         self.gameMessageHandler = gameMessageHandler()
         self.invites = {}  # type: Dict[str, Dict[str, str]]
@@ -57,6 +59,7 @@ class GameAdapter(object):
         self.user_cache = {}  # type: Dict[str, Dict[str, Any]]
         self.pending_subject_changes = []  # type: List[str]
         self.stream = 'games'
+        self.rules = rules
 
     # Values are [won, lost, drawn, total] new values can be added, but MUST be added to the end of the list.
     def add_user_statistics(self, user: str, values: Dict[str, int]) -> None:
@@ -90,7 +93,40 @@ class GameAdapter(object):
 `leaderboard`
 * To withdraw an invitation, type
 `cancel game`
+* To see rules of this game, type
+`rules`
 {}'''.format(self.game_name, self.get_bot_username(), self.play_with_computer_help(), self.move_help_message)
+
+    def help_message_single_player(self) -> str:
+        return '''** {} Bot Help:**
+*Preface all commands with @**{}***
+* To start a game in a stream, type
+`start game`
+* To quit a game at any time, type
+`quit`
+* To see rules of this game, type
+`rules`
+{}'''.format(self.game_name, self.get_bot_username(), self.move_help_message)
+
+    def get_commands(self) -> Dict[str, str]:
+        action = self.help_message_single_player()
+        return {
+            'accept': action,
+            'decline': action,
+            'register': action,
+            'draw': action,
+            'forfeit': action,
+            'leaderboard': action,
+            'join': action,
+        }
+
+    def manage_command(self, command: str, message: Dict[str, Any]) -> int:
+        commands = self.get_commands()
+        if command not in commands:
+            return 1
+        action = commands[command]
+        self.send_reply(message, action)
+        return 0
 
     def already_in_game_message(self) -> str:
         return 'You are already in a game. Type `quit` to leave.'
@@ -165,14 +201,29 @@ class GameAdapter(object):
                 self.add_user_to_cache(message)
                 logging.info('Added {} to user cache'.format(sender))
 
+            if self.is_single_player:
+                if content.lower().startswith('start game with') or content.lower().startswith('play game'):
+                    self.send_reply(message, self.help_message_single_player())
+                    return
+                else:
+                    val = self.manage_command(content.lower(), message)
+                    if val == 0:
+                        return
+
             if content.lower() == 'help' or content == '':
-                self.send_reply(message, self.help_message())
+                if self.is_single_player:
+                    self.send_reply(message, self.help_message_single_player())
+                else:
+                    self.send_reply(message, self.help_message())
                 return
+
+            elif content.lower() == 'rules':
+                self.send_reply(message, self.rules)
 
             elif content.lower().startswith('start game with '):
                 self.command_start_game_with(message, sender, content)
 
-            elif content.lower().startswith('start game'):
+            elif content.lower() == 'start game':
                 self.command_start_game(message, sender, content)
 
             elif content.lower().startswith('play game'):
@@ -204,7 +255,10 @@ class GameAdapter(object):
                 self.send_reply(
                     message, 'You are not in a game at the moment. Type `help` for help.')
             else:
-                self.send_reply(message, self.help_message())
+                if self.is_single_player:
+                    self.send_reply(message, self.help_message_single_player())
+                else:
+                    self.send_reply(message, self.help_message())
         except Exception as e:
             logging.exception(str(e))
             self.bot_handler.send_reply(message, 'Error {}.'.format(e))
@@ -225,13 +279,19 @@ class GameAdapter(object):
 
     def command_start_game(self, message: Dict[str, Any], sender: str, content: str) -> None:
         if message['type'] == 'private':
-            self.send_reply(
-                message, 'If you are starting a game in private messages, you must invite players. Type `help` for commands.')
+            if self.is_single_player:
+                self.send_reply(message, 'You are not allowed to play games in private messages.')
+                return
+            else:
+                self.send_reply(
+                    message, 'If you are starting a game in private messages, you must invite players. Type `help` for commands.')
         if not self.is_user_not_player(sender, message):
             self.send_reply(
                 message, self.already_in_game_message())
             return
         self.create_game_lobby(message)
+        if self.is_single_player:
+            self.command_play(message, sender, content)
 
     def command_accept(self, message: Dict[str, Any], sender: str, content: str) -> None:
         if not self.is_user_not_player(sender, message):
@@ -284,6 +344,12 @@ class GameAdapter(object):
                         self.game_name,
                         self.get_bot_username())
                 )
+            if self.is_single_player:
+                self.broadcast(game_id, '**{}** is now going to play {}!'.format(
+                    self.get_username_by_email(message['sender_email']),
+                    self.game_name)
+                )
+
         if self.email in users:
             self.broadcast(game_id, 'Wait... That\'s me!',
                            include_private=True)
@@ -312,6 +378,9 @@ class GameAdapter(object):
 
     def command_quit(self, message: Dict[str, Any], sender: str, content: str) -> None:
         game_id = self.get_game_id_by_email(sender)
+        if message['type'] == 'private' and self.is_single_player:
+            self.send_reply(message, 'You are not allowed to play games in private messages.')
+            return
         if game_id is '':
             self.send_reply(
                 message, 'You are not in a game. Type `help` for all commands.')
@@ -423,8 +492,9 @@ class GameAdapter(object):
 > {}/{} players'''.format(game_id, self.get_host(game_id), self.game_name, self.get_number_of_players(game_id), self.max_players)
         if game_id in self.instances.keys():
             instance = self.instances[game_id]
-            object += '\n> **[Join Game](/#narrow/stream/{}/topic/{})**'.format(
-                instance.stream, instance.subject)
+            if not self.is_single_player:
+                object += '\n> **[Join Game](/#narrow/stream/{}/topic/{})**'.format(
+                    instance.stream, instance.subject)
         return object
 
     def join_game(self, game_id: str, user_email: str, message: Dict[str, Any]={}) -> None:
@@ -496,6 +566,9 @@ class GameAdapter(object):
         game_id = self.is_user_in_game(message['sender_email'])
         game = self.get_game_info(game_id)
         if message['type'] == 'private':
+            if self.is_single_player:
+                self.send_reply(message, self.help_message_single_player())
+                return
             self.send_reply(message, 'Join your game using the link below!\n\n{}'.format(
                 self.get_formatted_game_object(game_id)))
             return
@@ -752,12 +825,15 @@ class GameInstance(object):
         if self.is_turn_of(player_email):
             self.handle_current_player_command(content)
         else:
-            user_turn_avatar = "!avatar({})".format(self.players[self.turn])
-            self.broadcast('{} It\'s **{}**\'s ({}) turn.'.format(
-                user_turn_avatar,
-                self.gameAdapter.get_username_by_email(
-                    self.players[self.turn]),
-                self.gameAdapter.gameMessageHandler.get_player_color(self.turn)))
+            if self.gameAdapter.is_single_player:
+                self.broadcast('It\'s your turn')
+            else:
+                user_turn_avatar = "!avatar({})".format(self.players[self.turn])
+                self.broadcast('{} It\'s **{}**\'s ({}) turn.'.format(
+                    user_turn_avatar,
+                    self.gameAdapter.get_username_by_email(
+                        self.players[self.turn]),
+                    self.gameAdapter.gameMessageHandler.get_player_color(self.turn)))
 
     def broadcast(self, content: str) -> None:
         self.gameAdapter.broadcast(self.game_id, content)
@@ -784,6 +860,7 @@ class GameInstance(object):
             return
         except BadMoveException as e:
             self.broadcast(e.message)
+            self.broadcast(self.parse_current_board())
             return
         if not is_computer:
             self.current_messages.append(self.gameAdapter.gameMessageHandler.alert_move_message(
@@ -829,12 +906,15 @@ class GameInstance(object):
         self.turn += 1
         if self.turn >= len(self.players):
             self.turn = 0
-        user_turn_avatar = "!avatar({})".format(self.players[self.turn])
-        self.current_messages.append('{} It\'s **{}**\'s ({}) turn.'.format(
-            user_turn_avatar,
-            self.gameAdapter.get_username_by_email(self.players[self.turn]),
-            self.gameAdapter.gameMessageHandler.get_player_color(self.turn)
-        ))
+        if self.gameAdapter.is_single_player:
+            self.current_messages.append('It\'s your turn.')
+        else:
+            user_turn_avatar = "!avatar({})".format(self.players[self.turn])
+            self.current_messages.append('{} It\'s **{}**\'s ({}) turn.'.format(
+                user_turn_avatar,
+                self.gameAdapter.get_username_by_email(self.players[self.turn]),
+                self.gameAdapter.gameMessageHandler.get_player_color(self.turn)
+            ))
         self.broadcast_current_message()
         if self.players[self.turn] == self.gameAdapter.email:
             self.make_move('', True)

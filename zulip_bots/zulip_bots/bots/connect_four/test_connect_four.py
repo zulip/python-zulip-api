@@ -66,6 +66,8 @@ class TestConnectFourBot(BotTestCase):
 `leaderboard`
 * To withdraw an invitation, type
 `cancel game`
+* To see rules of this game, type
+`rules`
 * To make your move during a game, type
 ```move <column-number>``` or ```<column-number>```'''
 

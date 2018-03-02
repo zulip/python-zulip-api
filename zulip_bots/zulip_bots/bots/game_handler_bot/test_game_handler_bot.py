@@ -123,6 +123,8 @@ class TestGameHandlerBot(BotTestCase):
 `leaderboard`
 * To withdraw an invitation, type
 `cancel game`
+* To see rules of this game, type
+`rules`
 * To make your move during a game, type
 ```move <column-number>```'''
 
@@ -379,7 +381,7 @@ class TestGameHandlerBot(BotTestCase):
     def test_invalid_move_message(self) -> None:
         bot = self.setup_game()
         self.verify_response('move 9', 'Invalid Move.', 0,
-                             bot=bot, stream='test', subject='test game', max_messages=1)
+                             bot=bot, stream='test', subject='test game', max_messages=2)
 
     def test_get_game_id_by_email(self) -> None:
         bot = self.setup_game()
