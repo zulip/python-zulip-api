@@ -7,10 +7,14 @@ from zulip_bots.test_lib import StubBotHandler, BotTestCase, get_bot_message_han
 class TestGiphyBot(BotTestCase):
     bot_name = "giphy"
 
-    # Override default function in BotTestCase
+    # Test for bot response to empty message
     def test_bot_responds_to_empty_message(self) -> None:
-        # FIXME?: Giphy does not respond to empty messages
-        pass
+        bot_response = '[Click to enlarge]' \
+                       '(https://media0.giphy.com/media/ISumMYQyX4sSI/giphy.gif)' \
+                       '[](/static/images/interactive-bot/giphy/powered-by-giphy.png)'
+        with self.mock_config_info({'key': '12345678'}), \
+                self.mock_http_conversation('test_random'):
+            self.verify_reply('', bot_response)
 
     def test_normal(self) -> None:
         bot_response = '[Click to enlarge]' \

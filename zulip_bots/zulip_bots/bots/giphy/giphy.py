@@ -10,6 +10,7 @@ from requests.exceptions import HTTPError, ConnectionError
 from zulip_bots.custom_exceptions import ConfigValidationError
 
 GIPHY_TRANSLATE_API = 'http://api.giphy.com/v1/gifs/translate'
+GIPHY_RANDOM_API = 'http://api.giphy.com/v1/gifs/random'
 
 class GiphyHandler(object):
     '''
@@ -62,21 +63,25 @@ def get_url_gif_giphy(keyword: str, api_key: str) -> Union[int, str]:
     # Return a URL for a Giphy GIF based on keywords given.
     # In case of error, e.g. failure to fetch a GIF URL, it will
     # return a number.
-    query = {'s': keyword,
-             'api_key': api_key}
+    query = {'api_key': api_key}
+    if len(keyword) > 0:
+        query['s'] = keyword
+        url = GIPHY_TRANSLATE_API
+    else:
+        url = GIPHY_RANDOM_API
+
     try:
-        data = requests.get(GIPHY_TRANSLATE_API, params=query)
+        data = requests.get(url, params=query)
     except requests.exceptions.ConnectionError as e:  # Usually triggered by bad connection.
         logging.exception('Bad connection')
         raise
     data.raise_for_status()
+
     try:
         gif_url = data.json()['data']['images']['original']['url']
     except (TypeError, KeyError):  # Usually triggered by no result in Giphy.
         raise GiphyNoResultException()
-
     return gif_url
-
 
 def get_bot_giphy_response(message: Dict[str, str], bot_handler: Any, config_info: Dict[str, str]) -> str:
     # Each exception has a specific reply should "gif_url" return a number.
