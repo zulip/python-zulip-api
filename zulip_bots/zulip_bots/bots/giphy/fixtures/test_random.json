@@ -1,0 +1,24 @@
+{
+  "request": {
+    "api_url": "http://api.giphy.com/v1/gifs/random",
+    "params": {
+      "api_key": "12345678"
+    }
+  },
+  "response": {
+    "meta": {
+      "status": 200
+    },
+    "data": {
+      "images": {
+        "original": {
+          "url": "https://media0.giphy.com/media/ISumMYQyX4sSI/giphy.gif"
+        }
+      }
+    }
+  },
+  "response-headers": {
+    "status": 200,
+    "content-type": "application/json; charset=utf-8"
+  }
+}
