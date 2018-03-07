@@ -9,6 +9,7 @@ from zulip_bots.custom_exceptions import (
 
 from zulip_bots.request_test_lib import (
     mock_http_conversation,
+    mock_request_exception
 )
 
 from zulip_bots.simple_lib import (
@@ -181,6 +182,10 @@ class BotTestCase(TestCase):
         assert test_name is not None
         http_data = read_bot_fixture_data(self.bot_name, test_name)
         return mock_http_conversation(http_data)
+
+    def mock_request_exception(self):
+        # type: () -> Any
+        return mock_request_exception()
 
     def mock_config_info(self, config_info):
         # type: (Dict[str, str]) -> Any
