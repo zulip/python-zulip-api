@@ -205,10 +205,9 @@ class BaremetricsHandler(object):
 
         url = 'https://api.baremetrics.com/v1/{}/plans'.format(parameters[0])
         create_plan_response = requests.post(url, data=data_header, headers=self.auth_header)
-
         if 'error' not in create_plan_response.json():
             return 'Plan Created.'
         else:
-            return 'Some Error Occurred. Maybe the passed arguments are invalid.'
+            return 'Invalid Arguments Error.'
 
 handler_class = BaremetricsHandler
