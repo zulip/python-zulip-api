@@ -103,3 +103,14 @@ class TestBaremetricsBot(BotTestCase):
                 patch('requests.get'):
             with self.mock_http_conversation('create_plan'):
                 self.verify_reply('create-plan TEST 1 TEST USD 123 TEST 123', 'Plan Created.')
+
+    def test_create_plan_error_command(self) -> None:
+        with self.mock_config_info({'api_key': 'TEST'}), \
+                patch('requests.get'):
+            with self.mock_http_conversation('create_plan_error'):
+                self.verify_reply('create-plan TEST 1 TEST USD 123 TEST 123', 'Invalid Arguments Error.')
+
+    def test_create_plan_argnum_error_command(self) -> None:
+        with self.mock_config_info({'api_key': 'TEST'}), \
+                patch('requests.get'):
+            self.verify_reply('create-plan alpha beta', 'Invalid number of arguments.')
