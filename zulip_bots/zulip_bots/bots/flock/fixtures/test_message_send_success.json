@@ -1,0 +1,17 @@
+{
+    "request": {
+        "api_url": "https://api.flock.co/v1/chat.sendMessage",
+        "method": "GET",
+        "params": {
+            "token": "12345",
+            "to": "u:userid",
+            "text": "hi there"
+        }
+    },
+    "response": {
+        "uid": "15207048523"
+    },
+    "response-headers": {
+        "content-type": "application/json; charset=utf-8"
+    }
+}

@@ -1,0 +1,19 @@
+{
+    "request": {
+        "api_url": "https://api.flock.co/v1/chat.sendMessage",
+        "method": "GET",
+        "params": {
+            "token": "12345",
+            "text": "hi there",
+            "to": "u:invalid"
+        }
+    },
+    "response": {
+        "error": "InvalidParameter",
+        "description": "A required parameter for the method call is missing or invalid",
+        "parameter": "to"
+    },
+    "response-headers": {
+        "content-type": "application/json; charset=utf-8"
+    }
+}
