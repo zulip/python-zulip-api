@@ -1,5 +1,8 @@
 from unittest.mock import patch
 from zulip_bots.test_lib import BotTestCase
+from zulip_bots.test_lib import StubBotHandler
+from zulip_bots.bots.link_shortener.link_shortener import LinkShortenerHandler
+
 
 class TestLinkShortenerBot(BotTestCase):
     bot_name = "link_shortener"
@@ -33,3 +36,10 @@ class TestLinkShortenerBot(BotTestCase):
             self._test('help',
                        ('Mention the link shortener bot in a conversation and then '
                         'enter any URLs you want to shorten in the body of the message.'))
+
+    def test_exception_when_api_key_is_invalid(self)-> None:
+        bot_test_instance = LinkShortenerHandler()
+        with self.mock_config_info({'key': 'qwertyuiopx'}):
+            with self.mock_http_conversation('test_invalid_key'):
+                with self.assertRaises(StubBotHandler.BotQuitException):
+                    bot_test_instance.initialize(StubBotHandler())
