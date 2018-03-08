@@ -67,6 +67,13 @@ class TestGithubDetailBot(BotTestCase):
             with self.mock_config_info(self.mock_config):
                 self.verify_reply(request, bot_response)
 
+    def test_exception(self) -> None:
+        request = 'zulip/zulip#0'
+        bot_response = 'Failed to find issue/pr: zulip/zulip#0'
+        with self.mock_request_exception():
+            with self.mock_config_info(self.mock_config):
+                self.verify_reply(request, bot_response)
+
     def test_random_text(self) -> None:
         request = 'some random text'
         bot_response = 'Failed to find any issue or PR.'
