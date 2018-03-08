@@ -1,0 +1,205 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import argparse
+import zipfile
+import textwrap
+import requests
+import urllib
+
+red = '\033[91m'
+green = '\033[92m'
+end_format = '\033[0m'
+bold = '\033[1m'
+
+bots_dir = '.bots'
+
+def pack(options):
+    # Basic sanity checks for input.
+    if not options.path:
+        print('tools/deploy: Path to bot folder not specified.')
+        sys.exit(1)
+    if not options.config:
+        print('tools/deploy: Path to zuliprc not specified.')
+        sys.exit(1)
+    if not options.main:
+        print('tools/deploy: No main bot file specified.')
+        sys.exit(1)
+    if not os.path.isfile(options.config):
+        print('pack: Config file not found at path: {}.'.format(options.config))
+        sys.exit(1)
+    if not os.path.isdir(options.path):
+        print('pack: Bot folder not found at path: {}.'.format(options.path))
+        sys.exit(1)
+    main_path = os.path.join(options.path, options.main)
+    if not os.path.isfile(main_path):
+        print('pack: Bot main file not found at path: {}.'.format(main_path))
+        sys.exit(1)
+
+    # Main logic for packing the bot.
+    if not os.path.exists(bots_dir):
+        os.makedirs(bots_dir)
+    zip_file_path = os.path.join(bots_dir, options.botname + ".zip")
+    zip_file = zipfile.ZipFile(zip_file_path, 'w', zipfile.ZIP_DEFLATED)
+    # Pack the complete bot folder
+    for root, dirs, files in os.walk(options.path):
+        for file in files:
+            file_path = os.path.join(root, file)
+            zip_file.write(file_path, os.path.relpath(file_path, options.path))
+    # Pack the zuliprc
+    zip_file.write(options.config, 'zuliprc')
+    # Pack the config file for the botfarm.
+    bot_config = textwrap.dedent('''\
+        [deploy]
+        bot={}
+        zuliprc=zuliprc
+        '''.format(options.main))
+    zip_file.writestr('config.ini', bot_config)
+    zip_file.close()
+    print('pack: Created zip file at: {}.'.format(zip_file_path))
+
+def check_common_options(options):
+    if not options.server:
+        print('tools/deploy: URL to Botfarm server not specified.')
+        sys.exit(1)
+    if not options.key:
+        print('tools/deploy: Botfarm deploy token not specified.')
+        sys.exit(1)
+
+def upload(options):
+    check_common_options(options)
+    file_path = os.path.join(bots_dir, options.botname + '.zip')
+    if not os.path.exists(file_path):
+        print('upload: Could not find bot package at {}.'.format(file_path))
+        sys.exit(1)
+    files = {'file': open(file_path, 'rb')}
+    headers = {'key': options.key}
+    url = urllib.parse.urljoin(options.server, 'bots/upload')
+    r = requests.post(url, files=files, headers=headers)
+    if r.status_code == requests.codes.ok:
+        print('upload: Uploaded the bot package to botfarm.')
+        return
+    if r.status_code == 401:
+        print('upload: Authentication error with the server. Aborting.')
+    else:
+        print('upload: Error {}. Aborting.'.format(r.status_code))
+    sys.exit(1)
+
+def clean(options):
+    file_path = os.path.join(bots_dir, options.botname + '.zip')
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        print('clean: Removed {}.'.format(file_path))
+    else:
+        print('clean: File \'{}\' not found.'.format(file_path))
+
+def process(options):
+    check_common_options(options)
+    headers = {'key': options.key}
+    url = urllib.parse.urljoin(options.server, 'bots/process')
+    payload = {'name': options.botname}
+    r = requests.post(url, headers=headers, json=payload)
+    if r.status_code == requests.codes.ok and r.text == 'done':
+        print('process: The bot has been processed by the botfarm.')
+        return
+    if r.status_code == 401:
+        print('process: Authentication error with the server. Aborting.')
+    else:
+        print('process: Error {}: {}. Aborting.'.format(r.status_code, r.text))
+    sys.exit(1)
+
+def start(options):
+    check_common_options(options)
+    headers = {'key': options.key}
+    url = urllib.parse.urljoin(options.server, 'bots/start')
+    payload = {'name': options.botname}
+    r = requests.post(url, headers=headers, json=payload)
+    if r.status_code == requests.codes.ok and r.text == 'done':
+        print('start: The bot has been started by the botfarm.')
+        return
+    if r.status_code == 401:
+        print('start: Authentication error with the server. Aborting.')
+    else:
+        print('start: Error {}: {}. Aborting.'.format(r.status_code, r.text))
+    sys.exit(1)
+
+def stop(options):
+    check_common_options(options)
+    headers = {'key': options.key}
+    url = urllib.parse.urljoin(options.server, 'bots/stop')
+    payload = {'name': options.botname}
+    r = requests.post(url, headers=headers, json=payload)
+    if r.status_code == requests.codes.ok and r.text == 'done':
+        print('stop: The bot has been stopped by the botfarm.')
+        return
+    if r.status_code == 401:
+        print('stop: Authentication error with the server. Aborting.')
+    else:
+        print('stop: Error {}: {}. Aborting.'.format(r.status_code, r.text))
+    sys.exit(1)
+
+def prepare(options):
+    pack(options)
+    upload(options)
+    clean(options)
+    process(options)
+
+def main():
+    usage = """tools/deploy <command> <bot-name> [options]
+
+This is tool meant to easily deploy bots to a Zulip Bot Farm.
+
+First, get your deploy token from the Botfarm server. We recommend saving your
+deploy-token as $TOKEN and the bot-farm server as $SERVER. To deploy, run:
+
+    tools/deploy prepare mybot --server=$SERVER --key=$TOKEN \\
+        --path=/path/to/bot/directory --config=/path/to/zuliprc --main=main_bot_file.py
+
+Now, your bot is ready to start.
+
+    tools/deploy start mybot --server=$SERVER --key=$TOKEN
+
+To stop the bot, use:
+
+    tools/deploy stop mybot --server=$SERVER --key=$TOKEN
+
+"""
+    parser = argparse.ArgumentParser(usage=usage)
+    parser.add_argument('command', help='Command to run.')
+    parser.add_argument('botname', help='Name of bot to operate on.')
+    parser.add_argument('--server', '-s',
+                        metavar='SERVERURL',
+                        default='https://botfarm.zulipdev.org',
+                        help='Url of the Zulip Botfarm server.')
+    parser.add_argument('--key', '-k',
+                        help='Deploy Token for the Botfarm.')
+    parser.add_argument('--path', '-p',
+                        help='Path to the bot directory.')
+    parser.add_argument('--config', '-c',
+                        help='Path to the zuliprc file.')
+    parser.add_argument('--main', '-m',
+                        help='Path to the bot\'s main file, relative to the bot\'s directory.')
+    options = parser.parse_args()
+    if not options.command:
+        print('tools/deploy: No command specified.')
+        sys.exit(1)
+    if not options.botname:
+        print('tools/deploy: No bot name specified. Please specify a name like \'my-custom-bot\'')
+        sys.exit(1)
+
+    commands = {
+        'pack': pack,
+        'upload': upload,
+        'clean': clean,
+        'prepare': prepare,
+        'process': process,
+        'start': start,
+        'stop': stop,
+    }
+    if options.command in commands:
+        commands[options.command](options)
+    else:
+        print('tools/deploy: No command \'{}\' found.'.format(options.command))
+if __name__ == '__main__':
+    main()
