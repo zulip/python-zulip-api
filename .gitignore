@@ -46,3 +46,6 @@ flaskbotrc
 
 # mypy
 .mypy_cache
+
+# zip files for bot deployment
+.bots
