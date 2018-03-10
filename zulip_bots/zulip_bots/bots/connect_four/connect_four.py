@@ -30,7 +30,7 @@ class ConnectFourMessageHandler(object):
         return original_player + ' moved in column ' + column_number
 
     def game_start_message(self) -> str:
-        return 'Type `move <column>` to place a token.\n\
+        return 'Type `move <column-number>` or `<column-number>` to place a token.\n\
 The first player to get 4 in a row wins!\n Good Luck!'
 
 
@@ -46,8 +46,8 @@ class ConnectFourBotHandler(GameAdapter):
         game_name = 'Connect Four'
         bot_name = 'connect_four'
         move_help_message = '* To make your move during a game, type\n' \
-                            '```move <column-number>```'
-        move_regex = 'move (\d)$'
+                            '```move <column-number>``` or ```<column-number>```'
+        move_regex = '(move (\d)$)|((\d)$)'
         model = ConnectFourModel
         gameMessageHandler = ConnectFourMessageHandler
 
