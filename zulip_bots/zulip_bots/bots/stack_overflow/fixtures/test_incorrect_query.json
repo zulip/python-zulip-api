@@ -1,0 +1,17 @@
+{
+    "request": {
+        "api_url":"http://api.stackexchange.com/2.2/search/advanced?order=desc&sort=relevance&site=stackoverflow&title=narendra"
+    },
+    "response": {
+        "data": {
+            "status_code":200
+        },
+        "items": [
+        ]
+    },
+    "response-headers":{
+        "status":200,
+        "ok":true,
+        "content-type":"application/json; charset=utf-8"
+    }
+}

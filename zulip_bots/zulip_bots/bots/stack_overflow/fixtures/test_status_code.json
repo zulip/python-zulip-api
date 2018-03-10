@@ -1,0 +1,16 @@
+{
+    "request": {
+        "api_url":"http://api.stackexchange.com/2.2/search/advanced?order=desc&sort=relevance&site=stackoverflow&title=Zulip"
+    },
+    "response": {
+        "data": {
+            "status_code":404
+        },
+        "items": [
+        ]
+    },
+    "response-headers":{
+        "status":404,
+        "content-type":"text/html"
+    }
+}

@@ -1,0 +1,29 @@
+{
+    "request": {
+        "api_url":"http://api.stackexchange.com/2.2/search/advanced?order=desc&sort=relevance&site=stackoverflow&title=restful"
+    },
+    "response": {
+        "data": {
+            "status_code":200
+        },
+        "items": [
+            {
+                "title":"What exactly is RESTful programming?", 
+                "link":"https://stackoverflow.com/questions/671118/what-exactly-is-restful-programming"
+            },
+            {
+                "title":"RESTful Authentication",
+                "link":"https://stackoverflow.com/questions/319530/restful-authentication"
+            },
+            {
+                "title":"RESTful URL design for search",
+                "link":"https://stackoverflow.com/questions/319530/restful-authentication"
+            }
+        ]
+    },
+    "response-headers":{
+        "status":200,
+        "ok":true,
+        "content-type":"application/json; charset=utf-8"
+    }
+}

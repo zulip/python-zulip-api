@@ -1,0 +1,29 @@
+{
+    "request": {
+        "api_url":"http://api.stackexchange.com/2.2/search/advanced?order=desc&sort=relevance&site=stackoverflow&title=113"
+    },
+    "response": {
+        "data": {
+            "status_code":200
+        },
+        "items": [
+            {
+                "title":"INSTALL_FAILED_NO_MATCHING_ABIS res-113", 
+                "link":"https://stackoverflow.com/questions/47117788/install-failed-no-matching-abis-res-113"
+            },
+            {
+                "title":"com.sun.tools.xjc.reader.Ring.get(Ring.java:113)",
+                "link":"https://stackoverflow.com/questions/12848282/com-sun-tools-xjc-reader-ring-getring-java113"
+            },
+            {
+                "title":"no route to host error 113",
+                "link":"https://stackoverflow.com/questions/10516222/no-route-to-host-error-113"
+            }
+        ]
+    },
+    "response-headers":{
+        "status":200,
+        "ok":true,
+        "content-type":"application/json; charset=utf-8"
+    }
+}
