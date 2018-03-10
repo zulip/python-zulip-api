@@ -236,7 +236,7 @@ class TicTacToeMessageHandler(object):
 
     def game_start_message(self) -> str:
         return ("Welcome to tic-tac-toe!"
-                "To make a move, type @-mention `move <number>`")
+                "To make a move, type @-mention `move <number>` or `<number>`")
 
 
 class ticTacToeHandler(GameAdapter):
@@ -258,8 +258,8 @@ class ticTacToeHandler(GameAdapter):
     def __init__(self) -> None:
         game_name = 'Tic Tac Toe'
         bot_name = 'tictactoe'
-        move_help_message = '* To move during a game, type\n`move <number>`'
-        move_regex = 'move \d$'
+        move_help_message = '* To move during a game, type\n`move <number>` or `<number>`'
+        move_regex = '(move (\d)$)|((\d)$)'
         model = TicTacToeModel
         gameMessageHandler = TicTacToeMessageHandler
         super(ticTacToeHandler, self).__init__(
