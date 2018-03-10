@@ -67,7 +67,7 @@ class TestConnectFourBot(BotTestCase):
 * To withdraw an invitation, type
 `cancel game`
 * To make your move during a game, type
-```move <column-number>```'''
+```move <column-number>``` or ```<column-number>```'''
 
     def test_static_responses(self) -> None:
         self.verify_response('help', self.help_message(), 0)
@@ -94,7 +94,7 @@ class TestConnectFourBot(BotTestCase):
         self.assertEqual(bot.gameMessageHandler.alert_move_message(
             'foo', 'move 6'), 'foo moved in column 6')
         self.assertEqual(bot.gameMessageHandler.game_start_message(
-        ), 'Type `move <column>` to place a token.\n\
+        ), 'Type `move <column-number>` or `<column-number>` to place a token.\n\
 The first player to get 4 in a row wins!\n Good Luck!')
 
     blank_board = [
