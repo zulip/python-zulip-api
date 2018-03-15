@@ -47,7 +47,7 @@ class ConnectFourBotHandler(GameAdapter):
         bot_name = 'connect_four'
         move_help_message = '* To make your move during a game, type\n' \
                             '```move <column-number>``` or ```<column-number>```'
-        move_regex = '(move (\d)$)|((\d)$)'
+        move_regex = '(move ([1-7])$)|(([1-7])$)'
         model = ConnectFourModel
         gameMessageHandler = ConnectFourMessageHandler
 
