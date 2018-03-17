@@ -7,15 +7,16 @@ import zipfile
 import textwrap
 import requests
 import urllib
+from urllib import parse
 
-red = '\033[91m'
-green = '\033[92m'
-end_format = '\033[0m'
-bold = '\033[1m'
+red = '\033[91m'  # type: str
+green = '\033[92m'  # type: str
+end_format = '\033[0m'  # type: str
+bold = '\033[1m'  # type: str
 
-bots_dir = '.bots'
+bots_dir = '.bots'  # type: str
 
-def pack(options):
+def pack(options: argparse.Namespace) -> None:
     # Basic sanity checks for input.
     if not options.path:
         print('tools/deploy: Path to bot folder not specified.')
@@ -59,7 +60,7 @@ def pack(options):
     zip_file.close()
     print('pack: Created zip file at: {}.'.format(zip_file_path))
 
-def check_common_options(options):
+def check_common_options(options: argparse.Namespace) -> None:
     if not options.server:
         print('tools/deploy: URL to Botfarm server not specified.')
         sys.exit(1)
@@ -67,7 +68,7 @@ def check_common_options(options):
         print('tools/deploy: Botfarm deploy token not specified.')
         sys.exit(1)
 
-def upload(options):
+def upload(options: argparse.Namespace) -> None:
     check_common_options(options)
     file_path = os.path.join(bots_dir, options.botname + '.zip')
     if not os.path.exists(file_path):
@@ -86,7 +87,7 @@ def upload(options):
         print('upload: Error {}. Aborting.'.format(r.status_code))
     sys.exit(1)
 
-def clean(options):
+def clean(options: argparse.Namespace) -> None:
     file_path = os.path.join(bots_dir, options.botname + '.zip')
     if os.path.exists(file_path):
         os.remove(file_path)
@@ -94,7 +95,7 @@ def clean(options):
     else:
         print('clean: File \'{}\' not found.'.format(file_path))
 
-def process(options):
+def process(options: argparse.Namespace) -> None:
     check_common_options(options)
     headers = {'key': options.key}
     url = urllib.parse.urljoin(options.server, 'bots/process')
@@ -109,7 +110,7 @@ def process(options):
         print('process: Error {}: {}. Aborting.'.format(r.status_code, r.text))
     sys.exit(1)
 
-def start(options):
+def start(options: argparse.Namespace) -> None:
     check_common_options(options)
     headers = {'key': options.key}
     url = urllib.parse.urljoin(options.server, 'bots/start')
@@ -124,7 +125,7 @@ def start(options):
         print('start: Error {}: {}. Aborting.'.format(r.status_code, r.text))
     sys.exit(1)
 
-def stop(options):
+def stop(options: argparse.Namespace) -> None:
     check_common_options(options)
     headers = {'key': options.key}
     url = urllib.parse.urljoin(options.server, 'bots/stop')
@@ -139,13 +140,13 @@ def stop(options):
         print('stop: Error {}: {}. Aborting.'.format(r.status_code, r.text))
     sys.exit(1)
 
-def prepare(options):
+def prepare(options: argparse.Namespace) -> None:
     pack(options)
     upload(options)
     clean(options)
     process(options)
 
-def main():
+def main() -> None:
     usage = """tools/deploy <command> <bot-name> [options]
 
 This is tool meant to easily deploy bots to a Zulip Bot Farm.
