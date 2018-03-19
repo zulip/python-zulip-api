@@ -1,0 +1,97 @@
+<aiml version="1.0">
+    <category>
+        <pattern>GET BRAIN</pattern>
+        <template>
+            <!-- Load standard AIML set -->
+            <learn>./bots/ai_bot/assets/standard/reduction0.safe.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/reduction1.safe.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/reduction2.safe.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/reduction3.safe.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/reduction0.safe.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/reduction.names.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/reductions-update.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/mp0.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/mp1.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/mp2.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/mp3.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/mp4.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/mp5.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/mp6.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/maths.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/alice.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/astrology.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/atomic.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/biography.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/bot.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/bot_profile.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/client.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/client_profile.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/computers.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/continuation.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/date.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/default.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/drugs.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/emotion.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/food.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/geography.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/gossip.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/history.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/humor.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/imponderables.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/inquiry.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/interjection.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/iu.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/knowledge.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/literature.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/loebner10.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/money.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/movies.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/music.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/numbers.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/personality.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/phone.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/pickup.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/politics.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/primeminister.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/primitive-math.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/psychology.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/pyschology.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/religion.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/salutations.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/science.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/sex.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/sports.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/stack.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/stories.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/that.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/wallace.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/xfind.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/update1.aiml</learn>
+            <learn>./bots/ai_bot/assets/standard/update_mccormick.aiml</learn>
+        </template>
+    </category>
+    
+    <category><pattern>help</pattern><template><srai>HELP</srai></template></category>
+    <category><pattern>help me</pattern><template><srai>HELP</srai></template></category>
+    <category>
+        <pattern>HELP</pattern>
+            <template>
+                Following are the things you can try saying: MATHS FACT
+            </template>
+    </category>
+
+    <category><pattern>verify</pattern><template><srai>VERIFY</srai></template></category>
+    <category>
+        <pattern>VERIFY</pattern>
+            <template>
+                Bot is working fine :-.
+            </template>
+    </category>
+
+    <category>
+        <pattern>*</pattern>
+        <template>
+            Sorry. I didn't quite get that.
+        </template>
+    </category>
+</aiml>

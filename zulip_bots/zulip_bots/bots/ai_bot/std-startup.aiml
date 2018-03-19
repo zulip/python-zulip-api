@@ -1,0 +1,23 @@
+<aiml version="1.0">
+    <category>
+        <pattern>LOAD AIML B</pattern>
+        <template>
+            <!-- Load standard AIML set -->
+            <learn>standard/reduction0.safe.aiml</learn>
+            <learn>standard/reduction1.safe.aiml</learn>
+            <learn>standard/reduction2.safe.aiml</learn>
+            <learn>standard/reduction3.safe.aiml</learn>
+            <learn>standard/reduction0.safe.aiml</learn>
+            <learn>standard/reduction.names.aiml</learn>
+            <learn>standard/reductions-update.aiml</learn>
+            <learn>standard/mp0.aiml</learn>
+            <learn>standard/mp1.aiml</learn>
+            <learn>standard/mp2.aiml</learn>
+            <learn>standard/mp3.aiml</learn>
+            <learn>standard/mp4.aiml</learn>
+            <learn>standard/mp5.aiml</learn>
+            <learn>standard/mp6.aiml</learn>
+            <learn>maths.aiml</learn>
+        </template>
+    </category>
+</aiml>
