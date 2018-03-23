@@ -43,14 +43,6 @@ def import_module_from_source(path, name=None):
 
     return module
 
-def name_and_path_match(given_name, path_to_bot):
-    # type: (Text, Text) -> bool
-    if given_name and path_to_bot:
-        name_by_path = os.path.splitext(os.path.basename(path_to_bot))[0]
-        if (given_name != name_by_path):
-            return False
-    return True
-
 def parse_args():
     # type: () -> argparse.Namespace
     usage = '''
