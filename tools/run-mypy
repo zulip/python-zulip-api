@@ -29,7 +29,7 @@ exclude = [
     "zulip_bots/zulip_bots/terminal.py",
     "zulip_bots/zulip_bots/simple_lib.py",
     "zulip_bots/zulip_bots/lib_tests.py",
-    "tools/test-lib",
+    "tools",
 ]
 
 # These files will be included even if excluded by a rule above.
@@ -94,7 +94,8 @@ force_include = [
     "zulip_bots/zulip_bots/bots/susi/susi.py",
     "zulip_bots/zulip_bots/bots/susi/test_susi.py",
     "zulip_bots/zulip_bots/bots/front/front.py",
-    "zulip_bots/zulip_bots/bots/front/test_front.py"
+    "zulip_bots/zulip_bots/bots/front/test_front.py",
+    "tools/deploy"
 ]
 
 parser = argparse.ArgumentParser(description="Run mypy on files tracked by git.")
@@ -130,14 +131,17 @@ files_dict = cast(Dict[str, List[str]],
                                     extless_only=args.scripts_only))
 
 for inpath in force_include:
-    ext = os.path.splitext(inpath)[1].split('.')[1]
+    try:
+        ext = os.path.splitext(inpath)[1].split('.')[1]
+    except IndexError:
+        ext = 'py'  # type: str
     files_dict[ext].append(inpath)
 
 pyi_files = set(files_dict['pyi'])
 python_files = [fpath for fpath in files_dict['py']
                 if not fpath.endswith('.py') or fpath + 'i' not in pyi_files]
 
-repo_python_files = OrderedDict([('zulip', []), ('zulip_bots', []), ('zulip_botserver', [])])
+repo_python_files = OrderedDict([('zulip', []), ('zulip_bots', []), ('zulip_botserver', []), ('tools', [])])
 for file_path in python_files:
     repo = PurePath(file_path).parts[0]
     if repo in repo_python_files:
