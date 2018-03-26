@@ -29,19 +29,28 @@ The source code is written in *Python 3*.
 
 4. Run:
    ```
-   ./tools/provision
+   python3 ./tools/provision
    ```
    This sets up a virtual Python environment in `zulip-api-py<your_python_version>-venv`,
    where `<your_python_version>` is your default version of Python. If you would like to specify
    a different Python version, run
    ```
-   ./tools/provision -p <path_to_your_python_version>
+   python3 ./tools/provision -p <path_to_your_python_version>
    ```
 
-5. The above step, if successful, will tell you the command to "source" your
-   virtual environment.  Run that command!
+5. If that succeeds, it will print end with printing the following command:
+   ```
+   source /.../python-zulip-api/.../activate
+   ```
+   You can run run this command to enter the virtual environment.
+   You'll want to run this in each new shell before running commands from `python-zulip-api`.
 
-6. You should now be able to run all the tests within this virtualenv.
+6. Once you've entered the virtualenv, you should see something like this on the terminal:
+   ```
+   (zulip-api-py3-venv) user@pc ~/python-zulip-api $
+   ```
+   You should now be able to run any commands/tests/etc. in this
+   virtual environment.
 
 ### Running tests
 
