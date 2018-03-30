@@ -1,5 +1,6 @@
 from unittest import TestCase
-from unittest.mock import MagicMock, patch, ANY, create_autospec
+from io import BytesIO
+from unittest.mock import MagicMock, patch, ANY, create_autospec, mock_open
 from zulip_bots.lib import (
     ExternalBotHandler,
     StateHandler,
@@ -138,3 +139,37 @@ class LibTest(TestCase):
                                         config_file=None,
                                         bot_config_file=None,
                                         bot_name='testbot')
+
+    def test_upload_file(self):
+        client = FakeClient()
+        handler = ExternalBotHandler(
+            client=client,
+            root_dir=None,
+            bot_details=None,
+            bot_config_file=None
+        )
+        file = BytesIO()
+        client.upload_file = MagicMock()
+        handler.upload_file(file)
+        client.upload_file.assert_called_once_with(file)
+
+    def test_upload_file_from_path(self):
+        client = FakeClient()
+        handler = ExternalBotHandler(
+            client=client,
+            root_dir=None,
+            bot_details=None,
+            bot_config_file=None
+        )
+        handler.upload_file = MagicMock()
+
+        with patch('builtins.open', mock_open()) as mock, \
+                patch('os.path.abspath', return_value="abspath/to/file"):
+            handler.upload_file_from_path('file')
+            mock.assert_called_with('abspath/to/file', 'rb')
+            assert handler.upload_file.called
+
+        with patch('builtins.open', side_effect=OSError), \
+                patch('logging.error'), \
+                self.assertRaises(OSError):
+            handler.upload_file_from_path('path/raising/an/error')
