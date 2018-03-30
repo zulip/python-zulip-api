@@ -414,7 +414,7 @@ class Client(object):
         session.auth = requests.auth.HTTPBasicAuth(self.email, self.api_key)
         session.verify = self.tls_verification  # type: ignore # https://github.com/python/typeshed/pull/1504
         session.cert = client_cert
-        session.headers = {"User-agent": self.get_user_agent()}
+        session.headers.update({"User-agent": self.get_user_agent()})
         self.session = session
 
     def get_user_agent(self):
