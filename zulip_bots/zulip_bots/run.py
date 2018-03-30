@@ -112,10 +112,13 @@ def main():
     args = parse_args()
     if os.path.isfile(args.bot):
         bot_path = os.path.abspath(args.bot)
+        bot_dir = os.path.dirname(bot_path)
         bot_name = os.path.splitext(basename(bot_path))[0]
     else:
         bot_path = os.path.abspath(os.path.join(current_dir, 'bots', args.bot, args.bot+'.py'))
+        bot_dir = os.path.dirname(bot_path)
         bot_name = args.bot
+    sys.path.insert(0, bot_dir)
     if args.provision:
         provision_bot(os.path.dirname(bot_path), args.force)
 

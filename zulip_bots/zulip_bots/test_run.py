@@ -14,6 +14,7 @@ from unittest import TestCase
 
 from unittest import mock
 from unittest.mock import patch
+import sys
 
 class TestDefaultArguments(TestCase):
 
@@ -46,6 +47,15 @@ class TestDefaultArguments(TestCase):
             bot_config_file=None,
             lib_module=mock.ANY,
             quiet=False)
+
+    @patch('sys.argv', ['zulip-run-bot', path_to_bot, '--config-file', '/foo/bar/baz.conf'])
+    @patch('zulip_bots.run.run_message_handler_for_bot')
+    def test_module_import(self, mock_run_message_handler_for_bot):
+        # type: (mock.Mock) -> None
+        path_to_bots_dir = os.path.dirname(os.path.dirname(self.path_to_bot))
+        sys.path.insert(0, path_to_bots_dir)
+        import helloworld
+        self.assertIn(path_to_bots_dir, sys.path)
 
 class TestBotLib(TestCase):
     def test_extract_query_without_mention(self):
