@@ -286,7 +286,7 @@ class Client(object):
                  site=None, client=None,
                  cert_bundle=None, insecure=None,
                  client_cert=None, client_cert_key=None):
-        # type: (Optional[str], Optional[str], Optional[str], bool, bool, Optional[str], Optional[str], Optional[str], bool, Optional[str], Optional[str]) -> None
+        # type: (Optional[str], Optional[str], Optional[str], bool, bool, Optional[str], Optional[str], Optional[str], Optional[bool], Optional[str], Optional[str]) -> None
         if client is None:
             client = _default_client()
 

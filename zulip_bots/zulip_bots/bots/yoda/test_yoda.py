@@ -1,6 +1,8 @@
 from zulip_bots.bots.yoda.yoda import ServiceUnavailableError
 from zulip_bots.test_lib import BotTestCase
 
+from typing import Optional
+
 class TestYodaBot(BotTestCase):
     bot_name = "yoda"
 
@@ -18,7 +20,7 @@ class TestYodaBot(BotTestCase):
             @mention-bot You will learn how to speak like me someday.
             '''
 
-    def _test(self, message: str, response: str, fixture: str=None) -> None:
+    def _test(self, message: str, response: str, fixture: Optional[str]=None) -> None:
         with self.mock_config_info({'api_key': '12345678'}):
             if fixture is not None:
                 with self.mock_http_conversation(fixture):
