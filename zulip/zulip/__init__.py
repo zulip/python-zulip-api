@@ -816,11 +816,14 @@ class Client(object):
             request=request,
         )
 
-    def remove_subscriptions(self, streams, principals=[]):
+    def remove_subscriptions(self, streams, principals=None):
         # type: (Iterable[str], Optional[Iterable[str]]) -> Dict[str, Any]
         '''
             See examples/unsubscribe for example usage.
         '''
+        if principals is None:
+            principals = []
+
         request = dict(
             subscriptions=streams,
             principals=principals
