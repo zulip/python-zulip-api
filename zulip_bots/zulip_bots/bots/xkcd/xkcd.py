@@ -3,7 +3,7 @@ import random
 import logging
 import requests
 
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 XKCD_TEMPLATE_URL = 'https://xkcd.com/%s/info.0.json'
 LATEST_XKCD_URL = 'https://xkcd.com/info.0.json'
@@ -84,7 +84,7 @@ def get_xkcd_bot_response(message: Dict[str, str]) -> str:
                                            fetched['alt'],
                                            fetched['img']))
 
-def fetch_xkcd_query(mode: int, comic_id: str = None) -> Dict[str, str]:
+def fetch_xkcd_query(mode: int, comic_id: Optional[str]=None) -> Dict[str, str]:
     try:
         if mode == XkcdBotCommand.LATEST:  # Fetch the latest comic strip.
             url = LATEST_XKCD_URL

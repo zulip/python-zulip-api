@@ -3,7 +3,7 @@ import requests
 import logging
 import re
 
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 API_BASE_URL = "https://beta.idonethis.com/api/v2"
 
@@ -25,7 +25,7 @@ class UnknownCommandSyntax(Exception):
 class UnspecifiedProblemException(Exception):
     pass
 
-def make_API_request(endpoint: str, method: str="GET", body: Dict[str, str]=None) -> Any:
+def make_API_request(endpoint: str, method: str="GET", body: Optional[Dict[str, str]]=None) -> Any:
     headers = {'Authorization': 'Token ' + api_key}
     if method == "GET":
         r = requests.get(API_BASE_URL + endpoint, headers=headers)
@@ -52,7 +52,7 @@ def api_show_team(hash_id: str) -> Any:
 def api_show_users(hash_id: str) -> Any:
     return make_API_request("/teams/{}/members".format(hash_id))
 
-def api_list_entries(team_id: str=None) -> Any:
+def api_list_entries(team_id: Optional[str]=None) -> Any:
     if team_id:
         return make_API_request("/entries?team_id={}".format(team_id))
     else:
