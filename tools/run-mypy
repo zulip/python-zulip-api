@@ -149,11 +149,7 @@ for file_path in python_files:
 
 mypy_command = "mypy"
 
-extra_args = ["--check-untyped-defs",
-              "--follow-imports=silent",
-              "--scripts-are-modules",
-              "--disallow-any-generics",
-              "-i"]
+extra_args = ["--follow-imports=silent"]
 if args.disallow_untyped_defs:
     extra_args.append("--disallow-untyped-defs")
 if args.warn_unused_ignores:
