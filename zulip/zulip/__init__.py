@@ -390,7 +390,7 @@ class Client(object):
         self.client_cert = client_cert
         self.client_cert_key = client_cert_key
 
-        self.session = None  # type: Union[None, requests.Session]
+        self.session = None  # type: Optional[requests.Session]
 
         self.has_connected = False
 
@@ -443,7 +443,7 @@ class Client(object):
         )
 
     def do_api_query(self, orig_request, url, method="POST", longpolling=False, files=None):
-        # type: (Mapping[str, Any], str, str, bool, List[IO[Any]]) -> Dict[str, Any]
+        # type: (Mapping[str, Any], str, str, bool, Optional[List[IO[Any]]]) -> Dict[str, Any]
         if files is None:
             files = []
 
@@ -577,7 +577,7 @@ class Client(object):
                     "status_code": res.status_code}
 
     def call_endpoint(self, url=None, method="POST", request=None, longpolling=False, files=None):
-        # type: (str, str, Dict[str, Any], bool, List[IO[Any]]) -> Dict[str, Any]
+        # type: (Optional[str], str, Optional[Dict[str, Any]], bool, Optional[List[IO[Any]]]) -> Dict[str, Any]
         if request is None:
             request = dict()
         versioned_url = API_VERSTRING + (url if url is not None else "")
@@ -585,7 +585,7 @@ class Client(object):
                                  longpolling=longpolling, files=files)
 
     def call_on_each_event(self, callback, event_types=None, narrow=None):
-        # type: (Callable[[Any], None], Optional[List[str]], Any) -> None
+        # type: (Callable[[Dict[str, Any]], None], Optional[List[str]], Optional[List[List[str]]]) -> None
         if narrow is None:
             narrow = []
 
@@ -645,9 +645,9 @@ class Client(object):
                 callback(event)
 
     def call_on_each_message(self, callback):
-        # type: (Callable[[Any], None]) -> None
+        # type: (Callable[[Dict[str, Any]], None]) -> None
         def event_callback(event):
-            # type: (Dict[str, str]) -> None
+            # type: (Dict[str, Any]) -> None
             if event['type'] == 'message':
                 callback(event['message'])
         self.call_on_each_event(event_callback, ['message'])
@@ -696,7 +696,7 @@ class Client(object):
         )
 
     def register(self, event_types=None, narrow=None, **kwargs):
-        # type: (Iterable[str], Any, **Any) -> Dict[str, Any]
+        # type: (Optional[Iterable[str]], Optional[List[List[str]]], **Any) -> Dict[str, Any]
         '''
             Example usage:
 
@@ -742,7 +742,7 @@ class Client(object):
         )
 
     def get_profile(self, request=None):
-        # type: (Dict[str, Any]) -> Dict[str, Any]
+        # type: (Optional[Dict[str, Any]]) -> Dict[str, Any]
         '''
             Example usage:
 
@@ -780,7 +780,7 @@ class Client(object):
         )
 
     def get_members(self, request=None):
-        # type: (Dict[str, Any]) -> Dict[str, Any]
+        # type: (Optional[Dict[str, Any]]) -> Dict[str, Any]
         '''
             See examples/list-members for example usage.
         '''
@@ -791,7 +791,7 @@ class Client(object):
         )
 
     def list_subscriptions(self, request=None):
-        # type: (Dict[str, Any]) -> Dict[str, Any]
+        # type: (Optional[Dict[str, Any]]) -> Dict[str, Any]
         '''
             See examples/list-subscriptions for example usage.
         '''
@@ -865,7 +865,7 @@ class Client(object):
         )
 
     def render_message(self, request=None):
-        # type: (Dict[str, Any]) -> Dict[str, Any]
+        # type: (Optional[Dict[str, Any]]) -> Dict[str, Any]
         '''
             Example usage:
 
@@ -879,7 +879,7 @@ class Client(object):
         )
 
     def create_user(self, request=None):
-        # type: (Dict[str, Any]) -> Dict[str, Any]
+        # type: (Optional[Dict[str, Any]]) -> Dict[str, Any]
         '''
             See examples/create-user for example usage.
         '''
