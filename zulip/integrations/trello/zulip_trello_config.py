@@ -23,15 +23,6 @@
 
 ### REQUIRED CONFIGURATION ###
 
-# It needs some API KEY and Token (from Zulip and Trello)
-# For more information, please visit https://zulipchat.com/integrations/doc/trello
-
-# BOT_API_KEY
-#
-# In Zulip, create a new bot for *incomming Webhook*.
-# It will generate an API KEY
-BOT_API_KEY = ""
-
 # TRELLO_API_KEY
 #
 # Visit https://trello.com/1/appkey/generate to generate
@@ -46,7 +37,7 @@ TRELLO_API_KEY = ""
 # Take care to replace <TRELLO_API_KEY> with the appropriate value
 TRELLO_TOKEN = ""
 
-# ZULIP_HOST
+# ZULIP_WEBHOOK_URL
 #
-# The hostname of your Zulip application
-ZULIP_HOST = ""
+# The webhook URL that Trello will query
+ZULIP_WEBHOOK_URL = ""

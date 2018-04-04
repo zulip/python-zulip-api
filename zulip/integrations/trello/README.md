@@ -1,16 +1,13 @@
-# Easy Trello integration for Zulip
-
-An easy Trello integration for Zulip
+# A script that automates setting up a webhook with Trello
 
 Usage :
 
 1. Fill the needed information in `zulip_trello_config.py` :
 
-    - The bot API KEY,
     - The Trello API KEY,
     - The Trello TOKEN,
-    - The Zulip host
+    - The Zulip webhook URL
 
 2. Execute the script :
 
-    $ python zulip_trello.py <stream_name> <trello_board_name> <trello_board_id>
+    $ python zulip_trello.py <trello_board_name> <trello_board_id>
