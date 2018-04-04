@@ -146,6 +146,25 @@ def prepare(options: argparse.Namespace) -> None:
     clean(options)
     process(options)
 
+def log(options: argparse.Namespace) -> None:
+    check_common_options(options)
+    headers = {'key': options.key}
+    if options.lines:
+        lines = options.lines
+    else:
+        lines = None
+    payload = {'name': options.botname, 'lines': lines}
+    url = urllib.parse.urljoin(options.server, 'bots/logs/' + options.botname)
+    r = requests.get(url, json=payload, headers=headers)
+    if r.status_code == requests.codes.ok:
+        print(r.text)
+        return
+    if r.status_code == 401:
+        print('log: Authentication error with the server. Aborting.')
+    else:
+        print('log: Error {}: {}. Aborting.'.format(r.status_code, r.text))
+    sys.exit(1)
+
 def main() -> None:
     usage = """tools/deploy <command> <bot-name> [options]
 
@@ -165,6 +184,9 @@ To stop the bot, use:
 
     tools/deploy stop mybot --server=$SERVER --key=$TOKEN
 
+To get logs of the bot, use:
+    tools/deploy log mybot --server=$SERVER --key=$TOKEN
+
 """
     parser = argparse.ArgumentParser(usage=usage)
     parser.add_argument('command', help='Command to run.')
@@ -181,6 +203,8 @@ To stop the bot, use:
                         help='Path to the zuliprc file.')
     parser.add_argument('--main', '-m',
                         help='Path to the bot\'s main file, relative to the bot\'s directory.')
+    parser.add_argument('--lines', '-l',
+                        help='Number of lines in log required.')
     options = parser.parse_args()
     if not options.command:
         print('tools/deploy: No command specified.')
@@ -197,6 +221,7 @@ To stop the bot, use:
         'process': process,
         'start': start,
         'stop': stop,
+        'log': log,
     }
     if options.command in commands:
         commands[options.command](options)
