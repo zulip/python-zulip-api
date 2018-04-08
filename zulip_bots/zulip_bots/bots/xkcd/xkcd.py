@@ -35,7 +35,8 @@ class XkcdHandler(object):
             '''
 
     def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
-        xkcd_bot_response = get_xkcd_bot_response(message)
+        quoted_name = bot_handler.identity().mention
+        xkcd_bot_response = get_xkcd_bot_response(message, quoted_name)
         bot_handler.send_reply(message, xkcd_bot_response)
 
 class XkcdBotCommand(object):
@@ -49,16 +50,16 @@ class XkcdNotFoundError(Exception):
 class XkcdServerError(Exception):
     pass
 
-def get_xkcd_bot_response(message: Dict[str, str]) -> str:
+def get_xkcd_bot_response(message: Dict[str, str], quoted_name: str) -> str:
     original_content = message['content'].strip()
     command = original_content.strip()
 
     commands_help = ("%s"
-                     "\n* `@xkcd help` to show this help message."
-                     "\n* `@xkcd latest` to fetch the latest comic strip from xkcd."
-                     "\n* `@xkcd random` to fetch a random comic strip from xkcd."
-                     "\n* `@xkcd <comic id>` to fetch a comic strip based on `<comic id>` "
-                     "e.g `@xkcd 1234`.")
+                     "\n* `{0} help` to show this help message."
+                     "\n* `{0} latest` to fetch the latest comic strip from xkcd."
+                     "\n* `{0} random` to fetch a random comic strip from xkcd."
+                     "\n* `{0} <comic id>` to fetch a comic strip based on `<comic id>` "
+                     "e.g `{0} 1234`.".format(quoted_name))
 
     try:
         if command == 'help':

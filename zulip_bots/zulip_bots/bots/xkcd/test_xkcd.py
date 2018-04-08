@@ -44,10 +44,11 @@ class TestXkcdBot(BotTestCase):
         help_txt = "xkcd bot supports these commands:"
         err_txt  = "xkcd bot only supports these commands, not `{}`:"
         commands = '''
-* `@xkcd help` to show this help message.
-* `@xkcd latest` to fetch the latest comic strip from xkcd.
-* `@xkcd random` to fetch a random comic strip from xkcd.
-* `@xkcd <comic id>` to fetch a comic strip based on `<comic id>` e.g `@xkcd 1234`.'''
+* `{0} help` to show this help message.
+* `{0} latest` to fetch the latest comic strip from xkcd.
+* `{0} random` to fetch a random comic strip from xkcd.
+* `{0} <comic id>` to fetch a comic strip based on `<comic id>` e.g `{0} 1234`.'''.format(
+            "@**test-bot**")
         self.verify_reply('', err_txt.format('') + commands)
         self.verify_reply('help', help_txt + commands)
         # Example invalid command
