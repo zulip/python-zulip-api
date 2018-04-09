@@ -9,3 +9,11 @@ class ConfigValidationError(Exception):
     Raise if the config data passed to a bot's validate_config()
     is invalid (e.g. wrong API key, invalid email, etc.).
     '''
+
+class FileUploadError(Exception):
+    '''
+    Raise if the file upload to a Zulip server fails.
+    '''
+    def __init__(self, msg, payload):
+        super(FileUploadError, self).__init__(msg)
+        self.payload = payload  # the complete dict from the upload_file method.
