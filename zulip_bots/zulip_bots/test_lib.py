@@ -104,6 +104,18 @@ class BotTestCase(TestCase):
 
         return (bot, bot_handler)
 
+    def get_responses(self, message):
+        # type: (Dict[str, Any]) -> List[Dict[str, Any]]
+        bot, bot_handler = self._get_handlers()
+        bot_handler.reset_transcript()
+        bot.handle_message(message, bot_handler)
+        responses = [
+            message
+            for (method, message)
+            in bot_handler.transcript
+        ]
+        return responses
+
     def get_response(self, message):
         # type: (Dict[str, Any]) -> Dict[str, Any]
         bot, bot_handler = self._get_handlers()
