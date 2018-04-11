@@ -1,0 +1,23 @@
+{
+  "request": {
+    "api_url": "https://check-host.net/check-result/7113153kd9d",
+    "headers": {
+      "Accept": "application/json"
+    }
+  },
+  "response": {
+    "ca2.node.check-host.net": [[null]],
+    "de1.node.check-host.net": [[null]],
+    "it2.node.check-host.net": [[null]],
+    "lv2.node.check-host.net": [[null]],
+    "nl1.node.check-host.net": [[null]],
+    "ru1.node.check-host.net": [[null]],
+    "se2.node.check-host.net": [[null]],
+    "ua2.node.check-host.net": [[null]],
+    "us1.node.check-host.net": [[null]],
+    "vn1.node.check-host.net": [[null]]
+  },
+  "response-headers": {
+    "Accept": "application/json"
+  }
+}

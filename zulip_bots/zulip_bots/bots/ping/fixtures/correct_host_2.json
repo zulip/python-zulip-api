@@ -1,0 +1,58 @@
+{
+  "request": {
+    "api_url": "https://check-host.net/check-result/71135d1kc3a",
+    "headers": {
+      "Accept": "application/json"
+    }
+  },
+  "response": {
+    "ca2.node.check-host.net": [[
+      ["TIMEOUT", 3.00004601478577, "220.181.57.217"],
+      ["TIMEOUT", 3.00002598762512],
+      ["TIMEOUT", 3.00108218193054],
+      ["TIMEOUT", 3.00138115882874]
+    ]],
+    "de1.node.check-host.net": [[
+      ["TIMEOUT", 3.00041604042053, "220.181.57.217"],
+      ["TIMEOUT", 3.00057792663574],
+      ["TIMEOUT", 3.00044202804565],
+      ["TIMEOUT", 3.00219321250916]
+    ]],
+    "it2.node.check-host.net": [[
+      ["OK", 0.23546290397644, "123.125.114.144"],
+      ["OK", 0.235502004623413],
+      ["OK", 0.235480785369873],
+      ["OK", 0.235458135604858]
+    ]],
+    "lv2.node.check-host.net": [[
+      ["TIMEOUT", 3.00079011917114, "220.181.57.217"],
+      ["TIMEOUT", 3.00066423416138],
+      ["TIMEOUT", 3.00121688842773],
+      ["TIMEOUT", 3.00076603889465]
+    ]],
+    "nl1.node.check-host.net": [[
+      ["OK", 0.423819065093994, "180.149.132.47"],
+      ["TIMEOUT", 3.00102186203003],
+      ["OK", 0.358379125595093],
+      ["OK", 0.358519077301025]
+    ]],
+    "ru1.node.check-host.net": [[
+      ["OK", 0.255478858947754, "111.13.101.208"],
+      ["OK", 0.255290031433105],
+      ["OK", 0.255298852920532],
+      ["OK", 0.255283832550049]
+    ]],
+    "se2.node.check-host.net": [[
+      ["OK", 0.194622993469238, "180.149.132.47"],
+      ["OK", 0.194519996643066],
+      ["OK", 0.194431066513062],
+      ["OK", 0.194742918014526]
+    ]],
+    "ua2.node.check-host.net": null,
+    "us1.node.check-host.net": null,
+    "vn1.node.check-host.net": null
+  },
+  "response-headers": {
+    "Accept": "application/json"
+  }
+}
