@@ -6,7 +6,7 @@ from __future__ import print_function
 import os
 import sys
 import glob
-import pip
+import subprocess
 if False:
     from typing import Any, Dict, Optional
 
@@ -105,4 +105,5 @@ bots_subdirs = map(lambda d: os.path.abspath(d), glob.glob(bots_dir + '/*'))
 bot_paths = filter(lambda d: os.path.isdir(d), bots_subdirs)
 for bot_path in bot_paths:
     req_path = os.path.join(bot_path, 'requirements.txt')
-    rcode = pip.main(['install', '-r', req_path, '--quiet'])
+    if os.path.exists(req_path):
+        subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-r', req_path, '--quiet'])
