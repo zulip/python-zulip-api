@@ -1,8 +1,11 @@
 from zulip_bots.test_lib import BotTestCase
 from zulip_bots.game_handler import GameInstance
 
+from tictactoe import TicTacToeModel
+
 from unittest.mock import patch
 from typing import List, Tuple, Any
+
 
 
 class TestTicTacToeBot(BotTestCase):
@@ -21,71 +24,63 @@ class TestTicTacToeBot(BotTestCase):
                  [0, 0, 0],
                  [0, 0, 2]]
         position = [0, 1]
+        tictactoeboard = TicTacToeModel(board)
         response = 1
-        self._test_get_value(board, position, response)
+        self._test_get_value(tictactoeboard, board, position, response)
     
-    def _test_get_value(self, board: List[List[int]], position: Tuple[int, int], expected_response: int) -> None:
-        model, message_handler = self._get_game_handlers()
-        model.current_board = board
-        response = model.get_value(model, board, position)
+    def _test_get_value(self, tictactoeboard: TicTacToeModel, board: List[List[int]], position: Tuple[int, int], expected_response: int) -> None:
+        response = tictactoeboard.get_value(board, position)
         self.assertEqual(response, expected_response)
 
     def test_determine_game_over_with_win(self) -> None:
         board = [[1, 1, 1],
                  [0, 2, 0],
                  [2, 0, 2]]
+        tictactoeboard = TicTacToeModel(board)
         players = ['Human', 'Computer']
         response = 'current turn'
-        self._test_determine_game_over_with_win(board, players, response)
+        self._test_determine_game_over_with_win(tictactoeboard, board, players, response)
 
-    def _test_determine_game_over_with_win(self, board: List[List[int]], players: List[str], expected_response: str) -> None:
-        model, message_handler = self._get_game_handlers()
-        #print (model)
-        model.current_board = board
-        #assert 1 == 2, model.current_board
-        response = model.determine_game_over(model, players)
+    def _test_determine_game_over_with_win(self, tictactoeboard: TicTacToeModel, board: List[List[int]], players: List[str], expected_response: str) -> None:
+        
+        response = tictactoeboard.determine_game_over(players)
         self.assertEqual(response, expected_response)
     
     def test_determine_game_over_with_draw(self) -> None:
         board = [[1, 2, 1],
                  [1, 2, 1],
                  [2, 1, 2]]
+        tictactoeboard = TicTacToeModel(board)
         players = ['Human', 'Computer']
         response = 'draw'
-        self._test_determine_game_over_with_draw(board, players, response)
+        self._test_determine_game_over_with_draw(tictactoeboard, board, players, response)
 
-    def _test_determine_game_over_with_draw(self, board: List[List[int]], players: List[str], expected_response: str) -> None:
-        model, message_handler = self._get_game_handlers()
-        #print (model)
-        model.current_board = board
-        #assert 1 == 2, model.current_board
-        response = model.determine_game_over(model, players)
+    def _test_determine_game_over_with_draw(self, tictactoeboard: TicTacToeModel, board: List[List[int]], players: List[str], expected_response: str) -> None:
+        response = tictactoeboard.determine_game_over(players)
         self.assertEqual(response, expected_response)
     
     def test_board_is_full(self) -> None:
         board = [[1, 0, 1],
                  [1, 2, 1],
                  [2, 1, 2]] 
+        tictactoeboard = TicTacToeModel(board)
         response = False
-        self._test_board_is_full(board, response)
+        self._test_board_is_full(tictactoeboard, board, response)
     
-    def _test_board_is_full(self, board: List[List[int]], expected_response: bool) -> None: 
-        model, message_handler = self._get_game_handlers()
-        model.current_board = board
-        response = model.board_is_full(model, board)
+    def _test_board_is_full(self, tictactoeboard: TicTacToeModel, board: List[List[int]], expected_response: bool) -> None: 
+        response = tictactoeboard.board_is_full(board)
         self.assertEqual(response, expected_response)
     
     def test_contains_winning_move(self) -> None:
         board = [[1, 1, 1],
                  [0, 2, 0],
                  [2, 0, 2]]
+        tictactoeboard = TicTacToeModel(board)
         response = True
-        self._test_contains_winning_move(board, response)
+        self._test_contains_winning_move(tictactoeboard, board, response)
     
-    def _test_contains_winning_move(self, board: List[List[int]], expected_response: bool) -> None:
-        model, message_handler = self._get_game_handlers()
-        model.current_board = board
-        response = model.contains_winning_move(model, board)
+    def _test_contains_winning_move(self, tictactoeboard: TicTacToeModel, board: List[List[int]], expected_response: bool) -> None:
+        response = tictactoeboard.contains_winning_move(board)
         self.assertEqual(response, expected_response)
     
 
@@ -111,16 +106,16 @@ class TestTicTacToeBot(BotTestCase):
     # FIXME: Add test lib for game_handler
 
 
-    # def test_player_color(self) -> str:
-    #     turn = 0
-    #     response = ':cross_mark_button:'
-    #     self._test_player_color(turn, response)
+    def test_player_color(self) -> str:
+        turn = 0
+        response = ':cross_mark_button:'
+        self._test_player_color(turn, response)
     
-    # def _test_player_color(self, turn: int, expected_response: str) -> None:
-    #     model, message_handler = self._get_game_handlers()
-    #     response = message_handler.get_player_color(0)
+    def _test_player_color(self, turn: int, expected_response: str) -> None:
+        model, message_handler = self._get_game_handlers()
+        response = message_handler.get_player_color(0)
 
-    #     self.assertEqual(response, expected_response)
+        self.assertEqual(response, expected_response)
     
     def test_static_responses(self) -> None:
         model, message_handler = self._get_game_handlers()
