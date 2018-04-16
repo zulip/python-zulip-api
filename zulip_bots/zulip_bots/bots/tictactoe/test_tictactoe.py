@@ -1,11 +1,12 @@
 from zulip_bots.test_lib import BotTestCase
 from zulip_bots.game_handler import GameInstance
 
+from . import tictactoe
 from tictactoe import TicTacToeModel
+# from tictactoe import TicTacToeModel
 
 from unittest.mock import patch
 from typing import List, Tuple, Any
-
 
 
 class TestTicTacToeBot(BotTestCase):
