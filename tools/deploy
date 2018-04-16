@@ -72,7 +72,8 @@ def upload(options: argparse.Namespace) -> None:
     check_common_options(options)
     file_path = os.path.join(bots_dir, options.botname + '.zip')
     if not os.path.exists(file_path):
-        print('upload: Could not find bot package at {}.'.format(file_path))
+        print('During execution of function upload in tools/deploy.py, the following error was encountered:\n'
+              'Could not find bot package at {}.'.format(file_path))
         sys.exit(1)
     files = {'file': open(file_path, 'rb')}
     headers = {'key': options.key}
@@ -82,9 +83,11 @@ def upload(options: argparse.Namespace) -> None:
         print('upload: Uploaded the bot package to botfarm.')
         return
     if r.status_code == 401:
-        print('upload: Authentication error with the server. Aborting.')
+        print('During execution of function upload in tools/deploy.py, the following error was encountered:\n'
+              'Authentication error with the server. Aborting.')
     else:
-        print('upload: Error {}. Aborting.'.format(r.status_code))
+        print('During execution of function upload in tools/deploy.py, the following error was encountered:\n'
+              'Error {}. Aborting.'.format(r.status_code))
     sys.exit(1)
 
 def clean(options: argparse.Namespace) -> None:
@@ -93,7 +96,8 @@ def clean(options: argparse.Namespace) -> None:
         os.remove(file_path)
         print('clean: Removed {}.'.format(file_path))
     else:
-        print('clean: File \'{}\' not found.'.format(file_path))
+        print('During execution of function clean in tools/deploy.py, the following error was encountered:\n'
+              'File \'{}\' not found.'.format(file_path))
 
 def process(options: argparse.Namespace) -> None:
     check_common_options(options)
@@ -105,9 +109,11 @@ def process(options: argparse.Namespace) -> None:
         print('process: The bot has been processed by the botfarm.')
         return
     if r.status_code == 401:
-        print('process: Authentication error with the server. Aborting.')
+        print('During execution of function process in tools/deploy.py, the following error was encountered:\n'
+              'Authentication error with the server. Aborting.')
     else:
-        print('process: Error {}: {}. Aborting.'.format(r.status_code, r.text))
+        print('During execution of function process in tools/deploy.py, the following error was encountered:\n'
+              'Error {}: {}. Aborting.'.format(r.status_code, r.text))
     sys.exit(1)
 
 def start(options: argparse.Namespace) -> None:
@@ -120,9 +126,11 @@ def start(options: argparse.Namespace) -> None:
         print('start: The bot has been started by the botfarm.')
         return
     if r.status_code == 401:
-        print('start: Authentication error with the server. Aborting.')
+        print('During execution of function start in tools/deploy.py, the following error was encountered:\n'
+              'Authentication error with the server. Aborting.')
     else:
-        print('start: Error {}: {}. Aborting.'.format(r.status_code, r.text))
+        print('During execution of function start in tools/deploy.py, the following error was encountered:\n'
+              'Error {}: {}. Aborting.'.format(r.status_code, r.text))
     sys.exit(1)
 
 def stop(options: argparse.Namespace) -> None:
@@ -135,9 +143,11 @@ def stop(options: argparse.Namespace) -> None:
         print('stop: The bot has been stopped by the botfarm.')
         return
     if r.status_code == 401:
-        print('stop: Authentication error with the server. Aborting.')
+        print('During execution of function stop in tools/deploy.py, the following error was encountered:\n'
+              'Authentication error with the server. Aborting.')
     else:
-        print('stop: Error {}: {}. Aborting.'.format(r.status_code, r.text))
+        print('During execution of function stop in tools/deploy.py, the following error was encountered:\n'
+              'Error {}: {}. Aborting.'.format(r.status_code, r.text))
     sys.exit(1)
 
 def prepare(options: argparse.Namespace) -> None:
@@ -145,6 +155,27 @@ def prepare(options: argparse.Namespace) -> None:
     upload(options)
     clean(options)
     process(options)
+
+def log(options: argparse.Namespace) -> None:
+    check_common_options(options)
+    headers = {'key': options.key}
+    if options.lines:
+        lines = options.lines
+    else:
+        lines = None
+    payload = {'name': options.botname, 'lines': lines}
+    url = urllib.parse.urljoin(options.server, 'bots/logs/' + options.botname)
+    r = requests.get(url, json=payload, headers=headers)
+    if r.status_code == requests.codes.ok:
+        print(r.text)
+        return
+    if r.status_code == 401:
+        print('During execution of function log in tools/deploy.py, the following error was encountered:\n'
+              'Authentication error with the server. Aborting.')
+    else:
+        print('During execution of function log in tools/deploy.py, the following error was encountered:\n'
+              'Error {}: {}. Aborting.'.format(r.status_code, r.text))
+    sys.exit(1)
 
 def main() -> None:
     usage = """tools/deploy <command> <bot-name> [options]
@@ -165,6 +196,9 @@ To stop the bot, use:
 
     tools/deploy stop mybot --server=$SERVER --key=$TOKEN
 
+To get logs of the bot, use:
+    tools/deploy log mybot --serverr=$SERVER --key=$TOKEN
+
 """
     parser = argparse.ArgumentParser(usage=usage)
     parser.add_argument('command', help='Command to run.')
@@ -181,6 +215,8 @@ To stop the bot, use:
                         help='Path to the zuliprc file.')
     parser.add_argument('--main', '-m',
                         help='Path to the bot\'s main file, relative to the bot\'s directory.')
+    parser.add_argument('--lines', '-l',
+                        help='Number of lines in log required.')
     options = parser.parse_args()
     if not options.command:
         print('tools/deploy: No command specified.')
@@ -197,6 +233,7 @@ To stop the bot, use:
         'process': process,
         'start': start,
         'stop': stop,
+        'log': log,
     }
     if options.command in commands:
         commands[options.command](options)
