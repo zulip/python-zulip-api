@@ -22,6 +22,9 @@
 
 from typing import Dict, Text, Optional
 
+# Name of the stream to send notifications to, default is "commits"
+STREAM_NAME = 'commits'
+
 # Change these values to configure authentication for the plugin
 ZULIP_USER = "git-bot@example.com"
 ZULIP_API_KEY = "0123456789abcdef0123456789abcdef"
@@ -44,7 +47,7 @@ ZULIP_API_KEY = "0123456789abcdef0123456789abcdef"
 def commit_notice_destination(repo, branch, commit):
     # type: (Text, Text, Text) -> Optional[Dict[Text, Text]]
     if branch in ["master", "test-post-receive"]:
-        return dict(stream  = "commits",
+        return dict(stream  = STREAM_NAME,
                     subject = u"%s" % (branch,))
 
     # Return None for cases where you don't want a notice sent
