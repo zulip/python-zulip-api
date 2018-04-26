@@ -580,8 +580,12 @@ class Client(object):
         # type: (Optional[str], str, Optional[Dict[str, Any]], bool, Optional[List[IO[Any]]]) -> Dict[str, Any]
         if request is None:
             request = dict()
+        marshalled_request = {}
+        for (k, v) in request.items():
+            if v is not None:
+                marshalled_request[k] = v
         versioned_url = API_VERSTRING + (url if url is not None else "")
-        return self.do_api_query(request, versioned_url, method=method,
+        return self.do_api_query(marshalled_request, versioned_url, method=method,
                                  longpolling=longpolling, files=files)
 
     def call_on_each_event(self, callback, event_types=None, narrow=None):
@@ -708,9 +712,6 @@ class Client(object):
 
         if narrow is None:
             narrow = []
-
-        if event_types is None:
-            event_types = []
 
         request = dict(
             event_types=event_types,

@@ -43,7 +43,7 @@ options = parser.parse_args()
 client = zulip.init_from_options(options)
 
 request = {
-    'narrow': [["stream", "Denmark"]],
+    'narrow': [["pm-with", "rishig@zulipchat.com"]],
     'num_before': options.count,
     'num_after': 0,
     'anchor': 1000000000,
