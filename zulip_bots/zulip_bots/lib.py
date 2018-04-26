@@ -65,11 +65,7 @@ class StateHandler(object):
         self._client = client
         self.marshal = lambda obj: json.dumps(obj)
         self.demarshal = lambda obj: json.loads(obj)
-        response = self._client.get_storage()
-        if response['result'] == 'success':
-            self.state_ = response['storage']
-        else:
-            raise StateHandlerError("Error initializing state: {}".format(str(response)))
+        self.state_ = dict()  # type: Dict[Text, Any]
 
     def put(self, key, value):
         # type: (Text, Any) -> None
@@ -80,7 +76,16 @@ class StateHandler(object):
 
     def get(self, key):
         # type: (Text) -> Any
-        return self.demarshal(self.state_[key])
+        if key in self.state_:
+            return self.demarshal(self.state_[key])
+
+        response = self._client.get_storage(keys=(key,))
+        if response['result'] != 'success':
+            raise StateHandlerError("Error fetching state: {}".format(str(response)))
+
+        marshalled_value = response['storage'][key]
+        self.state_[key] = marshalled_value
+        return self.demarshal(marshalled_value)
 
     def contains(self, key):
         # type: (Text) -> bool
