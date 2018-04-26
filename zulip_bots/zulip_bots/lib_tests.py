@@ -71,6 +71,34 @@ class LibTest(TestCase):
         val = state_handler.get('key')
         self.assertEqual(val, [1, 2, 3])
 
+    def test_state_handler(self):
+        client = MagicMock()
+
+        state_handler = StateHandler(client)
+        client.get_storage.assert_not_called()
+
+        client.update_storage = MagicMock(return_value=dict(result='success'))
+        state_handler.put('key', [1, 2, 3])
+        client.update_storage.assert_called_with(dict(storage=dict(key='[1, 2, 3]')))
+
+        val = state_handler.get('key')
+        client.get_storage.assert_not_called()
+        self.assertEqual(val, [1, 2, 3])
+
+        # force us to get non-cached values
+        client.get_storage = MagicMock(return_value=dict(
+            result='success',
+            storage=dict(non_cached_key='[5]')))
+        val = state_handler.get('non_cached_key')
+        client.get_storage.assert_called_with(keys=('non_cached_key',))
+        self.assertEqual(val, [5])
+
+        # value must already be cached
+        client.get_storage = MagicMock()
+        val = state_handler.get('non_cached_key')
+        client.get_storage.assert_not_called()
+        self.assertEqual(val, [5])
+
     def test_send_reply(self):
         client = FakeClient()
         profile = client.get_profile()
