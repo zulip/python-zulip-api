@@ -1,0 +1,18 @@
+{
+  "request": {
+    "api_url": "https://api-ssl.bitly.com/v3/shorten",
+    "method": "GET",
+    "params": {
+      "access_token": "qwertyuiopx",
+      "longUrl": "www.youtube.com/watch"
+    }
+  },
+  "response": {
+    "status_code": 500,
+    "status_txt": "INVALID_ARG_ACCESS_TOKEN",
+    "data": []
+  },
+  "response-headers": {
+    "content-type": "application/json; charset=utf-8"
+  }
+}

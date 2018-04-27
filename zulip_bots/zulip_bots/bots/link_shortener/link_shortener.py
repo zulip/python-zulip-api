@@ -20,17 +20,15 @@ class LinkShortenerHandler(object):
         self.check_api_key(bot_handler)
 
     def check_api_key(self, bot_handler: Any) -> None:
-        test_request = requests.post(
-            'https://www.googleapis.com/urlshortener/v1/url',
-            json={'longUrl': 'www.youtube.com/watch'},
-            params={'key': self.config_info['key']}
-        )  # type: Any
-        test_request_data = test_request.json()
+        test_request_data = self.call_link_shorten_service('www.youtube.com/watch')  # type: Any
         try:
-            if test_request_data['error']['errors'][0]['reason'] == 'keyInvalid':
+            if self.is_invalid_token_error(test_request_data):
                 bot_handler.quit('Invalid key. Follow the instructions in doc.md for setting API key.')
         except KeyError:
             pass
+
+    def is_invalid_token_error(self, response_json: Any) -> bool:
+        return response_json['status_code'] == 500 and response_json['status_txt'] == 'INVALID_ARG_ACCESS_TOKEN'
 
     def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
         REGEX_STR = (
@@ -83,15 +81,24 @@ class LinkShortenerHandler(object):
             long_url (str): The original URL to shorten.
         '''
 
-        body = {'longUrl': long_url}
-        params = {'key': self.config_info['key']}
+        response_json = self.call_link_shorten_service(long_url)
+        if response_json['status_code'] == 200 and self.has_shorten_url(response_json):
+            shorten_url = self.get_shorten_url(response_json)
+        else:
+            shorten_url = ''
+        return shorten_url
 
-        request = requests.post(
-            'https://www.googleapis.com/urlshortener/v1/url',
-            json=body,
-            params=params
+    def call_link_shorten_service(self, long_url: str) -> Any:
+        response = requests.get(
+            'https://api-ssl.bitly.com/v3/shorten',
+            params={'access_token': self.config_info['key'], 'longUrl': long_url}
         )
+        return response.json()
 
-        return request.json().get('id', '')
+    def has_shorten_url(self, response_json: Any) -> bool:
+        return 'data' in response_json and 'url' in response_json['data']
+
+    def get_shorten_url(self, response_json: Any) -> str:
+        return response_json['data']['url']
 
 handler_class = LinkShortenerHandler

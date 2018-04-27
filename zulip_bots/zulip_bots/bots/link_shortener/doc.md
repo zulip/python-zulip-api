@@ -1,10 +1,9 @@
 # Link Shortener Bot
 
 Link Shortener Bot is a Zulip bot that will shorten URLs ("links") in a
-conversation. It uses the [goo.gl URL shortener API] to shorten its links.
+conversation. It uses the [bitly URL shortener API] to shorten its links.
 
-Use [this](https://developers.google.com/url-shortener/v1/getting_started) to get
-your API Key.
+Use [this](https://dev.bitly.com/get_started.html) to get your API Key.
 
 Links can be anywhere in the message, for example,
 
@@ -15,6 +14,6 @@ Links can be anywhere in the message, for example,
 and LS Bot would respond
 
  > https://github.com/zulip/python-zulip-api/tree/master/zulip_bots/zulip_bots/bots:
- > **https://goo.gl/NjLZZH**
+ > **https://bit.ly/2FF3QHu**
 
-[goo.gl URL shortener API]: https://goo.gl
+[bitly URL shortener API]: https://bitly.com/
