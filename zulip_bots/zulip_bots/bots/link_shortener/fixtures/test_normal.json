@@ -1,16 +1,22 @@
 {
   "request": {
-    "api_url": "https://www.googleapis.com/urlshortener/v1/url",
-    "method": "POST",
+    "api_url": "https://api-ssl.bitly.com/v3/shorten",
+    "method": "GET",
     "params": {
-      "key": "qwertyuiop"
-    },
-    "json": {
+      "access_token": "qwertyuiop",
       "longUrl": "https://www.github.com/zulip/zulip"
     }
   },
   "response": {
-    "id": "https://goo.gl/6uoWKb"
+    "status_code": 200,
+    "status_txt": "OK",
+    "data": {
+        "url": "http://bit.ly/2Ht2hOI",
+        "hash": "2Ht2hOI",
+        "global_hash": "3j4ir4",
+        "long_url": "https://www.github.com/zulip/zulip/",
+        "new_hash": 0
+    }
   },
   "response-headers": {
     "status": 200,
