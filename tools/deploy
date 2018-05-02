@@ -208,21 +208,36 @@ def print_bots(bots: List[Any], pretty_print: bool) -> None:
         print_bots_pretty(bots)
     else:
         for bot in bots:
-            print('{0}\t{1}'.format(bot['name'], bot['status']))
+            print('{0}\t{1}\t{2}\t{3}'.format(bot['name'], bot['status'], bot['email'], bot['site']))
 
 def print_bots_pretty(bots: List[Any]) -> None:
     if len(bots) == 0:
         print('ls: No bots found on the botfarm')
     else:
         print('ls: There are the following bots on the botfarm:')
-        name_col_len, status_col_len = 25, 15
-        row_format = '{0} {1}'
-        header = row_format.format('NAME'.rjust(name_col_len), 'STATUS'.rjust(status_col_len))
-        header_bottom = row_format.format('-' * name_col_len, '-' * status_col_len)
+        name_col_len, status_col_len, email_col_len, site_col_len = 25, 15, 35, 35
+        row_format = '{0} {1} {2} {3}'
+        header = row_format.format(
+            'NAME'.rjust(name_col_len),
+            'STATUS'.rjust(status_col_len),
+            'EMAIL'.rjust(email_col_len),
+            'SITE'.rjust(site_col_len),
+        )
+        header_bottom = row_format.format(
+            '-' * name_col_len,
+            '-' * status_col_len,
+            '-' * email_col_len,
+            '-' * site_col_len,
+        )
         print(header)
         print(header_bottom)
         for bot in bots:
-            row = row_format.format(bot['name'].rjust(name_col_len), bot['status'].rjust(status_col_len))
+            row = row_format.format(
+                bot['name'].rjust(name_col_len),
+                bot['status'].rjust(status_col_len),
+                bot['email'].rjust(email_col_len),
+                bot['site'].rjust(site_col_len),
+            )
             print(row)
 
 def main() -> None:
