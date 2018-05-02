@@ -165,6 +165,21 @@ def log(options: argparse.Namespace) -> None:
         print('log: Error {}: {}. Aborting.'.format(r.status_code, r.text))
     sys.exit(1)
 
+def delete(options: argparse.Namespace) -> None:
+    check_common_options(options)
+    headers = {'key': options.key}
+    url = urllib.parse.urljoin(options.server, 'bots/delete')
+    payload = {'name': options.botname}
+    r = requests.post(url, headers=headers, json=payload)
+    if r.status_code == requests.codes.ok and r.text == 'done':
+        print('delete: The bot has been removed from the botfarm.')
+        return
+    if r.status_code == 401:
+        print('delete: Authentication error with the server. Aborting.')
+    else:
+        print('delete: Error {}: {}. Aborting.'.format(r.status_code, r.text))
+    sys.exit(1)
+
 def main() -> None:
     usage = """tools/deploy <command> <bot-name> [options]
 
@@ -186,6 +201,10 @@ To stop the bot, use:
 
 To get logs of the bot, use:
     tools/deploy log mybot --server=$SERVER --key=$TOKEN
+
+To delete the bot, use:
+
+    tools/deploy delete mybot --server=$SERVER --key=$TOKEN
 
 """
     parser = argparse.ArgumentParser(usage=usage)
@@ -222,6 +241,7 @@ To get logs of the bot, use:
         'start': start,
         'stop': stop,
         'log': log,
+        'delete': delete,
     }
     if options.command in commands:
         commands[options.command](options)
