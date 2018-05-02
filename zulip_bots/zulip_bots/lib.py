@@ -18,7 +18,7 @@ from typing import Any, Optional, List, Dict, IO, Text, Set
 from types import ModuleType
 
 from zulip import Client, ZulipError
-from zulip_bots.custom_exceptions import ConfigValidationError
+from zulip_bots.custom_exceptions import ConfigValidationError, FileUploadError
 
 class NoBotConfigException(Exception):
     pass
@@ -157,6 +157,33 @@ class ExternalBotHandler(object):
             return self._client.update_message(message)
         else:
             self._rate_limit.show_error_and_exit()
+
+    def upload_file(self, file):
+        # type: (IO[Any]) -> Dict[str, Any]
+        if self._rate_limit.is_legal():
+            upload = self._client.upload_file(file)
+            try:
+                result = upload['result']
+                if result == 'success':
+                    return upload['uri']
+                else:
+                    error_msg = upload['msg']
+                    raise FileUploadError(error_msg, upload)
+            except KeyError:
+                raise FileUploadError('Error: Received unexpected payload', upload)
+        else:
+            self._rate_limit.show_error_and_exit()
+
+    def upload_file_from_path(self, file_path):
+        # type: (str) -> Dict[str, Any]
+        try:
+            abs_filepath = os.path.abspath(file_path)
+            with open(abs_filepath, 'rb') as file:
+                return self.upload_file(file)
+        except OSError:
+            # Print the path that the code is trying to open.
+            logging.error('Error opening the file at {}'.format(abs_filepath))
+            raise
 
     def get_config_info(self, bot_name, optional=False):
         # type: (str, Optional[bool]) -> Dict[str, Any]
