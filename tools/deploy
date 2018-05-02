@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from typing import Any, List
+
 import os
 import sys
 import argparse
@@ -7,6 +9,7 @@ import zipfile
 import textwrap
 import requests
 import urllib
+import json
 from urllib import parse
 
 red = '\033[91m'  # type: str
@@ -180,6 +183,63 @@ def delete(options: argparse.Namespace) -> None:
         print('delete: Error {}: {}. Aborting.'.format(r.status_code, r.text))
     sys.exit(1)
 
+def list_bots(options: argparse.Namespace) -> None:
+    check_common_options(options)
+    headers = {'key': options.key}
+    if options.format:
+        pretty_print = True
+    else:
+        pretty_print = False
+    url = urllib.parse.urljoin(options.server, 'bots/list')
+    r = requests.get(url, headers=headers)
+    if r.status_code == requests.codes.ok:
+        data = json.loads(r.text)
+        if 'bots' in data:
+            print_bots(data['bots'], pretty_print)
+            return
+    if r.status_code == 401:
+        print('ls: Authentication error with the server. Aborting.')
+    else:
+        print('ls: Error {}: {}. Aborting.'.format(r.status_code, r.text))
+    sys.exit(1)
+
+def print_bots(bots: List[Any], pretty_print: bool) -> None:
+    if pretty_print:
+        print_bots_pretty(bots)
+    else:
+        for bot in bots:
+            print('{0}\t{1}\t{2}\t{3}'.format(bot['name'], bot['status'], bot['email'], bot['site']))
+
+def print_bots_pretty(bots: List[Any]) -> None:
+    if len(bots) == 0:
+        print('ls: No bots found on the botfarm')
+    else:
+        print('ls: There are the following bots on the botfarm:')
+        name_col_len, status_col_len, email_col_len, site_col_len = 25, 15, 35, 35
+        row_format = '{0} {1} {2} {3}'
+        header = row_format.format(
+            'NAME'.rjust(name_col_len),
+            'STATUS'.rjust(status_col_len),
+            'EMAIL'.rjust(email_col_len),
+            'SITE'.rjust(site_col_len),
+        )
+        header_bottom = row_format.format(
+            '-' * name_col_len,
+            '-' * status_col_len,
+            '-' * email_col_len,
+            '-' * site_col_len,
+        )
+        print(header)
+        print(header_bottom)
+        for bot in bots:
+            row = row_format.format(
+                bot['name'].rjust(name_col_len),
+                bot['status'].rjust(status_col_len),
+                bot['email'].rjust(email_col_len),
+                bot['site'].rjust(site_col_len),
+            )
+            print(row)
+
 def main() -> None:
     usage = """tools/deploy <command> <bot-name> [options]
 
@@ -206,10 +266,14 @@ To delete the bot, use:
 
     tools/deploy delete mybot --server=$SERVER --key=$TOKEN
 
+To list user's bots, use:
+
+    tools/deploy ls --server=$SERVER --key=$TOKEN
+
 """
     parser = argparse.ArgumentParser(usage=usage)
     parser.add_argument('command', help='Command to run.')
-    parser.add_argument('botname', help='Name of bot to operate on.')
+    parser.add_argument('botname', nargs='?', help='Name of bot to operate on.')
     parser.add_argument('--server', '-s',
                         metavar='SERVERURL',
                         default='https://botfarm.zulipdev.org',
@@ -224,11 +288,13 @@ To delete the bot, use:
                         help='Path to the bot\'s main file, relative to the bot\'s directory.')
     parser.add_argument('--lines', '-l',
                         help='Number of lines in log required.')
+    parser.add_argument('--format', '-f', action='store_true',
+                        help='Print user\'s bots in human readable format')
     options = parser.parse_args()
     if not options.command:
         print('tools/deploy: No command specified.')
         sys.exit(1)
-    if not options.botname:
+    if not options.botname and options.command not in ['ls']:
         print('tools/deploy: No bot name specified. Please specify a name like \'my-custom-bot\'')
         sys.exit(1)
 
@@ -242,6 +308,7 @@ To delete the bot, use:
         'stop': stop,
         'log': log,
         'delete': delete,
+        'ls': list_bots,
     }
     if options.command in commands:
         commands[options.command](options)
