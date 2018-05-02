@@ -68,7 +68,7 @@ def check_common_options(options: argparse.Namespace) -> None:
     if not options.server:
         print('tools/deploy: URL to Botfarm server not specified.')
         sys.exit(1)
-    if not options.key:
+    if not options.token:
         print('tools/deploy: Botfarm deploy token not specified.')
         sys.exit(1)
 
@@ -108,7 +108,7 @@ def upload(options: argparse.Namespace) -> None:
         print('upload: Could not find bot package at {}.'.format(file_path))
         sys.exit(1)
     files = {'file': open(file_path, 'rb')}
-    headers = {'key': options.key}
+    headers = {'key': options.token}
     url = urllib.parse.urljoin(options.server, 'bots/upload')
     response = requests.post(url, files=files, headers=headers)
     result = handle_common_response_without_data(response, 'upload', 'Uploaded the bot package to botfarm.')
@@ -125,7 +125,7 @@ def clean(options: argparse.Namespace) -> None:
 
 def process(options: argparse.Namespace) -> None:
     check_common_options(options)
-    headers = {'key': options.key}
+    headers = {'key': options.token}
     url = urllib.parse.urljoin(options.server, 'bots/process')
     payload = {'name': options.botname}
     response = requests.post(url, headers=headers, json=payload)
@@ -135,7 +135,7 @@ def process(options: argparse.Namespace) -> None:
 
 def start(options: argparse.Namespace) -> None:
     check_common_options(options)
-    headers = {'key': options.key}
+    headers = {'key': options.token}
     url = urllib.parse.urljoin(options.server, 'bots/start')
     payload = {'name': options.botname}
     response = requests.post(url, headers=headers, json=payload)
@@ -145,7 +145,7 @@ def start(options: argparse.Namespace) -> None:
 
 def stop(options: argparse.Namespace) -> None:
     check_common_options(options)
-    headers = {'key': options.key}
+    headers = {'key': options.token}
     url = urllib.parse.urljoin(options.server, 'bots/stop')
     payload = {'name': options.botname}
     response = requests.post(url, headers=headers, json=payload)
@@ -161,7 +161,7 @@ def prepare(options: argparse.Namespace) -> None:
 
 def log(options: argparse.Namespace) -> None:
     check_common_options(options)
-    headers = {'key': options.key}
+    headers = {'key': options.token}
     if options.lines:
         lines = options.lines
     else:
@@ -175,7 +175,7 @@ def log(options: argparse.Namespace) -> None:
 
 def delete(options: argparse.Namespace) -> None:
     check_common_options(options)
-    headers = {'key': options.key}
+    headers = {'key': options.token}
     url = urllib.parse.urljoin(options.server, 'bots/delete')
     payload = {'name': options.botname}
     response = requests.post(url, headers=headers, json=payload)
@@ -185,7 +185,7 @@ def delete(options: argparse.Namespace) -> None:
 
 def list_bots(options: argparse.Namespace) -> None:
     check_common_options(options)
-    headers = {'key': options.key}
+    headers = {'key': options.token}
     if options.format:
         pretty_print = True
     else:
@@ -239,29 +239,31 @@ def main() -> None:
 This is tool meant to easily deploy bots to a Zulip Bot Farm.
 
 First, get your deploy token from the Botfarm server. We recommend saving your
-deploy-token as $TOKEN and the bot-farm server as $SERVER. To deploy, run:
+deploy-token as $TOKEN and the bot-farm server as $SERVER. If you want to manually
+provide the SERVER and TOKEN values, use the --server="https://my-server.com"
+and --token="my-access-token" flags with each command. To deploy, run:
 
-    tools/deploy prepare mybot --server=$SERVER --key=$TOKEN \\
+    tools/deploy prepare mybot \\
         --path=/path/to/bot/directory --config=/path/to/zuliprc --main=main_bot_file.py
 
 Now, your bot is ready to start.
 
-    tools/deploy start mybot --server=$SERVER --key=$TOKEN
+    tools/deploy start mybot
 
 To stop the bot, use:
 
-    tools/deploy stop mybot --server=$SERVER --key=$TOKEN
+    tools/deploy stop mybot
 
 To get logs of the bot, use:
-    tools/deploy log mybot --server=$SERVER --key=$TOKEN
+    tools/deploy log mybot
 
 To delete the bot, use:
 
-    tools/deploy delete mybot --server=$SERVER --key=$TOKEN
+    tools/deploy delete mybot
 
 To list user's bots, use:
 
-    tools/deploy ls --server=$SERVER --key=$TOKEN
+    tools/deploy ls
 
 """
     parser = argparse.ArgumentParser(usage=usage)
@@ -269,9 +271,10 @@ To list user's bots, use:
     parser.add_argument('botname', nargs='?', help='Name of bot to operate on.')
     parser.add_argument('--server', '-s',
                         metavar='SERVERURL',
-                        default='https://botfarm.zulipdev.org',
+                        default=os.environ.get('SERVER', ''),
                         help='Url of the Zulip Botfarm server.')
-    parser.add_argument('--key', '-k',
+    parser.add_argument('--token', '-t',
+                        default=os.environ.get('TOKEN', ''),
                         help='Deploy Token for the Botfarm.')
     parser.add_argument('--path', '-p',
                         help='Path to the bot directory.')
