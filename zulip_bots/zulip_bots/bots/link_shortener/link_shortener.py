@@ -40,16 +40,18 @@ class LinkShortenerHandler(object):
             ')'
         )
 
+        HELP_STR = (
+            'Mention the link shortener bot in a conversation and '
+            'then enter any URLs you want to shorten in the body of '
+            'the message.'
+        )
+
         content = message['content']
 
         if content.strip() == 'help':
             bot_handler.send_reply(
                 message,
-                (
-                    'Mention the link shortener bot in a conversation and '
-                    'then enter any URLs you want to shorten in the body of '
-                    'the message.'
-                )
+                HELP_STR
             )
             return
 
@@ -67,7 +69,7 @@ class LinkShortenerHandler(object):
         if final_response == '':
             bot_handler.send_reply(
                 message,
-                'No links found. Send "help" to see usage instructions.'
+                'No links found. ' + HELP_STR
             )
             return
 
