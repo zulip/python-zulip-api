@@ -186,7 +186,7 @@ def gen_keys(key_dict):
 gen_keys(zhkeys)
 gen_keys(hzkeys)
 
-notices = []
+notices = []  # type: List[Any]
 
 # We check for new zephyrs multiple times, to avoid filling the zephyr
 # receive queue with 30+ messages, which might result in messages

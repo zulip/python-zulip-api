@@ -160,7 +160,7 @@ def send_error_zulip(error_msg):
                }
     zulip_client.send_message(message)
 
-current_zephyr_subs = set()
+current_zephyr_subs = set()  # type: Set[str]
 def zephyr_bulk_subscribe(subs):
     # type: (List[Tuple[str, str, str]]) -> None
     try:
