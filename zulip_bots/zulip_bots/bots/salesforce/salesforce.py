@@ -7,7 +7,7 @@ import getpass
 import re
 import logging
 import json
-from zulip_bots.bots.salesforce.utils import *
+from zulip_bots.bots.salesforce.utils import commands, object_types, default_query, link_query
 
 base_help_text = '''Salesforce bot
 This bot can do simple salesforce query requests
