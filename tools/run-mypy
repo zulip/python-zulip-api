@@ -153,6 +153,7 @@ for file_path in python_files:
         repo_python_files[repo].append(file_path)
 
 extra_args = []
+extra_args.append("--follow-imports=error")  # dmypy requires skip or error
 if args.disallow_untyped_defs:
     extra_args.append("--disallow-untyped-defs")
 if args.warn_unused_ignores:
@@ -163,7 +164,7 @@ if args.quick:
     extra_args.append("--quick")
 
 if args.dmypy:
-    extra_args.append("--follow-imports=error")  # dmypy requires skip or error
+    extra_args.append("--use-fine-grained-cache")
     dmypy_command = "dmypy"
     if args.dmypy_timeout != 0:
         timeout_args = ["--timeout", str(60*args.dmypy_timeout)]  # dmypy expects timeout in seconds
@@ -208,7 +209,7 @@ if args.dmypy:
 
     mypy_check_command = [dmypy_command] + ["check"]
 else:
-    extra_args.append("--follow-imports=silent")  # XXX previous value; can we use error here?
+    extra_args.append("--cache-fine-grained")
     mypy_check_command = ["mypy"] + extra_args
 
 # run mypy
