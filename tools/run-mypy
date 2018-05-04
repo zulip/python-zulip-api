@@ -7,6 +7,7 @@ import os
 import sys
 import argparse
 import subprocess
+import json
 
 from collections import OrderedDict
 from pathlib import PurePath
@@ -116,6 +117,12 @@ parser.add_argument('--no-ignore-missing-imports', dest='ignore_missing_imports'
                     help="""Don't use the --ignore-missing-imports flag with mypy""")
 parser.add_argument('--quick', action='store_true', default=False,
                     help="""Use the --quick flag with mypy""")
+parser.add_argument('-d', '--dmypy', dest='dmypy', action='store_true', default=False,
+                    help="""[EXPERIMENTAL] Use the dmypy daemon, starting it if it is not running.""")
+parser.add_argument('--dmypy-timeout', dest='dmypy_timeout', default=60, type=int,
+                    help="""The timeout in minutes before the dmypy daemon exits due to inactivity.
+                    Default: 60. A zero value leaves dmypy running indefinitely
+                    (use 'dmypy stop' to manually stop it).""")
 args = parser.parse_args()
 
 if args.all:
@@ -145,9 +152,7 @@ for file_path in python_files:
     if repo in repo_python_files:
         repo_python_files[repo].append(file_path)
 
-mypy_command = "mypy"
-
-extra_args = ["--follow-imports=silent"]
+extra_args = []
 if args.disallow_untyped_defs:
     extra_args.append("--disallow-untyped-defs")
 if args.warn_unused_ignores:
@@ -157,12 +162,61 @@ if args.ignore_missing_imports:
 if args.quick:
     extra_args.append("--quick")
 
+if args.dmypy:
+    extra_args.append("--follow-imports=error")  # dmypy requires skip or error
+    dmypy_command = "dmypy"
+    if args.dmypy_timeout != 0:
+        timeout_args = ["--timeout", str(60*args.dmypy_timeout)]  # dmypy expects timeout in seconds
+    else:
+        timeout_args = []
+    dmypy_options_file = "dmypy.options"
+
+    def daemon_is_running_now() -> bool:
+        status = subprocess.Popen([dmypy_command] + ["status"],
+                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        status_output, _ = status.communicate()
+        return status_output == b'Daemon is up and running\n'
+
+    start_command = None
+    if daemon_is_running_now():
+        with open(dmypy_options_file) as options_file:
+            previous_options = json.load(options_file)
+            if (" ".join(timeout_args) != previous_options.get("timeout_args") or
+                set(extra_args) != set(previous_options.get("args"))):
+                    start_command = "restart"
+                    print("Restarting mypy daemon: specified options differ from those of running daemon.")
+    else:
+        start_command = "start"
+
+    if start_command is not None:
+        start = subprocess.Popen([dmypy_command] + [start_command] + timeout_args + ["--"] + extra_args,
+                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        start_output = start.communicate()
+
+        if not daemon_is_running_now():
+            print("Failed to start mypy in daemon mode. Try running in normal mode.")
+            sys.exit(1)
+        else:
+            print("Daemon for mypy started ({}).".format(
+                  "running indefinitely until 'dmypy stop' executed" if args.dmypy_timeout == 0
+                  else "will terminate after {} minutes of inactivity".format(args.dmypy_timeout)))
+        options = dict(timeout_args=" ".join(timeout_args), args=extra_args)
+        with open(dmypy_options_file, "w") as options_file:
+            json.dump(options, options_file)
+    else:
+        print("Daemon for mypy is already running with specified options.")
+
+    mypy_check_command = [dmypy_command] + ["check"]
+else:
+    extra_args.append("--follow-imports=silent")  # XXX previous value; can we use error here?
+    mypy_check_command = ["mypy"] + extra_args
+
 # run mypy
 status = 0
 for repo, python_files in repo_python_files.items():
     print("Running mypy for `{}`.".format(repo), flush=True)
     if python_files:
-        result = subprocess.call([mypy_command] + extra_args + python_files)
+        result = subprocess.call(mypy_check_command + python_files)
         if result != 0:
             status = result
     else:
