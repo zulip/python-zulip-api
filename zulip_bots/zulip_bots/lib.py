@@ -211,6 +211,15 @@ class ExternalBotHandler(object):
 
         return dict(config_parser.items(bot_name))
 
+    def upload_file_from_path(self, file_path: str) -> Dict[str, Any]:
+        with open(file_path, 'rb') as file:
+            return self.upload_file(file)
+
+    def upload_file(self, file: IO[Any]) -> Dict[str, Any]:
+        if not self._rate_limit.is_legal():
+            self._rate_limit.show_error_and_exit()
+        return self._client.upload_file(file)
+
     def open(self, filepath: str) -> IO[str]:
         filepath = os.path.normpath(filepath)
         abs_filepath = os.path.join(self._root_dir, filepath)
