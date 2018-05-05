@@ -1,6 +1,6 @@
 import unittest
 
-from typing import List, Dict, Any, Tuple, Optional
+from typing import List, Dict, Any, Tuple, Optional, IO
 
 from zulip_bots.custom_exceptions import (
     ConfigValidationError,
@@ -52,6 +52,15 @@ class StubBotHandler:
 
     def update_message(self, message: Dict[str, Any]) -> None:
         self.message_server.update(message)
+
+    def upload_file_from_path(self, file_path):
+        # type: (str) -> Dict[str, Any]
+        with open(file_path, 'rb') as file:
+            return self.message_server.upload_file(file)
+
+    def upload_file(self, file):
+        # type: (IO[Any]) -> Dict[str, Any]
+        return self.message_server.upload_file(file)
 
     class BotQuitException(Exception):
         pass

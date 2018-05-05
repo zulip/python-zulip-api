@@ -2,6 +2,7 @@ import configparser
 import sys
 
 from zulip_bots.lib import BotIdentity
+from uuid import uuid4
 
 class SimpleStorage:
     def __init__(self):
@@ -31,6 +32,9 @@ class SimpleMessageServer:
 
     def update(self, message):
         self.messages[message['message_id']] = message
+
+    def upload_file(self, file):
+        return dict(result='success', msg='', uri='https://server/user_uploads/{}'.format(uuid4()))
 
 class TerminalBotHandler:
     def __init__(self, bot_config_file):
@@ -67,6 +71,13 @@ class TerminalBotHandler:
             update to message #{}:
             {}
             '''.format(message['message_id'], message['content']))
+
+    def upload_file_from_path(self, file_path):
+        with open(file_path) as file:
+            return self.upload_file(file)
+
+    def upload_file(self, file):
+        return self.message_server.upload_file(file)
 
     def get_config_info(self, bot_name, optional=False):
         if self.bot_config_file is None:
