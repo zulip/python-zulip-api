@@ -6,6 +6,8 @@ from zulip_bots.lib import (
     run_message_handler_for_bot,
 )
 
+import io
+
 class FakeClient:
     def __init__(self, *args, **kwargs):
         self.storage = dict()
@@ -35,6 +37,9 @@ class FakeClient:
         return dict(
             result='success',
         )
+
+    def upload_file(self, file):
+        pass
 
 class FakeBotHandler:
     def usage(self):
@@ -169,3 +174,32 @@ class LibTest(TestCase):
                                         config_file=None,
                                         bot_config_file=None,
                                         bot_name='testbot')
+
+    def test_upload_file(self):
+        client, handler = self._create_client_and_handler_for_file_upload()
+        file = io.BytesIO(b'binary')
+
+        handler.upload_file(file)
+
+        client.upload_file.assert_called_once_with(file)
+
+    def test_upload_file_from_path(self):
+        client, handler = self._create_client_and_handler_for_file_upload()
+        file = io.BytesIO(b'binary')
+
+        with patch('builtins.open', return_value=file):
+            handler.upload_file_from_path('file.txt')
+
+        client.upload_file.assert_called_once_with(file)
+
+    def _create_client_and_handler_for_file_upload(self):
+        client = FakeClient()
+        client.upload_file = MagicMock()
+
+        handler = ExternalBotHandler(
+            client=client,
+            root_dir=None,
+            bot_details=None,
+            bot_config_file=None
+        )
+        return client, handler
