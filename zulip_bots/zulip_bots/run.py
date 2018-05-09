@@ -116,6 +116,7 @@ def main():
     else:
         bot_path = os.path.abspath(os.path.join(current_dir, 'bots', args.bot, args.bot+'.py'))
         bot_name = args.bot
+    sys.path.insert(0, os.path.dirname(bot_path))
     if args.provision:
         provision_bot(os.path.dirname(bot_path), args.force)
 
