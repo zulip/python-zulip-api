@@ -1,6 +1,12 @@
 {
     "request": {
-        "api_url":"http://api.stackexchange.com/2.2/search/advanced?order=desc&sort=relevance&site=stackoverflow&title=restful"
+        "api_url":"http://api.stackexchange.com/2.2/search/advanced",
+        "params": {
+            "order": "desc",
+            "sort": "relevance",
+            "site": "stackoverflow",
+            "title": "restful"
+        }
     },
     "response": {
         "data": {
