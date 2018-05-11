@@ -1,5 +1,4 @@
 import requests
-import urllib
 from typing import Dict, Any, Tuple, Union
 
 class SusiHandler(object):
@@ -40,8 +39,7 @@ class SusiHandler(object):
         if msg == 'help' or msg == '':
             bot_handler.send_reply(message, self.usage())
             return
-        encoded_msg = urllib.parse.quote_plus(msg.encode('utf8'))
-        reply = requests.get("https://api.susi.ai/susi/chat.json?q=" + encoded_msg)
+        reply = requests.get("https://api.susi.ai/susi/chat.json", params=dict(q=msg))
         try:
             answer = reply.json()['answers'][0]['actions'][0]['expression']
         except Exception:
