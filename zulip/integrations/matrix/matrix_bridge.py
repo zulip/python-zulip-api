@@ -12,6 +12,29 @@ from typing import Any, Callable, Dict
 from matrix_bridge_config import config
 from matrix_client.api import MatrixRequestError
 from matrix_client.client import MatrixClient
+from requests.exceptions import MissingSchema
+
+def matrix_login(matrix_client: Any, matrix_config: Dict[str, Any]) -> None:
+    try:
+        matrix_client.login_with_password(matrix_config["username"],
+                                          matrix_config["password"])
+    except MatrixRequestError as e:
+        if e.code == 403:
+            sys.exit("Bad username or password.")
+        else:
+            sys.exit("Check if your server details are correct.")
+    except MissingSchema as e:
+        sys.exit("Bad URL format.")
+
+def matrix_join_room(matrix_client: Any, matrix_config: Dict[str, Any]) -> Any:
+    try:
+        room = matrix_client.join_room(matrix_config["room_id"])
+        return room
+    except MatrixRequestError as e:
+        if e.code == 403:
+            sys.exit("Room ID/Alias in the wrong format")
+        else:
+            sys.exit("Couldn't find room.")
 
 def die(signal: int, frame: FrameType) -> None:
     # We actually want to exit, so run os._exit (so as not to be caught and restarted)
@@ -102,10 +125,11 @@ if __name__ == '__main__':
                                         site=zulip_config["site"])
             matrix_client = MatrixClient(matrix_config["host"])
 
-            # TODO this lacks the proper error handling
-            matrix_client.login_with_password(matrix_config["username"],
-                                              matrix_config["password"])
-            room = matrix_client.join_room(matrix_config["room_id"])
+            # Login to Matrix
+            matrix_login(matrix_client, matrix_config)
+            # Join a room in Matrix
+            room = matrix_join_room(matrix_client, matrix_config)
+
             room.add_listener(matrix_to_zulip(zulip_client, zulip_config, matrix_config))
 
             print("Starting listener thread on Matrix client")
