@@ -1,6 +1,12 @@
 {
     "request": {
-        "api_url":"https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=The%20sky%20is%20blue&format=json"
+        "api_url":"https://en.wikipedia.org/w/api.php",
+        "params": {
+            "action": "query",
+            "list": "search",
+            "srsearch": "The sky is blue",
+            "format": "json"
+        }
     },
     "response": {
         "data": {
