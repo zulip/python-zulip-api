@@ -3,7 +3,8 @@
     "api_url": "https://beta.idonethis.com/api/v2/teams",
     "headers": {
         "Authorization": "Token 87654321"
-    }
+    },
+    "params": null
   },
   "response": {
     "error": "Invalid API Authentication"

@@ -3,7 +3,8 @@
     "api_url": "https://beta.idonethis.com/api/v2/teams/31415926535",
     "headers": {
         "Authorization": "Token 12345678"
-    }
+    },
+    "params": null
   },
   "response": {
     "hash_id": "31415926535",

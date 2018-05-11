@@ -1,8 +1,11 @@
 {
   "request": {
-    "api_url": "https://beta.idonethis.com/api/v2/entries?team_id=31415926535",
+    "api_url": "https://beta.idonethis.com/api/v2/entries",
     "headers": {
         "Authorization": "Token 12345678"
+    },
+    "params": {
+      "team_id": "31415926535"
     }
   },
   "response": [

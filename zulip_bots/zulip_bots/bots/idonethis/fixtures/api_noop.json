@@ -3,7 +3,8 @@
     "api_url": "https://beta.idonethis.com/api/v2/noop",
     "headers": {
         "Authorization": "Token 12345678"
-    }
+    },
+    "params": null
   },
   "response": {"doesnt": "matter"},
   "response-headers": {
