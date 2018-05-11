@@ -1,6 +1,10 @@
 {
     "request":{
-        "api_url":"http://api.openweathermap.org/data/2.5/weather?q=New Delhi, India&APPID=123456"
+        "api_url":"http://api.openweathermap.org/data/2.5/weather",
+        "params": {
+            "q": "New Delhi, India",
+            "APPID": "123456"
+        }
     },
     "response":{
         "coord":{

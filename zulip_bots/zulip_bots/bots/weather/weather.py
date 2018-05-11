@@ -5,6 +5,8 @@ import logging
 
 from typing import Any, Dict
 
+api_url = 'http://api.openweathermap.org/data/2.5/weather'
+
 class WeatherHandler(object):
     def initialize(self, bot_handler: Any) -> None:
         self.api_key = bot_handler.get_config_info('weather')['key']
@@ -12,8 +14,8 @@ class WeatherHandler(object):
         self.check_api_key(bot_handler)
 
     def check_api_key(self, bot_handler: Any) -> None:
-        url = 'http://api.openweathermap.org/data/2.5/weather?q=nyc&APPID=' + self.api_key
-        test_response = requests.get(url)
+        api_params = dict(q='nyc', APPID=self.api_key)
+        test_response = requests.get(api_url, params=api_params)
         try:
             test_response_data = test_response.json()
             if test_response_data['cod'] == 401:
@@ -40,8 +42,8 @@ class WeatherHandler(object):
         if (message['content'] == 'help') or (message['content'] == ''):
             response = help_content
         else:
-            url = 'http://api.openweathermap.org/data/2.5/weather?q=' + message['content'] + '&APPID='
-            r = requests.get(url + self.api_key)
+            api_params = dict(q=message['content'], APPID=self.api_key)
+            r = requests.get(api_url, params=api_params)
             if r.json()['cod'] == "404":
                 response = "Sorry, city not found"
             else:
