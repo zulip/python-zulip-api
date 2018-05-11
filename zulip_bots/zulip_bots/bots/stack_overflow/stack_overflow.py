@@ -45,11 +45,15 @@ class StackOverflowHandler(object):
         if query == '' or query == 'help':
             return help_text
 
-        query_stack_link = ('http://api.stackexchange.com/2.2/search/advanced?'
-                            'order=desc&sort=relevance&site=stackoverflow&title=%s'
-                            % (urllib.parse.quote(query),))
+        query_stack_url = 'http://api.stackexchange.com/2.2/search/advanced'
+        query_stack_params = dict(
+            order='desc',
+            sort='relevance',
+            site='stackoverflow',
+            title=query
+        )
         try:
-            data = requests.get(query_stack_link)
+            data = requests.get(query_stack_url, params=query_stack_params)
 
         except requests.exceptions.RequestException:
             logging.error('broken link')
