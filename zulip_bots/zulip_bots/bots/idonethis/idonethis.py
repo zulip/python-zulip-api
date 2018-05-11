@@ -25,12 +25,15 @@ class UnknownCommandSyntax(Exception):
 class UnspecifiedProblemException(Exception):
     pass
 
-def make_API_request(endpoint: str, method: str="GET", body: Optional[Dict[str, str]]=None) -> Any:
+def make_API_request(endpoint: str,
+                     method: str="GET",
+                     body: Optional[Dict[str, str]]=None,
+                     params: Optional[Dict[str, str]]=None) -> Any:
     headers = {'Authorization': 'Token ' + api_key}
     if method == "GET":
-        r = requests.get(API_BASE_URL + endpoint, headers=headers)
+        r = requests.get(API_BASE_URL + endpoint, headers=headers, params=params)
     elif method == "POST":
-        r = requests.post(API_BASE_URL + endpoint, headers=headers, json=body)
+        r = requests.post(API_BASE_URL + endpoint, headers=headers, params=params, json=body)
     if r.status_code == 200:
         return r.json()
     elif r.status_code == 401 and 'error' in r.json() and r.json()['error']  == "Invalid API Authentication":
@@ -54,9 +57,9 @@ def api_show_users(hash_id: str) -> Any:
 
 def api_list_entries(team_id: Optional[str]=None) -> Any:
     if team_id:
-        return make_API_request("/entries?team_id={}".format(team_id))
+        return make_API_request("/entries", params=dict(team_id=team_id))
     else:
-        return make_API_request("/entries".format(team_id))
+        return make_API_request("/entries")
 
 def api_create_entry(body: str, team_id: str) -> Any:
     return make_API_request("/entries", "POST", {"body": body, "team_id": team_id})
