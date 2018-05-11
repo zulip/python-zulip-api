@@ -1,6 +1,12 @@
 {
     "request": {
-        "api_url":"https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=sssssss%20kkkkk&format=json"
+        "api_url":"https://en.wikipedia.org/w/api.php",
+        "params": {
+            "action": "query",
+            "list": "search",
+            "srsearch": "sssssss kkkkk",
+            "format": "json"
+        }
     },
     "response": {
         "data": {

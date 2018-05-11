@@ -47,11 +47,15 @@ class WikipediaHandler(object):
         if query == '':
             return help_text
 
-        query_wiki_link = ('https://en.wikipedia.org/w/api.php?action=query&'
-                           'list=search&srsearch=%s&format=json'
-                           % (urllib.parse.quote(query),))
+        query_wiki_url = 'https://en.wikipedia.org/w/api.php'
+        query_wiki_params = dict(
+            action='query',
+            list='search',
+            srsearch=query,
+            format='json'
+        )
         try:
-            data = requests.get(query_wiki_link)
+            data = requests.get(query_wiki_url, params=query_wiki_params)
 
         except requests.exceptions.RequestException:
             logging.error('broken link')

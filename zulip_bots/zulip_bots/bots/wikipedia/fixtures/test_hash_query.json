@@ -1,6 +1,12 @@
 {
     "request": {
-        "api_url":"https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=%23&format=json"
+        "api_url":"https://en.wikipedia.org/w/api.php",
+        "params": {
+            "action": "query",
+            "list": "search",
+            "srsearch": "#",
+            "format": "json"
+        }
     },
     "response": {
         "data": {
