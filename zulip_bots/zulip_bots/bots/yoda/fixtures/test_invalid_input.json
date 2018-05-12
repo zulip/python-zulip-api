@@ -1,6 +1,9 @@
 {
   "request": {
-    "api_url": "https://yoda.p.mashape.com/yoda?sentence=@#$%^&*",
+    "api_url": "https://yoda.p.mashape.com/yoda",
+    "params": {
+      "sentence": "@#$%^&*"
+    },
     "headers": {
       "X-Mashape-Key": "12345678",
       "Accept": "text/plain"

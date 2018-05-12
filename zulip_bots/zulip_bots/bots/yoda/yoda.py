@@ -55,7 +55,8 @@ class YodaSpeakHandler(object):
 
     def send_to_yoda_api(self, sentence: str) -> str:
         # function for sending sentence to api
-        response = requests.get("https://yoda.p.mashape.com/yoda?sentence=" + sentence,
+        response = requests.get("https://yoda.p.mashape.com/yoda",
+                                params=dict(sentence=sentence),
                                 headers={
                                     "X-Mashape-Key": self.api_key,
                                     "Accept": "text/plain"
