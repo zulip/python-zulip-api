@@ -1,6 +1,9 @@
 {
   "request": {
-    "api_url": "https://yoda.p.mashape.com/yoda?sentence=You+will+learn+how+to+speak+like+me+someday.",
+    "api_url": "https://yoda.p.mashape.com/yoda",
+    "params": {
+      "sentence": "You+will+learn+how+to+speak+like+me+someday."
+    },
     "headers": {
       "X-Mashape-Key": "12345678",
       "Accept": "text/plain"
