@@ -35,8 +35,8 @@ class LinkShortenerHandler(object):
             '('
             '(?:http|https):\/\/'  # This allows for the HTTP or HTTPS
                                    # protocol.
-            '[^"<>#%\{\}|\\^~[\]` ]+'  # This allows for any character except
-                                       # for certain non-URL-safe ones.
+            '[^"<>\{\}|\\^~[\]` ]+'  # This allows for any character except
+                                     # for certain non-URL-safe ones.
             ')'
         )
 
