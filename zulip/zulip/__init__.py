@@ -271,6 +271,20 @@ def get_default_config_filename():
                          "  mv ~/.humbugrc ~/.zuliprc\n")
     return config_file
 
+def validate_boolean_field(field):
+    # type: (Optional[Text]) -> Union[bool, None]
+    if not isinstance(field, str):
+        return None
+
+    field = field.lower()
+
+    if field == "true":
+        return True
+    elif field == "false":
+        return False
+    else:
+        return None
+
 class ZulipError(Exception):
     pass
 
@@ -308,7 +322,19 @@ class Client(object):
             client_cert_key = os.environ.get("ZULIP_CERT_KEY")
         if cert_bundle is None:
             cert_bundle = os.environ.get("ZULIP_CERT_BUNDLE")
+        if insecure is None:
+            # Be quite strict about what is accepted so that users don't
+            # disable security unintentionally.
+            insecure_setting = os.environ.get('ZULIP_ALLOW_INSECURE')
 
+            if insecure_setting is not None:
+                insecure = validate_boolean_field(insecure_setting)
+
+                if insecure is None:
+                    raise ZulipError("The ZULIP_ALLOW_INSECURE environment "
+                                     "variable is set to '{}', it must be "
+                                     "'true' or 'false'"
+                                     .format(insecure_setting))
         if config_file is None:
             config_file = get_default_config_filename()
 
@@ -331,14 +357,15 @@ class Client(object):
             if insecure is None and config.has_option("api", "insecure"):
                 # Be quite strict about what is accepted so that users don't
                 # disable security unintentionally.
-                insecure_setting = config.get("api", "insecure").lower()
-                if insecure_setting == "true":
-                    insecure = True
-                elif insecure_setting == "false":
-                    insecure = False
-                else:
-                    raise ZulipError("insecure is set to '%s', it must be 'true' or 'false' if it is used in %s"
-                                     % (insecure_setting, config_file))
+                insecure_setting = config.get('api', 'insecure')
+
+                insecure = validate_boolean_field(insecure_setting)
+
+                if insecure is None:
+                    raise ZulipError("insecure is set to '{}', it must be "
+                                     "'true' or 'false' if it is used in {}"
+                                     .format(insecure_setting, config_file))
+
         elif None in (api_key, email):
             raise ConfigNotFoundError("api_key or email not specified and file %s does not exist"
                                       % (config_file,))
