@@ -392,6 +392,9 @@ class Client(object):
         self.client_name = client
 
         if insecure:
+            logger.warning('Insecure mode enabled. The server\'s SSL/TLS '
+                           'certificate will not be validated, making the '
+                           'HTTPS connection potentially insecure')
             self.tls_verification = False  # type: Union[bool, str]
         elif cert_bundle is not None:
             if not os.path.isfile(cert_bundle):
