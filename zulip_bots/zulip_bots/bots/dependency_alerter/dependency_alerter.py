@@ -1,4 +1,4 @@
-import requests
+from aiohttp import ClientSession, ClientConnectionError, InvalidURL, ClientError
 import os
 from datetime import datetime
 
@@ -45,14 +45,15 @@ class DependencyAlerterHandler:
 
         repo = "**{}**".format(content)
 
-        try:
-            text = await download_requirements_txt(repos[content])
-        except DownloadException as e:
-            bot_handler.send_reply(message, str(e).format(repo))
-            return
+        async with ClientSession() as session:
+            try:
+                text = await download_requirements_txt(repos[content], session)
+            except DownloadException as e:
+                bot_handler.send_reply(message, str(e).format(repo))
+                return
 
-        packages = await minimal_current_package_versions(text)
-        package_versions = await collect_current_versions(packages)
+            packages = await minimal_current_package_versions(text)
+            package_versions = await collect_current_versions(packages, session)
 
         if len(package_versions) == 0:
             bot_handler.send_reply(message, "No packages at URL for {}.".format(repo))
@@ -78,17 +79,19 @@ class DependencyAlerterHandler:
 class DownloadException(Exception):
     pass
 
-async def download_requirements_txt(url: str) -> List[str]:
+async def download_requirements_txt(url: str, session: ClientSession) -> List[str]:
     connection_failure = None
     response = None
     try:
-        response = requests.get(url)
-    except requests.exceptions.ConnectionError:
+        response = await session.get(url)
+    except ClientConnectionError:
         connection_failure = "Connection error"
-    except requests.exceptions.RequestException:
-        connection_failure = "General connection error"
+    except InvalidURL:
+        connection_failure = "Invalid URL"
+    except ClientError:
+        connection_failure = "General client error"
 
-    if connection_failure is not None or (response is not None and response.status_code != 200):
+    if connection_failure is not None or (response is not None and response.status != 200):
         download_failure_text = "Failed to download URL for {}.\n"
         if connection_failure is not None:
             download_failure_text += "{}.".format(connection_failure)
@@ -97,27 +100,29 @@ async def download_requirements_txt(url: str) -> List[str]:
         raise DownloadException(download_failure_text)
 
     assert response is not None
-    return response.iter_lines(decode_unicode=True)
+    return (await response.text()).split("\n")
 
 async def minimal_current_package_versions(requirements_txt_lines: List[str]) -> Dict[str, str]:
     package_lines = [line.strip().split("==") for line in requirements_txt_lines
                      if '==' in line and line != '\n' and line[0] != '#' and ' # via ' not in line]
     return dict((line[0], line[1]) for line in package_lines if len(line) == 2)
 
-async def collect_current_versions(packages: Dict[str, str]) -> Dict[str, Tuple[str, str]]:
+async def collect_current_versions(packages: Dict[str, str], session: ClientSession) -> Dict[str, Tuple[str, str]]:
     # Python 3.6 is required for await/async in list comprehensions, so with 3.5 must use for loop, not:
     # versions = {p: (v, await latest_version_by_date(p, session)) for p, v in packages.items()}
     versions = dict()
     for p, v in packages.items():
-        versions[p] = (v, await latest_version_by_date(p))
+        versions[p] = (v, await latest_version_by_date(p, session))
     return versions
 
-async def latest_version_by_date(package_name: str) -> str:
-    data = requests.get("https://pypi.org/pypi/{}/json".format(package_name))
-    if data.status_code == 200:
+async def latest_version_by_date(package_name: str, session: ClientSession) -> str:
+    data = await session.get("https://pypi.org/pypi/{}/json".format(package_name))
+    if data.status == 200:
+        # Python 3.6 is required for await/async in list comprehension, so hoist the data.json()
+        json = await data.json()
         version_uploads = [(version, [datetime.strptime(upload['upload_time'], "%Y-%m-%dT%H:%M:%S")
                                       for upload in data])
-                           for version, data in data.json()['releases'].items()]
+                           for version, data in json['releases'].items()]
         first_version_uploads = {version: min(uploads) if uploads else datetime.min
                                  for version, uploads in version_uploads}
         latest_upload = (datetime.min, "")
@@ -128,9 +133,9 @@ async def latest_version_by_date(package_name: str) -> str:
     return ""
 
 # This is not currently used
-def available_versions(package_name: str) -> List[str]:
-    data = requests.get("https://pypi.org/pypi/{}/json".format(package_name))
-    if data.status_code == 200:
+async def available_versions(package_name: str, session: ClientSession) -> List[str]:
+    data = await session.get("https://pypi.org/pypi/{}/json".format(package_name))
+    if data.status == 200:
         return sorted(data.json()['releases'].keys())
     return []
 
