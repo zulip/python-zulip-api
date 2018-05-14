@@ -12,6 +12,7 @@ from werkzeug.exceptions import BadRequest
 from six.moves.configparser import SafeConfigParser
 
 from zulip import Client
+from zulip_bots.custom_exceptions import ConfigValidationError
 from zulip_bots.lib import ExternalBotHandler, StateHandler
 
 bots_config = {}  # type: Dict[str, Mapping[str, str]]
