@@ -1,13 +1,11 @@
-from __future__ import absolute_import
-from __future__ import print_function
-
 import os
 import sys
 import json
 import argparse
+
 from flask import Flask, request
 from importlib import import_module
-from typing import Any, Dict, Mapping, Union, List, Tuple
+from typing import Any, Dict, Mapping, Union, List
 from werkzeug.exceptions import BadRequest
 from six.moves.configparser import SafeConfigParser
 
@@ -122,19 +120,17 @@ def parse_args():
     parser = argparse.ArgumentParser(usage=usage)
     parser.add_argument('--config-file',
                         action='store',
-                        help='(config file for the zulip bot server (flaskbotrc))')
+                        required=True,
+                        help='Config file for the zulip bot server (flaskbotrc)')
     parser.add_argument('--hostname',
                         action='store',
                         default="127.0.0.1",
-                        help='(address on which you want to run the server)')
+                        help='Address on which you want to run the server')
     parser.add_argument('--port',
                         action='store',
                         default=5002,
-                        help='(port on which you want to run the server)')
-    options = parser.parse_args()
-    if not options.config_file:  # if flaskbotrc is not given
-        parser.error('Flaskbotrc not given')
-    return options
+                        help='Port on which you want to run the server')
+    return parser.parse_args()
 
 
 def main():

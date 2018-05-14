@@ -2,7 +2,6 @@ from __future__ import absolute_import
 import mock
 import unittest
 from typing import Any
-from zulip_botserver import server
 from .server_test_lib import BotServerTestCase
 import six
 
