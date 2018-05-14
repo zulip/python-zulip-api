@@ -55,12 +55,26 @@ def load_bot_handlers():
             bot_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                    'bots', bot)
             # TODO: Figure out how to pass in third party config info.
-            bot_handlers[bot] = ExternalBotHandler(
+            bot_handler = ExternalBotHandler(
                 client,
                 bot_dir,
                 bot_details={},
                 bot_config_file=None
             )
+            bot_handlers[bot] = bot_handler
+
+            lib_module = get_bot_lib_module(bot)
+            message_handler = lib_module.handler_class()
+            if hasattr(message_handler, 'validate_config'):
+                config_data = bot_handlers[bot].get_config_info(bot)
+                try:
+                    lib_module.handler_class.validate_config(config_data)
+                except ConfigValidationError as e:
+                    print("There was a problem validating your config file:\n\n{}".format(e))
+                    sys.exit(1)
+
+            if hasattr(message_handler, 'initialize'):
+                message_handler.initialize(bot_handler=bot_handler)
         except SystemExit:
             return BadRequest("Cannot fetch user profile for bot {}, make sure you have set up the flaskbotrc "
                               "file correctly.".format(bot))
