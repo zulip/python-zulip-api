@@ -53,7 +53,7 @@ package_info = dict(
 )  # type: Dict[str, Any]
 
 setuptools_info = dict(
-    install_requires=['requests>=0.12.1',
+    install_requires=['requests[security]>=0.12.1',
                       'six',
                       'typing>=3.5.2.2',
                       ],
