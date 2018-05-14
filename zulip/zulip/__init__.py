@@ -848,6 +848,16 @@ class Client(object):
             request=None,
         )
 
+    def get_stream_topics(self, stream_id):
+        # type: (int) -> Dict[str, Any]
+        '''
+            See examples/get-stream-topics for example usage.
+        '''
+        return self.call_endpoint(
+            url='users/me/{}/topics'.format(stream_id),
+            method='GET'
+        )
+
     def get_subscribers(self, **request):
         # type: (**Any) -> Dict[str, Any]
         '''
