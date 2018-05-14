@@ -5,7 +5,7 @@ import argparse
 
 from flask import Flask, request
 from importlib import import_module
-from typing import Any, Dict, Mapping, Union, List
+from typing import Any, Dict, Mapping, Union, List, Optional
 from werkzeug.exceptions import BadRequest
 from six.moves.configparser import SafeConfigParser
 
@@ -18,8 +18,7 @@ available_bots = []  # type: List[str]
 bots_lib_module = {}  # type: Dict[str, Any]
 bot_handlers = {}  # type: Dict[str, ExternalBotHandler]
 
-def read_config_file(config_file_path):
-    # type: (str) -> None
+def read_config_file(config_file_path: str) -> None:
     config_file_path = os.path.abspath(os.path.expanduser(config_file_path))
     if not os.path.isfile(config_file_path):
         raise IOError("Could not read config file {}: File not found.".format(config_file_path))
@@ -33,8 +32,7 @@ def read_config_file(config_file_path):
             "site": parser.get(section, 'site'),
         }
 
-def load_lib_modules():
-    # type: () -> None
+def load_lib_modules() -> None:
     for bot in available_bots:
         try:
             module_name = 'zulip_bots.bots.{bot}.{bot}'.format(bot=bot)
@@ -44,8 +42,7 @@ def load_lib_modules():
             raise ImportError("\n Import Error: Bot \"{}\" doesn't exists. Please make sure you have set up the flaskbotrc "
                               "file correctly.\n".format(bot))
 
-def load_bot_handlers():
-    # type: () -> Any
+def load_bot_handlers() -> Optional[BadRequest]:
     for bot in available_bots:
         client = Client(email=bots_config[bot]["email"],
                         api_key=bots_config[bot]["key"],
@@ -77,9 +74,9 @@ def load_bot_handlers():
         except SystemExit:
             return BadRequest("Cannot fetch user profile for bot {}, make sure you have set up the flaskbotrc "
                               "file correctly.".format(bot))
+    return None
 
-def get_bot_lib_module(bot):
-    # type: (str) -> Any
+def get_bot_lib_module(bot: str) -> Any:
     if bot in bots_lib_module.keys():
         return bots_lib_module[bot]
     return None
@@ -87,8 +84,7 @@ def get_bot_lib_module(bot):
 app = Flask(__name__)
 
 @app.route('/bots/<bot>', methods=['POST'])
-def handle_bot(bot):
-    # type: (str) -> Union[str, BadRequest]
+def handle_bot(bot: str) -> Union[str, BadRequest]:
     lib_module = get_bot_lib_module(bot)
     if lib_module is None:
         return BadRequest("Can't find the configuration or Bot Handler code for bot {}. "
@@ -101,8 +97,7 @@ def handle_bot(bot):
                                    bot_handler=bot_handlers[bot])
     return json.dumps("")
 
-def parse_args():
-    # type: () -> argparse.Namespace
+def parse_args() -> argparse.Namespace:
     usage = '''
             zulip-bot-server --config-file <path to flaskbotrc> --hostname <address> --port <port>
             Example: zulip-bot-server --config-file ~/flaskbotrc
@@ -133,8 +128,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def main():
-    # type: () -> None
+def main() -> None:
     options = parse_args()
     read_config_file(options.config_file)
     global available_bots
