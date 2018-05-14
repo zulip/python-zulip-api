@@ -32,7 +32,7 @@ Get presence data for another user.
 import zulip
 
 parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage))
-parser.add_argument('--email')
+parser.add_argument('--email', required=True)
 options = parser.parse_args()
 
 client = zulip.init_from_options(options)

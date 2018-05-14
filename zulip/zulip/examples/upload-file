@@ -42,7 +42,7 @@ If no --file-path is specified, a placeholder text file will be used instead.
 """
 
 parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage))
-parser.add_argument('--file-path')
+parser.add_argument('--file-path', required=True)
 options = parser.parse_args()
 
 client = zulip.init_from_options(options)

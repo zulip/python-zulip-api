@@ -37,10 +37,10 @@ Specify your Zulip API credentials and server in a ~/.zuliprc file or using the 
 import zulip
 
 parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage))
-parser.add_argument('--new-email')
-parser.add_argument('--new-password')
-parser.add_argument('--new-full-name')
-parser.add_argument('--new-short-name')
+parser.add_argument('--new-email', required=True)
+parser.add_argument('--new-password', required=True)
+parser.add_argument('--new-full-name', required=True)
+parser.add_argument('--new-short-name', required=True)
 options = parser.parse_args()
 
 client = zulip.init_from_options(options)
