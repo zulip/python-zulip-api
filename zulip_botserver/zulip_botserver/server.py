@@ -129,6 +129,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument('--port',
                         action='store',
                         default=5002,
+                        type=int,
                         help='Port on which you want to run the server')
     return parser.parse_args()
 
