@@ -6,31 +6,32 @@ import argparse
 
 from flask import Flask, request
 from importlib import import_module
-from typing import Any, Dict, Mapping, Union, List, Optional
+from typing import Any, Dict, Union, List, Optional
 from werkzeug.exceptions import BadRequest
 
 from zulip import Client
 from zulip_bots.custom_exceptions import ConfigValidationError
 from zulip_bots.lib import ExternalBotHandler, StateHandler
 
-bots_config = {}  # type: Dict[str, Mapping[str, str]]
 available_bots = []  # type: List[str]
 bots_lib_module = {}  # type: Dict[str, Any]
 bot_handlers = {}  # type: Dict[str, ExternalBotHandler]
 
-def read_config_file(config_file_path: str) -> None:
+def read_config_file(config_file_path: str) -> Dict[str, Dict[str, str]]:
     config_file_path = os.path.abspath(os.path.expanduser(config_file_path))
     if not os.path.isfile(config_file_path):
         raise IOError("Could not read config file {}: File not found.".format(config_file_path))
     parser = configparser.ConfigParser()
     parser.read(config_file_path)
 
+    bots_config = {}
     for section in parser.sections():
         bots_config[section] = {
             "email": parser.get(section, 'email'),
             "key": parser.get(section, 'key'),
             "site": parser.get(section, 'site'),
         }
+    return bots_config
 
 def load_lib_modules() -> None:
     for bot in available_bots:
@@ -44,7 +45,9 @@ def load_lib_modules() -> None:
                 "file correctly.\n".format(bot)
             )
 
-def load_bot_handlers() -> Optional[BadRequest]:
+def load_bot_handlers(
+    bots_config: Dict[str, Dict[str, str]],
+) -> Optional[BadRequest]:
     for bot in available_bots:
         client = Client(email=bots_config[bot]["email"],
                         api_key=bots_config[bot]["key"],
@@ -132,11 +135,11 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     options = parse_args()
-    read_config_file(options.config_file)
+    bots_config = read_config_file(options.config_file)
     global available_bots
     available_bots = list(bots_config.keys())
     load_lib_modules()
-    load_bot_handlers()
+    load_bot_handlers(bots_config)
     app.run(host=options.hostname, port=int(options.port), debug=True)
 
 if __name__ == '__main__':

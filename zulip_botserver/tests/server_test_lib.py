@@ -21,9 +21,8 @@ class BotServerTestCase(TestCase):
                                    ) -> None:
         if available_bots is not None:
             server.available_bots = available_bots
-            server.bots_config = bots_config  # type: ignore # monkey-patching
             server.load_lib_modules()
-            server.load_bot_handlers()
+            server.load_bot_handlers(bots_config)
 
         response = self.app.post(payload_url, data=json.dumps(message))
 
