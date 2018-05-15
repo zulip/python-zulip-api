@@ -1,8 +1,8 @@
+import argparse
 import configparser
+import json
 import os
 import sys
-import json
-import argparse
 
 from flask import Flask, request
 from importlib import import_module
