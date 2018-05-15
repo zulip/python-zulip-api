@@ -4,6 +4,7 @@ import unittest
 from .server_test_lib import BotServerTestCase
 import six
 
+
 class BotServerTests(BotServerTestCase):
     class MockMessageHandler(object):
         def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:

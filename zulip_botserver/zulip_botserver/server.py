@@ -6,7 +6,7 @@ import sys
 
 from flask import Flask, request
 from importlib import import_module
-from typing import Any, Dict, Union, List, Optional
+from typing import Any, Dict, Union, List
 from werkzeug.exceptions import BadRequest
 
 from zulip import Client
@@ -14,8 +14,7 @@ from zulip_bots.custom_exceptions import ConfigValidationError
 from zulip_bots.lib import ExternalBotHandler, StateHandler
 
 available_bots = []  # type: List[str]
-bots_lib_module = {}  # type: Dict[str, Any]
-bot_handlers = {}  # type: Dict[str, ExternalBotHandler]
+
 
 def read_config_file(config_file_path: str) -> Dict[str, Dict[str, str]]:
     config_file_path = os.path.abspath(os.path.expanduser(config_file_path))
@@ -33,7 +32,9 @@ def read_config_file(config_file_path: str) -> Dict[str, Dict[str, str]]:
         }
     return bots_config
 
-def load_lib_modules() -> None:
+
+def load_lib_modules() -> Dict[str, Any]:
+    bots_lib_module = {}
     for bot in available_bots:
         try:
             module_name = 'zulip_bots.bots.{bot}.{bot}'.format(bot=bot)
@@ -41,13 +42,17 @@ def load_lib_modules() -> None:
             bots_lib_module[bot] = lib_module
         except ImportError:
             raise ImportError(
-                "\n Import Error: Bot \"{}\" doesn't exists. Please make sure you have set up the flaskbotrc "
-                "file correctly.\n".format(bot)
+                "\nImport Error: Bot \"{}\" doesn't exists. "
+                "Please make sure you have set up the flaskbotrc file correctly.\n".format(bot)
             )
+    return bots_lib_module
+
 
 def load_bot_handlers(
     bots_config: Dict[str, Dict[str, str]],
-) -> Optional[BadRequest]:
+    bots_lib_module: Dict[str, Any],
+) -> Union[Dict[str, ExternalBotHandler], BadRequest]:
+    bot_handlers = {}
     for bot in available_bots:
         client = Client(email=bots_config[bot]["email"],
                         api_key=bots_config[bot]["key"],
@@ -64,7 +69,7 @@ def load_bot_handlers(
             )
             bot_handlers[bot] = bot_handler
 
-            lib_module = get_bot_lib_module(bot)
+            lib_module = bots_lib_module[bot]
             message_handler = lib_module.handler_class()
             if hasattr(message_handler, 'validate_config'):
                 config_data = bot_handlers[bot].get_config_info(bot)
@@ -79,18 +84,15 @@ def load_bot_handlers(
         except SystemExit:
             return BadRequest("Cannot fetch user profile for bot {}, make sure you have set up the flaskbotrc "
                               "file correctly.".format(bot))
-    return None
+    return bot_handlers
 
-def get_bot_lib_module(bot: str) -> Any:
-    if bot in bots_lib_module.keys():
-        return bots_lib_module[bot]
-    return None
 
 app = Flask(__name__)
 
+
 @app.route('/bots/<bot>', methods=['POST'])
 def handle_bot(bot: str) -> Union[str, BadRequest]:
-    lib_module = get_bot_lib_module(bot)
+    lib_module = app.config.get("BOTS_LIB_MODULES", {}).get(bot)
     if lib_module is None:
         return BadRequest("Can't find the configuration or Bot Handler code for bot {}. "
                           "Make sure that the `zulip_bots` package is installed, and "
@@ -99,8 +101,9 @@ def handle_bot(bot: str) -> Union[str, BadRequest]:
 
     event = request.get_json(force=True)
     message_handler.handle_message(message=event["message"],
-                                   bot_handler=bot_handlers[bot])
+                                   bot_handler=app.config["BOT_HANDLERS"].get(bot))
     return json.dumps("")
+
 
 def parse_args() -> argparse.Namespace:
     usage = '''
@@ -139,8 +142,10 @@ def main() -> None:
     bots_config = read_config_file(options.config_file)
     global available_bots
     available_bots = list(bots_config.keys())
-    load_lib_modules()
-    load_bot_handlers(bots_config)
+    bots_lib_modules = load_lib_modules()
+    bot_handlers = load_bot_handlers(bots_config, bots_lib_modules)
+    app.config["BOTS_LIB_MODULES"] = bots_lib_modules
+    app.config["BOT_HANDLERS"] = bot_handlers
     app.run(host=options.hostname, port=int(options.port), debug=True)
 
 if __name__ == '__main__':
