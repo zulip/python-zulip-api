@@ -41,7 +41,9 @@ def die(signal: int, frame: FrameType) -> None:
     os._exit(1)
 
 def zulip_to_matrix_username(full_name: str, site: str) -> str:
-    return "@**{0}**:{1}".format(full_name, site)
+    # Strip spaces from the full_name
+    full_name = "".join(full_name.split(' '))
+    return "@zulip_{0}:{1}".format(full_name, site)
 
 def matrix_to_zulip(zulip_client: zulip.Client, zulip_config: Dict[str, Any],
                     matrix_config: Dict[str, Any]) -> Callable[[Any, Dict[str, Any]], None]:
@@ -95,17 +97,25 @@ def zulip_to_matrix(config: Dict[str, Any], room: Any) -> Callable[[Dict[str, An
         """
         Zulip -> Matrix
         """
-        isa_stream = msg["type"] == "stream"
-        not_from_bot = msg["sender_email"] != config["email"]
-        in_the_specified_stream = msg["display_recipient"] == config["stream"]
-        at_the_specified_subject = msg["subject"] == config["subject"]
-        if isa_stream and not_from_bot and in_the_specified_stream and at_the_specified_subject:
+        message_valid = check_zulip_message_validity(msg, config)
+        if message_valid:
             matrix_username = zulip_to_matrix_username(msg["sender_full_name"], site_without_http)
-            matrix_text = "{0}: {1}".format(matrix_username,
-                                            msg["content"])
-            print(matrix_text)
+            matrix_text = "{0}: {1}".format(matrix_username, msg["content"])
+            # Forward Zulip message to Matrix
             room.send_text(matrix_text)
     return _zulip_to_matrix
+
+def check_zulip_message_validity(msg: Dict[str, Any], config: Dict[str, Any]) -> bool:
+    is_a_stream = msg["type"] == "stream"
+    in_the_specified_stream = msg["display_recipient"] == config["stream"]
+    at_the_specified_subject = msg["subject"] == config["subject"]
+
+    # We do this to identify the messages generated from Matrix -> Zulip
+    # and we make sure we don't forward it again to the Matrix.
+    not_from_zulip_bot = msg["sender_email"] != config["email"]
+    if is_a_stream and not_from_zulip_bot and in_the_specified_stream and at_the_specified_subject:
+        return True
+    return False
 
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, die)
