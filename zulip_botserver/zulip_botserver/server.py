@@ -39,8 +39,10 @@ def load_lib_modules() -> None:
             lib_module = import_module(module_name)
             bots_lib_module[bot] = lib_module
         except ImportError:
-            raise ImportError("\n Import Error: Bot \"{}\" doesn't exists. Please make sure you have set up the flaskbotrc "
-                              "file correctly.\n".format(bot))
+            raise ImportError(
+                "\n Import Error: Bot \"{}\" doesn't exists. Please make sure you have set up the flaskbotrc "
+                "file correctly.\n".format(bot)
+            )
 
 def load_bot_handlers() -> Optional[BadRequest]:
     for bot in available_bots:
