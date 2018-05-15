@@ -8,13 +8,16 @@ import sys
 import time
 import re
 
+import asyncio
+from threading import Thread
+
 import configparser
 
 from contextlib import contextmanager
 
 if False:
     from mypy_extensions import NoReturn
-from typing import Any, Optional, List, Dict, IO, Text, Set
+from typing import Any, Optional, List, Dict, IO, Text, Set, Awaitable
 from types import ModuleType
 
 from zulip import Client, ZulipError
@@ -23,14 +26,31 @@ from zulip_bots.custom_exceptions import ConfigValidationError
 class NoBotConfigException(Exception):
     pass
 
-def exit_gracefully(signum, frame):
-    # type: (int, Optional[Any]) -> None
-    sys.exit(0)
-
 def get_bots_directory_path():
     # type: () -> str
     current_dir = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(current_dir, 'bots')
+
+class AsyncThread(Thread):
+    def __init__(self, auto_start: bool=True) -> None:
+        super().__init__()
+        self._loop = None  # type: Optional[asyncio.AbstractEventLoop]
+        if auto_start:
+            self.start()
+
+    def run(self) -> None:
+        self._loop = asyncio.new_event_loop()
+        self._loop.run_forever()
+
+    def stop_and_join(self) -> None:
+        if self._loop is not None:
+            self._loop.call_soon_threadsafe(self._loop.stop)
+        self.join()
+
+    def run_coroutine(self, coroutine: Awaitable[Any]) -> None:
+        if self._loop is None:
+            raise RuntimeError("No event loop available.")
+        asyncio.run_coroutine_threadsafe(coroutine, self._loop)
 
 class RateLimit(object):
     def __init__(self, message_limit, interval_limit):
@@ -289,6 +309,17 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_config_file,
     if hasattr(message_handler, 'initialize'):
         message_handler.initialize(bot_handler=restricted_client)
 
+    if hasattr(message_handler, 'handle_message_async'):
+        have_async_bot_handler = True
+        bot_message_handler = getattr(message_handler, 'handle_message_async')
+        async_bot_thread = AsyncThread()
+    elif hasattr(message_handler, 'handle_message'):
+        have_async_bot_handler = False
+        bot_message_handler = getattr(message_handler, 'handle_message')
+    else:
+        print("This bot does not have a 'handle_message' or 'handle_message_async' method.")
+        sys.exit(1)
+
     if not quiet:
         print("Running {} Bot:".format(bot_details['name']))
         if bot_details['description'] != "":
@@ -314,10 +345,19 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_config_file,
                 return
 
         if is_private_message or is_mentioned:
-            message_handler.handle_message(
-                message=message,
-                bot_handler=restricted_client
-            )
+            if have_async_bot_handler:
+                async_bot_thread.run_coroutine(
+                    message_handler.handle_message_async(message=message,
+                                                         bot_handler=restricted_client))
+            else:
+                message_handler.handle_message(message=message,
+                                               bot_handler=restricted_client)
+
+    def exit_gracefully(signum, frame):
+        # type: (int, Optional[Any]) -> None
+        if have_async_bot_handler:
+            async_bot_thread.stop_and_join()
+        sys.exit(0)
 
     signal.signal(signal.SIGINT, exit_gracefully)
 
