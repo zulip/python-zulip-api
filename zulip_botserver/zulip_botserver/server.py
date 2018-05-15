@@ -1,3 +1,4 @@
+import configparser
 import os
 import sys
 import json
@@ -7,7 +8,6 @@ from flask import Flask, request
 from importlib import import_module
 from typing import Any, Dict, Mapping, Union, List, Optional
 from werkzeug.exceptions import BadRequest
-from six.moves.configparser import SafeConfigParser
 
 from zulip import Client
 from zulip_bots.custom_exceptions import ConfigValidationError
@@ -22,7 +22,7 @@ def read_config_file(config_file_path: str) -> None:
     config_file_path = os.path.abspath(os.path.expanduser(config_file_path))
     if not os.path.isfile(config_file_path):
         raise IOError("Could not read config file {}: File not found.".format(config_file_path))
-    parser = SafeConfigParser()
+    parser = configparser.ConfigParser()
     parser.read(config_file_path)
 
     for section in parser.sections():
