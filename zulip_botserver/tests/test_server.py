@@ -28,6 +28,25 @@ class BotServerTests(BotServerTestCase):
                                         bots_config=bots_config,
                                         check_success=True)
 
+    @mock.patch('zulip_botserver.server.ExternalBotHandler')
+    def test_successful_request_from_two_bots(self, mock_ExternalBotHandler: mock.Mock) -> None:
+        available_bots = ['helloworld', 'help']
+        bots_config = {
+            'helloworld': {
+                'email': 'helloworld-bot@zulip.com',
+                'key': '123456789qwertyuiop',
+                'site': 'http://localhost',
+            },
+            'help': {
+                'email': 'help-bot@zulip.com',
+                'key': '123456789qwertyuiop',
+                'site': 'http://localhost',
+            }
+        }
+        self.assert_bot_server_response(available_bots=available_bots,
+                                        bots_config=bots_config,
+                                        check_success=True)
+
     def test_bot_module_not_exists(self) -> None:
         self.assert_bot_server_response(available_bots=[],
                                         payload_url="/bots/not_supported_bot",
