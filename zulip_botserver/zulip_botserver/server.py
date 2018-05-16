@@ -18,7 +18,7 @@ available_bots = []  # type: List[str]
 def read_config_file(config_file_path: str, bot_name: Optional[str]=None) -> Dict[str, Dict[str, str]]:
     parser = parse_config_file(config_file_path)
 
-    bots_config = {}
+    bots_config = {}  # type: Dict[str, Dict[str, str]]
     for section in parser.sections():
         section_info = {
             "email": parser.get(section, 'email'),
@@ -26,11 +26,16 @@ def read_config_file(config_file_path: str, bot_name: Optional[str]=None) -> Dic
             "site": parser.get(section, 'site'),
         }
         if bot_name is not None:
-            bots_config[bot_name] = section_info
-            logging.warning("First bot name in the config list was changed to '{}'. "
-                            "Other bots will be ignored".format(bot_name))
-            return bots_config
-        bots_config[section] = section_info
+            logging.warning("Single bot mode is enabled")
+            if bots_config:
+                logging.warning("'{}' bot will be ignored".format(section))
+            else:
+                bots_config[bot_name] = section_info
+                logging.warning(
+                    "First bot name in the config list was changed from '{}' to '{}'".format(section, bot_name)
+                )
+        else:
+            bots_config[section] = section_info
     return bots_config
 
 
