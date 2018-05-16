@@ -12,8 +12,6 @@ from zulip import Client
 from zulip_bots.lib import ExternalBotHandler
 from zulip_botserver.input_parameters import parse_args
 
-available_bots = []  # type: List[str]
-
 
 def read_config_file(config_file_path: str, bot_name: Optional[str]=None) -> Dict[str, Dict[str, str]]:
     parser = parse_config_file(config_file_path)
@@ -48,7 +46,7 @@ def parse_config_file(config_file_path: str) -> configparser.ConfigParser:
     return parser
 
 
-def load_lib_modules() -> Dict[str, Any]:
+def load_lib_modules(available_bots: List[str]) -> Dict[str, Any]:
     bots_lib_module = {}
     for bot in available_bots:
         try:
@@ -64,6 +62,7 @@ def load_lib_modules() -> Dict[str, Any]:
 
 
 def load_bot_handlers(
+    available_bots: List[str],
     bots_config: Dict[str, Dict[str, str]],
     third_party_bot_conf: Optional[configparser.ConfigParser]=None,
 ) -> Dict[str, ExternalBotHandler]:
@@ -85,6 +84,7 @@ def load_bot_handlers(
 
 
 def init_message_handlers(
+    available_bots: List[str],
     bots_lib_modules: Dict[str, Any],
     bot_handlers: Dict[str, ExternalBotHandler],
 ) -> Dict[str, Any]:
@@ -124,12 +124,11 @@ def handle_bot(bot: str) -> Union[str, BadRequest]:
 def main() -> None:
     options = parse_args()
     bots_config = read_config_file(options.config_file, options.bot_name)
-    global available_bots
     available_bots = list(bots_config.keys())
-    bots_lib_modules = load_lib_modules()
+    bots_lib_modules = load_lib_modules(available_bots)
     third_party_bot_conf = parse_config_file(options.bot_config_file) if options.bot_config_file is not None else None
-    bot_handlers = load_bot_handlers(bots_config, third_party_bot_conf)
-    message_handlers = init_message_handlers(bots_lib_modules, bot_handlers)
+    bot_handlers = load_bot_handlers(available_bots, bots_config, third_party_bot_conf)
+    message_handlers = init_message_handlers(available_bots, bots_lib_modules, bot_handlers)
     app.config["BOTS_LIB_MODULES"] = bots_lib_modules
     app.config["BOT_HANDLERS"] = bot_handlers
     app.config["MESSAGE_HANDLERS"] = message_handlers

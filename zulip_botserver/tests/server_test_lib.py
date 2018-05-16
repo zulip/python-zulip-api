@@ -23,12 +23,11 @@ class BotServerTestCase(TestCase):
         third_party_bot_conf: Optional[configparser.ConfigParser]=None,
     ) -> None:
         if available_bots is not None and bots_config is not None:
-            server.available_bots = available_bots
-            bots_lib_modules = server.load_lib_modules()
+            bots_lib_modules = server.load_lib_modules(available_bots)
             server.app.config["BOTS_LIB_MODULES"] = bots_lib_modules
             if bot_handlers is None:
-                bot_handlers = server.load_bot_handlers(bots_config, third_party_bot_conf)
-            message_handlers = server.init_message_handlers(bots_lib_modules, bot_handlers)
+                bot_handlers = server.load_bot_handlers(available_bots, bots_config, third_party_bot_conf)
+            message_handlers = server.init_message_handlers(available_bots, bots_lib_modules, bot_handlers)
             server.app.config["BOT_HANDLERS"] = bot_handlers
             server.app.config["MESSAGE_HANDLERS"] = message_handlers
 
