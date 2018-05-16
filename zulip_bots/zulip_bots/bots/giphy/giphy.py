@@ -1,10 +1,6 @@
-from configparser import SafeConfigParser
 from typing import Dict, Any, Union
 import requests
 import logging
-import sys
-import os
-import re
 from requests.exceptions import HTTPError, ConnectionError
 
 from zulip_bots.custom_exceptions import ConfigValidationError
@@ -12,14 +8,15 @@ from zulip_bots.custom_exceptions import ConfigValidationError
 GIPHY_TRANSLATE_API = 'http://api.giphy.com/v1/gifs/translate'
 GIPHY_RANDOM_API = 'http://api.giphy.com/v1/gifs/random'
 
+
 class GiphyHandler(object):
-    '''
+    """
     This plugin posts a GIF in response to the keywords provided by the user.
     Images are provided by Giphy, through the public API.
     The bot looks for messages starting with @mention of the bot
     and responds with a message with the GIF based on provided keywords.
     It also responds to private messages.
-    '''
+    """
     def usage(self) -> str:
         return '''
             This plugin allows users to post GIFs provided by Giphy.
@@ -38,7 +35,7 @@ class GiphyHandler(object):
             raise ConfigValidationError(str(e))
         except HTTPError as e:
             error_message = str(e)
-            if (data.status_code == 403):
+            if data.status_code == 403:
                 error_message += ('This is likely due to an invalid key.\n'
                                   'Follow the instructions in doc.md for setting an API key.')
             raise ConfigValidationError(error_message)
@@ -82,6 +79,7 @@ def get_url_gif_giphy(keyword: str, api_key: str) -> Union[int, str]:
     except (TypeError, KeyError):  # Usually triggered by no result in Giphy.
         raise GiphyNoResultException()
     return gif_url
+
 
 def get_bot_giphy_response(message: Dict[str, str], bot_handler: Any, config_info: Dict[str, str]) -> str:
     # Each exception has a specific reply should "gif_url" return a number.
