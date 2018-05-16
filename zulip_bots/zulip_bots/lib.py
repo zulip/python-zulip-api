@@ -6,16 +6,12 @@ import os
 import signal
 import sys
 import time
-import re
 
 import configparser
 
-from contextlib import contextmanager
-
 if False:
     from mypy_extensions import NoReturn
-from typing import Any, Optional, List, Dict, IO, Text, Set
-from types import ModuleType
+from typing import Any, Optional, List, Dict, IO, Text
 
 from zulip import Client, ZulipError
 from zulip_bots.custom_exceptions import ConfigValidationError
@@ -129,19 +125,16 @@ class ExternalBotHandler(object):
             sys.exit(1)
 
     @property
-    def storage(self):
-        # type: () -> StateHandler
+    def storage(self) -> StateHandler:
         return self._storage
 
-    def send_message(self, message):
-        # type: (Dict[str, Any]) -> Dict[str, Any]
+    def send_message(self, message: (Dict[str, Any])) -> Dict[str, Any]:
         if self._rate_limit.is_legal():
             return self._client.send_message(message)
         else:
             self._rate_limit.show_error_and_exit()
 
-    def send_reply(self, message, response):
-        # type: (Dict[str, Any], str) -> Dict[str, Any]
+    def send_reply(self, message: Dict[str, Any], response: str) -> Dict[str, Any]:
         if message['type'] == 'private':
             return self.send_message(dict(
                 type='private',
@@ -216,8 +209,7 @@ class ExternalBotHandler(object):
             raise PermissionError("Cannot open file \"{}\". Bots may only access "
                                   "files in their local directory.".format(abs_filepath))
 
-    def quit(self, message = ""):
-        # type: (str) -> None
+    def quit(self, message: str="") -> None:
         sys.exit(message)
 
 def extract_query_without_mention(message, client):
