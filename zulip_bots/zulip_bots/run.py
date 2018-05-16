@@ -1,13 +1,9 @@
 #!/usr/bin/env python3
-from __future__ import print_function
-from __future__ import absolute_import
 
 import logging
 import argparse
 import sys
 import os
-from types import ModuleType
-from importlib import import_module
 from os.path import basename, splitext
 
 if False:
