@@ -10,6 +10,7 @@ from unittest import TestCase
 from unittest import mock
 from unittest.mock import patch
 
+
 class TestDefaultArguments(TestCase):
 
     our_dir = os.path.dirname(__file__)
@@ -17,8 +18,7 @@ class TestDefaultArguments(TestCase):
 
     @patch('sys.argv', ['zulip-run-bot', 'giphy', '--config-file', '/foo/bar/baz.conf'])
     @patch('zulip_bots.run.run_message_handler_for_bot')
-    def test_argument_parsing_with_bot_name(self, mock_run_message_handler_for_bot):
-        # type: (mock.Mock) -> None
+    def test_argument_parsing_with_bot_name(self, mock_run_message_handler_for_bot: mock.Mock) -> None:
         with patch('zulip_bots.run.exit_gracefully_if_zulip_config_file_does_not_exist'):
             zulip_bots.run.main()
 
@@ -30,8 +30,7 @@ class TestDefaultArguments(TestCase):
 
     @patch('sys.argv', ['zulip-run-bot', path_to_bot, '--config-file', '/foo/bar/baz.conf'])
     @patch('zulip_bots.run.run_message_handler_for_bot')
-    def test_argument_parsing_with_bot_path(self, mock_run_message_handler_for_bot):
-        # type: (mock.Mock) -> None
+    def test_argument_parsing_with_bot_path(self, mock_run_message_handler_for_bot: mock.Mock) -> None:
         with patch('zulip_bots.run.exit_gracefully_if_zulip_config_file_does_not_exist'):
             zulip_bots.run.main()
 
@@ -42,8 +41,7 @@ class TestDefaultArguments(TestCase):
             lib_module=mock.ANY,
             quiet=False)
 
-    def test_adding_bot_parent_dir_to_sys_path_when_bot_name_specified(self):
-        # type: () -> None
+    def test_adding_bot_parent_dir_to_sys_path_when_bot_name_specified(self) -> None:
         bot_name = 'any_bot_name'
         expected_bot_dir_path = os.path.join(
             os.path.dirname(zulip_bots.run.__file__),
@@ -53,8 +51,7 @@ class TestDefaultArguments(TestCase):
         self._test_adding_bot_parent_dir_to_sys_path(bot_qualifier=bot_name, bot_dir_path=expected_bot_dir_path)
 
     @patch('os.path.isfile', return_value=True)
-    def test_adding_bot_parent_dir_to_sys_path_when_bot_path_specified(self, mock_os_path_isfile):
-        # type: (mock.Mock) -> None
+    def test_adding_bot_parent_dir_to_sys_path_when_bot_path_specified(self, mock_os_path_isfile: mock.Mock) -> None:
         bot_path = '/path/to/bot'
         expected_bot_dir_path = '/path/to'
         self._test_adding_bot_parent_dir_to_sys_path(bot_qualifier=bot_path, bot_dir_path=expected_bot_dir_path)
@@ -69,12 +66,11 @@ class TestDefaultArguments(TestCase):
 
         self.assertIn(bot_dir_path, sys.path)
 
-class TestBotLib(TestCase):
-    def test_extract_query_without_mention(self):
-        # type: () -> None
 
-        def test_message(name, message, expected_return):
-            # type: (str, str, Optional[str]) -> None
+class TestBotLib(TestCase):
+    def test_extract_query_without_mention(self) -> None:
+
+        def test_message(name: str, message: str, expected_return: Optional[str]) -> None:
             mock_client = mock.MagicMock()
             mock_client.full_name = name
             mock_message = {'content': message}
