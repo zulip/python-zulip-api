@@ -14,7 +14,6 @@ class BotServerTestCase(TestCase):
     def assert_bot_server_response(self,
                                    available_bots: Optional[List[str]]=None,
                                    bots_config: Optional[Dict[str, Dict[str, str]]]=None,
-                                   bots_lib_module: Optional[Dict[str, Any]]=None,
                                    bot_handlers: Optional[Dict[str, Any]]=None,
                                    payload_url: str="/bots/helloworld",
                                    message: Optional[Dict[str, Any]]=dict(message={'key': "test message"}),
