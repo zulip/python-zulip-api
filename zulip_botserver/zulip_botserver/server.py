@@ -18,7 +18,7 @@ available_bots = []  # type: List[str]
 def read_config_file(config_file_path: str, bot_name: Optional[str]=None) -> Dict[str, Dict[str, str]]:
     parser = parse_config_file(config_file_path)
 
-    bots_config = {}
+    bots_config = {}  # type: Dict[str, Dict[str, str]]
     for section in parser.sections():
         section_info = {
             "email": parser.get(section, 'email'),
