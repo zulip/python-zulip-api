@@ -25,6 +25,12 @@ def parse_args() -> argparse.Namespace:
         help='Config file for the zulip bot server (flaskbotrc)'
     )
     parser.add_argument(
+        '--bot-config-file',
+        action='store',
+        default=None,
+        help='Config file for third-party bots'
+    )
+    parser.add_argument(
         '--bot-name', '-b',
         action='store',
         help='Bot name (optional, rewrites first bot name from config file). '
