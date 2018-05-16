@@ -88,8 +88,14 @@ class StateHandler(object):
         return key in self.state_
 
 class ExternalBotHandler(object):
-    def __init__(self, client, root_dir, bot_details, bot_config_file):
-        # type: (Client, str, Dict[str, Any], str) -> None
+    def __init__(
+        self,
+        client: Client,
+        root_dir: str,
+        bot_details: Dict[str, Any],
+        bot_config_file: Optional[str]=None,
+        bot_config_parser: Optional[configparser.ConfigParser]=None,
+    ) -> None:
         # Only expose a subset of our Client's functionality
         try:
             user_profile = client.get_profile()
@@ -114,6 +120,7 @@ class ExternalBotHandler(object):
         self._root_dir = root_dir
         self.bot_details = bot_details
         self.bot_config_file = bot_config_file
+        self._bot_config_parser = bot_config_parser
         self._storage = StateHandler(client)
         try:
             self.user_id = user_profile['user_id']
@@ -156,51 +163,51 @@ class ExternalBotHandler(object):
         else:
             self._rate_limit.show_error_and_exit()
 
-    def get_config_info(self, bot_name, optional=False):
-        # type: (str, Optional[bool]) -> Dict[str, Any]
+    def get_config_info(self, bot_name: str, optional: Optional[bool]=False) -> Dict[str, Any]:
+        if self._bot_config_parser is not None:
+            config_parser = self._bot_config_parser
+        else:
+            if self.bot_config_file is None:
+                if optional:
+                    return dict()
 
-        if self.bot_config_file is None:
-            if optional:
-                return dict()
+                # Well written bots should catch this exception
+                # and provide nice error messages with instructions
+                # on setting up the configuration specfic to this bot.
+                # And then `run.py` should also catch exceptions on how
+                # to specify the file in the command line.
+                raise NoBotConfigException(bot_name)
 
-            # Well written bots should catch this exception
-            # and provide nice error messages with instructions
-            # on setting up the configuration specfic to this bot.
-            # And then `run.py` should also catch exceptions on how
-            # to specify the file in the command line.
-            raise NoBotConfigException(bot_name)
+            if bot_name not in self.bot_config_file:
+                print('''
+                    WARNING!
 
-        if bot_name not in self.bot_config_file:
-            print('''
-                WARNING!
+                    {} does not adhere to the
+                    file naming convention, and it could be a
+                    sign that you passed in the
+                    wrong third-party configuration file.
 
-                {} does not adhere to the
-                file naming convention, and it could be a
-                sign that you passed in the
-                wrong third-party configuration file.
+                    The suggested name is {}.conf
 
-                The suggested name is {}.conf
+                    We will proceed anyway.
+                    '''.format(self.bot_config_file, bot_name))
 
-                We will proceed anyway.
-                '''.format(self.bot_config_file, bot_name))
+            # We expect the caller to pass in None if the user does
+            # not specify a bot_config_file.  If they pass in a bogus
+            # filename, we'll let an IOError happen here.  Callers
+            # like `run.py` will do the command line parsing and checking
+            # for the existence of the file.
+            config_parser = configparser.ConfigParser()
+            with open(self.bot_config_file) as conf:
+                try:
+                    config_parser.read(conf)
+                except configparser.Error as e:
+                    display_config_file_errors(str(e), self.bot_config_file)
+                    sys.exit(1)
 
-        # We expect the caller to pass in None if the user does
-        # not specify a bot_config_file.  If they pass in a bogus
-        # filename, we'll let an IOError happen here.  Callers
-        # like `run.py` will do the command line parsing and checking
-        # for the existence of the file.
-        config = configparser.ConfigParser()
-        with open(self.bot_config_file) as conf:
-            try:
-                config.readfp(conf)  # type: ignore # readfp->read_file in python 3, so not in stubs
-            except configparser.Error as e:
-                display_config_file_errors(str(e), self.bot_config_file)
-                sys.exit(1)
+        return dict(config_parser.items(bot_name))
 
-        return dict(config.items(bot_name))
-
-    def open(self, filepath):
-        # type: (str) -> IO[str]
+    def open(self, filepath: str) -> IO[str]:
         filepath = os.path.normpath(filepath)
         abs_filepath = os.path.join(self._root_dir, filepath)
         if abs_filepath.startswith(self._root_dir):

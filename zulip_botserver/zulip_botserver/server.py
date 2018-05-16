@@ -9,18 +9,14 @@ from typing import Any, Dict, Union, List, Optional
 from werkzeug.exceptions import BadRequest
 
 from zulip import Client
-from zulip_bots.lib import ExternalBotHandler, StateHandler
+from zulip_bots.lib import ExternalBotHandler
 from zulip_botserver.input_parameters import parse_args
 
 available_bots = []  # type: List[str]
 
 
 def read_config_file(config_file_path: str, bot_name: Optional[str]=None) -> Dict[str, Dict[str, str]]:
-    config_file_path = os.path.abspath(os.path.expanduser(config_file_path))
-    if not os.path.isfile(config_file_path):
-        raise IOError("Could not read config file {}: File not found.".format(config_file_path))
-    parser = configparser.ConfigParser()
-    parser.read(config_file_path)
+    parser = parse_config_file(config_file_path)
 
     bots_config = {}
     for section in parser.sections():
@@ -33,10 +29,18 @@ def read_config_file(config_file_path: str, bot_name: Optional[str]=None) -> Dic
             bots_config[bot_name] = section_info
             logging.warning("First bot name in the config list was changed to '{}'. "
                             "Other bots will be ignored".format(bot_name))
-            break
-        else:
-            bots_config[section] = section_info
+            return bots_config
+        bots_config[section] = section_info
     return bots_config
+
+
+def parse_config_file(config_file_path: str) -> configparser.ConfigParser:
+    config_file_path = os.path.abspath(os.path.expanduser(config_file_path))
+    if not os.path.isfile(config_file_path):
+        raise IOError("Could not read config file {}: File not found.".format(config_file_path))
+    parser = configparser.ConfigParser()
+    parser.read(config_file_path)
+    return parser
 
 
 def load_lib_modules() -> Dict[str, Any]:
@@ -56,36 +60,43 @@ def load_lib_modules() -> Dict[str, Any]:
 
 def load_bot_handlers(
     bots_config: Dict[str, Dict[str, str]],
-    bots_lib_module: Dict[str, Any],
-) -> Union[Dict[str, ExternalBotHandler], BadRequest]:
+    bot_config_file: Optional[str]=None
+) -> Dict[str, ExternalBotHandler]:
     bot_handlers = {}
+    third_party_bot_conf = parse_config_file(bot_config_file) if bot_config_file is not None else None
     for bot in available_bots:
         client = Client(email=bots_config[bot]["email"],
                         api_key=bots_config[bot]["key"],
                         site=bots_config[bot]["site"])
-        try:
-            bot_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'bots', bot)
-            # TODO: Figure out how to pass in third party config info.
-            bot_handler = ExternalBotHandler(
-                client,
-                bot_dir,
-                bot_details={},
-                bot_config_file=None
-            )
-            bot_handlers[bot] = bot_handler
+        bot_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'bots', bot)
+        bot_handler = ExternalBotHandler(
+            client,
+            bot_dir,
+            bot_details={},
+            bot_config_parser=third_party_bot_conf
+        )
 
-            lib_module = bots_lib_module[bot]
-            message_handler = lib_module.handler_class()
-            if hasattr(message_handler, 'validate_config'):
-                config_data = bot_handlers[bot].get_config_info(bot)
-                lib_module.handler_class.validate_config(config_data)
-
-            if hasattr(message_handler, 'initialize'):
-                message_handler.initialize(bot_handler=bot_handler)
-        except SystemExit:
-            return BadRequest("Cannot fetch user profile for bot {}, make sure you have set up the flaskbotrc "
-                              "file correctly.".format(bot))
+        bot_handlers[bot] = bot_handler
     return bot_handlers
+
+
+def init_message_handlers(
+    bots_lib_modules: Dict[str, Any],
+    bot_handlers: Dict[str, ExternalBotHandler],
+) -> Dict[str, Any]:
+    message_handlers = {}
+    for bot in available_bots:
+        bot_lib_module = bots_lib_modules[bot]
+        bot_handler = bot_handlers[bot]
+        message_handler = bot_lib_module.handler_class()
+        if hasattr(message_handler, 'validate_config'):
+            config_data = bot_handler.get_config_info(bot)
+            bot_lib_module.handler_class.validate_config(config_data)
+
+        if hasattr(message_handler, 'initialize'):
+            message_handler.initialize(bot_handler=bot_handler)
+        message_handlers[bot] = message_handler
+    return message_handlers
 
 
 app = Flask(__name__)
@@ -94,15 +105,15 @@ app = Flask(__name__)
 @app.route('/bots/<bot>', methods=['POST'])
 def handle_bot(bot: str) -> Union[str, BadRequest]:
     lib_module = app.config.get("BOTS_LIB_MODULES", {}).get(bot)
+    bot_handler = app.config.get("BOT_HANDLERS", {}).get(bot)
+    message_handler = app.config.get("MESSAGE_HANDLERS", {}).get(bot)
     if lib_module is None:
         return BadRequest("Can't find the configuration or Bot Handler code for bot {}. "
                           "Make sure that the `zulip_bots` package is installed, and "
                           "that your flaskbotrc is set up correctly".format(bot))
-    message_handler = lib_module.handler_class()
 
     event = request.get_json(force=True)
-    message_handler.handle_message(message=event["message"],
-                                   bot_handler=app.config["BOT_HANDLERS"].get(bot))
+    message_handler.handle_message(message=event["message"], bot_handler=bot_handler)
     return json.dumps("")
 
 
@@ -112,9 +123,11 @@ def main() -> None:
     global available_bots
     available_bots = list(bots_config.keys())
     bots_lib_modules = load_lib_modules()
-    bot_handlers = load_bot_handlers(bots_config, bots_lib_modules)
+    bot_handlers = load_bot_handlers(bots_config, options.bot_config_file)
+    message_handlers = init_message_handlers(bots_lib_modules, bot_handlers)
     app.config["BOTS_LIB_MODULES"] = bots_lib_modules
     app.config["BOT_HANDLERS"] = bot_handlers
+    app.config["MESSAGE_HANDLERS"] = message_handlers
     app.run(host=options.hostname, port=int(options.port), debug=True)
 
 if __name__ == '__main__':
