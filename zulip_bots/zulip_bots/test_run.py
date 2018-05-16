@@ -1,15 +1,9 @@
 #!/usr/bin/env python3
-from __future__ import absolute_import
-
-import importlib
 import os
 import sys
 import zulip_bots.run
 from zulip_bots.lib import extract_query_without_mention
 import unittest
-import zulip
-
-from importlib import import_module
 from typing import Optional
 from unittest import TestCase
 

@@ -1,8 +1,7 @@
 import json
 
-from typing import Any, List, Dict, Optional, Union
+from typing import Any, List, Dict, Optional
 from unittest import TestCase
-from werkzeug.exceptions import BadRequest
 from zulip_botserver import server
 
 
