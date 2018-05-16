@@ -1,3 +1,4 @@
+import configparser
 import json
 
 from typing import Any, List, Dict, Optional
@@ -19,13 +20,14 @@ class BotServerTestCase(TestCase):
         payload_url: str="/bots/helloworld",
         message: Optional[Dict[str, Any]]=dict(message={'key': "test message"}),
         check_success: bool=False,
+        third_party_bot_conf: Optional[configparser.ConfigParser]=None,
     ) -> None:
         if available_bots is not None and bots_config is not None:
             server.available_bots = available_bots
             bots_lib_modules = server.load_lib_modules()
             server.app.config["BOTS_LIB_MODULES"] = bots_lib_modules
             if bot_handlers is None:
-                bot_handlers = server.load_bot_handlers(bots_config)
+                bot_handlers = server.load_bot_handlers(bots_config, third_party_bot_conf)
             message_handlers = server.init_message_handlers(bots_lib_modules, bot_handlers)
             server.app.config["BOT_HANDLERS"] = bot_handlers
             server.app.config["MESSAGE_HANDLERS"] = message_handlers
