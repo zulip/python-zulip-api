@@ -31,10 +31,12 @@ class AsyncThread(Thread):
     def __init__(self, auto_start: bool=True) -> None:
         super().__init__()
         self._loop = None  # type: Optional[asyncio.AbstractEventLoop]
+        self._loop_will_be_running = False
         if auto_start:
             self.start()
 
     def run(self) -> None:
+        self._loop_will_be_running = True
         self._loop = asyncio.new_event_loop()
         self._loop.run_forever()
 
@@ -44,8 +46,11 @@ class AsyncThread(Thread):
         self.join()
 
     def run_coroutine(self, coroutine: Any) -> None:  # XXX When python 3.5, Awaitable[Any]
+        if self._loop_will_be_running:  # Busy-wait until loop available
+            while self._loop is None:
+                pass
         if self._loop is None:
-            raise RuntimeError("No event loop available.")
+            raise RuntimeError("No event loop available and set to start.")
         asyncio.run_coroutine_threadsafe(coroutine, self._loop)
 
 class RateLimit(object):
