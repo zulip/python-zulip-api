@@ -1,21 +1,21 @@
 import configparser
+import logging
 import json
 import os
-import sys
 
 from flask import Flask, request
 from importlib import import_module
-from typing import Any, Dict, Union, List
+from typing import Any, Dict, Union, List, Optional
 from werkzeug.exceptions import BadRequest
 
 from zulip import Client
-from zulip_bots.custom_exceptions import ConfigValidationError
 from zulip_bots.lib import ExternalBotHandler, StateHandler
+from zulip_botserver.input_parameters import parse_args
 
 available_bots = []  # type: List[str]
 
 
-def read_config_file(config_file_path: str) -> Dict[str, Dict[str, str]]:
+def read_config_file(config_file_path: str, bot_name: Optional[str]=None) -> Dict[str, Dict[str, str]]:
     config_file_path = os.path.abspath(os.path.expanduser(config_file_path))
     if not os.path.isfile(config_file_path):
         raise IOError("Could not read config file {}: File not found.".format(config_file_path))
@@ -24,11 +24,18 @@ def read_config_file(config_file_path: str) -> Dict[str, Dict[str, str]]:
 
     bots_config = {}
     for section in parser.sections():
-        bots_config[section] = {
+        section_info = {
             "email": parser.get(section, 'email'),
             "key": parser.get(section, 'key'),
             "site": parser.get(section, 'site'),
         }
+        if bot_name is not None:
+            bots_config[bot_name] = section_info
+            logging.warning("First bot name in the config list was changed to '{}'. "
+                            "Other bots will be ignored".format(bot_name))
+            break
+        else:
+            bots_config[section] = section_info
     return bots_config
 
 
@@ -57,8 +64,7 @@ def load_bot_handlers(
                         api_key=bots_config[bot]["key"],
                         site=bots_config[bot]["site"])
         try:
-            bot_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                   'bots', bot)
+            bot_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'bots', bot)
             # TODO: Figure out how to pass in third party config info.
             bot_handler = ExternalBotHandler(
                 client,
@@ -72,11 +78,7 @@ def load_bot_handlers(
             message_handler = lib_module.handler_class()
             if hasattr(message_handler, 'validate_config'):
                 config_data = bot_handlers[bot].get_config_info(bot)
-                try:
-                    lib_module.handler_class.validate_config(config_data)
-                except ConfigValidationError as e:
-                    print("There was a problem validating your config file:\n\n{}".format(e))
-                    sys.exit(1)
+                lib_module.handler_class.validate_config(config_data)
 
             if hasattr(message_handler, 'initialize'):
                 message_handler.initialize(bot_handler=bot_handler)
@@ -106,7 +108,7 @@ def handle_bot(bot: str) -> Union[str, BadRequest]:
 
 def main() -> None:
     options = parse_args()
-    bots_config = read_config_file(options.config_file)
+    bots_config = read_config_file(options.config_file, options.bot_name)
     global available_bots
     available_bots = list(bots_config.keys())
     bots_lib_modules = load_lib_modules()
