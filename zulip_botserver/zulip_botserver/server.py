@@ -60,10 +60,9 @@ def load_lib_modules() -> Dict[str, Any]:
 
 def load_bot_handlers(
     bots_config: Dict[str, Dict[str, str]],
-    bot_config_file: Optional[str]=None
+    third_party_bot_conf: Optional[configparser.ConfigParser]=None,
 ) -> Dict[str, ExternalBotHandler]:
     bot_handlers = {}
-    third_party_bot_conf = parse_config_file(bot_config_file) if bot_config_file is not None else None
     for bot in available_bots:
         client = Client(email=bots_config[bot]["email"],
                         api_key=bots_config[bot]["key"],
@@ -123,7 +122,8 @@ def main() -> None:
     global available_bots
     available_bots = list(bots_config.keys())
     bots_lib_modules = load_lib_modules()
-    bot_handlers = load_bot_handlers(bots_config, options.bot_config_file)
+    third_party_bot_conf = parse_config_file(options.bot_config_file) if options.bot_config_file is not None else None
+    bot_handlers = load_bot_handlers(bots_config, third_party_bot_conf)
     message_handlers = init_message_handlers(bots_lib_modules, bot_handlers)
     app.config["BOTS_LIB_MODULES"] = bots_lib_modules
     app.config["BOT_HANDLERS"] = bot_handlers
