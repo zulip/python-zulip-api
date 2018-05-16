@@ -14,6 +14,8 @@ class HelloWorldHandler(object):
 
     def handle_message(self, message: Any, bot_handler: Any) -> None:
         content = 'beep boop'  # type: str
+        if message['content'] == 'silence':
+            return
         bot_handler.send_reply(message, content)
 
 handler_class = HelloWorldHandler

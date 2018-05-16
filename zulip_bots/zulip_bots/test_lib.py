@@ -1,7 +1,7 @@
 from unittest.mock import patch
 from unittest import TestCase
 
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Union
 
 from zulip_bots.custom_exceptions import (
     ConfigValidationError,
@@ -63,16 +63,20 @@ class StubBotHandler:
         # type: (str, bool) -> Dict[str, Any]
         return {}
 
-    def unique_reply(self):
-        # type: () -> Dict[str, Any]
+    def unique_reply(self, expect_empty):
+        # type: (bool) -> Dict[str, Any]
         responses = [
             message
             for (method, message)
             in self.transcript
             if method == 'send_reply'
         ]
-        self.ensure_unique_response(responses)
-        return responses[0]
+        if expect_empty:
+            self.ensure_no_response(responses)
+            return dict(content=None)
+        else:
+            self.ensure_unique_response(responses)
+            return responses[0]
 
     def unique_response(self):
         # type: () -> Dict[str, Any]
@@ -90,6 +94,11 @@ class StubBotHandler:
             raise Exception('The bot is not responding for some reason.')
         if len(responses) > 1:
             raise Exception('The bot is giving too many responses for some reason.')
+
+    def ensure_no_response(self, responses):
+        # type: (List[Dict[str, Any]]) -> None
+        if responses:
+            raise Exception('The bot is responding for some reason.')
 
 class BotTestCase(TestCase):
     bot_name = ''
@@ -127,14 +136,19 @@ class BotTestCase(TestCase):
         )
         return message
 
-    def get_reply_dict(self, request):
-        # type: (str) -> Dict[str, Any]
+    def get_reply_dict(self, request, expect_empty=False):
+        # type: (str, bool) -> Dict[str, Any]
         bot, bot_handler = self._get_handlers()
         message = self.make_request_message(request)
         bot_handler.reset_transcript()
         bot.handle_message(message, bot_handler)
-        reply = bot_handler.unique_reply()
+        reply = bot_handler.unique_reply(expect_empty)
         return reply
+
+    def verify_no_reply(self, request):
+        # type: (str) -> None
+        reply = self.get_reply_dict(request, True)
+        print("We Pass", reply)
 
     def verify_reply(self, request, response):
         # type: (str, str) -> None

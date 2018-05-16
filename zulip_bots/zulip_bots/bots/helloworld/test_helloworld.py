@@ -11,3 +11,6 @@ class TestHelpBot(BotTestCase):
         ]
 
         self.verify_dialog(dialog)
+
+    def test_bot_silence(self) -> None:
+        self.verify_no_reply('silence')
