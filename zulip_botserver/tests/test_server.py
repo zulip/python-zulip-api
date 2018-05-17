@@ -14,7 +14,7 @@ class BotServerTests(BotServerTestCase):
         def handler_class(self) -> Any:
             return BotServerTests.MockMessageHandler()
 
-    @mock.patch('zulip_botserver.server.ExternalBotHandler')
+    @mock.patch('zulip_bots.lib.ExternalBotHandler')
     def test_successful_request(self, mock_ExternalBotHandler: mock.Mock) -> None:
         available_bots = ['helloworld']
         bots_config = {
@@ -28,7 +28,7 @@ class BotServerTests(BotServerTestCase):
                                         bots_config=bots_config,
                                         check_success=True)
 
-    @mock.patch('zulip_botserver.server.ExternalBotHandler')
+    @mock.patch('zulip_bots.lib.ExternalBotHandler')
     def test_successful_request_from_two_bots(self, mock_ExternalBotHandler: mock.Mock) -> None:
         available_bots = ['helloworld', 'help']
         bots_config = {

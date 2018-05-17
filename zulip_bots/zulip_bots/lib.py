@@ -7,7 +7,6 @@ import sys
 import time
 
 
-from mypy_extensions import NoReturn
 from typing import Any, Optional, List, Dict, IO, Text
 
 from zulip import Client, ZulipError
@@ -48,7 +47,7 @@ class RateLimit(object):
         else:
             return True
 
-    def show_error_and_exit(self) -> NoReturn:
+    def show_error_and_exit(self) -> None:
         logging.error(self.error_message)
         sys.exit(1)
 
@@ -131,10 +130,9 @@ class ExternalBotHandler(object):
         return self._storage
 
     def send_message(self, message: (Dict[str, Any])) -> Dict[str, Any]:
-        if self._rate_limit.is_legal():
-            return self._client.send_message(message)
-        else:
+        if not self._rate_limit.is_legal():
             self._rate_limit.show_error_and_exit()
+        return self._client.send_message(message)
 
     def send_reply(self, message: Dict[str, Any], response: str) -> Dict[str, Any]:
         if message['type'] == 'private':
@@ -152,10 +150,9 @@ class ExternalBotHandler(object):
             ))
 
     def update_message(self, message: Dict[str, Any]) -> Dict[str, Any]:
-        if self._rate_limit.is_legal():
-            return self._client.update_message(message)
-        else:
+        if not self._rate_limit.is_legal():
             self._rate_limit.show_error_and_exit()
+        return self._client.update_message(message)
 
     def get_config_info(self, bot_name: str, optional: Optional[bool]=False) -> Dict[str, Any]:
         if self._bot_config_parser is not None:
@@ -244,6 +241,16 @@ def display_config_file_errors(error_msg: str, config_file: str) -> None:
     print('\nMore details here:\n\n{}\n'.format(error_msg))
 
 
+def prepare_message_handler(bot: str, bot_handler: ExternalBotHandler, bot_lib_module: Any) -> Any:
+    message_handler = bot_lib_module.handler_class()
+    if hasattr(message_handler, 'validate_config'):
+        config_data = bot_handler.get_config_info(bot)
+        bot_lib_module.handler_class.validate_config(config_data)
+    if hasattr(message_handler, 'initialize'):
+        message_handler.initialize(bot_handler=bot_handler)
+    return message_handler
+
+
 def run_message_handler_for_bot(
     lib_module: Any,
     quiet: bool,
@@ -277,17 +284,7 @@ def run_message_handler_for_bot(
     bot_dir = os.path.dirname(lib_module.__file__)
     restricted_client = ExternalBotHandler(client, bot_dir, bot_details, bot_config_file)
 
-    message_handler = lib_module.handler_class()
-    if hasattr(message_handler, 'validate_config'):
-        config_data = restricted_client.get_config_info(bot_name)
-        try:
-            lib_module.handler_class.validate_config(config_data)
-        except ConfigValidationError as e:
-            print("There was a problem validating your config file:\n\n{}".format(e))
-            sys.exit(1)
-
-    if hasattr(message_handler, 'initialize'):
-        message_handler.initialize(bot_handler=restricted_client)
+    message_handler = prepare_message_handler(bot_name, restricted_client, lib_module)
 
     if not quiet:
         print("Running {} Bot:".format(bot_details['name']))

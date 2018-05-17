@@ -9,7 +9,7 @@ from typing import Any, Dict, Union, List, Optional
 from werkzeug.exceptions import BadRequest
 
 from zulip import Client
-from zulip_bots.lib import ExternalBotHandler
+from zulip_bots import lib
 from zulip_botserver.input_parameters import parse_args
 
 
@@ -65,14 +65,14 @@ def load_bot_handlers(
     available_bots: List[str],
     bots_config: Dict[str, Dict[str, str]],
     third_party_bot_conf: Optional[configparser.ConfigParser]=None,
-) -> Dict[str, ExternalBotHandler]:
+) -> Dict[str, lib.ExternalBotHandler]:
     bot_handlers = {}
     for bot in available_bots:
         client = Client(email=bots_config[bot]["email"],
                         api_key=bots_config[bot]["key"],
                         site=bots_config[bot]["site"])
         bot_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'bots', bot)
-        bot_handler = ExternalBotHandler(
+        bot_handler = lib.ExternalBotHandler(
             client,
             bot_dir,
             bot_details={},
@@ -86,19 +86,13 @@ def load_bot_handlers(
 def init_message_handlers(
     available_bots: List[str],
     bots_lib_modules: Dict[str, Any],
-    bot_handlers: Dict[str, ExternalBotHandler],
+    bot_handlers: Dict[str, lib.ExternalBotHandler],
 ) -> Dict[str, Any]:
     message_handlers = {}
     for bot in available_bots:
         bot_lib_module = bots_lib_modules[bot]
         bot_handler = bot_handlers[bot]
-        message_handler = bot_lib_module.handler_class()
-        if hasattr(message_handler, 'validate_config'):
-            config_data = bot_handler.get_config_info(bot)
-            bot_lib_module.handler_class.validate_config(config_data)
-
-        if hasattr(message_handler, 'initialize'):
-            message_handler.initialize(bot_handler=bot_handler)
+        message_handler = lib.prepare_message_handler(bot, bot_handler, bot_lib_module)
         message_handlers[bot] = message_handler
     return message_handlers
 
