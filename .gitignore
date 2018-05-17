@@ -49,3 +49,7 @@ flaskbotrc
 
 # zip files for bot deployment
 .bots
+
+# Pycharm
+\.DS_Store
+\.idea/
