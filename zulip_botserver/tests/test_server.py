@@ -87,9 +87,11 @@ class BotServerTests(BotServerTestCase):
         assert opts.port == 5002
 
     def test_read_config_file(self):
+        with self.assertRaises(IOError):
+            server.read_config_file("nonexistentfile.conf")
         current_dir = os.path.dirname(os.path.abspath(__file__))
-        bot_conf = server.read_config_file(os.path.join(current_dir, "test.conf"))
-        expected_config = {
+        bot_conf1 = server.read_config_file(os.path.join(current_dir, "test.conf"))
+        expected_config1 = {
             'helloworld': {
                 'email': 'helloworld-bot@zulip.com',
                 'key': 'value',
@@ -101,7 +103,16 @@ class BotServerTests(BotServerTestCase):
                 'site': 'http://localhost',
             }
         }
-        assert json.dumps(bot_conf, sort_keys=True) == json.dumps(expected_config, sort_keys=True)
+        assert json.dumps(bot_conf1, sort_keys=True) == json.dumps(expected_config1, sort_keys=True)
+        bot_conf2 = server.read_config_file(os.path.join(current_dir, "test.conf"), "redefined_bot")
+        expected_config2 = {
+            'redefined_bot': {
+                'email': 'helloworld-bot@zulip.com',
+                'key': 'value',
+                'site': 'http://localhost',
+            }
+        }
+        assert json.dumps(bot_conf2, sort_keys=True) == json.dumps(expected_config2, sort_keys=True)
 
 
 if __name__ == '__main__':
