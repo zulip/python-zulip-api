@@ -89,7 +89,7 @@ if ignore_missing_stream:
         sys.exit(0)
 
 change = metadata["change"]
-p4web = None
+p4web = None  # type: Optional[str]
 if hasattr(config, "P4_WEB"):
     p4web = config.P4_WEB
 
