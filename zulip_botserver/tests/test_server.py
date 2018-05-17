@@ -4,6 +4,8 @@ import unittest
 from .server_test_lib import BotServerTestCase
 import six
 
+from zulip_botserver.input_parameters import parse_args
+
 
 class BotServerTests(BotServerTestCase):
     class MockMessageHandler(object):
@@ -71,6 +73,16 @@ class BotServerTests(BotServerTestCase):
                               "make sure you have set up the flaskbotrc file correctly.",
                               lambda: self.assert_bot_server_response(available_bots=available_bots,
                                                                       bots_config=bots_config))
+
+    @mock.patch('sys.argv', ['zulip-bot-server', '--config-file', '/foo/bar/baz.conf'])
+    def test_argument_parsing_defaults(self) -> None:
+        opts = parse_args()
+        assert opts.config_file == '/foo/bar/baz.conf'
+        assert opts.bot_name is None
+        assert opts.bot_config_file is None
+        assert opts.hostname == '127.0.0.1'
+        assert opts.port == 5002
+
 
 if __name__ == '__main__':
     unittest.main()
