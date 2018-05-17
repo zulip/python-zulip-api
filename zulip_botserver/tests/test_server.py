@@ -1,9 +1,12 @@
 import mock
+import os
 from typing import Any, Dict
 import unittest
 from .server_test_lib import BotServerTestCase
 import six
+import json
 
+from zulip_botserver import server
 from zulip_botserver.input_parameters import parse_args
 
 
@@ -82,6 +85,23 @@ class BotServerTests(BotServerTestCase):
         assert opts.bot_config_file is None
         assert opts.hostname == '127.0.0.1'
         assert opts.port == 5002
+
+    def test_read_config_file(self):
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        bot_conf = server.read_config_file(os.path.join(current_dir, "test.conf"))
+        expected_config = {
+            'helloworld': {
+                'email': 'helloworld-bot@zulip.com',
+                'key': 'value',
+                'site': 'http://localhost',
+            },
+            'giphy': {
+                'email': 'giphy-bot@zulip.com',
+                'key': 'value2',
+                'site': 'http://localhost',
+            }
+        }
+        assert json.dumps(bot_conf, sort_keys=True) == json.dumps(expected_config, sort_keys=True)
 
 
 if __name__ == '__main__':
