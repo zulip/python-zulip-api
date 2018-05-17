@@ -1,8 +1,13 @@
 import mock
+import os
 from typing import Any, Dict
 import unittest
 from .server_test_lib import BotServerTestCase
 import six
+import json
+
+from zulip_botserver import server
+from zulip_botserver.input_parameters import parse_args
 
 
 class BotServerTests(BotServerTestCase):
@@ -14,7 +19,7 @@ class BotServerTests(BotServerTestCase):
         def handler_class(self) -> Any:
             return BotServerTests.MockMessageHandler()
 
-    @mock.patch('zulip_botserver.server.ExternalBotHandler')
+    @mock.patch('zulip_bots.lib.ExternalBotHandler')
     def test_successful_request(self, mock_ExternalBotHandler: mock.Mock) -> None:
         available_bots = ['helloworld']
         bots_config = {
@@ -28,7 +33,7 @@ class BotServerTests(BotServerTestCase):
                                         bots_config=bots_config,
                                         check_success=True)
 
-    @mock.patch('zulip_botserver.server.ExternalBotHandler')
+    @mock.patch('zulip_bots.lib.ExternalBotHandler')
     def test_successful_request_from_two_bots(self, mock_ExternalBotHandler: mock.Mock) -> None:
         available_bots = ['helloworld', 'help']
         bots_config = {
@@ -71,6 +76,44 @@ class BotServerTests(BotServerTestCase):
                               "make sure you have set up the flaskbotrc file correctly.",
                               lambda: self.assert_bot_server_response(available_bots=available_bots,
                                                                       bots_config=bots_config))
+
+    @mock.patch('sys.argv', ['zulip-bot-server', '--config-file', '/foo/bar/baz.conf'])
+    def test_argument_parsing_defaults(self) -> None:
+        opts = parse_args()
+        assert opts.config_file == '/foo/bar/baz.conf'
+        assert opts.bot_name is None
+        assert opts.bot_config_file is None
+        assert opts.hostname == '127.0.0.1'
+        assert opts.port == 5002
+
+    def test_read_config_file(self):
+        with self.assertRaises(IOError):
+            server.read_config_file("nonexistentfile.conf")
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        bot_conf1 = server.read_config_file(os.path.join(current_dir, "test.conf"))
+        expected_config1 = {
+            'helloworld': {
+                'email': 'helloworld-bot@zulip.com',
+                'key': 'value',
+                'site': 'http://localhost',
+            },
+            'giphy': {
+                'email': 'giphy-bot@zulip.com',
+                'key': 'value2',
+                'site': 'http://localhost',
+            }
+        }
+        assert json.dumps(bot_conf1, sort_keys=True) == json.dumps(expected_config1, sort_keys=True)
+        bot_conf2 = server.read_config_file(os.path.join(current_dir, "test.conf"), "redefined_bot")
+        expected_config2 = {
+            'redefined_bot': {
+                'email': 'helloworld-bot@zulip.com',
+                'key': 'value',
+                'site': 'http://localhost',
+            }
+        }
+        assert json.dumps(bot_conf2, sort_keys=True) == json.dumps(expected_config2, sort_keys=True)
+
 
 if __name__ == '__main__':
     unittest.main()
