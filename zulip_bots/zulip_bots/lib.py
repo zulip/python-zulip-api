@@ -1,5 +1,4 @@
-from __future__ import print_function
-
+import configparser
 import json
 import logging
 import os
@@ -7,38 +6,40 @@ import signal
 import sys
 import time
 
-import configparser
 
-if False:
-    from mypy_extensions import NoReturn
+from mypy_extensions import NoReturn
 from typing import Any, Optional, List, Dict, IO, Text
 
 from zulip import Client, ZulipError
 from zulip_bots.custom_exceptions import ConfigValidationError
 
+
 class NoBotConfigException(Exception):
     pass
 
-def exit_gracefully(signum, frame):
-    # type: (int, Optional[Any]) -> None
+
+class StateHandlerError(Exception):
+    pass
+
+
+def exit_gracefully(signum: int, frame: Optional[Any]) -> None:
     sys.exit(0)
 
-def get_bots_directory_path():
-    # type: () -> str
+
+def get_bots_directory_path() -> str:
     current_dir = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(current_dir, 'bots')
 
+
 class RateLimit(object):
-    def __init__(self, message_limit, interval_limit):
-        # type: (int, int) -> None
+    def __init__(self, message_limit: int, interval_limit: int) -> None:
         self.message_limit = message_limit
         self.interval_limit = interval_limit
         self.message_list = []  # type: List[float]
         self.error_message = '-----> !*!*!*MESSAGE RATE LIMIT REACHED, EXITING*!*!*! <-----\n'
         'Is your bot trapped in an infinite loop by reacting to its own messages?'
 
-    def is_legal(self):
-        # type: () -> bool
+    def is_legal(self) -> bool:
         self.message_list.append(time.time())
         if len(self.message_list) > self.message_limit:
             self.message_list.pop(0)
@@ -47,31 +48,25 @@ class RateLimit(object):
         else:
             return True
 
-    def show_error_and_exit(self):
-        # type: () -> NoReturn
+    def show_error_and_exit(self) -> NoReturn:
         logging.error(self.error_message)
         sys.exit(1)
 
-class StateHandlerError(Exception):
-    pass
 
 class StateHandler(object):
-    def __init__(self, client):
-        # type: (Client) -> None
+    def __init__(self, client: Client) -> None:
         self._client = client
         self.marshal = lambda obj: json.dumps(obj)
         self.demarshal = lambda obj: json.loads(obj)
         self.state_ = dict()  # type: Dict[Text, Any]
 
-    def put(self, key, value):
-        # type: (Text, Any) -> None
+    def put(self, key: Text, value: Any) -> None:
         self.state_[key] = self.marshal(value)
         response = self._client.update_storage({'storage': {key: self.state_[key]}})
         if response['result'] != 'success':
             raise StateHandlerError("Error updating state: {}".format(str(response)))
 
-    def get(self, key):
-        # type: (Text) -> Any
+    def get(self, key: Text) -> Any:
         if key in self.state_:
             return self.demarshal(self.state_[key])
 
@@ -83,9 +78,9 @@ class StateHandler(object):
         self.state_[key] = marshalled_value
         return self.demarshal(marshalled_value)
 
-    def contains(self, key):
-        # type: (Text) -> bool
+    def contains(self, key: Text) -> bool:
         return key in self.state_
+
 
 class ExternalBotHandler(object):
     def __init__(
@@ -156,8 +151,7 @@ class ExternalBotHandler(object):
                 content=response,
             ))
 
-    def update_message(self, message):
-        # type: (Dict[str, Any]) -> Dict[str, Any]
+    def update_message(self, message: Dict[str, Any]) -> Dict[str, Any]:
         if self._rate_limit.is_legal():
             return self._client.update_message(message)
         else:
@@ -219,8 +213,8 @@ class ExternalBotHandler(object):
     def quit(self, message: str="") -> None:
         sys.exit(message)
 
-def extract_query_without_mention(message, client):
-    # type: (Dict[str, Any], ExternalBotHandler) -> Optional[str]
+
+def extract_query_without_mention(message: Dict[str, Any], client: ExternalBotHandler) -> Optional[str]:
     """
     If the bot is the first @mention in the message, then this function returns
     the stripped message with the bot's @mention removed.  Otherwise, it returns None.
@@ -230,8 +224,8 @@ def extract_query_without_mention(message, client):
         return None
     return message['content'][len(mention):].lstrip()
 
-def is_private_message_from_another_user(message_dict, current_user_id):
-    # type: (Dict[str, Any], int) -> bool
+
+def is_private_message_from_another_user(message_dict: Dict[str, Any], current_user_id: int) -> bool:
     """
     Checks whether a message dict represents a PM from another user.
 
@@ -243,21 +237,28 @@ def is_private_message_from_another_user(message_dict, current_user_id):
         return current_user_id != message_dict['sender_id']
     return False
 
-def display_config_file_errors(error_msg, config_file):
-    # type: (str, str) -> None
+
+def display_config_file_errors(error_msg: str, config_file: str) -> None:
     file_contents = open(config_file).read()
     print('\nERROR: {} seems to be broken:\n\n{}'.format(config_file, file_contents))
     print('\nMore details here:\n\n{}\n'.format(error_msg))
 
-def run_message_handler_for_bot(lib_module, quiet, config_file, bot_config_file, bot_name):
-    # type: (Any, bool, str, str, str) -> Any
-    #
-    # lib_module is of type Any, since it can contain any bot's
-    # handler class. Eventually, we want bot's handler classes to
-    # inherit from a common prototype specifying the handle_message
-    # function.
-    #
-    # Set default bot_details, then override from class, if provided
+
+def run_message_handler_for_bot(
+    lib_module: Any,
+    quiet: bool,
+    config_file: str,
+    bot_config_file: str,
+    bot_name: str,
+) -> Any:
+    """
+    lib_module is of type Any, since it can contain any bot's
+    handler class. Eventually, we want bot's handler classes to
+    inherit from a common prototype specifying the handle_message
+    function.
+
+    Set default bot_details, then override from class, if provided
+    """
     bot_details = {
         'name': bot_name.capitalize(),
         'description': "",
@@ -294,8 +295,7 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_config_file,
             print("\n\t{}".format(bot_details['description']))
         print(message_handler.usage())
 
-    def handle_message(message, flags):
-        # type: (Dict[str, Any], List[str]) -> None
+    def handle_message(message: Dict[str, Any], flags: List[str]) -> None:
         logging.info('waiting for next message')
         # `mentioned` will be in `flags` if the bot is mentioned at ANY position
         # (not necessarily the first @mention in the message).
@@ -322,8 +322,7 @@ def run_message_handler_for_bot(lib_module, quiet, config_file, bot_config_file,
 
     logging.info('starting message handling...')
 
-    def event_callback(event):
-        # type: (Dict[str, Any]) -> None
+    def event_callback(event: Dict[str, Any]) -> None:
         if event['type'] == 'message':
             handle_message(event['message'], event['flags'])
 
