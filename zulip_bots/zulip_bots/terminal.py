@@ -37,6 +37,7 @@ def main():
         bot_path = os.path.abspath(os.path.join(current_dir, 'bots', args.bot, args.bot+'.py'))
         bot_name = args.bot
     bot_dir = os.path.dirname(bot_path)
+    sys.path.insert(0, bot_dir)
 
     try:
         lib_module = import_module_from_source(bot_path, bot_name)
