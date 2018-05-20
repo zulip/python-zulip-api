@@ -9,7 +9,7 @@ import time
 import asyncio
 from threading import Thread
 
-from typing import Any, Optional, List, Dict, IO, Text, Awaitable
+from typing import Any, Optional, List, Dict, IO, Text  # XXX: When python 3.5, add Awaitable
 
 from zulip import Client, ZulipError
 from zulip_bots.custom_exceptions import ConfigValidationError
@@ -43,7 +43,7 @@ class AsyncThread(Thread):
             self._loop.call_soon_threadsafe(self._loop.stop)
         self.join()
 
-    def run_coroutine(self, coroutine: Awaitable[Any]) -> None:
+    def run_coroutine(self, coroutine: Any) -> None:  # XXX When python 3.5, Awaitable[Any]
         if self._loop is None:
             raise RuntimeError("No event loop available.")
         asyncio.run_coroutine_threadsafe(coroutine, self._loop)
