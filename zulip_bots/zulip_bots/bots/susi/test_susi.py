@@ -39,7 +39,7 @@ class TestSusiBot(BotTestCase):
 
     def test_issue(self) -> None:
         request = 'hi'
-        bot_response = 'Hello!'
+        bot_response = 'Hello!\n'
 
         with self.mock_http_conversation('test_reply'):
             self.verify_reply(request, bot_response)
