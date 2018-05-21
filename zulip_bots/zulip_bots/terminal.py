@@ -3,7 +3,7 @@ import os
 import sys
 import argparse
 
-from zulip_bots.run import import_module_from_source
+from zulip_bots.finder import import_module_from_source
 from zulip_bots.simple_lib import TerminalBotHandler
 
 current_dir = os.path.dirname(os.path.abspath(__file__))

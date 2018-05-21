@@ -59,7 +59,7 @@ class TestDefaultArguments(TestCase):
     def _test_adding_bot_parent_dir_to_sys_path(self, bot_qualifier, bot_dir_path):
         # type: (str, str) -> None
         with patch('sys.argv', ['zulip-run-bot', bot_qualifier, '--config-file', '/path/to/config']):
-            with patch('zulip_bots.run.import_module_from_source', return_value=mock.Mock()):
+            with patch('zulip_bots.finder.import_module_from_source', return_value=mock.Mock()):
                 with patch('zulip_bots.run.run_message_handler_for_bot'):
                     with patch('zulip_bots.run.exit_gracefully_if_zulip_config_file_does_not_exist'):
                         zulip_bots.run.main()
