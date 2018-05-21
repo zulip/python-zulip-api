@@ -110,16 +110,17 @@ class LibTest(TestCase):
         )
         to = {'email': 'Some@User'}
         expected = [({'type': 'private', 'display_recipient': [to]},
-                     {'type': 'private', 'to': [to['email']]}),
+                     {'type': 'private', 'to': [to['email']]}, None),
                     ({'type': 'private', 'display_recipient': [to, profile]},
-                     {'type': 'private', 'to': [to['email']]}),
+                     {'type': 'private', 'to': [to['email']]}, 'widget_content'),
                     ({'type': 'stream', 'display_recipient': 'Stream name', 'subject': 'Topic'},
-                     {'type': 'stream', 'to': 'Stream name', 'subject': 'Topic'})]
+                     {'type': 'stream', 'to': 'Stream name', 'subject': 'Topic'}, 'test widget')]
         response_text = "Response"
         for test in expected:
             client.send_message = MagicMock()
-            handler.send_reply(test[0], response_text)
-            client.send_message.assert_called_once_with(dict(test[1], content=response_text))
+            handler.send_reply(test[0], response_text, test[2])
+            client.send_message.assert_called_once_with(dict(
+                test[1], content=response_text, widget_content=test[2]))
 
     def test_content_and_full_content(self):
         client = FakeClient()

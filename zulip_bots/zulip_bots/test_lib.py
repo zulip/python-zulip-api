@@ -1,6 +1,6 @@
 import unittest
 
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Optional
 
 from zulip_bots.custom_exceptions import (
     ConfigValidationError,
@@ -41,9 +41,11 @@ class StubBotHandler:
         self.transcript.append(('send_message', message))
         return self.message_server.send(message)
 
-    def send_reply(self, message: Dict[str, Any], response: str) -> Dict[str, Any]:
+    def send_reply(self, message: Dict[str, Any], response: str,
+                   widget_content: Optional[str]=None) -> Dict[str, Any]:
         response_message = dict(
-            content=response
+            content=response,
+            widget_content=widget_content
         )
         self.transcript.append(('send_reply', response_message))
         return self.message_server.send(response_message)
