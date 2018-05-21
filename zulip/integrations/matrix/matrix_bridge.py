@@ -5,10 +5,11 @@ import signal
 import traceback
 import zulip
 import sys
+import argparse
 import re
 
 from types import FrameType
-from typing import Any, Callable, Dict
+from typing import Any, Callable, Dict, Optional
 
 from matrix_bridge_config import config
 from matrix_client.api import MatrixRequestError
@@ -49,12 +50,13 @@ def die(signal: int, frame: FrameType) -> None:
     os._exit(1)
 
 def matrix_to_zulip(zulip_client: zulip.Client, zulip_config: Dict[str, Any],
-                    matrix_config: Dict[str, Any]) -> Callable[[Any, Dict[str, Any]], None]:
+                    matrix_config: Dict[str, Any],
+                    no_noise: bool) -> Callable[[Any, Dict[str, Any]], None]:
     def _matrix_to_zulip(room: Any, event: Dict[str, Any]) -> None:
         """
         Matrix -> Zulip
         """
-        content = get_message_content_from_event(event)
+        content = get_message_content_from_event(event, no_noise)
 
         zulip_bot_user = ('@%s:matrix.org' % matrix_config['username'])
         # We do this to identify the messages generated from Zulip -> Matrix
@@ -62,7 +64,7 @@ def matrix_to_zulip(zulip_client: zulip.Client, zulip_config: Dict[str, Any],
         not_from_zulip_bot = ('body' not in event['content'] or
                               event['sender'] != zulip_bot_user)
 
-        if not_from_zulip_bot:
+        if not_from_zulip_bot and content:
             try:
                 result = zulip_client.send_message({
                     "sender": zulip_client.email,
@@ -80,9 +82,13 @@ def matrix_to_zulip(zulip_client: zulip.Client, zulip_config: Dict[str, Any],
 
     return _matrix_to_zulip
 
-def get_message_content_from_event(event: Dict[str, Any]) -> str:
+def get_message_content_from_event(event: Dict[str, Any], no_noise: bool) -> Optional[str]:
     irc_nick = shorten_irc_nick(event['sender'])
     if event['type'] == "m.room.member":
+        if no_noise:
+            return None
+        # Join and leave events can be noisy. They are ignored by default.
+        # To enable these events pass `no_noise` as `False` as the script argument
         if event['membership'] == "join":
             content = ZULIP_MESSAGE_TEMPLATE.format(username=irc_nick,
                                                     message="joined")
@@ -140,6 +146,14 @@ def check_zulip_message_validity(msg: Dict[str, Any], config: Dict[str, Any]) ->
         return True
     return False
 
+def parse_args():
+    # type: () -> Any
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--no_noise',
+                        default=True,
+                        help="Suppress the IRC join/leave events.")
+    return parser.parse_args()
+
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, die)
     logging.basicConfig(level=logging.WARNING)
@@ -147,6 +161,8 @@ if __name__ == '__main__':
     # Get config for each clients
     zulip_config = config["zulip"]
     matrix_config = config["matrix"]
+
+    options = parse_args()
 
     # Initiate clients
     backoff = zulip.RandomExponentialBackoff(timeout_success_equivalent=300)
@@ -163,7 +179,8 @@ if __name__ == '__main__':
             # Join a room in Matrix
             room = matrix_join_room(matrix_client, matrix_config)
 
-            room.add_listener(matrix_to_zulip(zulip_client, zulip_config, matrix_config))
+            room.add_listener(matrix_to_zulip(zulip_client, zulip_config, matrix_config,
+                                              options.no_noise))
 
             print("Starting listener thread on Matrix client")
             matrix_client.start_listener_thread()
