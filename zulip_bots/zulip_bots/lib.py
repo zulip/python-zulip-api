@@ -273,6 +273,7 @@ def prepare_message_handler(bot: str, bot_handler: ExternalBotHandler, bot_lib_m
         message_handler.initialize(bot_handler=bot_handler)
     return message_handler
 
+async_bot_thread = None
 
 def run_message_handler_for_bot(
     lib_module: Any,
@@ -289,6 +290,7 @@ def run_message_handler_for_bot(
 
     Set default bot_details, then override from class, if provided
     """
+    global async_bot_thread
     bot_details = {
         'name': bot_name.capitalize(),
         'description': "",
@@ -345,6 +347,7 @@ def run_message_handler_for_bot(
 
         if is_private_message or is_mentioned:
             if have_async_bot_handler:
+                assert async_bot_thread is not None
                 async_bot_thread.run_coroutine(
                     message_handler.handle_message_async(message=message,
                                                          bot_handler=restricted_client))
@@ -355,6 +358,7 @@ def run_message_handler_for_bot(
     def exit_gracefully(signum, frame):
         # type: (int, Optional[Any]) -> None
         if have_async_bot_handler:
+            assert async_bot_thread is not None
             async_bot_thread.stop_and_join()
         sys.exit(0)
 
@@ -367,3 +371,7 @@ def run_message_handler_for_bot(
             handle_message(event['message'], event['flags'])
 
     client.call_on_each_event(event_callback, ['message'])
+
+def shut_down_message_handler_for_bot() -> None:
+    if async_bot_thread is not None:
+        async_bot_thread.stop_and_join()

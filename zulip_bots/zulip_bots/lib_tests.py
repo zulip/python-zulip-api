@@ -6,6 +6,7 @@ from zulip_bots.lib import (
     ExternalBotHandler,
     StateHandler,
     run_message_handler_for_bot,
+    shut_down_message_handler_for_bot,
 )
 
 class FakeClient:
@@ -238,6 +239,8 @@ class LibTest(TestCase):
                     bot_handler=ANY)
                 ######## Also we test that the non-async function was not called
                 mock_bot_handler.handle_message.assert_not_called()
+
+                shut_down_message_handler_for_bot()
 
             fake_client.call_on_each_event = call_on_each_event_mock.__get__(
                 fake_client, fake_client.__class__)
