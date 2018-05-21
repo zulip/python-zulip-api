@@ -5,6 +5,7 @@ import signal
 import traceback
 import zulip
 import sys
+import re
 
 from types import FrameType
 from typing import Any, Callable, Dict
@@ -13,6 +14,13 @@ from matrix_bridge_config import config
 from matrix_client.api import MatrixRequestError
 from matrix_client.client import MatrixClient
 from requests.exceptions import MissingSchema
+
+GENERAL_NETWORK_USERNAME_REGEX = '@_?[a-zA-Z0-9]+_([a-zA-Z0-9-_]+):[a-zA-Z0-9.]+'
+MATRIX_USERNAME_REGEX = '@([a-zA-Z0-9-_]+):matrix.org'
+
+# change these templates to change the format of displayed message
+ZULIP_MESSAGE_TEMPLATE = "**{username}**: {message}"
+MATRIX_MESSAGE_TEMPLATE = "<{username}> {message}"
 
 def matrix_login(matrix_client: Any, matrix_config: Dict[str, Any]) -> None:
     try:
@@ -39,11 +47,6 @@ def matrix_join_room(matrix_client: Any, matrix_config: Dict[str, Any]) -> Any:
 def die(signal: int, frame: FrameType) -> None:
     # We actually want to exit, so run os._exit (so as not to be caught and restarted)
     os._exit(1)
-
-def zulip_to_matrix_username(full_name: str, site: str) -> str:
-    # Strip spaces from the full_name
-    full_name = "".join(full_name.split(' '))
-    return "@zulip_{0}:{1}".format(full_name, site)
 
 def matrix_to_zulip(zulip_client: zulip.Client, zulip_config: Dict[str, Any],
                     matrix_config: Dict[str, Any]) -> Callable[[Any, Dict[str, Any]], None]:
@@ -78,20 +81,39 @@ def matrix_to_zulip(zulip_client: zulip.Client, zulip_config: Dict[str, Any],
     return _matrix_to_zulip
 
 def get_message_content_from_event(event: Dict[str, Any]) -> str:
+    irc_nick = shorten_irc_nick(event['sender'])
     if event['type'] == "m.room.member":
         if event['membership'] == "join":
-            content = "{0} joined".format(event['sender'])
+            content = ZULIP_MESSAGE_TEMPLATE.format(username=irc_nick,
+                                                    message="joined")
         elif event['membership'] == "leave":
-            content = "{0} quit".format(event['sender'])
+            content = ZULIP_MESSAGE_TEMPLATE.format(username=irc_nick,
+                                                    message="quit")
     elif event['type'] == "m.room.message":
         if event['content']['msgtype'] == "m.text" or event['content']['msgtype'] == "m.emote":
-            content = "{0}: {1}".format(event['sender'], event['content']['body'])
+            content = ZULIP_MESSAGE_TEMPLATE.format(username=irc_nick,
+                                                    message=event['content']['body'])
     else:
         content = event['type']
     return content
 
+def shorten_irc_nick(nick: str) -> str:
+    """
+    Add nick shortner functions for specific IRC networks
+    Eg: For freenode change '@freenode_user:matrix.org' to 'user'
+    Check the list of IRC networks here:
+    https://github.com/matrix-org/matrix-appservice-irc/wiki/Bridged-IRC-networks
+    """
+    match = re.match(GENERAL_NETWORK_USERNAME_REGEX, nick)
+    if match:
+        return match.group(1)
+    # For matrix users
+    match = re.match(MATRIX_USERNAME_REGEX, nick)
+    if match:
+        return match.group(1)
+    return nick
+
 def zulip_to_matrix(config: Dict[str, Any], room: Any) -> Callable[[Dict[str, Any]], None]:
-    site_without_http = config["site"].replace("https://", "").replace("http://", "")
 
     def _zulip_to_matrix(msg: Dict[str, Any]) -> None:
         """
@@ -99,8 +121,9 @@ def zulip_to_matrix(config: Dict[str, Any], room: Any) -> Callable[[Dict[str, An
         """
         message_valid = check_zulip_message_validity(msg, config)
         if message_valid:
-            matrix_username = zulip_to_matrix_username(msg["sender_full_name"], site_without_http)
-            matrix_text = "{0}: {1}".format(matrix_username, msg["content"])
+            matrix_username = msg["sender_full_name"].replace(' ', '')
+            matrix_text = MATRIX_MESSAGE_TEMPLATE.format(username=matrix_username,
+                                                         message=msg["content"])
             # Forward Zulip message to Matrix
             room.send_text(matrix_text)
     return _zulip_to_matrix
