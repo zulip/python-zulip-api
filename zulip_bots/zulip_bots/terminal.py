@@ -3,7 +3,7 @@ import os
 import sys
 import argparse
 
-from zulip_bots.finder import import_module_from_source
+from zulip_bots.finder import import_module_from_source, resolve_bot_path
 from zulip_bots.simple_lib import TerminalBotHandler
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -30,12 +30,8 @@ def parse_args():
 
 def main():
     args = parse_args()
-    if os.path.isfile(args.bot):
-        bot_path = os.path.abspath(args.bot)
-        bot_name = os.path.splitext(os.path.basename(bot_path))[0]
-    else:
-        bot_path = os.path.abspath(os.path.join(current_dir, 'bots', args.bot, args.bot+'.py'))
-        bot_name = args.bot
+
+    bot_path, bot_name = resolve_bot_path(args.bot)
     bot_dir = os.path.dirname(bot_path)
     sys.path.insert(0, bot_dir)
 

@@ -80,13 +80,10 @@ def exit_gracefully_if_bot_config_file_does_not_exist(bot_config_file: str) -> N
 
 def main() -> None:
     args = parse_args()
-    if os.path.isfile(args.bot):
-        bot_path = os.path.abspath(args.bot)
-        bot_name = os.path.splitext(basename(bot_path))[0]
-    else:
-        bot_path = os.path.abspath(os.path.join(current_dir, 'bots', args.bot, args.bot+'.py'))
-        bot_name = args.bot
+
+    bot_path, bot_name = finder.resolve_bot_path(args.bot)
     sys.path.insert(0, os.path.dirname(bot_path))
+
     if args.provision:
         provision_bot(os.path.dirname(bot_path), args.force)
 
