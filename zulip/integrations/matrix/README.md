@@ -18,13 +18,14 @@ Hence, this can also be used as a IRC <--> Zulip bridge.
 ## Steps to configure the Matrix bridge
 
 ### 1. Zulip endpoint
-1. Create a generic Zulip bot
-2. (don't forget this step!) Make sure the bot is subscribed to the relevant stream
-2. Enter the bot's email and `api_key` into `matrix_bridge_config.py`
-3. Enter the destination subject, realm and site in `matrix_bridge_config.py`
+1. Create a generic Zulip bot preferable with a formal name similar to `irc-bot`.
+2. (Don't forget this step!) Make sure the bot is subscribed to the relevant stream
+3. Enter the bot's email and `api_key` into `matrix_bridge_config.py`
+4. Enter the destination topic, stream and site in `matrix_bridge_config.py`
 
 ### 2. Matrix endpoint
-1. Create a user on [matrix.org](https://matrix.org/)
+1. Create a user on [matrix.org](https://matrix.org/) preferably with a formal name
+similar to `zulip-bot`.
 2. Enter the user's username and password into `matrix_bridge_config.py`
 3. Enter the host and `room_id` into `matrix_bridge_config.py`
 
