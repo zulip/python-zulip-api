@@ -70,7 +70,7 @@ def matrix_to_zulip(zulip_client: zulip.Client, zulip_config: Dict[str, Any],
                     "sender": zulip_client.email,
                     "type": "stream",
                     "to": zulip_config["stream"],
-                    "subject": zulip_config["subject"],
+                    "subject": zulip_config["topic"],
                     "content": content,
                 })
             except MatrixRequestError as e:
@@ -137,7 +137,7 @@ def zulip_to_matrix(config: Dict[str, Any], room: Any) -> Callable[[Dict[str, An
 def check_zulip_message_validity(msg: Dict[str, Any], config: Dict[str, Any]) -> bool:
     is_a_stream = msg["type"] == "stream"
     in_the_specified_stream = msg["display_recipient"] == config["stream"]
-    at_the_specified_subject = msg["subject"] == config["subject"]
+    at_the_specified_subject = msg["subject"] == config["topic"]
 
     # We do this to identify the messages generated from Matrix -> Zulip
     # and we make sure we don't forward it again to the Matrix.
