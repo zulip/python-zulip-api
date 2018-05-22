@@ -19,6 +19,7 @@ def read_config_file(config_file_path: str, bot_name: Optional[str]=None) -> Dic
     bots_config = {}  # type: Dict[str, Dict[str, str]]
     for section in parser.sections():
         section_info = {
+            "name": parser.get(section, 'name'),
             "email": parser.get(section, 'email'),
             "key": parser.get(section, 'key'),
             "site": parser.get(section, 'site'),
@@ -98,25 +99,37 @@ def init_message_handlers(
 
 
 app = Flask(__name__)
+bots_config = {}  # type: Dict[str, Dict[str, str]]
 
 
-@app.route('/bots/<bot>', methods=['POST'])
-def handle_bot(bot: str) -> Union[str, BadRequest]:
-    lib_module = app.config.get("BOTS_LIB_MODULES", {}).get(bot)
-    bot_handler = app.config.get("BOT_HANDLERS", {}).get(bot)
-    message_handler = app.config.get("MESSAGE_HANDLERS", {}).get(bot)
-    if lib_module is None:
-        return BadRequest("Can't find the configuration or Bot Handler code for bot {}. "
-                          "Make sure that the `zulip_bots` package is installed, and "
-                          "that your flaskbotrc is set up correctly".format(bot))
-
+@app.route('/', methods=['POST'])
+def handle_bot() -> Union[str, BadRequest]:
     event = request.get_json(force=True)
+    mention = lib.extract_first_mention(event['message'])
+    bot = None
+    for bot_name, config in bots_config.items():
+        if config['name'] == mention:
+            bot = bot_name
+    if bot is None:
+        return BadRequest("Cannot find a bot with name {} in the bot server "
+                          "configuration file. Do the names in your flaskbotrc "
+                          "match the bot names on the server?".format(mention))
+    else:
+        lib_module = app.config.get("BOTS_LIB_MODULES", {}).get(bot)
+        bot_handler = app.config.get("BOT_HANDLERS", {}).get(bot)
+        message_handler = app.config.get("MESSAGE_HANDLERS", {}).get(bot)
+        if lib_module is None:
+            return BadRequest("Can't find the configuration or Bot Handler code for bot {}. "
+                              "Make sure that the `zulip_bots` package is installed, and "
+                              "that your flaskbotrc is set up correctly".format(bot))
+
     message_handler.handle_message(message=event["message"], bot_handler=bot_handler)
     return json.dumps("")
 
 
 def main() -> None:
     options = parse_args()
+    global bots_config
     bots_config = read_config_file(options.config_file, options.bot_name)
     available_bots = list(bots_config.keys())
     bots_lib_modules = load_lib_modules(available_bots)

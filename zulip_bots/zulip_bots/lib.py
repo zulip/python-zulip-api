@@ -2,6 +2,7 @@ import configparser
 import json
 import logging
 import os
+import re
 import signal
 import sys
 import time
@@ -221,6 +222,15 @@ def extract_query_without_mention(message: Dict[str, Any], client: ExternalBotHa
         return None
     return message['content'][len(mention):].lstrip()
 
+def extract_first_mention(message: Dict[str, Any]) -> str:
+    """
+    Returns the name inside the first @mention in message `message`.
+    Throws an exception if `message` contains no @mention.
+    """
+    mention_regex = re.search(r"\@\*\*(?P<mention>.*?)\*\*", message['content'])
+    if mention_regex is None:
+        raise ValueError("message contains no @mention.")
+    return mention_regex.group("mention")
 
 def is_private_message_from_another_user(message_dict: Dict[str, Any], current_user_id: int) -> bool:
     """

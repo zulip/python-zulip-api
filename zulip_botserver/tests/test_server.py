@@ -24,6 +24,7 @@ class BotServerTests(BotServerTestCase):
         available_bots = ['helloworld']
         bots_config = {
             'helloworld': {
+                'name': 'foo bar',
                 'email': 'helloworld-bot@zulip.com',
                 'key': '123456789qwertyuiop',
                 'site': 'http://localhost',
@@ -31,6 +32,7 @@ class BotServerTests(BotServerTestCase):
         }
         self.assert_bot_server_response(available_bots=available_bots,
                                         bots_config=bots_config,
+                                        message=dict(message={'content': "@**foo bar** baz"}),
                                         check_success=True)
 
     @mock.patch('zulip_bots.lib.ExternalBotHandler')
@@ -38,11 +40,13 @@ class BotServerTests(BotServerTestCase):
         available_bots = ['helloworld', 'help']
         bots_config = {
             'helloworld': {
+                'name': 'foo bar',
                 'email': 'helloworld-bot@zulip.com',
                 'key': '123456789qwertyuiop',
                 'site': 'http://localhost',
             },
             'help': {
+                'name': 'foo bar',
                 'email': 'help-bot@zulip.com',
                 'key': '123456789qwertyuiop',
                 'site': 'http://localhost',
@@ -50,11 +54,12 @@ class BotServerTests(BotServerTestCase):
         }
         self.assert_bot_server_response(available_bots=available_bots,
                                         bots_config=bots_config,
+                                        message=dict(message={'content': "@**foo bar** baz"}),
                                         check_success=True)
 
     def test_bot_module_not_exists(self) -> None:
         self.assert_bot_server_response(available_bots=[],
-                                        payload_url="/bots/not_supported_bot",
+                                        message=dict(message={'content': "@**foo bar** baz"}),
                                         check_success=False)
 
     @mock.patch('logging.error')
@@ -63,6 +68,7 @@ class BotServerTests(BotServerTestCase):
         available_bots = ['nonexistent-bot']
         bots_config = {
             'nonexistent-bot': {
+                'name': 'foo bar',
                 'email': 'helloworld-bot@zulip.com',
                 'key': '123456789qwertyuiop',
                 'site': 'http://localhost',
@@ -93,11 +99,13 @@ class BotServerTests(BotServerTestCase):
         bot_conf1 = server.read_config_file(os.path.join(current_dir, "test.conf"))
         expected_config1 = {
             'helloworld': {
+                'name': 'helloworldbot',
                 'email': 'helloworld-bot@zulip.com',
                 'key': 'value',
                 'site': 'http://localhost',
             },
             'giphy': {
+                'name': 'foo bar',
                 'email': 'giphy-bot@zulip.com',
                 'key': 'value2',
                 'site': 'http://localhost',
@@ -107,6 +115,7 @@ class BotServerTests(BotServerTestCase):
         bot_conf2 = server.read_config_file(os.path.join(current_dir, "test.conf"), "redefined_bot")
         expected_config2 = {
             'redefined_bot': {
+                'name': 'helloworldbot',
                 'email': 'helloworld-bot@zulip.com',
                 'key': 'value',
                 'site': 'http://localhost',
