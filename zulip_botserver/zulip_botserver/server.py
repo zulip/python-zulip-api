@@ -98,25 +98,36 @@ def init_message_handlers(
 
 
 app = Flask(__name__)
+bots_config = {}  # type: Dict[str, Dict[str, str]]
 
 
-@app.route('/bots/<bot>', methods=['POST'])
-def handle_bot(bot: str) -> Union[str, BadRequest]:
-    lib_module = app.config.get("BOTS_LIB_MODULES", {}).get(bot)
-    bot_handler = app.config.get("BOT_HANDLERS", {}).get(bot)
-    message_handler = app.config.get("MESSAGE_HANDLERS", {}).get(bot)
-    if lib_module is None:
-        return BadRequest("Can't find the configuration or Bot Handler code for bot {}. "
-                          "Make sure that the `zulip_bots` package is installed, and "
-                          "that your flaskbotrc is set up correctly".format(bot))
-
+@app.route('/', methods=['POST'])
+def handle_bot() -> Union[str, BadRequest]:
     event = request.get_json(force=True)
+    bot = None
+    for bot_name, config in bots_config.items():
+        if config['email'] == event['bot_email']:
+            bot = bot_name
+    if bot is None:
+        return BadRequest("Cannot find a bot with email {} in the bot server "
+                          "configuration file. Do the emails in your flaskbotrc "
+                          "match the bot emails on the server?".format(event['bot_email']))
+    else:
+        lib_module = app.config.get("BOTS_LIB_MODULES", {}).get(bot)
+        bot_handler = app.config.get("BOT_HANDLERS", {}).get(bot)
+        message_handler = app.config.get("MESSAGE_HANDLERS", {}).get(bot)
+        if lib_module is None:
+            return BadRequest("Can't find the configuration or Bot Handler code for bot {}. "
+                              "Make sure that the `zulip_bots` package is installed, and "
+                              "that your flaskbotrc is set up correctly".format(bot))
+
     message_handler.handle_message(message=event["message"], bot_handler=bot_handler)
     return json.dumps("")
 
 
 def main() -> None:
     options = parse_args()
+    global bots_config
     bots_config = read_config_file(options.config_file, options.bot_name)
     available_bots = list(bots_config.keys())
     bots_lib_modules = load_lib_modules(available_bots)
