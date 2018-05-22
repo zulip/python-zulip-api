@@ -10,6 +10,6 @@ config = {
         "api_key": "aPiKeY",
         "site": "https://chat.zulip.org",
         "stream": "test here",
-        "subject": "matrix"
+        "topic": "matrix"
     }
 }
