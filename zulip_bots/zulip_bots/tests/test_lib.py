@@ -32,7 +32,9 @@ class FakeClient:
         )
 
     def send_message(self, message):
-        pass
+        return dict(
+            result='success',
+        )
 
 class FakeBotHandler:
     def usage(self):
