@@ -42,6 +42,8 @@ class AsyncThread(Thread):
 
     def stop_and_join(self) -> None:
         if self._loop is not None:
+            while asyncio.Task.all_tasks():  # XXX Busy-wait until tasks complete
+                pass
             self._loop.call_soon_threadsafe(self._loop.stop)
         self.join()
 

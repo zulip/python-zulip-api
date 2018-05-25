@@ -240,6 +240,9 @@ class LibTest(TestCase):
                 ######## Also we test that the non-async function was not called
                 mock_bot_handler.handle_message.assert_not_called()
 
+                import asyncio
+                asyncio.sleep(3)
+
                 shut_down_message_handler_for_bot()
 
             fake_client.call_on_each_event = call_on_each_event_mock.__get__(
