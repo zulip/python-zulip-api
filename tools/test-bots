@@ -10,7 +10,7 @@ import glob
 import unittest
 from unittest import TestCase, TestSuite
 
-def parse_args(available_bots):
+def parse_args():
     description = """
 Script to run test_<bot_name>.py files in the
 zulip_bot/zulip_bots/bots/<bot_name> directories.
@@ -59,7 +59,8 @@ def main():
 
     # get only the names of bots that have tests
     available_bots = map(lambda path: basename(dirname(path)), test_modules)
-    options = parse_args(available_bots)
+
+    options = parse_args()
 
     if options.coverage:
         import coverage
