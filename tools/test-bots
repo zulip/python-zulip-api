@@ -81,7 +81,8 @@ def main():
         # Codecov seems to work only when using loader.discover. It failed to
         # capture line executions for functions like loader.loadTestFromModule
         # or loader.loadTestFromNames.
-        test_suites = loader.discover(top_level)
+        test_suites = [loader.discover(top_level + name, top_level_dir=top_level)
+                       for name in available_bots]
 
     def filter_tests(tests):
         # type: (Union[TestSuite, TestCase]) -> TestSuite
