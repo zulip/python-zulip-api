@@ -1,7 +1,7 @@
 import unittest
 
-from libraries import game
-from libraries import database
+from ..libraries import game
+from ..libraries import database
 
 from zulip_bots.simple_lib import SimpleStorage
 
