@@ -70,11 +70,11 @@ def main():
         cov.start()
 
     if options.bots_to_test:
-        bots_to_test = filter(lambda bot: bot not in options.exclude,
-                              options.bots_to_test)
+        specified_bots = options.bots_to_test
     else:
-        bots_to_test = filter(lambda bot: bot not in options.exclude,
-                              available_bots)
+        specified_bots = available_bots
+
+    bots_to_test = filter(lambda bot: bot not in options.exclude, specified_bots)
 
     # Should add a check here that __init__.py is absent if test_*.py is present?
 
