@@ -10,21 +10,6 @@ import glob
 import unittest
 from unittest import TestCase, TestSuite
 
-def load_tests_from_modules(names, template):
-    loader = unittest.defaultTestLoader
-    test_suites = []
-    for name in names:
-        module = import_module(template.format(name=name))
-        test_suites.append(loader.loadTestsFromModule(module))
-
-    return test_suites
-
-def load_all_tests():
-    loader = unittest.defaultTestLoader
-    # Codecov seems to work only when using loader.discover. It failed to capture line executions
-    # for functions like loader.loadTestFromModule or loader.loadTestFromNames.
-    return loader.discover('zulip_bots')
-
 def parse_args(available_bots):
     description = """
 Script to run test_<bot_name>.py files in the
@@ -83,14 +68,19 @@ def main():
             cov.load()
         cov.start()
 
+    loader = unittest.defaultTestLoader
+    top_level = "zulip_bots/zulip_bots/bots/"
     if options.bots_to_test:
         bots_to_test = filter(lambda bot: bot not in options.exclude,
                               options.bots_to_test)
-        test_suites = load_tests_from_modules(
-            bots_to_test,
-            template='zulip_bots.bots.{name}.test_{name}')
+        # Should add a check here that __init__.py is absent if test_*.py is present?
+        test_suites = [loader.discover(top_level + name, top_level_dir=top_level)
+                       for name in bots_to_test]
     else:
-        test_suites = load_all_tests()
+        # Codecov seems to work only when using loader.discover. It failed to
+        # capture line executions for functions like loader.loadTestFromModule
+        # or loader.loadTestFromNames.
+        test_suites = loader.discover(top_level)
 
     def filter_tests(tests):
         # type: (Union[TestSuite, TestCase]) -> TestSuite
