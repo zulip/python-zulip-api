@@ -2,13 +2,13 @@ from zulip_bots.test_lib import BotTestCase
 
 from contextlib import contextmanager
 from unittest.mock import MagicMock
-from zulip_bots.bots.gameoffifteen.gameoffifteen import *
+from zulip_bots.bots.game_of_fifteen.game_of_fifteen import GameOfFifteenModel
 from zulip_bots.game_handler import BadMoveException
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Tuple
 
 
 class TestGameOfFifteenBot(BotTestCase):
-    bot_name = 'gameoffifteen'
+    bot_name = 'game_of_fifteen'
 
     def make_request_message(
         self,
