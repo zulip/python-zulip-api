@@ -46,6 +46,10 @@ the tests for xkcd and wikipedia bots):
                         nargs='*',
                         default=[],
                         help='bot(s) to exclude')
+    parser.add_argument('--error-on-no-init',
+                        default=False,
+                        action="store_true",
+                        help="whether to exit if a bot has tests which won't run due to no __init__.py")
     return parser.parse_args()
 
 
@@ -76,15 +80,20 @@ def main():
 
     bots_to_test = filter(lambda bot: bot not in options.exclude, specified_bots)
 
-    # Should add a check here that __init__.py is absent if test_*.py is present?
-
     # Codecov seems to work only when using loader.discover. It failed to
     # capture line executions for functions like loader.loadTestFromModule
     # or loader.loadTestFromNames.
     top_level = "zulip_bots/zulip_bots/bots/"
     loader = unittest.defaultTestLoader
-    test_suites = [loader.discover(top_level + name, top_level_dir=top_level)
-                   for name in bots_to_test]
+    test_suites = []
+    for name in bots_to_test:
+        try:
+            test_suites.append(loader.discover(top_level + name, top_level_dir=top_level))
+        except ImportError as exception:
+            print(exception)
+            print("This likely indicates that you need a '__init__.py' file in your bot directory.")
+            if options.error_on_no_init:
+                sys.exit(1)
 
     def filter_tests(tests):
         # type: (Union[TestSuite, TestCase]) -> TestSuite
