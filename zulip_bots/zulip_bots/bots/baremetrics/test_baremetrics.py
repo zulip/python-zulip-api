@@ -39,7 +39,7 @@ class TestBaremetricsBot(BotTestCase):
     def test_account_info_command(self) -> None:
         with self.mock_config_info({'api_key': 'TEST'}):
             with self.mock_http_conversation('account_info'):
-                self.verify_reply('account-info', '**Your account information:** \nId: 376418\nCompany: NA\nDefault '
+                self.verify_reply('account-info', '**Your account information:**\nId: 376418\nCompany: NA\nDefault '
                                                   'Currency: United States Dollar')
 
     def test_list_sources_command(self) -> None:
@@ -49,26 +49,26 @@ class TestBaremetricsBot(BotTestCase):
                                                   'baremetrics\nProvider ID: None\n\n')
 
     def test_list_plans_command(self) -> None:
-        r = '**Listing plans:** \n1.Name: Plan 1\nActive: True\nInterval: year\nInterval Count: 1\nAmounts: \n' \
-            ' - 450000 USD\n\n2.Name: Plan 2\nActive: True\nInterval: year\nInterval Count: 1\nAmounts: \n' \
-            ' - 450000 USD\n\n'
+        r = '**Listing plans:**\n1.Name: Plan 1\nActive: True\nInterval: year\nInterval Count: 1\nAmounts:\n' \
+            ' - 450000 USD\n\n2.Name: Plan 2\nActive: True\nInterval: year\nInterval Count: 1\nAmounts:\n' \
+            ' - 450000 USD\n'
 
         with self.mock_config_info({'api_key': 'TEST'}):
             with self.mock_http_conversation('list_plans'):
                 self.verify_reply('list-plans TEST', r)
 
     def test_list_customers_command(self) -> None:
-        r = '**Listing customers:** \n1.Name: Customer 1\nDisplay Name: Customer 1\nOID: customer_1\nActive: True\n' \
-            'Email: customer_1@baremetrics.com\nNotes: Here are some notes\nCurrent Plans: \n - Plan 1\n\n'
+        r = '**Listing customers:**\n1.Name: Customer 1\nDisplay Name: Customer 1\nOID: customer_1\nActive: True\n' \
+            'Email: customer_1@baremetrics.com\nNotes: Here are some notes\nCurrent Plans:\n - Plan 1\n'
 
         with self.mock_config_info({'api_key': 'TEST'}):
             with self.mock_http_conversation('list_customers'):
                 self.verify_reply('list-customers TEST', r)
 
     def test_list_subscriptions_command(self) -> None:
-        r = '**Listing subscriptions:** \n1.Customer Name: Customer 1\nCustomer Display Name: Customer 1\n' \
+        r = '**Listing subscriptions:**\n1.Customer Name: Customer 1\nCustomer Display Name: Customer 1\n' \
             'Customer OID: customer_1\nCustomer Email: customer_1@baremetrics.com\nActive: True\n' \
-            'Plan Name: Plan 1\nPlan Amounts: \n - 1000 $\n\n'
+            'Plan Name: Plan 1\nPlan Amounts:\n - 1000 $\n'
 
         with self.mock_config_info({'api_key': 'TEST'}):
             with self.mock_http_conversation('list_subscriptions'):
