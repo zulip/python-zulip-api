@@ -79,8 +79,11 @@ class BotServerTests(BotServerTestCase):
                               ImportError,
                               "Bot \"nonexistent-bot\" doesn't exists. Please "
                               "make sure you have set up the flaskbotrc file correctly.",
-                              lambda: self.assert_bot_server_response(available_bots=available_bots,
-                                                                      bots_config=bots_config))
+                              lambda: self.assert_bot_server_response(
+                                  available_bots=available_bots,
+                                  message=dict(message={'content': "test message"},
+                                               bot_email='helloworld-bot@zulip.com'),
+                                  bots_config=bots_config))
 
     @mock.patch('sys.argv', ['zulip-bot-server', '--config-file', '/foo/bar/baz.conf'])
     def test_argument_parsing_defaults(self) -> None:

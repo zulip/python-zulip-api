@@ -17,7 +17,7 @@ class BotServerTestCase(TestCase):
         available_bots: Optional[List[str]]=None,
         bots_config: Optional[Dict[str, Dict[str, str]]]=None,
         bot_handlers: Optional[Dict[str, Any]]=None,
-        message: Optional[Dict[str, Any]]=dict(message={'key': "test message"}),
+        message: Optional[Dict[str, Any]]=None,
         check_success: bool=False,
         third_party_bot_conf: Optional[configparser.ConfigParser]=None,
     ) -> None:
