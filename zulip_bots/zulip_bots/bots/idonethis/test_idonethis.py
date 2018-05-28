@@ -41,7 +41,7 @@ class TestIDoneThisBot(BotTestCase):
         with self.mock_config_info({'api_key': '12345678', 'default_team': 'testing team 1'}), \
                 self.mock_http_conversation('team_list'):
             self.verify_reply('list teams',
-                              'Teams:\n * testing team 1\n * test_team_2\n')
+                              'Teams:\n * testing team 1\n * test_team_2')
 
     def test_show_team_no_team(self) -> None:
         with self.mock_config_info({'api_key': '12345678', 'default_team': 'testing team 1'}), \
@@ -57,7 +57,7 @@ class TestIDoneThisBot(BotTestCase):
             self.verify_reply('team info testing team 1',
                               'Team Name: testing team 1\n'
                               'ID: `31415926535`\n'
-                              'Created at: 2017-12-28T19:12:55.121+11:00\n')
+                              'Created at: 2017-12-28T19:12:55.121+11:00')
             get_team_hashFunction.assert_called_with('testing team 1')
 
     def test_entries_list(self) -> None:
@@ -83,7 +83,7 @@ class TestIDoneThisBot(BotTestCase):
                               '  * Status: done\n'
                               '  * User: John Doe\n'
                               '  * Team: testing team 1\n'
-                              '  * ID: 72c8241d2218464433268c5abd6625ac104e3d8f\n')
+                              '  * ID: 72c8241d2218464433268c5abd6625ac104e3d8f')
 
     def test_bot_responds_to_empty_message(self) -> None:
         with self.mock_config_info({'api_key': '12345678', 'bot_info': 'team'}), \
