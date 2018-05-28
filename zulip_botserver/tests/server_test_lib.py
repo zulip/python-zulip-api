@@ -17,7 +17,7 @@ class BotServerTestCase(TestCase):
         available_bots: Optional[List[str]]=None,
         bots_config: Optional[Dict[str, Dict[str, str]]]=None,
         bot_handlers: Optional[Dict[str, Any]]=None,
-        message: Optional[Dict[str, Any]]=None,
+        event: Optional[Dict[str, Any]]=None,
         check_success: bool=False,
         third_party_bot_conf: Optional[configparser.ConfigParser]=None,
     ) -> None:
@@ -31,7 +31,7 @@ class BotServerTestCase(TestCase):
             server.app.config["BOT_HANDLERS"] = bot_handlers
             server.app.config["MESSAGE_HANDLERS"] = message_handlers
 
-        response = self.app.post(data=json.dumps(message))
+        response = self.app.post(data=json.dumps(event))
 
         if check_success:
             assert 200 <= response.status_code < 300

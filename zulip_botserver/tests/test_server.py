@@ -31,8 +31,8 @@ class BotServerTests(BotServerTestCase):
         }
         self.assert_bot_server_response(available_bots=available_bots,
                                         bots_config=bots_config,
-                                        message=dict(message={'content': "test message"},
-                                                     bot_email='helloworld-bot@zulip.com'),
+                                        event=dict(message={'content': "test message"},
+                                                   bot_email='helloworld-bot@zulip.com'),
                                         check_success=True)
 
     @mock.patch('zulip_bots.lib.ExternalBotHandler')
@@ -51,15 +51,15 @@ class BotServerTests(BotServerTestCase):
             }
         }
         self.assert_bot_server_response(available_bots=available_bots,
-                                        message=dict(message={'content': "test message"},
-                                                     bot_email='helloworld-bot@zulip.com'),
+                                        event=dict(message={'content': "test message"},
+                                                   bot_email='helloworld-bot@zulip.com'),
                                         bots_config=bots_config,
                                         check_success=True)
 
     def test_bot_module_not_exists(self) -> None:
         self.assert_bot_server_response(available_bots=[],
-                                        message=dict(message={'content': "test message"},
-                                                     bot_email='nonexistent-bot@zulip.com'),
+                                        event=dict(message={'content': "test message"},
+                                                   bot_email='nonexistent-bot@zulip.com'),
                                         check_success=False)
 
     @mock.patch('logging.error')
@@ -81,8 +81,8 @@ class BotServerTests(BotServerTestCase):
                               "make sure you have set up the flaskbotrc file correctly.",
                               lambda: self.assert_bot_server_response(
                                   available_bots=available_bots,
-                                  message=dict(message={'content': "test message"},
-                                               bot_email='helloworld-bot@zulip.com'),
+                                  event=dict(message={'content': "test message"},
+                                             bot_email='helloworld-bot@zulip.com'),
                                   bots_config=bots_config))
 
     @mock.patch('sys.argv', ['zulip-bot-server', '--config-file', '/foo/bar/baz.conf'])
