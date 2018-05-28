@@ -64,8 +64,8 @@ def api_list_entries(team_id: Optional[str]=None) -> List[Dict[str, Any]]:
 def api_create_entry(body: str, team_id: str) -> Dict[str, Any]:
     return make_API_request("/entries", "POST", {"body": body, "team_id": team_id})
 
-def list_steams() -> str:
-    response = ["Teams:"] + [" * " + team['name'] for team in api_list_team()] + [""]
+def list_teams() -> str:
+    response = ["Teams:"] + [" * " + team['name'] for team in api_list_team()]
     return "\n".join(response)
 
 def get_team_hash(team_name: str) -> str:
@@ -78,26 +78,27 @@ def team_info(team_name: str) -> str:
     data = api_show_team(get_team_hash(team_name))
     return "\n".join(["Team Name: {name}",
                       "ID: `{hash_id}`",
-                      "Created at: {created_at}", ""]).format(**data)
+                      "Created at: {created_at}"]).format(**data)
 
 def entries_list(team_name: str) -> str:
     if team_name:
         data = api_list_entries(get_team_hash(team_name))
-        response = "Entries for {}:\n".format(team_name)
+        response = "Entries for {}:".format(team_name)
     else:
         data = api_list_entries()
-        response = "Entries for all teams:\n"
+        response = "Entries for all teams:"
     for entry in data:
         response += "\n".join(
-            [" * {body_formatted}",
+            ["",
+             " * {body_formatted}",
              "  * Created at: {created_at}",
              "  * Status: {status}",
              "  * User: {username}",
              "  * Team: {teamname}",
-             "  * ID: {hash_id}",
-             ""]).format(username=entry['user']['full_name'],
-                         teamname=entry['team']['name'],
-                         **entry)
+             "  * ID: {hash_id}"
+             ]).format(username=entry['user']['full_name'],
+                       teamname=entry['team']['name'],
+                       **entry)
     return response
 
 def create_entry(message: str) -> str:
@@ -188,7 +189,7 @@ Below are some of the commands you can use, and what they do.
         try:
             command = " ".join(message_content[:2])
             if command in ["teams list", "list teams"]:
-                reply = list_steams()
+                reply = list_teams()
             elif command in ["teams info", "team info"]:
                 if len(message_content) > 2:
                     reply = team_info(" ".join(message_content[2:]))
