@@ -1,6 +1,6 @@
 # See readme.md for instructions on running this code.
 
-from typing import Any, List
+from typing import Any, List, Dict
 import requests
 
 class BaremetricsHandler(object):
@@ -46,7 +46,7 @@ class BaremetricsHandler(object):
         Version 1.0
         '''
 
-    def handle_message(self, message: Any, bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, Any], bot_handler: Any) -> None:
         message['content'] = message['content'].strip()
 
         if message['content'].lower() == 'help':

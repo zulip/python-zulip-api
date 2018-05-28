@@ -180,10 +180,10 @@ Below are some of the commands you can use, and what they do.
     new entry `something` for the product team.
         ''' + default_team_message
 
-    def handle_message(self, message: Any, bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, Any], bot_handler: Any) -> None:
         bot_handler.send_reply(message, self.get_response(message))
 
-    def get_response(self, message: Any) -> str:
+    def get_response(self, message: Dict[str, Any]) -> str:
         message_content = message['content'].strip().split()
         if message_content == "":
             return ""

@@ -1,7 +1,7 @@
 # See readme.md for instructions on running this code.
 
 import requests
-from typing import Any, List
+from typing import Any, List, Dict
 import logging
 
 class MentionHandler(object):
@@ -34,7 +34,7 @@ class MentionHandler(object):
         Version 1.00
         '''
 
-    def handle_message(self, message: Any, bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, Any], bot_handler: Any) -> None:
         message['content'] = message['content'].strip()
 
         if message['content'].lower() == 'help':

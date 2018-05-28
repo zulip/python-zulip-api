@@ -1,6 +1,5 @@
 # See readme.md for instructions on running this code.
 
-from typing import Any
 import simple_salesforce
 from typing import Dict, Any, List
 import getpass
@@ -165,7 +164,7 @@ class SalesforceHandler(object):
         except simple_salesforce.exceptions.SalesforceAuthenticationFailed as err:
             bot_handler.quit('Failed to log in to Salesforce. {} {}'.format(err.code, err.message))
 
-    def handle_message(self, message: Any, bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, Any], bot_handler: Any) -> None:
         try:
             bot_response = self.get_salesforce_response(message['content'])
             bot_handler.send_reply(message, bot_response)

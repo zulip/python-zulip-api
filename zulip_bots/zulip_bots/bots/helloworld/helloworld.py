@@ -1,6 +1,6 @@
 # See readme.md for instructions on running this code.
 
-from typing import Any
+from typing import Any, Dict
 
 class HelloWorldHandler(object):
     def usage(self) -> str:
@@ -12,7 +12,7 @@ class HelloWorldHandler(object):
         sophisticated, bots.
         '''
 
-    def handle_message(self, message: Any, bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, Any], bot_handler: Any) -> None:
         content = 'beep boop'  # type: str
         bot_handler.send_reply(message, content)
 
