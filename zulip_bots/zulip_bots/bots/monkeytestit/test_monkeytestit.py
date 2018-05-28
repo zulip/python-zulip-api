@@ -1,20 +1,22 @@
 from unittest import mock
 
-import zulip_bots.bots.monkeytestit.monkeytestit
+from importlib import import_module
 from zulip_bots.test_lib import BotTestCase
 
 
 class TestMonkeyTestitBot(BotTestCase):
     bot_name = "monkeytestit"
 
+    def setUp(self):
+        self.monkeytestit_class = import_module(
+            "zulip_bots.bots.monkeytestit.monkeytestit").MonkeyTestitBot
+
     def test_bot_responds_to_empty_message(self):
         message = dict(
             content='',
             type='stream',
         )
-        with mock.patch.object(
-                zulip_bots.bots.monkeytestit.monkeytestit.MonkeyTestitBot,
-                'initialize', return_value=None):
+        with mock.patch.object(self.monkeytestit_class, 'initialize', return_value=None):
             with self.mock_config_info({'api_key': "magic"}):
                 res = self.get_response(message)
                 self.assertTrue("Unknown command" in res['content'])
@@ -24,9 +26,7 @@ class TestMonkeyTestitBot(BotTestCase):
             content='check https://website.com',
             type='stream',
         )
-        with mock.patch.object(
-                zulip_bots.bots.monkeytestit.monkeytestit.MonkeyTestitBot,
-                'initialize', return_value=None):
+        with mock.patch.object(self.monkeytestit_class, 'initialize', return_value=None):
             with self.mock_config_info({'api_key': "magic"}):
                 with self.mock_http_conversation('website_result_fail'):
                     res = self.get_response(message)
@@ -37,9 +37,7 @@ class TestMonkeyTestitBot(BotTestCase):
             content='check https://website.com',
             type='stream',
         )
-        with mock.patch.object(
-                zulip_bots.bots.monkeytestit.monkeytestit.MonkeyTestitBot,
-                'initialize', return_value=None):
+        with mock.patch.object(self.monkeytestit_class, 'initialize', return_value=None):
             with self.mock_config_info({'api_key': "magic"}):
                 with self.mock_http_conversation('website_result_success'):
                     res = self.get_response(message)
