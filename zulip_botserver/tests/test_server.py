@@ -32,6 +32,7 @@ class BotServerTests(BotServerTestCase):
                                         bots_config=bots_config,
                                         event=dict(message={'content': "test message"},
                                                    bot_email='helloworld-bot@zulip.com'),
+                                        expected_response="beep boop",
                                         check_success=True)
 
     def test_successful_request_from_two_bots(self) -> None:
@@ -51,6 +52,7 @@ class BotServerTests(BotServerTestCase):
         self.assert_bot_server_response(available_bots=available_bots,
                                         event=dict(message={'content': "test message"},
                                                    bot_email='helloworld-bot@zulip.com'),
+                                        expected_response="beep boop",
                                         bots_config=bots_config,
                                         check_success=True)
 
