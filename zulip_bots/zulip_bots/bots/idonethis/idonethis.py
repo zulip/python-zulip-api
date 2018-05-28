@@ -2,7 +2,7 @@ import requests
 import logging
 import re
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, List
 
 API_BASE_URL = "https://beta.idonethis.com/api/v2"
 
@@ -42,25 +42,26 @@ def make_API_request(endpoint: str,
         logging.error('Error make API request, code ' + str(r.status_code) + '. json: ' + r.json())
         raise UnspecifiedProblemException()
 
-def api_noop() -> Any:
-    return make_API_request("/noop")
+def api_noop() -> None:
+    make_API_request("/noop")
 
-def api_list_team() -> Any:
+def api_list_team() -> List[Dict[str, str]]:
     return make_API_request("/teams")
 
-def api_show_team(hash_id: str) -> Any:
+def api_show_team(hash_id: str) -> Dict[str, str]:
     return make_API_request("/teams/{}".format(hash_id))
 
+# NOTE: This function is not currently used
 def api_show_users(hash_id: str) -> Any:
     return make_API_request("/teams/{}/members".format(hash_id))
 
-def api_list_entries(team_id: Optional[str]=None) -> Any:
+def api_list_entries(team_id: Optional[str]=None) -> List[Dict[str, Any]]:
     if team_id:
         return make_API_request("/entries", params=dict(team_id=team_id))
     else:
         return make_API_request("/entries")
 
-def api_create_entry(body: str, team_id: str) -> Any:
+def api_create_entry(body: str, team_id: str) -> Dict[str, Any]:
     return make_API_request("/entries", "POST", {"body": body, "team_id": team_id})
 
 def list_steams() -> str:
