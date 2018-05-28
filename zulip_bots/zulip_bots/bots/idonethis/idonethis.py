@@ -1,4 +1,3 @@
-import sys
 import requests
 import logging
 import re
@@ -65,40 +64,39 @@ def api_create_entry(body: str, team_id: str) -> Any:
     return make_API_request("/entries", "POST", {"body": body, "team_id": team_id})
 
 def list_steams() -> str:
-    data = api_list_team()
-    response = "Teams:\n"
-    for team in data:
-        response += " * " + team['name'] + "\n"
-    return response
+    response = ["Teams:"] + [" * " + team['name'] for team in api_list_team()] + [""]
+    return "\n".join(response)
 
 def get_team_hash(team_name: str) -> str:
-    data = api_list_team()
-    for team in data:
+    for team in api_list_team():
         if team['name'].lower() == team_name.lower() or team['hash_id'] == team_name:
             return team['hash_id']
     raise TeamNotFoundException(team_name)
 
 def team_info(team_name: str) -> str:
     data = api_show_team(get_team_hash(team_name))
-    response = "Team Name: " + data['name'] + "\n"
-    response += "ID: `" + data['hash_id'] + "`\n"
-    response += "Created at: " + data['created_at'] + "\n"
-    return response
+    return "\n".join(["Team Name: {name}",
+                      "ID: `{hash_id}`",
+                      "Created at: {created_at}", ""]).format(**data)
 
 def entries_list(team_name: str) -> str:
     if team_name:
         data = api_list_entries(get_team_hash(team_name))
-        response = "Entries for " + team_name + ":\n"
+        response = "Entries for {}:\n".format(team_name)
     else:
         data = api_list_entries()
         response = "Entries for all teams:\n"
     for entry in data:
-        response += " * " + entry['body_formatted'] + "\n"
-        response += "  * Created at: " + entry['created_at'] + "\n"
-        response += "  * Status: " + entry['status'] + "\n"
-        response += "  * User: " + entry['user']['full_name'] + "\n"
-        response += "  * Team: " + entry['team']['name'] + "\n"
-        response += "  * ID: " + entry['hash_id'] + "\n"
+        response += "\n".join(
+            [" * {body_formatted}",
+             "  * Created at: {created_at}",
+             "  * Status: {status}",
+             "  * User: {username}",
+             "  * Team: {teamname}",
+             "  * ID: {hash_id}",
+             ""]).format(username=entry['user']['full_name'],
+                         teamname=entry['team']['name'],
+                         **entry)
     return response
 
 def create_entry(message: str) -> str:
@@ -185,8 +183,6 @@ Below are some of the commands you can use, and what they do.
 
     def get_response(self, message: Dict[str, Any]) -> str:
         message_content = message['content'].strip().split()
-        if message_content == "":
-            return ""
         reply = ""
         try:
             command = " ".join(message_content[:2])
