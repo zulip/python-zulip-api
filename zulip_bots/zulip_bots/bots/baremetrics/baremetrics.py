@@ -110,7 +110,7 @@ class BaremetricsHandler(object):
         account_data = account_response.json()
         account_data = account_data['account']
 
-        template = ['**Your account information:** ',
+        template = ['**Your account information:**',
                     'Id: {id}',
                     'Company: {company}',
                     'Default Currency: {currency}']
@@ -144,15 +144,15 @@ class BaremetricsHandler(object):
                               'Active: {active}',
                               'Interval: {interval}',
                               'Interval Count: {interval_count}',
-                              'Amounts: '])
-        response = ['**Listing plans:** ']
+                              'Amounts:'])
+        response = ['**Listing plans:**']
         for index, plan in enumerate(plans_data):
             response += ([template.format(_count=index + 1, **plan)] +
                          [' - {amount} {currency}'.format(**amount)
                           for amount in plan['amounts']] +
                          [''])
 
-        return '\n'.join(response + [''])
+        return '\n'.join(response)
 
     def get_customers(self, source_id: str) -> str:
         url = 'https://api.baremetrics.com/v1/{}/customers'.format(source_id)
@@ -168,15 +168,15 @@ class BaremetricsHandler(object):
                               'Active: {is_active}',
                               'Email: {email}',
                               'Notes: {notes}',
-                              'Current Plans: '])
-        response = ['**Listing customers:** ']
+                              'Current Plans:'])
+        response = ['**Listing customers:**']
         for index, customer in enumerate(customers_data):
             response += ([template.format(_count=index + 1, **customer)] +
                          [' - {name}'.format(**plan)
                           for plan in customer['current_plans']] +
                          [''])
 
-        return '\n'.join(response + [''])
+        return '\n'.join(response)
 
     def get_subscriptions(self, source_id: str) -> str:
         url = 'https://api.baremetrics.com/v1/{}/subscriptions'.format(source_id)
@@ -191,8 +191,8 @@ class BaremetricsHandler(object):
                               'Customer Email: {email}',
                               'Active: {_active}',
                               'Plan Name: {_plan_name}',
-                              'Plan Amounts:' ])
-        response = ['**Listing subscriptions:** ']
+                              'Plan Amounts:'])
+        response = ['**Listing subscriptions:**']
         for index, subscription in enumerate(subscriptions_data):
             response += ([template.format(_count=index + 1,
                                           _active=subscription['active'],
@@ -202,7 +202,7 @@ class BaremetricsHandler(object):
                           for amount in subscription['plan']['amounts']] +
                          [''])
 
-        return '\n'.join(response + [''])
+        return '\n'.join(response)
 
     def create_plan(self, parameters: List[str]) -> str:
         data_header = {
