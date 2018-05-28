@@ -1,5 +1,6 @@
 import configparser
 import json
+import mock
 
 from typing import Any, List, Dict, Optional
 from unittest import TestCase
@@ -12,8 +13,10 @@ class BotServerTestCase(TestCase):
         server.app.testing = True
         self.app = server.app.test_client()
 
+    @mock.patch('zulip_bots.lib.ExternalBotHandler')
     def assert_bot_server_response(
         self,
+        mock_ExternalBotHandler: mock.Mock,
         available_bots: Optional[List[str]]=None,
         bots_config: Optional[Dict[str, Dict[str, str]]]=None,
         bot_handlers: Optional[Dict[str, Any]]=None,
