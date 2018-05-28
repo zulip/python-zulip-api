@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any, List, Dict
 
 import requests
 
@@ -42,7 +42,7 @@ class TrelloHandler(object):
         Use `list-commands` to get information about the supported commands.
         '''
 
-    def handle_message(self, message: Any, bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, Any], bot_handler: Any) -> None:
         content = message['content'].strip()
 
         if content == '':
