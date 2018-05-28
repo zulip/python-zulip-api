@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-from __future__ import print_function
+#!/usr/bin/env python3
 import argparse
 import httplib2
 import os
@@ -12,7 +11,7 @@ from oauth2client.file import Storage
 # Before running this, make sure to register a new
 # project in the Google Developers Console
 # (https://console.developers.google.com/start)
-# and download the "client secret" JSON file.
+# and download the JSON file with the "client secret".
 #
 # You'll have to specify its location with --secret-path.
 #
@@ -22,12 +21,12 @@ from oauth2client.file import Storage
 # https://developers.google.com/identity/protocols/googlescopes
 #
 # If you're using this script to set a bot or integration up, look at its
-# documentation. The developer probably specified the scopes required for that
-# specific application.
+# documentation. The developer probably specified the scopes required for
+# that specific application.
 #
-# The script supports the addition of multiple scopes. Also, if you added some
-# scopes in the past, you can add more without overwriting the already existing
-# ones.
+# The script supports the addition of multiple scopes. Also, if you added
+# some scopes in the past, you can add more without overwriting the already
+# existing ones.
 
 # This parent argparser is used because it already contains
 # the arguments that Google's Client Library method "tools.run_flow"
@@ -37,18 +36,24 @@ parent = tools.argparser
 parent.add_argument('-p', '--secret_path',
                     default='~/.client_secret.json',
                     type=str,
-                    help='Path where the file with the secret is (filename included).')
+                    help='File with the client secret from the Google '
+                         'Developers Console can be found')
 parent.add_argument('-c', '--credential_path',
                     default='~/.google_credentials.json',
                     type=str,
-                    help='Path to save the credentials (filename included).')
+                    help='File where you wish to store the generated '
+                         'authentication tokens')
 parent.add_argument('-s', '--scopes',
                     nargs='+',
                     type=str,
                     required=True,
-                    help='Scopes to use in the authentication (separated with spaces).')
+                    help='Scopes to use in the authentication, separated '
+                         'with spaces')
 
-flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
+flags = argparse.ArgumentParser(formatter_class=
+                                argparse.ArgumentDefaultsHelpFormatter,
+                                parents=[tools.argparser]
+                                ).parse_args()
 
 APPLICATION_NAME = 'Zulip'
 
@@ -73,7 +78,8 @@ def get_credentials():
 
     # There are no previous credentials, they aren't valid, or don't contain
     # some of the requested scopes
-    if not credentials or credentials.invalid or not credentials.has_scopes(scopes):
+    if (not credentials or credentials.invalid or
+            not credentials.has_scopes(scopes)):
         if credentials:
             # Check which scopes already exist
             http = credentials.authorize(httplib2.Http())
@@ -88,5 +94,4 @@ def get_credentials():
         credentials = tools.run_flow(flow, store, flags)
     else:
         print('Credentials already exist!')
-
 get_credentials()
