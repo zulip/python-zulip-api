@@ -47,13 +47,19 @@ class BaremetricsHandler(object):
         '''
 
     def handle_message(self, message: Dict[str, Any], bot_handler: Any) -> None:
-        message['content'] = message['content'].strip()
+        content = message['content'].strip().split()
 
-        if message['content'].lower() == 'help':
+        if content == []:
+            bot_handler.send_reply(message, 'No Command Specified')
+            return
+
+        content[0] = content[0].lower()
+
+        if content == ['help']:
             bot_handler.send_reply(message, self.usage())
             return
 
-        if message['content'].lower() == 'list-commands':
+        if content == ['list-commands']:
             response = '**Available Commands:** \n'
             for command, description in zip(self.commands, self.descriptions):
                 response += ' - {} : {}\n'.format(command, description)
@@ -61,36 +67,32 @@ class BaremetricsHandler(object):
             bot_handler.send_reply(message, response)
             return
 
-        if message['content'] == '':
-            bot_handler.send_reply(message, 'No Command Specified')
-            return
-
-        response = self.generate_response(message['content'])
+        response = self.generate_response(content)
         bot_handler.send_reply(message, response)
 
-    def generate_response(self, command: str) -> str:
+    def generate_response(self, commands: List[str]) -> str:
         try:
-            if command.lower() == 'account-info':
+            instruction = commands[0]
+
+            if instruction == 'account-info':
                 return self.get_account_info()
 
-            if command.lower() == 'list-sources':
+            if instruction == 'list-sources':
                 return self.get_sources()
 
-            part_commands = command.split()
-
             try:
-                if part_commands[0].lower() == 'list-plans':
-                    return self.get_plans(part_commands[1])
+                if instruction == 'list-plans':
+                    return self.get_plans(commands[1])
 
-                if part_commands[0].lower() == 'list-customers':
-                    return self.get_customers(part_commands[1])
+                if instruction == 'list-customers':
+                    return self.get_customers(commands[1])
 
-                if part_commands[0].lower() == 'list-subscriptions':
-                    return self.get_subscriptions(part_commands[1])
+                if instruction == 'list-subscriptions':
+                    return self.get_subscriptions(commands[1])
 
-                if part_commands[0].lower() == 'create-plan':
-                    if len(part_commands) == 8:
-                        return self.create_plan(part_commands[1:])
+                if instruction == 'create-plan':
+                    if len(commands) == 8:
+                        return self.create_plan(commands[1:])
                     else:
                         return 'Invalid number of arguments.'
 
