@@ -84,7 +84,7 @@ class TrelloHandler(object):
 
         try:
             boards = board_ids_response.json()['idBoards']
-            bot_response = '**Boards:** \n' + self.get_board_descs(boards)
+            bot_response = '**Boards:**\n' + self.get_board_descs(boards)
 
         except (KeyError, ValueError, TypeError):
             return RESPONSE_ERROR_MESSAGE
@@ -100,7 +100,7 @@ class TrelloHandler(object):
             board_data = board_desc_response.json()
             bot_response += ['{_count}.[{name}]({url}) (`{id}`)'.format(_count=index + 1, **board_data)]
 
-        return '\n'.join(bot_response + [''])
+        return '\n'.join(bot_response)
 
     def get_all_cards(self, content: List[str]) -> str:
         if len(content) != 2:
@@ -112,14 +112,14 @@ class TrelloHandler(object):
 
         try:
             cards = cards_response.json()
-            bot_response = ['**Cards:** ']
+            bot_response = ['**Cards:**']
             for index, card in enumerate(cards):
                 bot_response += ['{_count}. [{name}]({url}) (`{id}`)'.format(_count=index + 1, **card)]
 
         except (KeyError, ValueError, TypeError):
             return RESPONSE_ERROR_MESSAGE
 
-        return '\n'.join(bot_response + [''])
+        return '\n'.join(bot_response)
 
     def get_all_checklists(self, content: List[str]) -> str:
         if len(content) != 2:
@@ -131,7 +131,7 @@ class TrelloHandler(object):
 
         try:
             checklists = checklists_response.json()
-            bot_response = ['**Checklists:** ']
+            bot_response = ['**Checklists:**']
             for index, checklist in enumerate(checklists):
                 bot_response += ['{}. `{}`:'.format(index + 1, checklist['name'])]
 
@@ -142,7 +142,7 @@ class TrelloHandler(object):
         except (KeyError, ValueError, TypeError):
             return RESPONSE_ERROR_MESSAGE
 
-        return '\n'.join(bot_response + [''])
+        return '\n'.join(bot_response)
 
     def get_all_lists(self, content: List[str]) -> str:
         if len(content) != 2:
@@ -154,7 +154,7 @@ class TrelloHandler(object):
 
         try:
             lists = lists_response.json()
-            bot_response = ['**Lists:** ']
+            bot_response = ['**Lists:**']
 
             for index, _list in enumerate(lists):
                 bot_response += ['{}. {}'.format(index + 1, _list['name'])]
@@ -166,6 +166,6 @@ class TrelloHandler(object):
         except (KeyError, ValueError, TypeError):
             return RESPONSE_ERROR_MESSAGE
 
-        return '\n'.join(bot_response + [''])
+        return '\n'.join(bot_response)
 
 handler_class = TrelloHandler
