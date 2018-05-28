@@ -43,23 +43,23 @@ class TrelloHandler(object):
         '''
 
     def handle_message(self, message: Dict[str, Any], bot_handler: Any) -> None:
-        content = message['content'].strip()
+        content = message['content'].strip().split()
 
-        if content == '':
+        if content == []:
             bot_handler.send_reply(message, 'Empty Query')
             return
-        elif content.lower() == 'help':
+
+        content[0] = content[0].lower()
+
+        if content == ['help']:
             bot_handler.send_reply(message, self.usage())
             return
 
-        if content.lower() == 'list-commands':
+        if content == ['list-commands']:
             bot_reply = self.get_all_supported_commands()
-        elif content.lower() == 'get-all-boards':
+        elif content == ['get-all-boards']:
             bot_reply = self.get_all_boards()
         else:
-            content = content.split()
-            content[0] = content[0].lower()
-
             if content[0] == 'get-all-cards':
                 bot_reply = self.get_all_cards(content)
             elif content[0] == 'get-all-checklists':
@@ -92,16 +92,15 @@ class TrelloHandler(object):
         return bot_response
 
     def get_board_descs(self, boards: List[str]) -> str:
-        bot_response = ''
+        bot_response = []  # type: List[str]
         get_board_desc_url = 'https://api.trello.com/1/boards/{}/'
         for index, board in enumerate(boards):
             board_desc_response = requests.get(get_board_desc_url.format(board), params=self.auth_params)
 
             board_data = board_desc_response.json()
-            bot_response += '{}.[{}]({}) (`{}`)\n'.format(index + 1, board_data['name'], board_data['url'],
-                                                          board_data['id'])
+            bot_response += ['{_count}.[{name}]({url}) (`{id}`)'.format(_count=index + 1, **board_data)]
 
-        return bot_response
+        return '\n'.join(bot_response + [''])
 
     def get_all_cards(self, content: List[str]) -> str:
         if len(content) != 2:
@@ -113,14 +112,14 @@ class TrelloHandler(object):
 
         try:
             cards = cards_response.json()
-            bot_response = '**Cards:** \n'
+            bot_response = ['**Cards:** ']
             for index, card in enumerate(cards):
-                bot_response += '{}. [{}]({}) (`{}`)\n'.format(index + 1, card['name'], card['url'], card['id'])
+                bot_response += ['{_count}. [{name}]({url}) (`{id}`)'.format(_count=index + 1, **card)]
 
         except (KeyError, ValueError, TypeError):
             return RESPONSE_ERROR_MESSAGE
 
-        return bot_response
+        return '\n'.join(bot_response + [''])
 
     def get_all_checklists(self, content: List[str]) -> str:
         if len(content) != 2:
@@ -132,18 +131,18 @@ class TrelloHandler(object):
 
         try:
             checklists = checklists_response.json()
-            bot_response = '**Checklists:** \n'
+            bot_response = ['**Checklists:** ']
             for index, checklist in enumerate(checklists):
-                bot_response += '{}. `{}`:\n'.format(index + 1, checklist['name'])
+                bot_response += ['{}. `{}`:'.format(index + 1, checklist['name'])]
 
                 if 'checkItems' in checklist:
                     for item in checklist['checkItems']:
-                        bot_response += ' * [{}] {}\n'.format('X' if item['state'] == 'complete' else '-', item['name'])
+                        bot_response += [' * [{}] {}'.format('X' if item['state'] == 'complete' else '-', item['name'])]
 
         except (KeyError, ValueError, TypeError):
             return RESPONSE_ERROR_MESSAGE
 
-        return bot_response
+        return '\n'.join(bot_response + [''])
 
     def get_all_lists(self, content: List[str]) -> str:
         if len(content) != 2:
@@ -155,18 +154,18 @@ class TrelloHandler(object):
 
         try:
             lists = lists_response.json()
-            bot_response = '**Lists:** \n'
+            bot_response = ['**Lists:** ']
 
             for index, _list in enumerate(lists):
-                bot_response += '{}. {}\n'.format(index + 1, _list['name'])
+                bot_response += ['{}. {}'.format(index + 1, _list['name'])]
 
                 if 'cards' in _list:
                     for card in _list['cards']:
-                        bot_response += '  * {}\n'.format(card['name'])
+                        bot_response += ['  * {}'.format(card['name'])]
 
         except (KeyError, ValueError, TypeError):
             return RESPONSE_ERROR_MESSAGE
 
-        return bot_response
+        return '\n'.join(bot_response + [''])
 
 handler_class = TrelloHandler
