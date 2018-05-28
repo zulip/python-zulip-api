@@ -35,6 +35,7 @@ class BotServerTestCase(TestCase):
             server.app.config["BOT_HANDLERS"] = bot_handlers
             server.app.config["MESSAGE_HANDLERS"] = message_handlers
 
+        mock_ExternalBotHandler.return_value.full_name = "test"
         response = self.app.post(data=json.dumps(event))
 
         # NOTE: Currently, assert_bot_server_response can only check the expected_response

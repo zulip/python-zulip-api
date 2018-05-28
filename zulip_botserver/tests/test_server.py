@@ -30,8 +30,9 @@ class BotServerTests(BotServerTestCase):
         }
         self.assert_bot_server_response(available_bots=available_bots,
                                         bots_config=bots_config,
-                                        event=dict(message={'content': "test message"},
-                                                   bot_email='helloworld-bot@zulip.com'),
+                                        event=dict(message={'content': "@**test** test message"},
+                                                   bot_email='helloworld-bot@zulip.com',
+                                                   trigger='mention'),
                                         expected_response="beep boop",
                                         check_success=True)
 
@@ -50,8 +51,9 @@ class BotServerTests(BotServerTestCase):
             }
         }
         self.assert_bot_server_response(available_bots=available_bots,
-                                        event=dict(message={'content': "test message"},
-                                                   bot_email='helloworld-bot@zulip.com'),
+                                        event=dict(message={'content': "@**test** test message"},
+                                                   bot_email='helloworld-bot@zulip.com',
+                                                   trigger='mention'),
                                         expected_response="beep boop",
                                         bots_config=bots_config,
                                         check_success=True)
@@ -89,8 +91,9 @@ class BotServerTests(BotServerTestCase):
                               "make sure you have set up the flaskbotrc file correctly.",
                               lambda: self.assert_bot_server_response(
                                   available_bots=available_bots,
-                                  event=dict(message={'content': "test message"},
-                                             bot_email='helloworld-bot@zulip.com'),
+                                  event=dict(message={'content': "@**test** test message"},
+                                             bot_email='helloworld-bot@zulip.com',
+                                             trigger='mention'),
                                   bots_config=bots_config))
 
     @mock.patch('sys.argv', ['zulip-bot-server', '--config-file', '/foo/bar/baz.conf'])

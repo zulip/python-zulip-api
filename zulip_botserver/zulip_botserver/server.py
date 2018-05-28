@@ -113,12 +113,24 @@ def handle_bot() -> Union[str, BadRequest]:
                           "configuration file. Do the emails in your flaskbotrc "
                           "match the bot emails on the server?".format(event['bot_email']))
     else:
-        lib_module = app.config.get("BOTS_LIB_MODULES", {}).get(bot)
-        bot_handler = app.config.get("BOT_HANDLERS", {}).get(bot)
-        message_handler = app.config.get("MESSAGE_HANDLERS", {}).get(bot)
+        lib_module = app.config.get("BOTS_LIB_MODULES", {})[bot]
+        bot_handler = app.config.get("BOT_HANDLERS", {})[bot]
+        message_handler = app.config.get("MESSAGE_HANDLERS", {})[bot]
+        is_mentioned = event['trigger'] == "mention"
+        is_private_message = event['trigger'] == "private_message"
+        message = event["message"]
+        message['full_content'] = message['content']
+        # Strip at-mention botname from the message
+        if is_mentioned:
+            # message['content'] will be None when the bot's @-mention is not at the beginning.
+            # In that case, the message shall not be handled.
+            message['content'] = lib.extract_query_without_mention(message=message, client=bot_handler)
+            if message['content'] is None:
+                return json.dumps("")
 
-    message_handler.handle_message(message=event["message"], bot_handler=bot_handler)
-    return json.dumps("")
+        if is_private_message or is_mentioned:
+            message_handler.handle_message(message=message, bot_handler=bot_handler)
+        return json.dumps("")
 
 
 def main() -> None:
