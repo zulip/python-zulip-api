@@ -109,7 +109,7 @@ def handle_bot() -> Union[str, BadRequest]:
             bot = bot_name
             break
     else:
-        return BadRequest("Cannot find a bot with email {} in the bot server "
+        return BadRequest("Cannot find a bot with email {} in the Botserver "
                           "configuration file. Do the emails in your botserverrc "
                           "match the bot emails on the server?".format(event['bot_email']))
     lib_module = app.config.get("BOTS_LIB_MODULES", {})[bot]

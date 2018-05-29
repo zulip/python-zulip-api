@@ -22,7 +22,7 @@ def parse_args() -> argparse.Namespace:
         '--config-file',
         action='store',
         required=True,
-        help='Config file for the zulip bot server (botserverrc)'
+        help='Config file for the zulip Botserver (botserverrc)'
     )
     parser.add_argument(
         '--bot-config-file',
