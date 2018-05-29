@@ -116,10 +116,6 @@ def handle_bot() -> Union[str, BadRequest]:
         lib_module = app.config.get("BOTS_LIB_MODULES", {}).get(bot)
         bot_handler = app.config.get("BOT_HANDLERS", {}).get(bot)
         message_handler = app.config.get("MESSAGE_HANDLERS", {}).get(bot)
-        if lib_module is None:
-            return BadRequest("Can't find the configuration or Bot Handler code for bot {}. "
-                              "Make sure that the `zulip_bots` package is installed, and "
-                              "that your flaskbotrc is set up correctly".format(bot))
 
     message_handler.handle_message(message=event["message"], bot_handler=bot_handler)
     return json.dumps("")

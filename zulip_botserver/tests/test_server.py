@@ -56,10 +56,18 @@ class BotServerTests(BotServerTestCase):
                                         bots_config=bots_config,
                                         check_success=True)
 
-    def test_bot_module_not_exists(self) -> None:
-        self.assert_bot_server_response(available_bots=[],
+    def test_request_for_unkown_bot(self) -> None:
+        bots_config = {
+            'helloworld': {
+                'email': 'helloworld-bot@zulip.com',
+                'key': '123456789qwertyuiop',
+                'site': 'http://localhost',
+            },
+        }
+        self.assert_bot_server_response(available_bots=['helloworld'],
                                         event=dict(message={'content': "test message"},
-                                                   bot_email='nonexistent-bot@zulip.com'),
+                                                   bot_email='unknown-bot@zulip.com'),
+                                        bots_config=bots_config,
                                         check_success=False)
 
     @mock.patch('logging.error')
