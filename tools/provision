@@ -99,8 +99,8 @@ the Python version this command is executed with."""
                                     venv_dir,
                                     venv_exec_dir,
                                     'activate')
-    print('\nNow, run this!:')
-    print(bold + 'source ' + activate_command + end_format)
+    print('\nRun the following the enter the virtualenv:\n')
+    print(bold + '  source ' + activate_command + end_format + "\n")
 
 
 if __name__ == '__main__':
