@@ -88,7 +88,7 @@ class BotServerTests(BotServerTestCase):
         six.assertRaisesRegex(self,
                               ImportError,
                               "Bot \"nonexistent-bot\" doesn't exists. Please "
-                              "make sure you have set up the flaskbotrc file correctly.",
+                              "make sure you have set up the botserverrc file correctly.",
                               lambda: self.assert_bot_server_response(
                                   available_bots=available_bots,
                                   event=dict(message={'content': "@**test** test message"},

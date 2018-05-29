@@ -3,14 +3,14 @@ import argparse
 
 def parse_args() -> argparse.Namespace:
     usage = '''
-        zulip-bot-server --config-file <path to flaskbotrc> --hostname <address> --port <port>
-        Example1: zulip-bot-server --config-file ~/flaskbotrc
-        Example2: zulip-bot-server --config-file ~/flaskbotrc -b mybotname
+        zulip-bot-server --config-file <path to botserverrc> --hostname <address> --port <port>
+        Example1: zulip-bot-server --config-file ~/botserverrc
+        Example2: zulip-bot-server --config-file ~/botserverrc -b mybotname
         (This program loads the bot configurations from the
-        config file (flaskbotrc here) and loads the bot modules.
+        config file (botserverrc here) and loads the bot modules.
         It then starts the server and fetches the requests to the
         above loaded modules and returns the success/failure result)
-        Please make sure you have a current flaskbotrc file with the
+        Please make sure you have a current botserverrc file with the
         configurations of the required bots.
         Hostname and Port are optional arguments. Default hostname is
         127.0.0.1 and default port is 5002.
@@ -22,7 +22,7 @@ def parse_args() -> argparse.Namespace:
         '--config-file',
         action='store',
         required=True,
-        help='Config file for the zulip bot server (flaskbotrc)'
+        help='Config file for the zulip bot server (botserverrc)'
     )
     parser.add_argument(
         '--bot-config-file',

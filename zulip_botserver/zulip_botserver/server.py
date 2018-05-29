@@ -56,7 +56,7 @@ def load_lib_modules(available_bots: List[str]) -> Dict[str, Any]:
         except ImportError:
             raise ImportError(
                 "\nImport Error: Bot \"{}\" doesn't exists. "
-                "Please make sure you have set up the flaskbotrc file correctly.\n".format(bot)
+                "Please make sure you have set up the botserverrc file correctly.\n".format(bot)
             )
     return bots_lib_module
 
@@ -110,7 +110,7 @@ def handle_bot() -> Union[str, BadRequest]:
             break
     else:
         return BadRequest("Cannot find a bot with email {} in the bot server "
-                          "configuration file. Do the emails in your flaskbotrc "
+                          "configuration file. Do the emails in your botserverrc "
                           "match the bot emails on the server?".format(event['bot_email']))
     lib_module = app.config.get("BOTS_LIB_MODULES", {})[bot]
     bot_handler = app.config.get("BOT_HANDLERS", {})[bot]
