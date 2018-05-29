@@ -194,6 +194,8 @@ def build_custom_checkers(by_lang):
          'description': "Organization is spelled with a z"},
         {'pattern': '!!! warning',
          'description': "!!! warning is invalid; it's spelled '!!! warn'"},
+        {'pattern': '[^-_]botserver(?!rc)|bot server',
+         'description': "Use Botserver instead of botserver or Botserver."},
     ]  # type: RuleList
     json_rules = []  # type: RuleList # fix newlines at ends of files
     # It is okay that json_rules is empty, because the empty list
