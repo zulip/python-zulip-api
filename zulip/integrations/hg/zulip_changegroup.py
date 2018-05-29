@@ -31,7 +31,7 @@ import zulip
 import sys
 from six.moves import range
 from typing import Any, Optional, Text
-from mercurial import ui, repo
+from mercurial import ui, repository as repo
 
 VERSION = "0.9"
 
@@ -73,7 +73,7 @@ def format_commit_lines(web_url, repo, base, tip):
     commit_summaries = []
     for rev in range(base, tip):
         rev_node = repo.changelog.node(rev)
-        rev_ctx = repo.changectx(rev_node)
+        rev_ctx = repo[rev_node]
         one_liner = rev_ctx.description().split("\n")[0]
 
         if web_url:
@@ -109,8 +109,8 @@ def send_zulip(email, api_key, site, stream, subject, content):
 def get_config(ui, item):
     # type: (ui, str) -> str
     try:
-        # configlist returns everything in lists.
-        return ui.configlist('zulip', item)[0]
+        # config returns configuration value.
+        return ui.config('zulip', item)
     except IndexError:
         ui.warn("Zulip: Could not find required item {} in hg config.".format(item))
         sys.exit(1)
@@ -129,7 +129,7 @@ def hook(ui, repo, **kwargs):
         ui.warn("Zulip: {hooktype} not supported\n".format(hooktype=hooktype))
         sys.exit(1)
 
-    ctx = repo.changectx(node)
+    ctx = repo[node]
     branch = ctx.branch()
 
     # If `branches` isn't specified, notify on all branches.
