@@ -14,7 +14,7 @@ from unittest.mock import patch
 class TestDefaultArguments(TestCase):
 
     our_dir = os.path.dirname(__file__)
-    path_to_bot = os.path.abspath(os.path.join(our_dir, 'bots/giphy/giphy.py'))
+    path_to_bot = os.path.abspath(os.path.join(our_dir, '../bots/giphy/giphy.py'))
 
     @patch('sys.argv', ['zulip-run-bot', 'giphy', '--config-file', '/foo/bar/baz.conf'])
     @patch('zulip_bots.run.run_message_handler_for_bot')

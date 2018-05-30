@@ -28,7 +28,7 @@ exclude = [
     # Excluded out of laziness:
     "zulip_bots/zulip_bots/terminal.py",
     "zulip_bots/zulip_bots/simple_lib.py",
-    "zulip_bots/zulip_bots/lib_tests.py",
+    "zulip_bots/zulip_bots/tests/test_lib.py",
     "tools",
 ]
 
