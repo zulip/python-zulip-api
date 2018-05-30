@@ -23,3 +23,5 @@ omit =
     tools/test-bots
     tools/test-botserver
     tools/test-zulip
+    # Contains async keywords, which python 3.4 doesn't support
+    zulip_bots/zulip_bots/lib_tests.py

@@ -1,9 +1,12 @@
 from unittest import TestCase
-from unittest.mock import MagicMock, patch, ANY, create_autospec
+# Import these from asynctest rather than unittest.mock, to handle coroutines
+from asynctest import MagicMock, patch, create_autospec, ANY
+
 from zulip_bots.lib import (
     ExternalBotHandler,
     StateHandler,
     run_message_handler_for_bot,
+    shut_down_message_handler_for_bot,
 )
 
 class FakeClient:
@@ -34,12 +37,32 @@ class FakeClient:
     def send_message(self, message):
         pass
 
+class FakeBrokenBotHandler:
+    def usage(self):
+        return '''
+            This is a fake bot handler that is used
+            to spec BotHandler mocks with absent handler.
+            '''
+
 class FakeBotHandler:
     def usage(self):
         return '''
             This is a fake bot handler that is used
             to spec BotHandler mocks.
             '''
+
+    def handle_message(self, message, bot_handler):
+        pass
+
+class FakeAsyncBotHandler:
+    def usage(self):
+        return '''
+            This is a fake bot handler that is used
+            to spec async-capable BotHandler mocks.
+            '''
+
+    async def handle_message_async(self, message, bot_handler):
+        pass
 
     def handle_message(self, message, bot_handler):
         pass
@@ -132,6 +155,25 @@ class LibTest(TestCase):
         )
         to = {'email': 'Some@User'}
 
+    def test_detect_absence_of_message_handler_in_bot(self):
+        with patch('zulip_bots.lib.Client', new=FakeClient) as fake_client:
+            mock_lib_module = MagicMock()
+            # __file__ is not mocked by MagicMock(), so we assign a mock value manually.
+            mock_lib_module.__file__ = "foo"
+            ##### NOTE *FakeBrokenBotHandler*
+            mock_bot_handler = create_autospec(FakeBrokenBotHandler)
+            mock_lib_module.handler_class.return_value = mock_bot_handler
+
+            from io import StringIO
+            with self.assertRaises(SystemExit):
+                with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+                    run_message_handler_for_bot(lib_module=mock_lib_module,
+                                                quiet=True,
+                                                config_file=None,
+                                                bot_config_file=None,
+                                                bot_name='testbot')
+#                    mock_stdout.assert_called_with('')
+
     def test_run_message_handler_for_bot(self):
         with patch('zulip_bots.lib.Client', new=FakeClient) as fake_client:
             mock_lib_module = MagicMock()
@@ -158,6 +200,50 @@ class LibTest(TestCase):
                 mock_bot_handler.handle_message.assert_called_with(
                     message=expected_message,
                     bot_handler=ANY)
+
+            fake_client.call_on_each_event = call_on_each_event_mock.__get__(
+                fake_client, fake_client.__class__)
+            run_message_handler_for_bot(lib_module=mock_lib_module,
+                                        quiet=True,
+                                        config_file=None,
+                                        bot_config_file=None,
+                                        bot_name='testbot')
+
+    def test_run_message_handler_async_for_async_capable_bot(self):
+        with patch('zulip_bots.lib.Client', new=FakeClient) as fake_client:
+            mock_lib_module = MagicMock()
+            # __file__ is not mocked by MagicMock(), so we assign a mock value manually.
+            mock_lib_module.__file__ = "foo"
+            ###### NOTE the different BotHandler, with handle_message_async
+            mock_bot_handler = create_autospec(FakeAsyncBotHandler)
+            mock_lib_module.handler_class.return_value = mock_bot_handler
+
+            def call_on_each_event_mock(self, callback, event_types=None, narrow=None):
+                def test_message(message, flags):
+                    event = {'message': message,
+                             'flags': flags,
+                             'type': 'message'}
+                    callback(event)
+
+                # In the following test, expected_message is the dict that we expect
+                # to be passed to the bot's handle_message function.
+                original_message = {'content': '@**Alice** bar',
+                                    'type': 'stream'}
+                expected_message = {'type': 'stream',
+                                    'content': 'bar',
+                                    'full_content': '@**Alice** bar'}
+                test_message(original_message, {'mentioned'})
+                ######## Here we test for the async function instead
+                mock_bot_handler.handle_message_async.assert_called_with(
+                    message=expected_message,
+                    bot_handler=ANY)
+                ######## Also we test that the non-async function was not called
+                mock_bot_handler.handle_message.assert_not_called()
+
+                import asyncio
+                asyncio.sleep(3)
+
+                shut_down_message_handler_for_bot()
 
             fake_client.call_on_each_event = call_on_each_event_mock.__get__(
                 fake_client, fake_client.__class__)

@@ -6,8 +6,10 @@ import signal
 import sys
 import time
 
+import asyncio
+from threading import Thread
 
-from typing import Any, Optional, List, Dict, IO, Text
+from typing import Any, Optional, List, Dict, IO, Text  # XXX: When python 3.5, add Awaitable
 
 from zulip import Client, ZulipError
 from zulip_bots.custom_exceptions import ConfigValidationError
@@ -21,14 +23,37 @@ class StateHandlerError(Exception):
     pass
 
 
-def exit_gracefully(signum: int, frame: Optional[Any]) -> None:
-    sys.exit(0)
-
-
 def get_bots_directory_path() -> str:
     current_dir = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(current_dir, 'bots')
 
+class AsyncThread(Thread):
+    def __init__(self, auto_start: bool=True) -> None:
+        super().__init__()
+        self._loop = None  # type: Optional[asyncio.AbstractEventLoop]
+        self._loop_will_be_running = False
+        if auto_start:
+            self.start()
+
+    def run(self) -> None:
+        self._loop_will_be_running = True
+        self._loop = asyncio.new_event_loop()
+        self._loop.run_forever()
+
+    def stop_and_join(self) -> None:
+        if self._loop is not None:
+            while asyncio.Task.all_tasks():  # XXX Busy-wait until tasks complete
+                pass
+            self._loop.call_soon_threadsafe(self._loop.stop)
+        self.join()
+
+    def run_coroutine(self, coroutine: Any) -> None:  # XXX When python 3.5, Awaitable[Any]
+        if self._loop_will_be_running:  # Busy-wait until loop available
+            while self._loop is None:
+                pass
+        if self._loop is None:
+            raise RuntimeError("No event loop available and set to start.")
+        asyncio.run_coroutine_threadsafe(coroutine, self._loop)
 
 class RateLimit(object):
     def __init__(self, message_limit: int, interval_limit: int) -> None:
@@ -250,6 +275,7 @@ def prepare_message_handler(bot: str, bot_handler: ExternalBotHandler, bot_lib_m
         message_handler.initialize(bot_handler=bot_handler)
     return message_handler
 
+async_bot_thread = None
 
 def run_message_handler_for_bot(
     lib_module: Any,
@@ -266,6 +292,7 @@ def run_message_handler_for_bot(
 
     Set default bot_details, then override from class, if provided
     """
+    global async_bot_thread
     bot_details = {
         'name': bot_name.capitalize(),
         'description': "",
@@ -285,6 +312,17 @@ def run_message_handler_for_bot(
     restricted_client = ExternalBotHandler(client, bot_dir, bot_details, bot_config_file)
 
     message_handler = prepare_message_handler(bot_name, restricted_client, lib_module)
+
+    if hasattr(message_handler, 'handle_message_async'):
+        have_async_bot_handler = True
+        bot_message_handler = getattr(message_handler, 'handle_message_async')
+        async_bot_thread = AsyncThread()
+    elif hasattr(message_handler, 'handle_message'):
+        have_async_bot_handler = False
+        bot_message_handler = getattr(message_handler, 'handle_message')
+    else:
+        print("This bot does not have a 'handle_message' or 'handle_message_async' method.")
+        sys.exit(1)
 
     if not quiet:
         print("Running {} Bot:".format(bot_details['name']))
@@ -310,10 +348,21 @@ def run_message_handler_for_bot(
                 return
 
         if is_private_message or is_mentioned:
-            message_handler.handle_message(
-                message=message,
-                bot_handler=restricted_client
-            )
+            if have_async_bot_handler:
+                assert async_bot_thread is not None
+                async_bot_thread.run_coroutine(
+                    message_handler.handle_message_async(message=message,
+                                                         bot_handler=restricted_client))
+            else:
+                message_handler.handle_message(message=message,
+                                               bot_handler=restricted_client)
+
+    def exit_gracefully(signum, frame):
+        # type: (int, Optional[Any]) -> None
+        if have_async_bot_handler:
+            assert async_bot_thread is not None
+            async_bot_thread.stop_and_join()
+        sys.exit(0)
 
     signal.signal(signal.SIGINT, exit_gracefully)
 
@@ -324,3 +373,7 @@ def run_message_handler_for_bot(
             handle_message(event['message'], event['flags'])
 
     client.call_on_each_event(event_callback, ['message'])
+
+def shut_down_message_handler_for_bot() -> None:
+    if async_bot_thread is not None:
+        async_bot_thread.stop_and_join()
