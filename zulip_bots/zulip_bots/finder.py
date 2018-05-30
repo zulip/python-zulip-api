@@ -23,12 +23,22 @@ def import_module_from_source(path: Text, name: Text) -> Any:
 
     return module
 
-def resolve_bot_path(name: Text) -> Tuple[Text, Text]:
+def import_module_by_name(name: Text) -> Any:
+    import importlib
+    try:
+        return importlib.import_module(name)
+    except ModuleNotFoundError:
+        return None
+
+def resolve_bot_path(name: Text) -> Optional[Tuple[Text, Text]]:
     if os.path.isfile(name):
         bot_path = os.path.abspath(name)
         bot_name = splitext(basename(bot_path))[0]
+        return (bot_path, bot_name)
     else:
-        bot_path = os.path.abspath(os.path.join(current_dir, 'bots', name, name + '.py'))
         bot_name = name
+        bot_path = os.path.abspath(os.path.join(current_dir, 'bots', bot_name, bot_name + '.py'))
+        if os.path.isfile(bot_path):
+            return (bot_path, bot_name)
 
-    return (bot_path, bot_name)
+    return None
