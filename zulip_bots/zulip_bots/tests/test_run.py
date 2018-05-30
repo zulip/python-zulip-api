@@ -42,7 +42,7 @@ class TestDefaultArguments(TestCase):
             quiet=False)
 
     def test_adding_bot_parent_dir_to_sys_path_when_bot_name_specified(self) -> None:
-        bot_name = 'any_bot_name'
+        bot_name = 'helloworld'  # existing bot's name
         expected_bot_dir_path = os.path.join(
             os.path.dirname(zulip_bots.run.__file__),
             'bots',
@@ -65,6 +65,18 @@ class TestDefaultArguments(TestCase):
                         zulip_bots.run.main()
 
         self.assertIn(bot_dir_path, sys.path)
+
+    @patch('os.path.isfile', return_value=False)
+    def test_run_bot_by_module_name(self, mock_os_path_isfile: mock.Mock) -> None:
+        bot_module_name = 'bot.module.name'
+        mock_bot_module = mock.Mock()
+        mock_bot_module.__name__ = bot_module_name
+        with patch('sys.argv', ['zulip-run-bot', 'bot.module.name', '--config-file', '/path/to/config']):
+            with patch('importlib.import_module', return_value=mock_bot_module) as mock_import_module:
+                with patch('zulip_bots.run.run_message_handler_for_bot'):
+                        with patch('zulip_bots.run.exit_gracefully_if_zulip_config_file_does_not_exist'):
+                            zulip_bots.run.main()
+                            mock_import_module.assert_called_once_with(bot_module_name)
 
 
 class TestBotLib(TestCase):
