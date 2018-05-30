@@ -6,7 +6,7 @@ import os
 from flask import Flask, request
 from importlib import import_module
 from typing import Any, Dict, Union, List, Optional
-from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import BadRequest, Unauthorized
 
 from zulip import Client
 from zulip_bots import lib
@@ -22,6 +22,7 @@ def read_config_file(config_file_path: str, bot_name: Optional[str]=None) -> Dic
             "email": parser.get(section, 'email'),
             "key": parser.get(section, 'key'),
             "site": parser.get(section, 'site'),
+            "token": parser.get(section, 'token'),
         }
         if bot_name is not None:
             logging.warning("Single bot mode is enabled")
@@ -102,16 +103,21 @@ bots_config = {}  # type: Dict[str, Dict[str, str]]
 
 
 @app.route('/', methods=['POST'])
-def handle_bot() -> Union[str, BadRequest]:
+def handle_bot() -> Union[str, BadRequest, Unauthorized]:
     event = request.get_json(force=True)
     for bot_name, config in bots_config.items():
         if config['email'] == event['bot_email']:
             bot = bot_name
+            bot_config = config
             break
     else:
         return BadRequest("Cannot find a bot with email {} in the Botserver "
                           "configuration file. Do the emails in your botserverrc "
                           "match the bot emails on the server?".format(event['bot_email']))
+    if bot_config['token'] != event['token']:
+        return Unauthorized("Request token does not match token found for bot {} in the "
+                            "Botserver configuration file. Do the outgoing webhooks in "
+                            "Zulip point to the right Botserver?".format(event['bot_email']))
     lib_module = app.config.get("BOTS_LIB_MODULES", {})[bot]
     bot_handler = app.config.get("BOT_HANDLERS", {})[bot]
     message_handler = app.config.get("MESSAGE_HANDLERS", {})[bot]

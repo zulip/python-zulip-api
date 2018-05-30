@@ -26,13 +26,15 @@ class BotServerTests(BotServerTestCase):
                 'email': 'helloworld-bot@zulip.com',
                 'key': '123456789qwertyuiop',
                 'site': 'http://localhost',
+                'token': 'abcd1234',
             }
         }
         self.assert_bot_server_response(available_bots=available_bots,
                                         bots_config=bots_config,
                                         event=dict(message={'content': "@**test** test message"},
                                                    bot_email='helloworld-bot@zulip.com',
-                                                   trigger='mention'),
+                                                   trigger='mention',
+                                                   token='abcd1234'),
                                         expected_response="beep boop",
                                         check_success=True)
 
@@ -43,17 +45,20 @@ class BotServerTests(BotServerTestCase):
                 'email': 'helloworld-bot@zulip.com',
                 'key': '123456789qwertyuiop',
                 'site': 'http://localhost',
+                'token': 'abcd1234',
             },
             'help': {
                 'email': 'help-bot@zulip.com',
                 'key': '123456789qwertyuiop',
                 'site': 'http://localhost',
+                'token': 'abcd1234',
             }
         }
         self.assert_bot_server_response(available_bots=available_bots,
                                         event=dict(message={'content': "@**test** test message"},
                                                    bot_email='helloworld-bot@zulip.com',
-                                                   trigger='mention'),
+                                                   trigger='mention',
+                                                   token='abcd1234'),
                                         expected_response="beep boop",
                                         bots_config=bots_config,
                                         check_success=True)
@@ -64,12 +69,31 @@ class BotServerTests(BotServerTestCase):
                 'email': 'helloworld-bot@zulip.com',
                 'key': '123456789qwertyuiop',
                 'site': 'http://localhost',
+                'token': 'abcd1234',
             },
         }
         self.assert_bot_server_response(available_bots=['helloworld'],
                                         event=dict(message={'content': "test message"},
                                                    bot_email='unknown-bot@zulip.com'),
                                         bots_config=bots_config,
+                                        check_success=False)
+
+    def test_wrong_bot_token(self) -> None:
+        available_bots = ['helloworld']
+        bots_config = {
+            'helloworld': {
+                'email': 'helloworld-bot@zulip.com',
+                'key': '123456789qwertyuiop',
+                'site': 'http://localhost',
+                'token': 'abcd1234',
+            }
+        }
+        self.assert_bot_server_response(available_bots=available_bots,
+                                        bots_config=bots_config,
+                                        event=dict(message={'content': "@**test** test message"},
+                                                   bot_email='helloworld-bot@zulip.com',
+                                                   trigger='mention',
+                                                   token='wrongtoken'),
                                         check_success=False)
 
     @mock.patch('logging.error')
@@ -81,6 +105,7 @@ class BotServerTests(BotServerTestCase):
                 'email': 'helloworld-bot@zulip.com',
                 'key': '123456789qwertyuiop',
                 'site': 'http://localhost',
+                'token': 'abcd1234',
             }
         }
         # TODO: The following passes mypy, though the six stubs don't match the
@@ -93,7 +118,8 @@ class BotServerTests(BotServerTestCase):
                                   available_bots=available_bots,
                                   event=dict(message={'content': "@**test** test message"},
                                              bot_email='helloworld-bot@zulip.com',
-                                             trigger='mention'),
+                                             trigger='mention',
+                                             token='abcd1234'),
                                   bots_config=bots_config))
 
     @mock.patch('sys.argv', ['zulip-bot-server', '--config-file', '/foo/bar/baz.conf'])
@@ -115,11 +141,13 @@ class BotServerTests(BotServerTestCase):
                 'email': 'helloworld-bot@zulip.com',
                 'key': 'value',
                 'site': 'http://localhost',
+                'token': 'abcd1234',
             },
             'giphy': {
                 'email': 'giphy-bot@zulip.com',
                 'key': 'value2',
                 'site': 'http://localhost',
+                'token': 'abcd1234',
             }
         }
         assert json.dumps(bot_conf1, sort_keys=True) == json.dumps(expected_config1, sort_keys=True)
@@ -129,6 +157,7 @@ class BotServerTests(BotServerTestCase):
                 'email': 'helloworld-bot@zulip.com',
                 'key': 'value',
                 'site': 'http://localhost',
+                'token': 'abcd1234',
             }
         }
         assert json.dumps(bot_conf2, sort_keys=True) == json.dumps(expected_config2, sort_keys=True)
