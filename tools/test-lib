@@ -31,8 +31,8 @@ def run_all():
             cov.load()
         cov.start()
 
-    module = import_module('zulip_bots.lib_tests')
-    suite = unittest.defaultTestLoader.loadTestsFromModule(module)
+    module = 'zulip_bots/zulip_bots/tests/'
+    suite = unittest.defaultTestLoader.discover(module)
 
     suite = unittest.TestSuite([suite])
     runner = unittest.TextTestRunner(verbosity=2)
