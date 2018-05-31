@@ -154,7 +154,7 @@ def parse_args():
                         help="Suppress the IRC join/leave events.")
     return parser.parse_args()
 
-if __name__ == '__main__':
+def main() -> None:
     signal.signal(signal.SIGINT, die)
     logging.basicConfig(level=logging.WARNING)
 
@@ -190,3 +190,6 @@ if __name__ == '__main__':
         except Exception:
             traceback.print_exc()
         backoff.fail()
+
+if __name__ == '__main__':
+    main()
