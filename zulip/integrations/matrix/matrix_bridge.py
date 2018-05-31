@@ -7,11 +7,11 @@ import zulip
 import sys
 import argparse
 import re
+import configparser
 
 from types import FrameType
 from typing import Any, Callable, Dict, Optional
 
-from matrix_bridge_config import config
 from matrix_client.api import MatrixRequestError
 from matrix_client.client import MatrixClient
 from requests.exceptions import MissingSchema
@@ -22,6 +22,9 @@ MATRIX_USERNAME_REGEX = '@([a-zA-Z0-9-_]+):matrix.org'
 # change these templates to change the format of displayed message
 ZULIP_MESSAGE_TEMPLATE = "**{username}**: {message}"
 MATRIX_MESSAGE_TEMPLATE = "<{username}> {message}"
+
+class Bridge_ConfigException(Exception):
+    pass
 
 def matrix_login(matrix_client: Any, matrix_config: Dict[str, Any]) -> None:
     try:
@@ -149,20 +152,42 @@ def check_zulip_message_validity(msg: Dict[str, Any], config: Dict[str, Any]) ->
 def parse_args():
     # type: () -> Any
     parser = argparse.ArgumentParser()
+    parser.add_argument('-c', '--config', required=True,
+                        help="Path to the config file for the bridge.")
     parser.add_argument('--no_noise',
                         default=True,
                         help="Suppress the IRC join/leave events.")
     return parser.parse_args()
 
+def read_configuration(config_file: str) -> Dict[str, Dict[str, str]]:
+    config = configparser.ConfigParser()
+
+    try:
+        config.read(config_file)
+    except configparser.Error as e:
+        raise Bridge_ConfigException(str(e))
+
+    if set(config.sections()) != {'matrix', 'zulip'}:
+        raise Bridge_ConfigException("Please ensure the configuration has zulip & matrix sections.")
+
+    # TODO Could add more checks for configuration content here
+
+    return {section: dict(config[section]) for section in config.sections()}
+
 def main() -> None:
     signal.signal(signal.SIGINT, die)
     logging.basicConfig(level=logging.WARNING)
 
-    # Get config for each clients
+    options = parse_args()
+
+    try:
+        config = read_configuration(options.config)
+    except Bridge_ConfigException as exception:
+        sys.exit("Could not parse config file: {}".format(exception))
+
+    # Get config for each client
     zulip_config = config["zulip"]
     matrix_config = config["matrix"]
-
-    options = parse_args()
 
     # Initiate clients
     backoff = zulip.RandomExponentialBackoff(timeout_success_equivalent=300)
