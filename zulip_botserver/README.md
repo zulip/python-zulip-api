@@ -1,9 +1,9 @@
 ```
-zulip-bot-server --config-file <path to botserverrc> --hostname <address> --port <port>
+zulip-botserver --config-file <path to botserverrc> --hostname <address> --port <port>
 
 ```
 
-Example: `zulip-bot-server --config-file ~/botserverrc`
+Example: `zulip-botserver --config-file ~/botserverrc`
 
 This program loads the bot configurations from the
 config file (botserverrc here) and loads the bot modules.

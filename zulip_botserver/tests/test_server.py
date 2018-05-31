@@ -122,7 +122,7 @@ class BotServerTests(BotServerTestCase):
                                              token='abcd1234'),
                                   bots_config=bots_config))
 
-    @mock.patch('sys.argv', ['zulip-bot-server', '--config-file', '/foo/bar/baz.conf'])
+    @mock.patch('sys.argv', ['zulip-botserver', '--config-file', '/foo/bar/baz.conf'])
     def test_argument_parsing_defaults(self) -> None:
         opts = parse_args()
         assert opts.config_file == '/foo/bar/baz.conf'

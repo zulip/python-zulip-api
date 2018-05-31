@@ -26,7 +26,7 @@ package_info = dict(
     url='https://www.zulip.org/',
     entry_points={
         'console_scripts': [
-            'zulip-bot-server=zulip_botserver.server:main',
+            'zulip-botserver=zulip_botserver.server:main',
         ],
     },
     test_suite='tests',

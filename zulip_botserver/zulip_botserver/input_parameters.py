@@ -3,50 +3,41 @@ import argparse
 
 def parse_args() -> argparse.Namespace:
     usage = '''
-        zulip-bot-server --config-file <path to botserverrc> --hostname <address> --port <port>
-        Example1: zulip-bot-server --config-file ~/botserverrc
-        Example2: zulip-bot-server --config-file ~/botserverrc -b mybotname
-        (This program loads the bot configurations from the
-        config file (botserverrc here) and loads the bot modules.
-        It then starts the server and fetches the requests to the
-        above loaded modules and returns the success/failure result)
-        Please make sure you have a current botserverrc file with the
-        configurations of the required bots.
-        Hostname and Port are optional arguments. Default hostname is
-        127.0.0.1 and default port is 5002.
-        See lib/readme.md for more context.
+        zulip-botserver --config-file <path/to/botserverrc> [--hostname=<address>] [--port=<port>]
     '''
 
     parser = argparse.ArgumentParser(usage=usage)
     parser.add_argument(
-        '--config-file',
+        '--config-file', '-c',
         action='store',
         required=True,
-        help='Config file for the zulip Botserver (botserverrc)'
+        help='Config file for the Botserver. Use your `botserverrc` for multiple bots or'
+             '`zuliprc` for a single bot.'
     )
     parser.add_argument(
         '--bot-config-file',
         action='store',
         default=None,
-        help='Config file for third-party bots'
+        help='Config file for bots. Only needed when one of '
+             'the bots you want to run requires a config file.'
     )
     parser.add_argument(
         '--bot-name', '-b',
         action='store',
-        help='Bot name (optional, rewrites first bot name from config file). '
-             'Only for single-bot usage! Other bots will be ignored'
+        help='Run a single bot BOT_NAME. Use this option to run the Botserver '
+             'with a `zuliprc` config file.'
     )
     parser.add_argument(
         '--hostname',
         action='store',
         default="127.0.0.1",
-        help='Address on which you want to run the server'
+        help='Address on which you want to run the Botserver. (default: %(default)s)'
     )
     parser.add_argument(
         '--port',
         action='store',
         default=5002,
         type=int,
-        help='Port on which you want to run the server'
+        help='Port on which you want to run the Botserver. (default: %(default)d)'
     )
     return parser.parse_args()
