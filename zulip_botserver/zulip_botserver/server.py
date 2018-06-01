@@ -57,10 +57,11 @@ def load_lib_modules(available_bots: List[str]) -> Dict[str, Any]:
             lib_module = import_module(module_name)
             bots_lib_module[bot] = lib_module
         except ImportError:
-            sys.exit(
-                "Error: Bot \"{}\" doesn't exist. "
-                "Please make sure you have set up the botserverrc file correctly.\n".format(bot)
-            )
+            error_message = ("Error: Bot \"{}\" doesn't exist. Please make sure "
+                             "you have set up the botserverrc file correctly.\n".format(bot))
+            if bot == "api":
+                error_message += "Did you forget to specify the bot you want to run with -b <botname> ?"
+            sys.exit(error_message)
     return bots_lib_module
 
 
