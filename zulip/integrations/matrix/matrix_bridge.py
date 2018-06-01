@@ -12,7 +12,7 @@ import configparser
 from types import FrameType
 from typing import Any, Callable, Dict, Optional
 
-from matrix_client.api import MatrixRequestError
+from matrix_client.errors import MatrixRequestError
 from matrix_client.client import MatrixClient
 from requests.exceptions import MissingSchema
 
@@ -26,27 +26,33 @@ MATRIX_MESSAGE_TEMPLATE = "<{username}> {message}"
 class Bridge_ConfigException(Exception):
     pass
 
+class Bridge_FatalMatrixException(Exception):
+    pass
+
+class Bridge_ZulipFatalException(Exception):
+    pass
+
 def matrix_login(matrix_client: Any, matrix_config: Dict[str, Any]) -> None:
     try:
         matrix_client.login_with_password(matrix_config["username"],
                                           matrix_config["password"])
-    except MatrixRequestError as e:
-        if e.code == 403:
-            sys.exit("Bad username or password.")
+    except MatrixRequestError as exception:
+        if exception.code == 403:
+            raise Bridge_FatalMatrixException("Bad username or password.")
         else:
-            sys.exit("Check if your server details are correct.")
-    except MissingSchema as e:
-        sys.exit("Bad URL format.")
+            raise Bridge_FatalMatrixException("Check if your server details are correct.")
+    except MissingSchema as exception:
+        raise Bridge_FatalMatrixException("Bad URL format.")
 
 def matrix_join_room(matrix_client: Any, matrix_config: Dict[str, Any]) -> Any:
     try:
         room = matrix_client.join_room(matrix_config["room_id"])
         return room
-    except MatrixRequestError as e:
-        if e.code == 403:
-            sys.exit("Room ID/Alias in the wrong format")
+    except MatrixRequestError as exception:
+        if exception.code == 403:
+            raise Bridge_FatalMatrixException("Room ID/Alias in the wrong format")
         else:
-            sys.exit("Couldn't find room.")
+            raise Bridge_FatalMatrixException("Couldn't find room.")
 
 def die(signal: int, frame: FrameType) -> None:
     # We actually want to exit, so run os._exit (so as not to be caught and restarted)
@@ -76,12 +82,12 @@ def matrix_to_zulip(zulip_client: zulip.Client, zulip_config: Dict[str, Any],
                     "subject": zulip_config["topic"],
                     "content": content,
                 })
-            except MatrixRequestError as e:
+            except Exception as exception:  # XXX This should be more specific
                 # Generally raised when user is forbidden
-                raise Exception(e)
+                raise Bridge_ZulipFatalException(exception)
             if result['result'] != 'success':
                 # Generally raised when API key is invalid
-                raise Exception(result['msg'])
+                raise Bridge_ZulipFatalException(result['msg'])
 
     return _matrix_to_zulip
 
@@ -164,8 +170,8 @@ def read_configuration(config_file: str) -> Dict[str, Dict[str, str]]:
 
     try:
         config.read(config_file)
-    except configparser.Error as e:
-        raise Bridge_ConfigException(str(e))
+    except configparser.Error as exception:
+        raise Bridge_ConfigException(str(exception))
 
     if set(config.sections()) != {'matrix', 'zulip'}:
         raise Bridge_ConfigException("Please ensure the configuration has zulip & matrix sections.")
@@ -212,7 +218,14 @@ def main() -> None:
 
             print("Starting message handler on Zulip client")
             zulip_client.call_on_each_message(zulip_to_matrix(zulip_config, room))
-        except Exception:
+
+        except Bridge_FatalMatrixException as exception:
+            sys.exit("Matrix bridge error: {}".format(exception))
+        except Bridge_ZulipFatalException as exception:
+            sys.exit("Zulip bridge error: {}".format(exception))
+        except zulip.ZulipError as exception:
+            sys.exit("Zulip error: {}".format(exception))
+        except Exception as e:
             traceback.print_exc()
         backoff.fail()
 
