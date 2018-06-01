@@ -154,9 +154,9 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--config', required=True,
                         help="Path to the config file for the bridge.")
-    parser.add_argument('--no_noise',
-                        default=True,
-                        help="Suppress the IRC join/leave events.")
+    parser.add_argument('--show-join-leave', dest='no_noise',
+                        default=True, action='store_false',
+                        help="Enable IRC join/leave events.")
     return parser.parse_args()
 
 def read_configuration(config_file: str) -> Dict[str, Dict[str, str]]:
