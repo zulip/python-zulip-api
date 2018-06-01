@@ -3,7 +3,6 @@ import os
 from typing import Any, Dict
 import unittest
 from .server_test_lib import BotServerTestCase
-import six
 import json
 
 from zulip_botserver import server
@@ -108,19 +107,19 @@ class BotServerTests(BotServerTestCase):
                 'token': 'abcd1234',
             }
         }
-        # TODO: The following passes mypy, though the six stubs don't match the
-        # unittest ones, so we could file a mypy bug to improve this.
-        six.assertRaisesRegex(self,
-                              ImportError,
-                              "Bot \"nonexistent-bot\" doesn't exists. Please "
-                              "make sure you have set up the botserverrc file correctly.",
-                              lambda: self.assert_bot_server_response(
-                                  available_bots=available_bots,
-                                  event=dict(message={'content': "@**test** test message"},
-                                             bot_email='helloworld-bot@zulip.com',
-                                             trigger='mention',
-                                             token='abcd1234'),
-                                  bots_config=bots_config))
+        # This works, but mypy still complains:
+        # error: No overload variant of "assertRaisesRegexp" of "TestCase" matches argument types
+        # [def (*args: builtins.object, **kwargs: builtins.object) -> builtins.SystemExit, builtins.str]
+        with self.assertRaisesRegexp(SystemExit,  # type: ignore
+                                     'Error: Bot "nonexistent-bot" doesn\'t exist. Please make '
+                                     'sure you have set up the botserverrc file correctly.'):
+            self.assert_bot_server_response(
+                available_bots=available_bots,
+                event=dict(message={'content': "@**test** test message"},
+                           bot_email='helloworld-bot@zulip.com',
+                           trigger='mention',
+                           token='abcd1234'),
+                bots_config=bots_config)
 
     @mock.patch('sys.argv', ['zulip-botserver', '--config-file', '/foo/bar/baz.conf'])
     def test_argument_parsing_defaults(self) -> None:

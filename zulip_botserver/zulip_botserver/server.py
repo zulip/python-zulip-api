@@ -57,8 +57,8 @@ def load_lib_modules(available_bots: List[str]) -> Dict[str, Any]:
             lib_module = import_module(module_name)
             bots_lib_module[bot] = lib_module
         except ImportError:
-            raise ImportError(
-                "\nImport Error: Bot \"{}\" doesn't exists. "
+            sys.exit(
+                "Error: Bot \"{}\" doesn't exist. "
                 "Please make sure you have set up the botserverrc file correctly.\n".format(bot)
             )
     return bots_lib_module
