@@ -2,7 +2,9 @@ import configparser
 import logging
 import json
 import os
+import sys
 
+from configparser import MissingSectionHeaderError
 from flask import Flask, request
 from importlib import import_module
 from typing import Any, Dict, Union, List, Optional
@@ -141,7 +143,12 @@ def handle_bot() -> Union[str, BadRequest, Unauthorized]:
 def main() -> None:
     options = parse_args()
     global bots_config
-    bots_config = read_config_file(options.config_file, options.bot_name)
+    try:
+        bots_config = read_config_file(options.config_file, options.bot_name)
+    except MissingSectionHeaderError:
+        sys.exit("Error: Your Botserver config file `{0}` contains an empty section header!\n"
+                 "You need to write the names of the bots you want to run in the "
+                 "section headers of `{0}`.".format(options.config_file))
     available_bots = list(bots_config.keys())
     bots_lib_modules = load_lib_modules(available_bots)
     third_party_bot_conf = parse_config_file(options.bot_config_file) if options.bot_config_file is not None else None
