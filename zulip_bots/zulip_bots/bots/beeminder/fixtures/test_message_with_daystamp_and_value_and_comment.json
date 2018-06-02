@@ -1,0 +1,29 @@
+{
+    "request": {
+        "api_url": "https://www.beeminder.com/api/v1/users/aaron/goals/goal/datapoints.json",
+        "method": "POST",
+        "json": {
+            "auth_token": "XXXXXX",
+            "daystamp": "20180602",
+            "value": "2",
+            "comment": "hi there!"
+        }
+    },
+    "response": {
+        "timestamp": 1527961199,
+        "value": 2,
+        "comment": "hi there",
+        "id": "5b1258f7bfec032233000020",
+        "updated_at": 1527929079,
+        "requestid": null,
+        "canonical": "02 2 \"hi there!\"",
+        "fulltext": "2018-Jun-02 entered at 14:14 via api",
+        "origin": "api",
+        "daystamp": "20180602",
+        "status": "created"
+    },
+    "response-headers": {
+        "status": 200,
+        "content-type": "application/json; charset=utf-8"
+    }
+}

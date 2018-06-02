@@ -30,11 +30,23 @@ following the syntax shown below :smile:.\n \
                 self.mock_http_conversation('test_help_message'):
                     self.verify_reply('help', self.help_message)
 
+    def test_message_with_daystamp_and_value(self) -> None:
+        bot_response = '[Datapoint](https://www.beeminder.com/aaron/goal) created.'
+        with self.mock_config_info(self.normal_config), \
+                self.mock_http_conversation('test_message_with_daystamp_and_value'):
+            self.verify_reply('20180602, 2', bot_response)
+
     def test_message_with_value_and_comment(self) -> None:
         bot_response = '[Datapoint](https://www.beeminder.com/aaron/goal) created.'
         with self.mock_config_info(self.normal_config), \
                 self.mock_http_conversation('test_message_with_value_and_comment'):
             self.verify_reply('2, hi there!', bot_response)
+
+    def test_message_with_daystamp_and_value_and_comment(self) -> None:
+        bot_response = '[Datapoint](https://www.beeminder.com/aaron/goal) created.'
+        with self.mock_config_info(self.normal_config), \
+                self.mock_http_conversation('test_message_with_daystamp_and_value_and_comment'):
+            self.verify_reply('20180602, 2, hi there!', bot_response)
 
     def test_syntax_error(self) -> None:
         with self.mock_config_info(self.normal_config), \
