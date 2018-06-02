@@ -83,13 +83,9 @@ class BeeminderHandler(object):
     def initialize(self, bot_handler: Any) -> None:
         self.config_info = bot_handler.get_config_info('beeminder')
         # Check for valid auth_token
-        try:
-            result = get_beeminder_response('5', self.config_info)
-            if result == "Error. Check your key!":
-                bot_handler.quit('Invalid key!')
-        except ConnectionError:
-            logging.warning('Bad connection')
-            raise
+        result = get_beeminder_response('5', self.config_info)
+        if result == "Error. Check your key!":
+            bot_handler.quit('Invalid key!')
 
     def usage(self) -> str:
         return "This plugin allows users to add datapoints towards their Beeminder goals"
