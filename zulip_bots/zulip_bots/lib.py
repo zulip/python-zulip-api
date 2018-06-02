@@ -199,7 +199,7 @@ class ExternalBotHandler(object):
             config_parser = configparser.ConfigParser()
             with open(self.bot_config_file) as conf:
                 try:
-                    config_parser.read(conf)
+                    config_parser.read_file(conf)
                 except configparser.Error as e:
                     display_config_file_errors(str(e), self.bot_config_file)
                     sys.exit(1)
