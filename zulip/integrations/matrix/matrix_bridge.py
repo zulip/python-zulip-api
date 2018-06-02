@@ -157,7 +157,19 @@ def check_zulip_message_validity(msg: Dict[str, Any], config: Dict[str, Any]) ->
 
 def parse_args():
     # type: () -> Any
-    parser = argparse.ArgumentParser()
+    description = """
+    Script to bridge between a topic in a Zulip stream, and a Matrix channel.
+
+    Tested connections:
+        * Zulip <-> Matrix channel
+        * Zulip <-> IRC channel (bridged via Matrix)
+
+    Example matrix 'room_id' options might be, if via matrix.org:
+        * #zulip:matrix.org (zulip channel on Matrix)
+        * #freenode_#zulip:matrix.org (zulip channel on irc.freenode.net)"""
+
+    parser = argparse.ArgumentParser(description=description,
+                                     formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('-c', '--config', required=True,
                         help="Path to the config file for the bridge.")
     parser.add_argument('--show-join-leave', dest='no_noise',
