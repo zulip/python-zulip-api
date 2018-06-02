@@ -1,0 +1,32 @@
+{
+    "request": {
+        "api_url": "https://www.beeminder.com/api/v1/users/me.json",
+        "method": "GET",
+        "params": {
+            "auth_token": "XXXXXX"
+        }
+    },
+    "response": {
+        "username": "testuser",
+        "timezone": "Asia/Kolkata",
+        "goals": [
+            "gainweight"
+        ],
+        "updated_at": 1527962842,
+        "deadbeat": false,
+        "has_authorized_fitbit": false,
+        "default_leadtime": 0,
+        "default_alertstart": 82620,
+        "default_deadline": -3000,
+        "subscription": null,
+        "subs_downto": null,
+        "subs_freq": null,
+        "subs_lifetime": null,
+        "remaining_subs_credit": 0,
+        "id": "5a7c8509bfec03755800544a"
+    },
+    "response-headers": {
+        "status": 200,
+        "content-type": "application/json; charset=utf-8"
+    }
+}
