@@ -9,6 +9,8 @@ import argparse
 import re
 import configparser
 
+from collections import OrderedDict
+
 from types import FrameType
 from typing import Any, Callable, Dict, Optional
 
@@ -155,8 +157,7 @@ def check_zulip_message_validity(msg: Dict[str, Any], config: Dict[str, Any]) ->
         return True
     return False
 
-def parse_args():
-    # type: () -> Any
+def generate_parser() -> argparse.ArgumentParser:
     description = """
     Script to bridge between a topic in a Zulip stream, and a Matrix channel.
 
@@ -170,12 +171,14 @@ def parse_args():
 
     parser = argparse.ArgumentParser(description=description,
                                      formatter_class=argparse.RawTextHelpFormatter)
-    parser.add_argument('-c', '--config', required=True,
+    parser.add_argument('-c', '--config', required=False,
                         help="Path to the config file for the bridge.")
+    parser.add_argument('--write-sample-config', metavar='PATH', dest='sample_config',
+                        help="Generate a configuration template at the specified location.")
     parser.add_argument('--show-join-leave', dest='no_noise',
                         default=True, action='store_false',
                         help="Enable IRC join/leave events.")
-    return parser.parse_args()
+    return parser
 
 def read_configuration(config_file: str) -> Dict[str, Dict[str, str]]:
     config = configparser.ConfigParser()
@@ -192,11 +195,49 @@ def read_configuration(config_file: str) -> Dict[str, Dict[str, str]]:
 
     return {section: dict(config[section]) for section in config.sections()}
 
+def write_sample_config(target_path: str) -> None:
+    if os.path.exists(target_path):
+        raise Bridge_ConfigException("Path '{}' exists; not overwriting existing file.".format(target_path))
+
+    sample_dict = OrderedDict((
+        ('matrix', OrderedDict((
+            ('host', 'https://matrix.org'),
+            ('username', 'username'),
+            ('password', 'password'),
+            ('room_id', '#zulip:matrix.org'),
+        ))),
+        ('zulip', OrderedDict((
+            ('email', 'glitch-bot@chat.zulip.org'),
+            ('api_key', 'aPiKeY'),
+            ('site', 'https://chat.zulip.org'),
+            ('stream', 'test here'),
+            ('topic', 'matrix'),
+        ))),
+    ))
+
+    sample = configparser.ConfigParser()
+    sample.read_dict(sample_dict)
+    with open(target_path, 'w') as target:
+        sample.write(target)
+
 def main() -> None:
     signal.signal(signal.SIGINT, die)
     logging.basicConfig(level=logging.WARNING)
 
-    options = parse_args()
+    parser = generate_parser()
+    options = parser.parse_args()
+
+    if options.sample_config:
+        try:
+            write_sample_config(options.sample_config)
+        except Bridge_ConfigException as exception:
+            sys.exit(exception)
+        print("Wrote sample configuration to '{}'".format(options.sample_config))
+        sys.exit(0)
+    elif not options.config:
+        print("Options required: -c or --config to run, OR --write-sample-config.")
+        parser.print_usage()
+        sys.exit(1)
 
     try:
         config = read_configuration(options.config)
