@@ -83,7 +83,7 @@ class BeeminderHandler(object):
     def initialize(self, bot_handler: Any) -> None:
         self.config_info = bot_handler.get_config_info('beeminder')
         # Check for valid auth_token
-        result = get_beeminder_response('5', self.config_info)
+        result = get_beeminder_response('0', self.config_info)
         if result == "Error. Check your key!":
             bot_handler.quit('Invalid key!')
 

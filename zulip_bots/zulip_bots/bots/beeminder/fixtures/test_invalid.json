@@ -4,7 +4,7 @@
         "method": "POST",
         "json": {
             "auth_token": "someInvalidKey",
-            "value": "5"
+            "value": "0"
         }
     },
     "response": {
