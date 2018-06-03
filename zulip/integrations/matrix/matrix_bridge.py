@@ -184,6 +184,8 @@ def generate_parser():
                         help="Path to the config file for the bridge.")
     parser.add_argument('--write-sample-config', metavar='PATH', dest='sample_config',
                         help="Generate a configuration template at the specified location.")
+    parser.add_argument('--from-zuliprc', metavar='ZULIPRC', dest='zuliprc',
+                        help="Optional path to zuliprc file for bot, when using --write-sample-config")
     parser.add_argument('--show-join-leave', dest='no_noise',
                         default=True, action='store_false',
                         help="Enable IRC join/leave events.")
@@ -205,8 +207,8 @@ def read_configuration(config_file):
 
     return {section: dict(config[section]) for section in config.sections()}
 
-def write_sample_config(target_path):
-    # type: (str) -> None
+def write_sample_config(target_path, zuliprc):
+    # type: (str, Optional[str]) -> None
     if os.path.exists(target_path):
         raise Bridge_ConfigException("Path '{}' exists; not overwriting existing file.".format(target_path))
 
@@ -226,6 +228,22 @@ def write_sample_config(target_path):
         ))),
     ))
 
+    if zuliprc is not None:
+        if not os.path.exists(zuliprc):
+            raise Bridge_ConfigException("Zuliprc file '{}' does not exist.".format(zuliprc))
+
+        zuliprc_config = configparser.ConfigParser()
+        try:
+            zuliprc_config.read(zuliprc)
+        except configparser.Error as exception:
+            raise Bridge_ConfigException(str(exception))
+
+        # Can add more checks for validity of zuliprc file here
+
+        sample_dict['zulip']['email'] = zuliprc_config['api']['email']
+        sample_dict['zulip']['site'] = zuliprc_config['api']['site']
+        sample_dict['zulip']['api_key'] = zuliprc_config['api']['key']
+
     sample = configparser.ConfigParser()
     sample.read_dict(sample_dict)
     with open(target_path, 'w') as target:
@@ -241,10 +259,14 @@ def main():
 
     if options.sample_config:
         try:
-            write_sample_config(options.sample_config)
+            write_sample_config(options.sample_config, options.zuliprc)
         except Bridge_ConfigException as exception:
             sys.exit(exception)
-        print("Wrote sample configuration to '{}'".format(options.sample_config))
+        if options.zuliprc is None:
+            print("Wrote sample configuration to '{}'".format(options.sample_config))
+        else:
+            print("Wrote sample configuration to '{}' using zuliprc file '{}'"
+                  .format(options.sample_config, options.zuliprc))
         sys.exit(0)
     elif not options.config:
         print("Options required: -c or --config to run, OR --write-sample-config.")
