@@ -82,6 +82,30 @@ class MatrixBridgeScriptTests(TestCase):
             with open(path) as sample_file:
                 self.assertEqual(sample_file.read(), sample_config_text)
 
+    def test_write_sample_config_from_zuliprc(self):
+        # type: () -> None
+        zuliprc_template = ["[api]", "email={email}", "key={key}", "site={site}"]
+        zulip_params = {'email': 'foo@bar',
+                        'key': 'some_api_key',
+                        'site': 'https://some.chat.serverplace'}
+        with new_temp_dir() as tempdir:
+            path = os.path.join(tempdir, sample_config_path)
+            zuliprc_path = os.path.join(tempdir, "zuliprc")
+            with open(zuliprc_path, "w") as zuliprc_file:
+                zuliprc_file.write("\n".join(zuliprc_template).format(**zulip_params))
+            output_lines = self.output_from_script(["--write-sample-config", path,
+                                                    "--from-zuliprc", zuliprc_path])
+            self.assertEqual(output_lines,
+                             ["Wrote sample configuration to '{}' using zuliprc file '{}'"
+                              .format(path, zuliprc_path)])
+
+            with open(path) as sample_file:
+                sample_lines = [line.strip() for line in sample_file.readlines()]
+                expected_lines = sample_config_text.split("\n")
+                expected_lines[7] = 'email = {}'.format(zulip_params['email'])
+                expected_lines[8] = 'api_key = {}'.format(zulip_params['key'])
+                expected_lines[9] = 'site = {}'.format(zulip_params['site'])
+                self.assertEqual(sample_lines, expected_lines[:-1])
 
 class MatrixBridgeZulipToMatrixTests(TestCase):
     valid_zulip_config = dict(
