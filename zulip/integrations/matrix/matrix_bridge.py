@@ -34,7 +34,8 @@ class Bridge_FatalMatrixException(Exception):
 class Bridge_ZulipFatalException(Exception):
     pass
 
-def matrix_login(matrix_client: Any, matrix_config: Dict[str, Any]) -> None:
+def matrix_login(matrix_client, matrix_config):
+    # type: (Any, Dict[str, Any]) -> None
     try:
         matrix_client.login_with_password(matrix_config["username"],
                                           matrix_config["password"])
@@ -46,7 +47,8 @@ def matrix_login(matrix_client: Any, matrix_config: Dict[str, Any]) -> None:
     except MissingSchema as exception:
         raise Bridge_FatalMatrixException("Bad URL format.")
 
-def matrix_join_room(matrix_client: Any, matrix_config: Dict[str, Any]) -> Any:
+def matrix_join_room(matrix_client, matrix_config):
+    # type: (Any, Dict[str, Any]) -> Any
     try:
         room = matrix_client.join_room(matrix_config["room_id"])
         return room
@@ -56,14 +58,15 @@ def matrix_join_room(matrix_client: Any, matrix_config: Dict[str, Any]) -> Any:
         else:
             raise Bridge_FatalMatrixException("Couldn't find room.")
 
-def die(signal: int, frame: FrameType) -> None:
+def die(signal, frame):
+    # type: (int, FrameType) -> None
     # We actually want to exit, so run os._exit (so as not to be caught and restarted)
     os._exit(1)
 
-def matrix_to_zulip(zulip_client: zulip.Client, zulip_config: Dict[str, Any],
-                    matrix_config: Dict[str, Any],
-                    no_noise: bool) -> Callable[[Any, Dict[str, Any]], None]:
-    def _matrix_to_zulip(room: Any, event: Dict[str, Any]) -> None:
+def matrix_to_zulip(zulip_client, zulip_config, matrix_config, no_noise):
+    # type: (zulip.Client, Dict[str, Any], Dict[str, Any], bool) -> Callable[[Any, Dict[str, Any]], None]
+    def _matrix_to_zulip(room, event):
+        # type: (Any, Dict[str, Any]) -> None
         """
         Matrix -> Zulip
         """
@@ -93,7 +96,8 @@ def matrix_to_zulip(zulip_client: zulip.Client, zulip_config: Dict[str, Any],
 
     return _matrix_to_zulip
 
-def get_message_content_from_event(event: Dict[str, Any], no_noise: bool) -> Optional[str]:
+def get_message_content_from_event(event, no_noise):
+    # type: (Dict[str, Any], bool) -> Optional[str]
     irc_nick = shorten_irc_nick(event['sender'])
     if event['type'] == "m.room.member":
         if no_noise:
@@ -114,7 +118,8 @@ def get_message_content_from_event(event: Dict[str, Any], no_noise: bool) -> Opt
         content = event['type']
     return content
 
-def shorten_irc_nick(nick: str) -> str:
+def shorten_irc_nick(nick):
+    # type: (str) -> str
     """
     Add nick shortner functions for specific IRC networks
     Eg: For freenode change '@freenode_user:matrix.org' to 'user'
@@ -130,9 +135,11 @@ def shorten_irc_nick(nick: str) -> str:
         return match.group(1)
     return nick
 
-def zulip_to_matrix(config: Dict[str, Any], room: Any) -> Callable[[Dict[str, Any]], None]:
+def zulip_to_matrix(config, room):
+    # type: (Dict[str, Any], Any) -> Callable[[Dict[str, Any]], None]
 
-    def _zulip_to_matrix(msg: Dict[str, Any]) -> None:
+    def _zulip_to_matrix(msg):
+        # type: (Dict[str, Any]) -> None
         """
         Zulip -> Matrix
         """
@@ -145,7 +152,8 @@ def zulip_to_matrix(config: Dict[str, Any], room: Any) -> Callable[[Dict[str, An
             room.send_text(matrix_text)
     return _zulip_to_matrix
 
-def check_zulip_message_validity(msg: Dict[str, Any], config: Dict[str, Any]) -> bool:
+def check_zulip_message_validity(msg, config):
+    # type: (Dict[str, Any], Dict[str, Any]) -> bool
     is_a_stream = msg["type"] == "stream"
     in_the_specified_stream = msg["display_recipient"] == config["stream"]
     at_the_specified_subject = msg["subject"] == config["topic"]
@@ -157,7 +165,8 @@ def check_zulip_message_validity(msg: Dict[str, Any], config: Dict[str, Any]) ->
         return True
     return False
 
-def generate_parser() -> argparse.ArgumentParser:
+def generate_parser():
+    # type: () -> argparse.ArgumentParser
     description = """
     Script to bridge between a topic in a Zulip stream, and a Matrix channel.
 
@@ -180,7 +189,8 @@ def generate_parser() -> argparse.ArgumentParser:
                         help="Enable IRC join/leave events.")
     return parser
 
-def read_configuration(config_file: str) -> Dict[str, Dict[str, str]]:
+def read_configuration(config_file):
+    # type: (str) -> Dict[str, Dict[str, str]]
     config = configparser.ConfigParser()
 
     try:
@@ -195,7 +205,8 @@ def read_configuration(config_file: str) -> Dict[str, Dict[str, str]]:
 
     return {section: dict(config[section]) for section in config.sections()}
 
-def write_sample_config(target_path: str) -> None:
+def write_sample_config(target_path):
+    # type: (str) -> None
     if os.path.exists(target_path):
         raise Bridge_ConfigException("Path '{}' exists; not overwriting existing file.".format(target_path))
 
@@ -220,7 +231,8 @@ def write_sample_config(target_path: str) -> None:
     with open(target_path, 'w') as target:
         sample.write(target)
 
-def main() -> None:
+def main():
+    # type: () -> None
     signal.signal(signal.SIGINT, die)
     logging.basicConfig(level=logging.WARNING)
 
