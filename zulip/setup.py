@@ -46,7 +46,8 @@ package_info = dict(
     entry_points={
         'console_scripts': [
             'zulip-send=zulip.send:main',
-            'zulip-api-examples=zulip.api_examples:main'
+            'zulip-api-examples=zulip.api_examples:main',
+            'zulip-matrix-bridge=integrations.bridge_with_matrix.matrix_bridge:main',
         ],
     },
     package_data={'zulip': ["py.typed"]},
@@ -56,6 +57,7 @@ setuptools_info = dict(
     install_requires=['requests[security]>=0.12.1',
                       'six',
                       'typing>=3.5.2.2',
+                      'matrix_client',
                       ],
 )
 
