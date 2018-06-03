@@ -6,12 +6,18 @@ script_file = "matrix_bridge.py"
 script_dir = os.path.dirname(__file__)
 script = os.path.join(script_dir, script_file)
 
+from typing import List
+
 
 class MatrixBridgeTests(TestCase):
+    def output_from_script(self, options):
+        # type: (List[str]) -> List[str]
+        popen = Popen(["python", script] + options, stdin=PIPE, stdout=PIPE, universal_newlines=True)
+        return popen.communicate()[0].strip().split("\n")
+
     def test_no_args(self):
         # type: () -> None
-        popen = Popen(["python", script], stdin=PIPE, stdout=PIPE, universal_newlines=True)
-        output_lines = popen.communicate()[0].strip().split("\n")
+        output_lines = self.output_from_script([])
         expected_lines = [
             "Options required: -c or --config to run, OR --write-sample-config.",
             "usage: {} [-h]".format(script_file)
@@ -21,8 +27,7 @@ class MatrixBridgeTests(TestCase):
 
     def test_help_usage_and_description(self):
         # type: () -> None
-        popen = Popen(["python", script] + ["-h"], stdin=PIPE, stdout=PIPE, universal_newlines=True)
-        output_lines = popen.communicate()[0].strip().split("\n")
+        output_lines = self.output_from_script(["-h"])
         usage = "usage: {} [-h]".format(script_file)
         description = "Script to bridge"
         self.assertIn(usage, output_lines[0])
