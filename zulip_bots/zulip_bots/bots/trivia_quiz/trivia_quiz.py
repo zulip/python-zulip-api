@@ -37,7 +37,7 @@ class TriviaQuizHandler:
                 bot_handler.send_reply(message, bot_response)
                 return
             try:
-                quiz_payload = bot_handler.storage.get(quiz_id)
+                quiz_payload = get_quiz_from_id(quiz_id, bot_handler)
             except KeyError:
                 bot_response = 'Invalid quiz id'
                 bot_handler.send_reply(message, bot_response)
@@ -51,6 +51,9 @@ class TriviaQuizHandler:
         else:
             bot_response = 'type "new" for a new question'
         bot_handler.send_reply(message, bot_response)
+
+def get_quiz_from_id(quiz_id: str, bot_handler: Any) -> str:
+    return bot_handler.storage.get(quiz_id)
 
 def start_new_quiz(message: Dict[str, Any], bot_handler: Any) -> None:
     quiz = get_trivia_quiz()
