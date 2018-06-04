@@ -4,6 +4,7 @@ import os
 import sys
 import argparse
 import subprocess
+import glob
 
 from importlib import import_module
 
@@ -92,6 +93,17 @@ the Python version this command is executed with."""
     install_dependencies('requirements.txt')
     if py_version > (3, 1):
         install_dependencies('py3_requirements.txt')
+
+    # Install all requirements for all bots. get_bot_paths()
+    # has requirements that must be satisfied prior to calling
+    # it by setup().
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    bots_dir = os.path.join(current_dir, "..", "zulip_bots", "zulip_bots", "bots")
+    req_paths = glob.glob(bots_dir + "/*/requirements.txt")
+    for req_path in req_paths:
+        path_split = req_path.split(os.path.sep)[-5:]
+        relative_path = os.path.join(*path_split)
+        install_dependencies(relative_path)
 
     print(green + 'Success!' + end_format)
 
