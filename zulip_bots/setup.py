@@ -52,6 +52,9 @@ setuptools_info = dict(
     install_requires=[
         'pip',
         'zulip',
+        'html2text',
+        'lxml',
+        'BeautifulSoup4',
     ],
 )
 
