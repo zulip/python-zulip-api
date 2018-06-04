@@ -134,6 +134,8 @@ def generate_quiz_id(storage) -> str:
         quiz_num = storage.get('quiz_id')
     except KeyError:
         quiz_num = 0
+    except TypeError:
+        quiz_num = 0
     quiz_num += 1
     quiz_num = quiz_num % (1000)
     storage.put('quiz_id', quiz_num)
