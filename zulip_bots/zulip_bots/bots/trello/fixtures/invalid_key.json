@@ -1,0 +1,15 @@
+{
+  "meta": {
+    "is_raw_response": true
+  },
+  "request": {
+    "api_url": "https://api.trello.com/1/members/TEST/",
+    "params": {
+        "key": "TEST",
+        "token": "TEST"
+    }
+  },
+  "response": "invalid key",
+  "response-headers": {
+  }
+}
