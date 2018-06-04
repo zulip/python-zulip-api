@@ -96,8 +96,6 @@ def dbx_command(client: Any, cmd: str) -> str:
     m = re.match(regex, cmd_args)
     if m:
         return f(client, *m.groups())
-    elif cmd_name == 'help':
-        return get_help()
     else:
         return 'ERROR: ' + syntax_help(cmd_name)
 
