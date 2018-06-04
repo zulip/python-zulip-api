@@ -140,14 +140,18 @@ class ExternalBotHandler(object):
     def send_message(self, message: (Dict[str, Any])) -> Dict[str, Any]:
         if not self._rate_limit.is_legal():
             self._rate_limit.show_error_and_exit()
-        return self._client.send_message(message)
+        resp = self._client.send_message(message)
+        if resp.get('result') == 'error':
+            print("ERROR!: " + str(resp))
+        return resp
 
-    def send_reply(self, message: Dict[str, Any], response: str) -> Dict[str, Any]:
+    def send_reply(self, message: Dict[str, Any], response: str, widget_content: Optional[str]=None) -> Dict[str, Any]:
         if message['type'] == 'private':
             return self.send_message(dict(
                 type='private',
                 to=[x['email'] for x in message['display_recipient'] if self.email != x['email']],
                 content=response,
+                widget_content=widget_content,
             ))
         else:
             return self.send_message(dict(
@@ -155,6 +159,7 @@ class ExternalBotHandler(object):
                 to=message['display_recipient'],
                 subject=message['subject'],
                 content=response,
+                widget_content=widget_content,
             ))
 
     def update_message(self, message: Dict[str, Any]) -> Dict[str, Any]:
