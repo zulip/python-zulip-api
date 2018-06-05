@@ -114,7 +114,20 @@ def main() -> None:
     if args.provision:
         provision_bot(os.path.dirname(bot_path), args.force)
 
-    lib_module = import_module_from_source(bot_path, bot_name)
+    try:
+        lib_module = import_module_from_source(bot_path, bot_name)
+    except ImportError as e:
+        req_path = os.path.join(os.path.dirname(bot_path), "requirements.txt")
+        with open(req_path) as fp:
+            deps_list = fp.read()
+
+        dep_err_msg = ("ERROR: The following dependencies for the {bot_name} bot are not installed:\n\n"
+                       "{deps_list}\n"
+                       "If you'd like us to install these dependencies, run:\n"
+                       "    zulip-run-bot {bot_name} --provision")
+        print(dep_err_msg.format(bot_name=bot_name, deps_list=deps_list))
+        sys.exit(1)
+
     if lib_module is None:
         print("ERROR: Could not load bot module. Exiting now.")
         sys.exit(1)
