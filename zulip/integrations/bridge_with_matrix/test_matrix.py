@@ -107,6 +107,18 @@ class MatrixBridgeScriptTests(TestCase):
                 expected_lines[9] = 'site = {}'.format(zulip_params['site'])
                 self.assertEqual(sample_lines, expected_lines[:-1])
 
+    def test_detect_zuliprc_does_not_exist(self):
+        # type: () -> None
+        with new_temp_dir() as tempdir:
+            path = os.path.join(tempdir, sample_config_path)
+            zuliprc_path = os.path.join(tempdir, "zuliprc")
+            # No writing of zuliprc file here -> triggers check for zuliprc absence
+            output_lines = self.output_from_script(["--write-sample-config", path,
+                                                    "--from-zuliprc", zuliprc_path])
+            self.assertEqual(output_lines,
+                             ["Could not write sample config: Zuliprc file '{}' does not exist."
+                              .format(zuliprc_path)])
+
 class MatrixBridgeZulipToMatrixTests(TestCase):
     valid_zulip_config = dict(
         stream="some stream",
