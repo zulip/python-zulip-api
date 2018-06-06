@@ -6,6 +6,7 @@ import argparse
 import logging
 import os
 import sys
+import subprocess
 import glob
 import pip
 from typing import Iterator
@@ -26,7 +27,7 @@ def provision_bot(path_to_bot, force):
         logging.info('Installing dependencies for {}...'.format(bot_name))
 
         # pip install -r $BASEDIR/requirements.txt -t $BASEDIR/bot_dependencies --quiet
-        rcode = pip.main(['install', '-r', req_path, '--quiet'])
+        rcode = subprocess.call(['pip', 'install', '-r', req_path])
 
         if rcode != 0:
             logging.error('Error. Check output of `pip install` above for details.')
