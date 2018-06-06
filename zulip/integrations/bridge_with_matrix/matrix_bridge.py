@@ -261,7 +261,8 @@ def main():
         try:
             write_sample_config(options.sample_config, options.zuliprc)
         except Bridge_ConfigException as exception:
-            sys.exit(exception)
+            print("Could not write sample config: {}".format(exception))
+            sys.exit(1)
         if options.zuliprc is None:
             print("Wrote sample configuration to '{}'".format(options.sample_config))
         else:
@@ -276,7 +277,8 @@ def main():
     try:
         config = read_configuration(options.config)
     except Bridge_ConfigException as exception:
-        sys.exit("Could not parse config file: {}".format(exception))
+        print("Could not parse config file: {}".format(exception))
+        sys.exit(1)
 
     # Get config for each client
     zulip_config = config["zulip"]
