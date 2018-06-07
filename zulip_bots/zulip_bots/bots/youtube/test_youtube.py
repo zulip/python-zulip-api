@@ -42,6 +42,15 @@ class TestYoutubeBot(BotTestCase):
                 self.assertRaises(bot_handler.BotQuitException):
                     bot.initialize(bot_handler)
 
+    def test_unknown_error(self) -> None:
+        bot = get_bot_message_handler(self.bot_name)
+        bot_handler = StubBotHandler()
+
+        with self.mock_config_info(self.normal_config), \
+                self.mock_http_conversation('test_unknown_error'), \
+                self.assertRaises(HTTPError):
+                    bot.initialize(bot_handler)
+
     def test_multiple(self) -> None:
         bot = get_bot_message_handler(self.bot_name)
         bot_handler = StubBotHandler()

@@ -1,0 +1,31 @@
+{
+    "request": {
+      "api_url": "https://www.googleapis.com/youtube/v3/search",
+      "params": {
+        "part": "id,snippet",
+        "maxResults": 1,
+        "key": "12345678",
+        "q": "test",
+        "alt": "json",
+        "type": "video",
+        "regionCode": "US"
+      }
+    },
+    "response": {
+      "error": {
+        "errors": [
+          {
+            "domain": "error",
+            "reason": "unknownError",
+            "message": "Unknown Rrror"
+          }
+        ],
+        "code": 400,
+        "message": "Bad Request"
+      }
+    },
+    "response-headers": {
+      "status": 400,
+      "content-type": "application/json; charset=utf-8"
+    }
+  }
