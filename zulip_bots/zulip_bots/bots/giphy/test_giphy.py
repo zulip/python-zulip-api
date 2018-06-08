@@ -39,6 +39,11 @@ class TestGiphyBot(BotTestCase, DefaultTests):
             self.validate_invalid_config({'key': '12345678'},
                                          "This is likely due to an invalid key.\n")
 
+    def test_connection_error_when_validate_config(self) -> None:
+        error = ConnectionError()
+        with patch('requests.get', side_effect=ConnectionError()):
+            self.validate_invalid_config({'key': '12345678'}, str(error))
+
     def test_valid_config(self) -> None:
         bot = get_bot_message_handler(self.bot_name)
         bot_handler = StubBotHandler()
