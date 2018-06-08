@@ -18,6 +18,19 @@ def find_recipient_id(res: str, recipient_name: str) -> str:
         if recipient_name == obj['firstName']:
             return obj['id']
 
+# Make request to given flock URL and return a two-element tuple
+# whose left-hand value contains JSON body of response (or None if request failed)
+# and whose right-hand value contains an error message (or None if request succeeded)
+def make_flock_request(url: str, params: Dict[str, str]) -> Tuple[Any, str]:
+    try:
+        res = requests.get(url, params=params)
+        return (res.json(), None)
+    except ConnectionError as e:
+        logging.exception(str(e))
+        error = "Uh-Oh, couldn't process the request \
+right now.\nPlease try again later"
+        return (None, error)
+
 # Returns two-element tuple whose left-hand value contains recipient
 # user's ID (or None if it was not found) and right-hand value contains
 # an error message (or None if recipient user's ID was found)
@@ -26,16 +39,10 @@ def get_recipient_id(recipient_name: str, config: Dict[str, str]) -> Tuple[Optio
     payload = {
         'token': token
     }
-
-    try:
-        res = requests.get(USERS_LIST_URL, params=payload)
-    except ConnectionError as e:
-        logging.exception(str(e))
-        error = "Uh-Oh, couldn't process the request \
-right now.\nPlease try again later"
+    res, error = make_flock_request(USERS_LIST_URL, payload)
+    if res is None:
         return (None, error)
 
-    res = res.json()
     recipient_id = find_recipient_id(res, recipient_name)
     if recipient_id is None:
         error = "No user found. Make sure you typed it correctly."
@@ -62,15 +69,11 @@ def get_flock_response(content: str, config: Dict[str, str]) -> str:
         'text': message,
         'token': token
     }
-    try:
-        r = requests.get(SEND_MESSAGE_URL, params=payload)
-    except ConnectionError as e:
-        logging.exception(str(e))
-        return "Uh-Oh, couldn't process the request \
-right now.\nPlease try again later"
+    res, error = make_flock_request(SEND_MESSAGE_URL, payload)
+    if res is None:
+        return error
 
-    r = r.json()
-    if "uid" in r:
+    if "uid" in res:
         return "Message sent."
     else:
         return "Message sending failed :slightly_frowning_face:. Please try again."
