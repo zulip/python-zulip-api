@@ -178,7 +178,14 @@ def build_custom_checkers(by_lang):
                         ' provided by the bots framework to access the filesystem.',
          'include_only': set(['zulip_bots/zulip_bots/bots/'])},
         {'pattern': 'pprint',
-         'description': 'Used pprint, which is most likely a debugging leftover. For user output, use print().'}
+         'description': 'Used pprint, which is most likely a debugging leftover. For user output, use print().'},
+        {'pattern': '\(BotTestCase\)',
+         'bad_lines': ['class TestSomeBot(BotTestCase):'],
+         'description': 'Bot test cases should directly inherit from BotTestCase *and* DefaultTests.'},
+        {'pattern': '\(DefaultTests, BotTestCase\)',
+         'bad_lines': ['class TestSomeBot(DefaultTests, BotTestCase):'],
+         'good_lines': ['class TestSomeBot(BotTestCase, DefaultTests):'],
+         'description': 'Bot test cases should inherit from BotTestCase before DefaultTests.'},
     ]) + whitespace_rules
     bash_rules = [
         {'pattern': '#!.*sh [-xe]',
