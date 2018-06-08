@@ -45,15 +45,15 @@ right now.\nPlease try again later"
 def get_flock_response(content: str, config: Dict[str, str]) -> str:
     token = config['token']
     content_pieces = content.split(':')
-    to = content_pieces[0].strip()
+    recipient_name = content_pieces[0].strip()
     message = content_pieces[1].strip()
 
-    to = get_recipient_id(content, config)
-    if len(str(to)) > 30:
-        return to
+    recipient_id = get_recipient_id(content, config)
+    if len(str(recipient_id)) > 30:
+        return recipient_id
 
     payload = {
-        'to': to,
+        'to': recipient_id,
         'text': message,
         'token': token
     }
