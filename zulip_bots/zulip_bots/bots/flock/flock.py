@@ -1,6 +1,6 @@
 import logging
 import requests
-from typing import Any, Dict
+from typing import Any, Dict, Tuple, Optional
 from requests.exceptions import ConnectionError
 
 USERS_LIST_URL = 'https://api.flock.co/v1/roster.listContacts'
@@ -18,8 +18,10 @@ def find_recipient_id(res: str, recipient_name: str) -> str:
         if recipient_name == obj['firstName']:
             return obj['id']
 
-# Returns User's ID, if not found, returns error message.
-def get_recipient_id(recipient_name: str, config: Dict[str, str]) -> str:
+# Returns two-element tuple whose left-hand value contains recipient
+# user's ID (or None if it was not found) and right-hand value contains
+# an error message (or None if recipient user's ID was found)
+def get_recipient_id(recipient_name: str, config: Dict[str, str]) -> Tuple[Optional[str], Optional[str]]:
     token = config['token']
     payload = {
         'token': token
@@ -29,15 +31,17 @@ def get_recipient_id(recipient_name: str, config: Dict[str, str]) -> str:
         res = requests.get(USERS_LIST_URL, params=payload)
     except ConnectionError as e:
         logging.exception(str(e))
-        return "Uh-Oh, couldn't process the request \
+        error = "Uh-Oh, couldn't process the request \
 right now.\nPlease try again later"
+        return (None, error)
 
     res = res.json()
     recipient_id = find_recipient_id(res, recipient_name)
     if recipient_id is None:
-        return "No user found. Make sure you typed it correctly."
+        error = "No user found. Make sure you typed it correctly."
+        return (None, error)
     else:
-        return recipient_id
+        return (recipient_id, None)
 
 # This handles the message sending work.
 def get_flock_response(content: str, config: Dict[str, str]) -> str:
@@ -46,7 +50,10 @@ def get_flock_response(content: str, config: Dict[str, str]) -> str:
     recipient_name = content_pieces[0].strip()
     message = content_pieces[1].strip()
 
-    recipient_id = get_recipient_id(recipient_name, config)
+    recipient_id, error = get_recipient_id(recipient_name, config)
+    if recipient_id is None:
+        return error
+
     if len(str(recipient_id)) > 30:
         return recipient_id
 
