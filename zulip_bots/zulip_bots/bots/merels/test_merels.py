@@ -10,7 +10,7 @@ import zulip_bots.bots.merels.merels
 import zulip_bots.test_lib
 
 
-class TestFollowUpBot(zulip_bots.test_lib.BotTestCase):
+class TestFollowUpBot(zulip_bots.test_lib.BotTestCase, DefaultTests):
     bot_name = "merels"
 
     def test_no_command(self):

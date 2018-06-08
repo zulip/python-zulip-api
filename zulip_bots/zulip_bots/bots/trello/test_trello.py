@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 from zulip_bots.bots.trello.trello import TrelloHandler
-from zulip_bots.test_lib import BotTestCase
+from zulip_bots.test_lib import BotTestCase, DefaultTests
 from zulip_bots.test_lib import StubBotHandler
 
 mock_config = {
@@ -10,7 +10,7 @@ mock_config = {
     'user_name': 'TEST'
 }
 
-class TestTrelloBot(BotTestCase):
+class TestTrelloBot(BotTestCase, DefaultTests):
     bot_name = "trello"  # type: str
 
     def test_bot_responds_to_empty_message(self) -> None:

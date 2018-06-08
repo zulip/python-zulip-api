@@ -1,4 +1,4 @@
-from zulip_bots.test_lib import BotTestCase
+from zulip_bots.test_lib import BotTestCase, DefaultTests
 
 from contextlib import contextmanager
 from unittest.mock import MagicMock
@@ -7,7 +7,7 @@ from zulip_bots.game_handler import BadMoveException
 from typing import Dict, Any, List
 
 
-class TestConnectFourBot(BotTestCase):
+class TestConnectFourBot(BotTestCase, DefaultTests):
     bot_name = 'connect_four'
 
     def make_request_message(

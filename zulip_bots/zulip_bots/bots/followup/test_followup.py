@@ -1,13 +1,14 @@
 from zulip_bots.test_lib import (
     StubBotHandler,
     BotTestCase,
+    DefaultTests,
     get_bot_message_handler,
 )
 
 from typing import Any
 
 
-class TestFollowUpBot(BotTestCase):
+class TestFollowUpBot(BotTestCase, DefaultTests):
     bot_name = "followup"
 
     def test_followup_stream(self) -> None:

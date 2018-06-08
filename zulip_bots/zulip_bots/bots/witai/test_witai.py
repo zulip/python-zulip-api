@@ -1,9 +1,9 @@
 from unittest.mock import patch
 import sys
 from typing import Dict, Any, Optional
-from zulip_bots.test_lib import BotTestCase, get_bot_message_handler, StubBotHandler
+from zulip_bots.test_lib import BotTestCase, DefaultTests, get_bot_message_handler, StubBotHandler
 
-class TestWitaiBot(BotTestCase):
+class TestWitaiBot(BotTestCase, DefaultTests):
     bot_name = 'witai'
 
     MOCK_CONFIG_INFO = {

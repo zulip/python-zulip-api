@@ -1,9 +1,9 @@
 from zulip_bots.bots.yoda.yoda import ServiceUnavailableError
-from zulip_bots.test_lib import BotTestCase
+from zulip_bots.test_lib import BotTestCase, DefaultTests
 
 from typing import Optional
 
-class TestYodaBot(BotTestCase):
+class TestYodaBot(BotTestCase, DefaultTests):
     bot_name = "yoda"
 
     help_text = '''

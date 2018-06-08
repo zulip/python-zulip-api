@@ -1,11 +1,11 @@
-from zulip_bots.test_lib import BotTestCase
+from zulip_bots.test_lib import BotTestCase, DefaultTests
 from zulip_bots.game_handler import GameInstance
 
 from unittest.mock import patch
 from typing import List, Tuple, Any
 
 
-class TestTicTacToeBot(BotTestCase):
+class TestTicTacToeBot(BotTestCase, DefaultTests):
     bot_name = 'tictactoe'
 
     # FIXME: Add tests for computer moves

@@ -88,6 +88,29 @@ class StubBotHandler:
             raise Exception('The bot is giving too many responses for some reason.')
 
 
+class DefaultTests:
+    bot_name = ''
+
+    def make_request_message(self, content: str) -> Dict[str, Any]:
+        raise NotImplementedError()
+
+    def get_response(self, message: Dict[str, Any]) -> Dict[str, Any]:
+        raise NotImplementedError()
+
+    def test_bot_usage(self) -> None:
+        bot = get_bot_message_handler(self.bot_name)
+        assert bot.usage() != ''
+
+    def test_bot_responds_to_empty_message(self) -> None:
+        message = self.make_request_message('')
+
+        # get_response will fail if we don't respond at all
+        response = self.get_response(message)
+
+        # we also want a non-blank response
+        assert len(response['content']) >= 1
+
+
 class BotTestCase(unittest.TestCase):
     bot_name = ''
 
@@ -153,19 +176,6 @@ class BotTestCase(unittest.TestCase):
     def validate_valid_config(self, config_data: Dict[str, str]) -> None:
         bot_class = type(get_bot_message_handler(self.bot_name))
         bot_class.validate_config(config_data)
-
-    def test_bot_usage(self) -> None:
-        bot = get_bot_message_handler(self.bot_name)
-        self.assertNotEqual(bot.usage(), '')
-
-    def test_bot_responds_to_empty_message(self) -> None:
-        message = self.make_request_message('')
-
-        # get_response will fail if we don't respond at all
-        response = self.get_response(message)
-
-        # we also want a non-blank response
-        self.assertTrue(len(response['content']) >= 1)
 
     def mock_http_conversation(self, test_name: str) -> Any:
         assert test_name is not None

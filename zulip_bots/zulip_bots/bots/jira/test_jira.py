@@ -1,7 +1,7 @@
 from unittest.mock import patch
-from zulip_bots.test_lib import BotTestCase
+from zulip_bots.test_lib import BotTestCase, DefaultTests
 
-class TestJiraBot(BotTestCase):
+class TestJiraBot(BotTestCase, DefaultTests):
     bot_name = 'jira'
 
     MOCK_CONFIG_INFO = {

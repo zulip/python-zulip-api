@@ -1,4 +1,4 @@
-from zulip_bots.test_lib import BotTestCase, StubBotHandler, read_bot_fixture_data
+from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler, read_bot_fixture_data
 import simple_salesforce
 from simple_salesforce.exceptions import SalesforceAuthenticationFailed
 from contextlib import contextmanager
@@ -107,7 +107,7 @@ mock_object_types = {
 }
 
 
-class TestSalesforceBot(BotTestCase):
+class TestSalesforceBot(BotTestCase, DefaultTests):
     bot_name = "salesforce"  # type: str
 
     def _test(self, test_name: str, message: str, response: str, auth_success: bool=True) -> None:

@@ -1,8 +1,8 @@
 from typing import Any, Dict
 
-from zulip_bots.test_lib import BotTestCase
+from zulip_bots.test_lib import BotTestCase, DefaultTests
 
-class TestFrontBot(BotTestCase):
+class TestFrontBot(BotTestCase, DefaultTests):
     bot_name = 'front'
 
     def make_request_message(self, content: str) -> Dict[str, Any]:
@@ -49,7 +49,7 @@ class TestFrontBot(BotTestCase):
             with self.mock_http_conversation('comment'):
                 self.verify_reply("comment " + body, "Comment was sent.")
 
-class TestFrontBotWrongTopic(BotTestCase):
+class TestFrontBotWrongTopic(BotTestCase, DefaultTests):
     bot_name = 'front'
 
     def make_request_message(self, content: str) -> Dict[str, Any]:

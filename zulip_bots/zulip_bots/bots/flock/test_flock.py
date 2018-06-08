@@ -1,8 +1,8 @@
 from unittest.mock import patch
-from zulip_bots.test_lib import BotTestCase
+from zulip_bots.test_lib import BotTestCase, DefaultTests
 from requests.exceptions import ConnectionError
 
-class TestFlockBot(BotTestCase):
+class TestFlockBot(BotTestCase, DefaultTests):
     bot_name = "flock"
     normal_config = {"token": "12345"}
 
