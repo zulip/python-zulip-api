@@ -48,7 +48,7 @@ right now.\nPlease try again later")
     @patch('zulip_bots.bots.flock.flock.get_recipient_id')
     def test_message_send_success(self, get_recipient_id: str) -> None:
         bot_response = "Message sent."
-        get_recipient_id.return_value = "u:userid"
+        get_recipient_id.return_value = ["u:userid", None]
         with self.mock_config_info(self.normal_config), \
                 self.mock_http_conversation('test_message_send_success'):
                     self.verify_reply('Rishabh: hi there', bot_response)
@@ -56,7 +56,7 @@ right now.\nPlease try again later")
     @patch('zulip_bots.bots.flock.flock.get_recipient_id')
     def test_message_send_failed(self, get_recipient_id: str) -> None:
         bot_response = "Message sending failed :slightly_frowning_face:. Please try again."
-        get_recipient_id.return_value = "u:invalid"
+        get_recipient_id.return_value = ["u:invalid", None]
         with self.mock_config_info(self.normal_config), \
                 self.mock_http_conversation('test_message_send_failed'):
                     self.verify_reply('Rishabh: hi there', bot_response)
