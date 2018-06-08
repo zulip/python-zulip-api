@@ -13,7 +13,7 @@ You can send messages to any Flock user associated with your account from Zulip.
 
 # Matches the recipient name provided by user with list of users in his contacts.
 # If matches, returns the matched User's ID
-def find_recipient(res: str, recipient_name: str) -> str:
+def find_recipient_id(res: str, recipient_name: str) -> str:
     for obj in res:
         if recipient_name == obj['firstName']:
             return obj['id']
@@ -33,7 +33,7 @@ def get_recipient_id(recipient_name: str, config: Dict[str, str]) -> str:
 right now.\nPlease try again later"
 
     res = res.json()
-    recipient_id = find_recipient(res, recipient_name)
+    recipient_id = find_recipient_id(res, recipient_name)
     if recipient_id is None:
         return "No user found. Make sure you typed it correctly."
     else:
