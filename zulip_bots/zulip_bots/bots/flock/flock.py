@@ -19,10 +19,8 @@ def find_recipient(res: str, to: str) -> str:
             return obj['id']
 
 # Returns User's ID, if not found, returns error message.
-def get_recipient_id(content: str, config: Dict[str, str]) -> str:
+def get_recipient_id(recipient_name: str, config: Dict[str, str]) -> str:
     token = config['token']
-    content_pieces = content.split(':')
-    to = content_pieces[0].strip()
     payload = {
         'token': token
     }
@@ -35,11 +33,11 @@ def get_recipient_id(content: str, config: Dict[str, str]) -> str:
 right now.\nPlease try again later"
 
     res = res.json()
-    to = find_recipient(res, to)
-    if to is None:
+    recipient_id = find_recipient(res, recipient_name)
+    if recipient_id is None:
         return "No user found. Make sure you typed it correctly."
     else:
-        return to
+        return recipient_id
 
 # This handles the message sending work.
 def get_flock_response(content: str, config: Dict[str, str]) -> str:
@@ -48,7 +46,7 @@ def get_flock_response(content: str, config: Dict[str, str]) -> str:
     recipient_name = content_pieces[0].strip()
     message = content_pieces[1].strip()
 
-    recipient_id = get_recipient_id(content, config)
+    recipient_id = get_recipient_id(recipient_name, config)
     if len(str(recipient_id)) > 30:
         return recipient_id
 
