@@ -1,12 +1,13 @@
 from zulip_bots.test_lib import (
     StubBotHandler,
     BotTestCase,
+    DefaultTests,
     get_bot_message_handler,
 )
 
 from typing import Any
 
-class TestGithubDetailBot(BotTestCase):
+class TestGithubDetailBot(BotTestCase, DefaultTests):
     bot_name = "github_detail"
     mock_config = {'owner': 'zulip', 'repo': 'zulip'}
     empty_config = {'owner': '', 'repo': ''}

@@ -3,10 +3,11 @@ from unittest import mock
 from zulip_bots.test_lib import (
     get_bot_message_handler,
     StubBotHandler,
+    DefaultTests,
     BotTestCase,
 )
 
-class TestIncrementorBot(BotTestCase):
+class TestIncrementorBot(BotTestCase, DefaultTests):
     bot_name = "incrementor"
 
     def test_bot(self) -> None:

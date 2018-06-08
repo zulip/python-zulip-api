@@ -1,7 +1,7 @@
 from unittest.mock import patch
 from requests.exceptions import ConnectionError
 
-from zulip_bots.test_lib import BotTestCase, StubBotHandler
+from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler
 from zulip_bots.bots.google_translate.google_translate import TranslateError
 
 help_text = '''
@@ -11,7 +11,7 @@ Please format your message like:
 Visit [here](https://cloud.google.com/translate/docs/languages) for all languages
 '''
 
-class TestGoogleTranslateBot(BotTestCase):
+class TestGoogleTranslateBot(BotTestCase, DefaultTests):
     bot_name = "google_translate"
 
     def _test(self, message, response, http_config_fixture, http_fixture=None):

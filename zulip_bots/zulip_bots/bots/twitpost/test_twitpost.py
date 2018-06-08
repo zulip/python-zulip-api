@@ -1,6 +1,7 @@
 from zulip_bots.test_lib import (
     StubBotHandler,
     BotTestCase,
+    DefaultTests,
     get_bot_message_handler,
 )
 from zulip_bots.test_file_utils import (
@@ -12,7 +13,7 @@ import os
 import json
 
 
-class TestTwitpostBot(BotTestCase):
+class TestTwitpostBot(BotTestCase, DefaultTests):
     bot_name = "twitpost"
     mock_config = {'consumer_key': 'abcdefghijklmnopqrstuvwxy',
                    'consumer_secret': 'aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyy',

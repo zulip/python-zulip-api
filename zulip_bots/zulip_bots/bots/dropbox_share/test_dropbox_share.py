@@ -1,4 +1,4 @@
-from zulip_bots.test_lib import BotTestCase
+from zulip_bots.test_lib import BotTestCase, DefaultTests
 from typing import List
 from unittest.mock import patch
 
@@ -73,7 +73,7 @@ def get_help() -> str:
     ```
     '''
 
-class TestDropboxBot(BotTestCase):
+class TestDropboxBot(BotTestCase, DefaultTests):
     bot_name = "dropbox_share"
     config_info = {"access_token": "1234567890"}
 

@@ -5,6 +5,7 @@ from typing import Optional
 
 from zulip_bots.test_lib import (
     BotTestCase,
+    DefaultTests,
     read_bot_fixture_data,
 )
 
@@ -12,7 +13,7 @@ from zulip_bots.bots.trivia_quiz.trivia_quiz import (
     get_quiz_from_payload,
 )
 
-class TestTriviaQuizBot(BotTestCase):
+class TestTriviaQuizBot(BotTestCase, DefaultTests):
     bot_name = "trivia_quiz"  # type: str
 
     new_question_response = '\nQ: Which class of animals are newts members of?\n\n' + \

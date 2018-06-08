@@ -1,6 +1,6 @@
-from zulip_bots.test_lib import BotTestCase
+from zulip_bots.test_lib import BotTestCase, DefaultTests
 
-class TestHelpBot(BotTestCase):
+class TestHelpBot(BotTestCase, DefaultTests):
     bot_name = "helloworld"  # type: str
 
     def test_bot(self) -> None:

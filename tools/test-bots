@@ -95,19 +95,6 @@ def main():
             if options.error_on_no_init:
                 sys.exit(1)
 
-    def filter_tests(tests):
-        # type: (Union[TestSuite, TestCase]) -> TestSuite
-        filtered_tests = TestSuite()
-        for test in tests:
-            if isinstance(test, TestCase):
-                # Exclude test base class from being tested.
-                if test.__class__.__name__ != 'BotTestCase':
-                    filtered_tests.addTest(test)
-            else:
-                filtered_tests.addTest(filter_tests(test))
-        return filtered_tests
-    test_suites = filter_tests(test_suites)
-
     suite = unittest.TestSuite(test_suites)
     runner = unittest.TextTestRunner(verbosity=2)
     result = runner.run(suite)

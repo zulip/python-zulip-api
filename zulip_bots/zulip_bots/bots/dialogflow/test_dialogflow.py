@@ -1,4 +1,4 @@
-from zulip_bots.test_lib import BotTestCase, read_bot_fixture_data
+from zulip_bots.test_lib import BotTestCase, DefaultTests, read_bot_fixture_data
 
 from contextlib import contextmanager
 
@@ -40,7 +40,7 @@ def mock_dialogflow(test_name: str, bot_name: str) -> Any:
         mock_text_request.return_value = request
         yield
 
-class TestDialogFlowBot(BotTestCase):
+class TestDialogFlowBot(BotTestCase, DefaultTests):
     bot_name = 'dialogflow'
 
     def _test(self, test_name: str, message: str, response: str) -> None:

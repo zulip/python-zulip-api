@@ -1,9 +1,9 @@
 from zulip_bots.bots.mention.mention import MentionHandler
 from unittest.mock import patch
-from zulip_bots.test_lib import BotTestCase
+from zulip_bots.test_lib import BotTestCase, DefaultTests
 from zulip_bots.test_lib import StubBotHandler
 
-class TestMentionBot(BotTestCase):
+class TestMentionBot(BotTestCase, DefaultTests):
     bot_name = "mention"
 
     def test_bot_responds_to_empty_message(self) -> None:

@@ -1,7 +1,7 @@
-from zulip_bots.test_lib import BotTestCase
+from zulip_bots.test_lib import BotTestCase, DefaultTests
 from unittest.mock import patch
 
-class TestDefineBot(BotTestCase):
+class TestDefineBot(BotTestCase, DefaultTests):
     bot_name = "define"
 
     def test_bot(self) -> None:

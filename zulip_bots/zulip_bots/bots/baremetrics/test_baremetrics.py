@@ -1,9 +1,9 @@
 from unittest.mock import patch
-from zulip_bots.test_lib import BotTestCase
+from zulip_bots.test_lib import BotTestCase, DefaultTests
 from zulip_bots.test_lib import StubBotHandler
 from zulip_bots.bots.baremetrics.baremetrics import BaremetricsHandler
 
-class TestBaremetricsBot(BotTestCase):
+class TestBaremetricsBot(BotTestCase, DefaultTests):
     bot_name = "baremetrics"
 
     def test_bot_responds_to_empty_message(self) -> None:

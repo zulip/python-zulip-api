@@ -1,6 +1,6 @@
-from zulip_bots.test_lib import BotTestCase
+from zulip_bots.test_lib import BotTestCase, DefaultTests
 
-class TestChessBot(BotTestCase):
+class TestChessBot(BotTestCase, DefaultTests):
     bot_name = "chessbot"
 
     START_RESPONSE = '''New game! The board looks like this:

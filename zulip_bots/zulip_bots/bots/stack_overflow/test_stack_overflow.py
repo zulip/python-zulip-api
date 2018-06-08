@@ -1,7 +1,7 @@
-from zulip_bots.test_lib import BotTestCase
+from zulip_bots.test_lib import BotTestCase, DefaultTests
 from zulip_bots.request_test_lib import mock_request_exception
 
-class TestStackoverflowBot(BotTestCase):
+class TestStackoverflowBot(BotTestCase, DefaultTests):
     bot_name = "stack_overflow"
 
     def test_bot(self) -> None:

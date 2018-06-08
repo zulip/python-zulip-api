@@ -1,10 +1,11 @@
 from zulip_bots.test_lib import (
     BotTestCase,
+    DefaultTests,
 )
 
 from typing import Any
 
-class TestSusiBot(BotTestCase):
+class TestSusiBot(BotTestCase, DefaultTests):
     bot_name = "susi"
 
     def test_help(self) -> None:

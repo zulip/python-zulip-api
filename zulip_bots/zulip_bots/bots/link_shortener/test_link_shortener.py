@@ -1,10 +1,10 @@
 from unittest.mock import patch
-from zulip_bots.test_lib import BotTestCase
+from zulip_bots.test_lib import BotTestCase, DefaultTests
 from zulip_bots.test_lib import StubBotHandler
 from zulip_bots.bots.link_shortener.link_shortener import LinkShortenerHandler
 
 
-class TestLinkShortenerBot(BotTestCase):
+class TestLinkShortenerBot(BotTestCase, DefaultTests):
     bot_name = "link_shortener"
 
     def _test(self, message: str, response: str) -> None:

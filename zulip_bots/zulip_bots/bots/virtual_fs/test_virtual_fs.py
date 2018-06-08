@@ -1,8 +1,8 @@
-from zulip_bots.test_lib import BotTestCase
+from zulip_bots.test_lib import BotTestCase, DefaultTests
 from zulip_bots.bots.virtual_fs.virtual_fs import sample_conversation
 from unittest.mock import patch
 
-class TestVirtualFsBot(BotTestCase):
+class TestVirtualFsBot(BotTestCase, DefaultTests):
     bot_name = "virtual_fs"
     help_txt = ('foo@example.com:\n\nThis bot implements a virtual file system for a stream.\n'
                 'The locations of text are persisted for the lifetime of the bot\n'
