@@ -1,6 +1,6 @@
 import unittest
 
-from libraries import constants
+from ..libraries import constants
 
 
 class CheckIntegrity(unittest.TestCase):
