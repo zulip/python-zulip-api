@@ -9,13 +9,8 @@
       "status": "archived"
     }
   },
-  "response": {
-      "error": {
-        "title": "Unauthenticated",
-        "message": "Provided token is not a JSON Web Token"
-      }
-  },
+  "response": "",
   "response-headers": {
-      "Status": "401 Unauthorized"
+      "status": 200
   }
 }
