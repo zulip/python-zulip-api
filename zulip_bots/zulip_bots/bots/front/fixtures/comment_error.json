@@ -1,0 +1,22 @@
+{
+  "request": {
+    "method": "POST",
+    "api_url": "https://api2.frontapp.com/conversations/cnv_kqatm2/comments",
+    "headers": {
+      "Authorization": "Bearer TEST"
+    },
+    "json": {
+      "author_id": "alt:email:leela@planet-express.com",
+      "body": "@bender, I thought you were supposed to be cooking for this party."
+    }
+  },
+  "response": {
+      "error": {
+        "title": "Unauthenticated",
+        "message": "Provided token is not a JSON Web Token"
+      }
+  },
+  "response-headers": {
+      "status": 401
+  }
+}

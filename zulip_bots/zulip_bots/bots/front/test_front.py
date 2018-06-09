@@ -11,6 +11,12 @@ class TestFrontBot(BotTestCase, DefaultTests):
         message['sender_email'] = "leela@planet-express.com"
         return message
 
+    def test_bot_invalid_api_key(self) -> None:
+        invalid_api_key = ''
+        with self.mock_config_info({'api_key': invalid_api_key}):
+            with self.assertRaises(KeyError):
+                bot, bot_handler = self._get_handlers()
+
     def test_bot_responds_to_empty_message(self) -> None:
         with self.mock_config_info({'api_key': "TEST"}):
             self.verify_reply("", "Unknown command. Use `help` for instructions.")
@@ -28,26 +34,52 @@ class TestFrontBot(BotTestCase, DefaultTests):
             with self.mock_http_conversation('archive'):
                 self.verify_reply('archive', "Conversation was archived.")
 
+    def test_archive_error(self) -> None:
+        with self.mock_config_info({'api_key': "TEST"}):
+            with self.mock_http_conversation('archive_error'):
+                self.verify_reply('archive', 'Something went wrong.')
+
     def test_delete(self) -> None:
         with self.mock_config_info({'api_key': "TEST"}):
             with self.mock_http_conversation('delete'):
                 self.verify_reply('delete', "Conversation was deleted.")
+
+    def test_delete_error(self) -> None:
+        with self.mock_config_info({'api_key': "TEST"}):
+            with self.mock_http_conversation('delete_error'):
+                self.verify_reply('delete', 'Something went wrong.')
 
     def test_spam(self) -> None:
         with self.mock_config_info({'api_key': "TEST"}):
             with self.mock_http_conversation('spam'):
                 self.verify_reply('spam', "Conversation was marked as spam.")
 
+    def test_spam_error(self) -> None:
+        with self.mock_config_info({'api_key': "TEST"}):
+            with self.mock_http_conversation('spam_error'):
+                self.verify_reply('spam', 'Something went wrong.')
+
     def test_restore(self) -> None:
         with self.mock_config_info({'api_key': "TEST"}):
             with self.mock_http_conversation('open'):
                 self.verify_reply('open', "Conversation was restored.")
+
+    def test_restore_error(self) -> None:
+        with self.mock_config_info({'api_key': "TEST"}):
+            with self.mock_http_conversation('open_error'):
+                self.verify_reply('open', 'Something went wrong.')
 
     def test_comment(self) -> None:
         body = "@bender, I thought you were supposed to be cooking for this party."
         with self.mock_config_info({'api_key': "TEST"}):
             with self.mock_http_conversation('comment'):
                 self.verify_reply("comment " + body, "Comment was sent.")
+
+    def test_comment_error(self) -> None:
+        body = "@bender, I thought you were supposed to be cooking for this party."
+        with self.mock_config_info({'api_key': "TEST"}):
+            with self.mock_http_conversation('comment_error'):
+                self.verify_reply('comment ' + body, 'Something went wrong.')
 
 class TestFrontBotWrongTopic(BotTestCase, DefaultTests):
     bot_name = 'front'

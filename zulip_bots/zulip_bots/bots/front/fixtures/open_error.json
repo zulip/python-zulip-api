@@ -1,0 +1,21 @@
+{
+  "request": {
+    "method": "PATCH",
+    "api_url": "https://api2.frontapp.com/conversations/cnv_kqatm2",
+    "headers": {
+      "Authorization": "Bearer TEST"
+    },
+    "json": {
+      "status": "open"
+    }
+  },
+  "response": {
+      "error": {
+        "title": "Unauthenticated",
+        "message": "Provided token is not a JSON Web Token"
+      }
+  },
+  "response-headers": {
+      "status": 401
+  }
+}
