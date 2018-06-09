@@ -5,6 +5,7 @@ import sys
 import argparse
 import unittest
 import pytest
+import shutil
 
 TOOLS_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(os.path.dirname(TOOLS_DIR))
@@ -25,6 +26,10 @@ def handle_input_and_run_tests_for_package(package_name, path_list):
                         action='store_true',
                         help='show verbose output (with pytest)')
     options = parser.parse_args()
+
+    test_session_title = ' Running tests for {} '.format(package_name)
+    header = test_session_title.center(shutil.get_terminal_size().columns, '#')
+    print(header)
 
     if options.coverage:
         import coverage
