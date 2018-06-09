@@ -9,8 +9,8 @@ import pytest
 TOOLS_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(os.path.dirname(TOOLS_DIR))
 
-def handle_input_and_run_tests_for_package(package_name):
-    parser = argparse.ArgumentParser(description="Run tests for the {} package.".format(package_name))
+def handle_input_and_run_tests_for_package(package_name, path_list):
+    parser = argparse.ArgumentParser(description="Run tests for {}.".format(package_name))
     parser.add_argument('--coverage',
                         nargs='?',
                         const=True,
@@ -34,7 +34,7 @@ def handle_input_and_run_tests_for_package(package_name):
         cov.start()
 
     if options.pytest:
-        location_to_run_in = os.path.join(TOOLS_DIR, '..', package_name)
+        location_to_run_in = os.path.join(TOOLS_DIR, '..', *path_list)
         paths_to_test = ['.']
         pytest_options = [
             '-s',    # show output from tests; this hides the progress bar though
@@ -50,7 +50,7 @@ def handle_input_and_run_tests_for_package(package_name):
     else:
         # Codecov seems to work only when using loader.discover. It failed to capture line executions
         # for functions like loader.loadTestFromModule or loader.loadTestFromNames.
-        test_suites = unittest.defaultTestLoader.discover(package_name)
+        test_suites = unittest.defaultTestLoader.discover(os.path.join(*path_list))
         suite = unittest.TestSuite(test_suites)
         runner = unittest.TextTestRunner(verbosity=2)
         result = runner.run(suite)
