@@ -1,4 +1,5 @@
-from unittest import mock, skipIf
+from unittest.mock import patch
+from unittest import skipIf
 
 from sys import version_info
 
@@ -18,7 +19,7 @@ class TestMonkeyTestitBot(BotTestCase, DefaultTests):
             content='',
             type='stream',
         )
-        with mock.patch.object(self.monkeytestit_class, 'initialize', return_value=None):
+        with patch.object(self.monkeytestit_class, 'initialize', return_value=None):
             with self.mock_config_info({'api_key': "magic"}):
                 res = self.get_response(message)
                 self.assertTrue("Unknown command" in res['content'])
@@ -28,7 +29,7 @@ class TestMonkeyTestitBot(BotTestCase, DefaultTests):
             content='check https://website.com',
             type='stream',
         )
-        with mock.patch.object(self.monkeytestit_class, 'initialize', return_value=None):
+        with patch.object(self.monkeytestit_class, 'initialize', return_value=None):
             with self.mock_config_info({'api_key': "magic"}):
                 with self.mock_http_conversation('website_result_fail'):
                     res = self.get_response(message)
@@ -39,7 +40,7 @@ class TestMonkeyTestitBot(BotTestCase, DefaultTests):
             content='check https://website.com',
             type='stream',
         )
-        with mock.patch.object(self.monkeytestit_class, 'initialize', return_value=None):
+        with patch.object(self.monkeytestit_class, 'initialize', return_value=None):
             with self.mock_config_info({'api_key': "magic"}):
                 with self.mock_http_conversation('website_result_success'):
                     res = self.get_response(message)
