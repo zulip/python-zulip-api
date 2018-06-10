@@ -62,7 +62,7 @@ def get_flock_response(content: str, config: Dict[str, str]) -> str:
         return error
 
     if len(str(recipient_id)) > 30:
-        return recipient_id
+        return "Found user is invalid."
 
     payload = {
         'to': recipient_id,
