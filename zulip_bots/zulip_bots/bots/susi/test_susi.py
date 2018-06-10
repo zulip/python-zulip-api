@@ -3,8 +3,6 @@ from zulip_bots.test_lib import (
     DefaultTests,
 )
 
-from typing import Any
-
 class TestSusiBot(BotTestCase, DefaultTests):
     bot_name = "susi"
 

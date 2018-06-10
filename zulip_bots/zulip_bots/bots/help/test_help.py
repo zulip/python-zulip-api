@@ -1,7 +1,5 @@
 from zulip_bots.test_lib import BotTestCase, DefaultTests
 
-from typing import Any
-
 class TestHelpBot(BotTestCase, DefaultTests):
     bot_name = "help"
 

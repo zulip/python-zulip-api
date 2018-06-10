@@ -9,9 +9,6 @@ from zulip_bots.test_file_utils import (
 )
 from unittest.mock import patch
 import tweepy
-import os
-import json
-
 
 class TestTwitpostBot(BotTestCase, DefaultTests):
     bot_name = "twitpost"

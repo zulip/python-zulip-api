@@ -1,10 +1,8 @@
 from zulip_bots.test_lib import BotTestCase, DefaultTests
 
-from contextlib import contextmanager
-from unittest.mock import MagicMock
 from zulip_bots.bots.game_of_fifteen.game_of_fifteen import GameOfFifteenModel
 from zulip_bots.game_handler import BadMoveException
-from typing import Dict, Any, List, Tuple
+from typing import Dict, List, Tuple
 
 
 class TestGameOfFifteenBot(BotTestCase, DefaultTests):

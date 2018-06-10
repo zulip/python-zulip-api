@@ -2,7 +2,8 @@ from unittest.mock import patch
 from requests.exceptions import HTTPError, ConnectionError
 
 from zulip_bots.test_lib import StubBotHandler, BotTestCase, DefaultTests, get_bot_message_handler
-from typing import Any, Union, Dict
+from typing import Dict
+
 class TestYoutubeBot(BotTestCase, DefaultTests):
     bot_name = "youtube"
     normal_config  = {'key': '12345678',

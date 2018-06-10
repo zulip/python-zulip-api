@@ -1,10 +1,8 @@
 from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler, read_bot_fixture_data
-import simple_salesforce
 from simple_salesforce.exceptions import SalesforceAuthenticationFailed
 from contextlib import contextmanager
 from unittest.mock import patch
 from typing import Any, Dict
-import logging
 
 
 @contextmanager
