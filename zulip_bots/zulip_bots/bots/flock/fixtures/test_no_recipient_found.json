@@ -6,9 +6,12 @@
             "token": "12345"
         }
     },
-    "response": {
-        "error": "No user found. Make sure you typed it correctly."
-    },
+    "response": [
+        {
+            "id": 1,
+            "firstName": "user1"
+        }
+    ],
     "response-headers": {
         "content-type": "application/json; charset=utf-8"
     }

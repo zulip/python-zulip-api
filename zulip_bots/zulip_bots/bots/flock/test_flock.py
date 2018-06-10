@@ -37,10 +37,8 @@ right now.\nPlease try again later")
             self.verify_reply('Ricky: test message', "Uh-Oh, couldn\'t process the request \
 right now.\nPlease try again later")
 
-    @patch('zulip_bots.bots.flock.flock.find_recipient_id')
-    def test_no_recipient_found(self, find_recipient: str) -> None:
+    def test_no_recipient_found(self) -> None:
         bot_response = "No user found. Make sure you typed it correctly."
-        find_recipient.return_value = None
         with self.mock_config_info(self.normal_config), \
                 self.mock_http_conversation('test_no_recipient_found'):
                     self.verify_reply('david: hello', bot_response)
