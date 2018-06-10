@@ -1,4 +1,4 @@
-from unittest import mock
+from unittest.mock import patch
 
 from zulip_bots.test_lib import (
     get_bot_message_handler,
@@ -19,7 +19,7 @@ class TestIncrementorBot(BotTestCase, DefaultTests):
         bot.initialize(bot_handler)
         bot.handle_message(message, bot_handler)
 
-        with mock.patch('zulip_bots.simple_lib.SimpleMessageServer.update') as m:
+        with patch('zulip_bots.simple_lib.SimpleMessageServer.update') as m:
             bot.handle_message(message, bot_handler)
             bot.handle_message(message, bot_handler)
             bot.handle_message(message, bot_handler)
