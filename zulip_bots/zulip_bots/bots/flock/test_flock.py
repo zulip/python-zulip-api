@@ -50,6 +50,15 @@ right now.\nPlease try again later")
                     self.verify_reply('david: hello', bot_response)
 
     @patch('zulip_bots.bots.flock.flock.get_recipient_id')
+    def test_message_send_connection_error(self, get_recipient_id: str) -> None:
+        bot_response = "Uh-Oh, couldn't process the request right now.\nPlease try again later"
+        get_recipient_id.return_value = ["u:userid", None]
+        with self.mock_config_info(self.normal_config), \
+                patch('requests.get', side_effect=ConnectionError()), \
+                patch('logging.exception'):
+            self.verify_reply('Rishabh: hi there', bot_response)
+
+    @patch('zulip_bots.bots.flock.flock.get_recipient_id')
     def test_message_send_success(self, get_recipient_id: str) -> None:
         bot_response = "Message sent."
         get_recipient_id.return_value = ["u:userid", None]
