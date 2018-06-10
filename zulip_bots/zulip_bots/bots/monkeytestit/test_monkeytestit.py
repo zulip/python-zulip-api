@@ -1,13 +1,11 @@
-import unittest
-from unittest import mock
+from unittest import mock, skipIf
+
+from sys import version_info
 
 from importlib import import_module
 from zulip_bots.test_lib import BotTestCase, DefaultTests
 
-
-# TODO: Figure out a way to test bots that depends
-# on the Python version of the environment.
-@unittest.skip("Fails on Python3.4.")
+@skipIf(version_info[:2] < (3, 5), "monkeytestit requires python3.5+")
 class TestMonkeyTestitBot(BotTestCase, DefaultTests):
     bot_name = "monkeytestit"
 
