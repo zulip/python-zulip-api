@@ -43,9 +43,9 @@ class TriviaQuizHandler:
                 bot_handler.send_reply(message, bot_response)
                 return
             quiz = json.loads(quiz_payload)
-            correct, bot_response = grade_question(quiz, answer)
+            start_new_question, bot_response = handle_answer(quiz, answer, quiz_id, bot_handler)
             bot_handler.send_reply(message, bot_response)
-            if correct:
+            if start_new_question:
                 start_new_quiz(message, bot_handler)
             return
         else:
@@ -125,6 +125,8 @@ def get_quiz_from_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
     quiz = dict(
         question=fix_quotes(question),
         answers=answers,
+        answered_options=[],
+        pending=True,
         correct_letter=correct_letter,
     )
     return quiz
@@ -196,16 +198,39 @@ Q: {question}
     )
     return content
 
-def grade_question(quiz: Dict[str, Any], answer: str) -> Tuple[bool, str]:
-    correct = (answer == quiz['correct_letter'])
+def update_quiz(quiz: Dict[str, Any], quiz_id: str, bot_handler: Any) -> None:
+    bot_handler.storage.put(quiz_id, json.dumps(quiz))
 
-    if correct:
-        long_answer = quiz['answers'][answer]
-        response = '**CORRECT!** {long_answer} :tada:'.format(long_answer=long_answer)
-        return correct, response
+def build_response(is_correct: bool, num_answers: int) -> str:
+    if is_correct:
+        response = '**CORRECT!** {answer} :tada:'
+    else:
+        if num_answers >= 3:
+            response = '**WRONG!** :disappointed: The correct answer is {answer}.'
+        else:
+            response = '**WRONG!** {option} is not correct :disappointed:'
+    return response
 
-    response = '**WRONG!** {answer} is not correct :disappointed:'.format(answer=answer)
-    return correct, response
+def handle_answer(quiz: Dict[str, Any], option: str, quiz_id: str,
+                  bot_handler: Any) -> Tuple[bool, str]:
+    answer = quiz['answers'][quiz['correct_letter']]
+    is_new_answer = (option not in quiz['answered_options'])
+    if is_new_answer:
+        quiz['answered_options'].append(option)
+
+    num_answers = len(quiz['answered_options'])
+    is_correct = (option == quiz['correct_letter'])
+
+    start_new_question = quiz['pending'] and (is_correct or num_answers >= 3)
+    if start_new_question or is_correct:
+        quiz['pending'] = False
+
+    if is_new_answer or start_new_question:
+        update_quiz(quiz, quiz_id, bot_handler)
+
+    response = build_response(is_correct, num_answers).format(
+        option=option, answer=answer, id=quiz_id)
+    return start_new_question, response
 
 
 handler_class = TriviaQuizHandler

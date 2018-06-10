@@ -2,12 +2,13 @@ import json
 import html
 
 from unittest.mock import patch
-from typing import Optional
+from typing import Optional, Tuple, Any, Dict
 
 from zulip_bots.test_lib import (
     BotTestCase,
     DefaultTests,
     read_bot_fixture_data,
+    StubBotHandler,
 )
 
 from zulip_bots.request_test_lib import (
@@ -17,6 +18,9 @@ from zulip_bots.request_test_lib import (
 from zulip_bots.bots.trivia_quiz.trivia_quiz import (
     get_quiz_from_payload,
     fix_quotes,
+    get_quiz_from_id,
+    update_quiz,
+    handle_answer,
 )
 
 class TestTriviaQuizBot(BotTestCase, DefaultTests):
@@ -28,6 +32,13 @@ class TestTriviaQuizBot(BotTestCase, DefaultTests):
         '* **C** Reptiles\n' + \
         '* **D** Mammals\n' + \
         '**reply**: answer Q001 <letter>'
+
+    def get_test_quiz(self) -> Tuple[Dict[str, Any], Any]:
+        bot_handler = StubBotHandler()
+        quiz_payload = read_bot_fixture_data('trivia_quiz', 'test_new_question')['response']
+        with patch('random.shuffle'):
+            quiz = get_quiz_from_payload(quiz_payload)
+        return quiz, bot_handler
 
     def _test(self, message: str, response: str, fixture: Optional[str]=None) -> None:
         if fixture:
@@ -74,9 +85,12 @@ class TestTriviaQuizBot(BotTestCase, DefaultTests):
         with patch('random.shuffle'):
             quiz = get_quiz_from_payload(quiz_payload)
 
+        # Test initial storage
         self.assertEqual(quiz['question'], 'Which class of animals are newts members of?')
         self.assertEqual(quiz['correct_letter'], 'A')
         self.assertEqual(quiz['answers']['D'], 'Mammals')
+        self.assertEqual(quiz['answered_options'], [])
+        self.assertEqual(quiz['pending'], True)
 
         # test incorrect answer
         with patch('zulip_bots.bots.trivia_quiz.trivia_quiz.get_quiz_from_id',
@@ -88,3 +102,56 @@ class TestTriviaQuizBot(BotTestCase, DefaultTests):
                    return_value=json.dumps(quiz)):
             with patch('zulip_bots.bots.trivia_quiz.trivia_quiz.start_new_quiz') as mock_new_quiz:
                 self._test('answer Q001 A', '**CORRECT!** Amphibian :tada:')
+
+    def test_update_quiz(self) -> None:
+        quiz, bot_handler = self.get_test_quiz()
+        update_quiz(quiz, 'Q001', bot_handler)
+        test_quiz = json.loads(bot_handler.storage.get('Q001'))
+        self.assertEqual(test_quiz, quiz)
+
+    def test_get_quiz_from_id(self) -> None:
+        quiz, bot_handler = self.get_test_quiz()
+        bot_handler.storage.put('Q001', quiz)
+        self.assertEqual(get_quiz_from_id('Q001', bot_handler), quiz)
+
+    def test_handle_answer(self) -> None:
+        quiz, bot_handler = self.get_test_quiz()
+        # create test initial storage
+        update_quiz(quiz, 'Q001', bot_handler)
+
+        # test for a correct answer
+        start_new_question, response = handle_answer(quiz, 'A', 'Q001', bot_handler)
+        self.assertTrue(start_new_question)
+        self.assertEqual(response, '**CORRECT!** Amphibian :tada:')
+
+        # test for an incorrect answer
+        start_new_question, response = handle_answer(quiz, 'D', 'Q001', bot_handler)
+        self.assertFalse(start_new_question)
+        self.assertEqual(response, '**WRONG!** D is not correct :disappointed:')
+
+    def test_handle_answer_three_failed_attempts(self) -> None:
+        quiz, bot_handler = self.get_test_quiz()
+        # create test storage for a question which has been incorrectly answered twice
+        quiz['answered_options'] = ['C', 'B']
+        update_quiz(quiz, 'Q001', bot_handler)
+
+        # test response  and storage after three failed attempts
+        start_new_question, response = handle_answer(quiz, 'D', 'Q001', bot_handler)
+        self.assertEqual(response, '**WRONG!** :disappointed: The correct answer is Amphibian.')
+        self.assertTrue(start_new_question)
+        quiz_reset = json.loads(bot_handler.storage.get('Q001'))
+        self.assertEqual(quiz_reset['pending'], False)
+
+        # test response after question has ended
+        incorrect_answers = ['B', 'C', 'D']
+        for ans in incorrect_answers:
+            start_new_question, response = handle_answer(quiz, ans, 'Q001', bot_handler)
+            self.assertEqual(response, '**WRONG!** :disappointed: The correct answer is Amphibian.')
+            self.assertFalse(start_new_question)
+        start_new_question, response = handle_answer(quiz, 'A', 'Q001', bot_handler)
+        self.assertEqual(response, '**CORRECT!** Amphibian :tada:')
+        self.assertFalse(start_new_question)
+
+        # test storage after question has ended
+        quiz_reset = json.loads(bot_handler.storage.get('Q001'))
+        self.assertEqual(quiz_reset['pending'], False)
