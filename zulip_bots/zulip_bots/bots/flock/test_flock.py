@@ -43,6 +43,12 @@ right now.\nPlease try again later")
                 self.mock_http_conversation('test_no_recipient_found'):
                     self.verify_reply('david: hello', bot_response)
 
+    def test_found_invalid_recipient(self) -> None:
+        bot_response = "Found user is invalid."
+        with self.mock_config_info(self.normal_config), \
+                self.mock_http_conversation('test_found_invalid_recipient'):
+                    self.verify_reply('david: hello', bot_response)
+
     @patch('zulip_bots.bots.flock.flock.get_recipient_id')
     def test_message_send_success(self, get_recipient_id: str) -> None:
         bot_response = "Message sent."
