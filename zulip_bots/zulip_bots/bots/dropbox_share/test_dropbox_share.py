@@ -1,5 +1,4 @@
 from zulip_bots.test_lib import BotTestCase, DefaultTests
-from typing import List
 from unittest.mock import patch
 
 from zulip_bots.bots.dropbox_share.test_util import (

@@ -1,8 +1,7 @@
 from zulip_bots.test_lib import BotTestCase, DefaultTests
 from zulip_bots.game_handler import GameInstance
 
-from contextlib import contextmanager
-from mock import MagicMock, patch
+from mock import patch
 
 from typing import Any, Dict, List
 

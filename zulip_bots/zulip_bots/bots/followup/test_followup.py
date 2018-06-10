@@ -5,8 +5,6 @@ from zulip_bots.test_lib import (
     get_bot_message_handler,
 )
 
-from typing import Any
-
 
 class TestFollowUpBot(BotTestCase, DefaultTests):
     bot_name = "followup"

@@ -1,7 +1,6 @@
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from requests.exceptions import HTTPError, ConnectionError
 
-from typing import Any, Union
 from zulip_bots.test_lib import StubBotHandler, BotTestCase, DefaultTests, get_bot_message_handler
 
 class TestGiphyBot(BotTestCase, DefaultTests):

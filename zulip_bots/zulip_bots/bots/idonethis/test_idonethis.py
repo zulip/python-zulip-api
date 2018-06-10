@@ -2,8 +2,6 @@ from unittest.mock import patch
 
 from zulip_bots.test_lib import BotTestCase, DefaultTests
 
-import requests
-
 class TestIDoneThisBot(BotTestCase, DefaultTests):
     bot_name = "idonethis"  # type: str
 
