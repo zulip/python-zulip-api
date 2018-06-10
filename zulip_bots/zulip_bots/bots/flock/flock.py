@@ -1,6 +1,6 @@
 import logging
 import requests
-from typing import Any, Dict, Tuple, Optional
+from typing import Any, Dict, List, Tuple, Optional
 from requests.exceptions import ConnectionError
 
 USERS_LIST_URL = 'https://api.flock.co/v1/roster.listContacts'
@@ -13,10 +13,10 @@ You can send messages to any Flock user associated with your account from Zulip.
 
 # Matches the recipient name provided by user with list of users in his contacts.
 # If matches, returns the matched User's ID
-def find_recipient_id(res: str, recipient_name: str) -> str:
-    for obj in res:
-        if recipient_name == obj['firstName']:
-            return obj['id']
+def find_recipient_id(users: List[Any], recipient_name: str) -> str:
+    for user in users:
+        if recipient_name == user['firstName']:
+            return user['id']
 
 # Make request to given flock URL and return a two-element tuple
 # whose left-hand value contains JSON body of response (or None if request failed)
@@ -39,11 +39,11 @@ def get_recipient_id(recipient_name: str, config: Dict[str, str]) -> Tuple[Optio
     payload = {
         'token': token
     }
-    res, error = make_flock_request(USERS_LIST_URL, payload)
-    if res is None:
+    users, error = make_flock_request(USERS_LIST_URL, payload)
+    if users is None:
         return (None, error)
 
-    recipient_id = find_recipient_id(res, recipient_name)
+    recipient_id = find_recipient_id(users, recipient_name)
     if recipient_id is None:
         error = "No user found. Make sure you typed it correctly."
         return (None, error)
