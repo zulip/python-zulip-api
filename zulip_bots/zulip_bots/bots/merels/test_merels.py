@@ -4,13 +4,9 @@ Most of the testing for the actual game are done in test_database
 This is only to really verify the output of the chat
 """
 
-from unittest import mock
+from zulip_bots.test_lib import BotTestCase, DefaultTests
 
-import zulip_bots.bots.merels.merels
-import zulip_bots.test_lib
-
-
-class TestFollowUpBot(zulip_bots.test_lib.BotTestCase, DefaultTests):
+class TestMerelsBot(BotTestCase, DefaultTests):
     bot_name = "merels"
 
     def test_no_command(self):
