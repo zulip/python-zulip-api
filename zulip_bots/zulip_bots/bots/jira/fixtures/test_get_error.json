@@ -1,0 +1,16 @@
+{
+  "request": {
+    "api_url": "https://example.atlassian.net/rest/api/2/issue/TEST-13",
+    "method": "GET",
+    "headers": {
+      "Authorization": "Basic ZXhhbXBsZUBleGFtcGxlLmNvbTpxd2VydHkhMTIz"
+    }
+  },
+  "response": {
+    "errorMessages": ["error1"]
+  },
+  "response-headers": {
+    "status": 200,
+    "content-type": "application/json; charset=utf-8"
+  }
+}
