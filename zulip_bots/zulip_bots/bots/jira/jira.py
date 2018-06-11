@@ -242,7 +242,7 @@ def make_jira_auth(username: str, password: str) -> str:
 def make_create_json(summary: str, project_key: str, type_name: str,
                      description: Optional[str], assignee: Optional[str],
                      priority_name: Optional[str], labels: Optional[str],
-                     due_date: Optional[str]) -> str:
+                     due_date: Optional[str]) -> Any:
     '''Makes a JSON string for the Jira REST API editing endpoint based on
     fields that could be edited.
 
@@ -257,35 +257,34 @@ def make_create_json(summary: str, project_key: str, type_name: str,
                           comma-spaces.
      - due_date (optional): The Jira due date property.
     '''
-    json = '{"fields": {'
-
-    json += '"summary": "' + summary + '",'
-    json += '"project": { "key": "' + project_key + '" },'
-    json += '"issuetype": { "name": "' + type_name + '" },'
+    json_fields = {
+        'summary': summary,
+        'project': {
+            'key': project_key
+        },
+        'issuetype': {
+            'name': type_name
+        }
+    }
     if description:
-        json += '"description": "' + description + '",'
+        json_fields['description'] = description
     if assignee:
-        json += '"assignee": { "name": "' + assignee + '" },'
+        json_fields['assignee'] = {'name': assignee}
     if priority_name:
-        json += '"priority": { "name": "' + priority_name + '" },'
+        json_fields['priority'] = {'name': priority_name}
     if labels:
-        labels_list = labels.split(', ')
-        labels_json = '"' + '","'.join(labels_list) + '"'
-        json += '"labels": [' + labels_json + '],'
+        json_fields['labels'] = labels.split(', ')
     if due_date:
-        json += '"duedate": "' + due_date + '",'
+        json_fields['duedate'] = due_date
 
-    # Remove the trailing comma.
-    json = json[:-1]
-
-    json += '}}'
+    json = {'fields': json_fields}
 
     return json
 
 def make_edit_json(summary: Optional[str], project_key: Optional[str],
                    type_name: Optional[str], description: Optional[str],
                    assignee: Optional[str], priority_name: Optional[str],
-                   labels: Optional[str], due_date: Optional[str]) -> str:
+                   labels: Optional[str], due_date: Optional[str]) -> Any:
     '''Makes a JSON string for the Jira REST API editing endpoint based on
     fields that could be edited.
 
@@ -300,31 +299,26 @@ def make_edit_json(summary: Optional[str], project_key: Optional[str],
                           comma-spaces.
      - due_date (optional): The Jira due date property.
     '''
-    json = '{"fields": {'
+    json_fields = {}
 
     if summary:
-        json += '"summary": "' + summary + '",'
+        json_fields['summary'] = summary
     if project_key:
-        json += '"project": { "key": "' + project_key + '" },'
+        json_fields['project'] = {'key': project_key}
     if type_name:
-        json += '"issuetype": { "name": "' + type_name + '" },'
+        json_fields['issuetype'] = {'name': type_name}
     if description:
-        json += '"description": "' + description + '",'
+        json_fields['description'] = description
     if assignee:
-        json += '"assignee": { "name": "' + assignee + '" },'
+        json_fields['assignee'] = {'name': assignee}
     if priority_name:
-        json += '"priority": { "name": "' + priority_name + '" },'
+        json_fields['priority'] = {'name': priority_name}
     if labels:
-        labels_list = labels.split(', ')
-        labels_json = '"' + '","'.join(labels_list) + '"'
-        json += '"labels": [' + labels_json + '],'
+        json_fields['labels'] = labels.split(', ')
     if due_date:
-        json += '"duedate": "' + due_date + '",'
+        json_fields['duedate'] = due_date
 
-    # Remove the trailing comma.
-    json = json[:-1]
-
-    json += '}}'
+    json = {'fields': json_fields}
 
     return json
 

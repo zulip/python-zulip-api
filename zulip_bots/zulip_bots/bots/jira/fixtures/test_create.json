@@ -6,7 +6,17 @@
       "Authorization": "Basic ZXhhbXBsZUBleGFtcGxlLmNvbTpxd2VydHkhMTIz",
       "Content-type": "application/json"
     },
-    "data": "{\"fields\": {\"summary\": \"Testing\",\"project\": { \"key\": \"TEST\" },\"issuetype\": { \"name\": \"Task\" }}}"
+    "data": {
+      "fields": {
+        "summary": "Testing",
+        "project": { 
+          "key": "TEST" 
+        },
+        "issuetype": { 
+          "name": "Task" 
+        }
+      }
+    }
   },
   "response": {
     "key": "TEST-16"

@@ -6,7 +6,11 @@
       "Authorization": "Basic ZXhhbXBsZUBleGFtcGxlLmNvbTpxd2VydHkhMTIz",
       "Content-type": "application/json"
     },
-    "data": "{\"fields\": {\"description\": \"description\"}}"
+    "data": {
+      "fields": {
+        "description": "description"
+      }
+    }
   },
   "response": {
   },
