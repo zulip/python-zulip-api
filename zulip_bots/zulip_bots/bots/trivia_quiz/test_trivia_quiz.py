@@ -1,4 +1,5 @@
 import json
+import html
 
 from unittest.mock import patch
 from typing import Optional
@@ -9,8 +10,13 @@ from zulip_bots.test_lib import (
     read_bot_fixture_data,
 )
 
+from zulip_bots.request_test_lib import (
+    mock_request_exception,
+)
+
 from zulip_bots.bots.trivia_quiz.trivia_quiz import (
     get_quiz_from_payload,
+    fix_quotes,
 )
 
 class TestTriviaQuizBot(BotTestCase, DefaultTests):
@@ -39,6 +45,18 @@ class TestTriviaQuizBot(BotTestCase, DefaultTests):
 
     def test_question_not_available(self) -> None:
         self._test('new', 'Uh-Oh! Trivia service is down.', 'test_status_code')
+
+        with mock_request_exception():
+            self.verify_reply('new', 'Uh-Oh! Trivia service is down.')
+
+    def test_fix_quotes(self) -> None:
+        self.assertEqual(fix_quotes('test &amp; test'), html.unescape('test &amp; test'))
+        print('f')
+        with patch('html.unescape') as mock_html_unescape:
+            mock_html_unescape.side_effect = Exception
+            with self.assertRaises(Exception) as exception:
+                fix_quotes('test')
+            self.assertEqual(str(exception.exception), "Please use python3.4 or later for this bot.")
 
     def test_invalid_answer(self) -> None:
         invalid_replies = ['answer A',
