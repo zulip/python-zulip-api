@@ -87,7 +87,9 @@ def main():
     else:
         specified_bots = available_bots
 
-    bots_to_test = filter(lambda bot: bot not in options.exclude, specified_bots)
+    # Use of a set ensures we don't end up with duplicate tests with unittest
+    # (from globbing multiple test_*.py files, or multiple on the command line)
+    bots_to_test = {bot for bot in specified_bots if bot not in options.exclude}
 
     if options.pytest:
         excluded_bots = ['merels']
