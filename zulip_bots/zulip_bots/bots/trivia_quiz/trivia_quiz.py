@@ -38,7 +38,7 @@ class TriviaQuizHandler:
                 return
             try:
                 quiz_payload = get_quiz_from_id(quiz_id, bot_handler)
-            except KeyError:
+            except (KeyError, TypeError):
                 bot_response = 'Invalid quiz id'
                 bot_handler.send_reply(message, bot_response)
                 return
@@ -132,9 +132,7 @@ def get_quiz_from_payload(payload):
 def generate_quiz_id(storage) -> str:
     try:
         quiz_num = storage.get('quiz_id')
-    except KeyError:
-        quiz_num = 0
-    except TypeError:
+    except (KeyError, TypeError):
         quiz_num = 0
     quiz_num += 1
     quiz_num = quiz_num % (1000)
