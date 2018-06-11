@@ -10,18 +10,6 @@ class TestJiraBot(BotTestCase, DefaultTests):
         'domain': 'example.atlassian.net'
     }
 
-    MOCK_GET_JSON = {
-        'fields': {
-            'creator': {'name': 'admin'},
-            'description': 'description',
-            'priority': {'name': 'Medium'},
-            'project': {'name': 'Tests'},
-            'issuetype': {'name': 'Task'},
-            'status': {'name': 'To Do'},
-            'summary': 'summary'
-        }
-    }
-
     MOCK_GET_RESPONSE = '''\
 **Issue *[TEST-13](https://example.atlassian.net/browse/TEST-13)*: summary**
 
@@ -34,13 +22,7 @@ class TestJiraBot(BotTestCase, DefaultTests):
  - Status: *To Do*
 '''
 
-    MOCK_CREATE_JSON = {
-        'key': 'TEST-16'
-    }
-
     MOCK_CREATE_RESPONSE = 'Issue *TEST-16* is up! https://example.atlassian.net/browse/TEST-16'
-
-    MOCK_EDIT_JSON = {}
 
     MOCK_EDIT_RESPONSE = 'Issue *TEST-16* was edited! https://example.atlassian.net/browse/TEST-16'
 
@@ -153,11 +135,8 @@ Jira Bot:
                                   'No `domain` was specified')
 
     def test_get(self) -> None:
-        with patch('requests.get') as response, \
-                self.mock_config_info(self.MOCK_CONFIG_INFO):
-            response.return_value.text = 'text so that it isn\'t assumed to be an error'
-            response.return_value.json = lambda: self.MOCK_GET_JSON
-
+        with self.mock_config_info(self.MOCK_CONFIG_INFO), \
+                self.mock_http_conversation('test_get'):
             self.verify_reply('get "TEST-13"', self.MOCK_GET_RESPONSE)
 
     def test_get_error(self) -> None:
@@ -167,15 +146,10 @@ Jira Bot:
                               'Oh no! Jira raised an error:\n > error1')
 
     def test_create(self) -> None:
-        with patch('requests.post') as response, \
-                self.mock_config_info(self.MOCK_CONFIG_INFO):
-            response.return_value.text = 'text so that it isn\'t assumed to be an error'
-            response.return_value.json = lambda: self.MOCK_CREATE_JSON
-
-            self.verify_reply(
-                'create issue "Testing" in project "TEST" with type "Task"',
-                self.MOCK_CREATE_RESPONSE
-            )
+        with self.mock_config_info(self.MOCK_CONFIG_INFO), \
+                self.mock_http_conversation('test_create'):
+            self.verify_reply('create issue "Testing" in project "TEST" with type "Task"',
+                              self.MOCK_CREATE_RESPONSE)
 
     def test_create_error(self) -> None:
         with self.mock_config_info(self.MOCK_CONFIG_INFO), \
@@ -195,6 +169,12 @@ Jira Bot:
                 'edit issue "TEST-16" to use description "description"',
                 self.MOCK_EDIT_RESPONSE
             )
+
+    def test_edit(self) -> None:
+        with self.mock_config_info(self.MOCK_CONFIG_INFO), \
+                self.mock_http_conversation('test_edit'):
+            self.verify_reply('edit issue "TEST-16" to use description "description"',
+                              self.MOCK_EDIT_RESPONSE)
 
     def test_edit_error(self) -> None:
         with self.mock_config_info(self.MOCK_CONFIG_INFO), \
