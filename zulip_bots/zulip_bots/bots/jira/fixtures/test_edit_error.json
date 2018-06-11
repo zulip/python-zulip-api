@@ -1,0 +1,20 @@
+{
+  "request": {
+    "api_url": "https://example.atlassian.net/rest/api/2/issue/TEST-13",
+    "method": "PUT",
+    "headers": {
+      "Authorization": "Basic ZXhhbXBsZUBleGFtcGxlLmNvbTpxd2VydHkhMTIz",
+      "Content-type": "application/json"
+    },
+    "data": "{\"fields\": {\"summary\": \"Change the summary\",\"project\": { \"key\": \"TEST\" },\"issuetype\": { \"name\": \"Bug\" },\"description\": \"This is a test description\",\"assignee\": { \"name\": \"testuser\" },\"priority\": { \"name\": \"Low\" },\"labels\": [\"issues\",\"testing\"],\"duedate\": \"2018-06-11\"}}"
+  },
+  "response": {
+    "errors": {
+      "error1": "error1"
+    }
+  },
+  "response-headers": {
+    "status": 200,
+    "content-type": "application/json; charset=utf-8"
+  }
+}
