@@ -87,6 +87,8 @@ force_include = [
     "zulip_bots/zulip_bots/bots/connect_four/test_connect_four.py",
     "zulip_bots/zulip_bots/bots/tictactoe/tictactoe.py",
     "zulip_bots/zulip_bots/bots/tictactoe/test_tictactoe.py",
+    "zulip_bots/zulip_bots/bots/trivia_quiz/trivia_quiz.py",
+    "zulip_bots/zulip_bots/bots/trivia_quiz/test_trivia_quiz.py",
     "zulip_bots/zulip_bots/bots/game_handler_bot/game_handler_bot.py",
     "zulip_bots/zulip_bots/bots/game_handler_bot/test_game_handler_bot.py",
     "zulip_bots/zulip_bots/bots/trello/trello.py",

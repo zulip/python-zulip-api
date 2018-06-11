@@ -5,7 +5,7 @@ import random
 import re
 from zulip_bots.lib import Any
 
-from typing import Optional, Any, Dict
+from typing import Optional, Any, Dict, Tuple
 
 class NotAvailableException(Exception):
     pass
@@ -63,7 +63,7 @@ def start_new_quiz(message: Dict[str, Any], bot_handler: Any) -> None:
     bot_handler.storage.put(quiz_id, json.dumps(quiz))
     bot_handler.send_reply(message, bot_response, widget_content)
 
-def parse_answer(query):
+def parse_answer(query: str) -> Tuple[str, str]:
     m = re.match('answer\s+(Q...)\s+(.)', query)
     if not m:
         raise InvalidAnswerException()
@@ -75,12 +75,12 @@ def parse_answer(query):
 
     return (quiz_id, answer)
 
-def get_trivia_quiz() -> str:
+def get_trivia_quiz() -> Dict[str, Any]:
     payload = get_trivia_payload()
     quiz = get_quiz_from_payload(payload)
     return quiz
 
-def get_trivia_payload() -> str:
+def get_trivia_payload() -> Dict[str, Any]:
 
     url = 'https://opentdb.com/api.php?amount=1&type=multiple'
 
@@ -96,7 +96,7 @@ def get_trivia_payload() -> str:
     payload = data.json()
     return payload
 
-def fix_quotes(s):
+def fix_quotes(s: str) -> Optional[str]:
     # opentdb is nice enough to escape HTML for us, but
     # we are sending this to code that does that already :)
     #
@@ -107,7 +107,7 @@ def fix_quotes(s):
     except Exception:
         raise Exception('Please use python3.4 or later for this bot.')
 
-def get_quiz_from_payload(payload):
+def get_quiz_from_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
     result = payload['results'][0]
     question = result['question']
     letters = ['A', 'B', 'C', 'D']
@@ -129,7 +129,7 @@ def get_quiz_from_payload(payload):
     )
     return quiz
 
-def generate_quiz_id(storage) -> str:
+def generate_quiz_id(storage: Any) -> str:
     try:
         quiz_num = storage.get('quiz_id')
     except (KeyError, TypeError):
@@ -140,14 +140,14 @@ def generate_quiz_id(storage) -> str:
     quiz_id = 'Q%03d' % (quiz_num,)
     return quiz_id
 
-def format_quiz_for_widget(quiz_id, quiz):
+def format_quiz_for_widget(quiz_id: str, quiz: Dict[str, Any]) -> str:
     widget_type = 'zform'
     question = quiz['question']
     answers = quiz['answers']
 
     heading = quiz_id + ': ' + question
 
-    def get_choice(letter):
+    def get_choice(letter: str) -> Dict[str, str]:
         answer = answers[letter]
         reply = 'answer ' + quiz_id + ' ' + letter
 
@@ -173,7 +173,7 @@ def format_quiz_for_widget(quiz_id, quiz):
     payload = json.dumps(widget_content)
     return payload
 
-def format_quiz_for_markdown(quiz_id, quiz):
+def format_quiz_for_markdown(quiz_id: str, quiz: Dict[str, Any]) -> str:
     question = quiz['question']
     answers = quiz['answers']
     answer_list = '\n'.join([
@@ -196,7 +196,7 @@ Q: {question}
     )
     return content
 
-def grade_question(quiz, answer):
+def grade_question(quiz: Dict[str, Any], answer: str) -> Tuple[bool, str]:
     correct = (answer == quiz['correct_letter'])
 
     if correct:
