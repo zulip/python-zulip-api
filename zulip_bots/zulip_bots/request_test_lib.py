@@ -79,6 +79,16 @@ def mock_http_conversation(http_data):
                 ['params', 'headers', 'json', 'data'],
                 meta
             )
+    elif http_method == 'PUT':
+        with patch('requests.put') as mock_post:
+            mock_post.return_value = get_response(http_response, http_headers, is_raw_response)
+            yield
+            assert_called_with_fields(
+                mock_post,
+                http_request,
+                ['params', 'headers', 'json', 'data'],
+                meta
+            )
     else:
         with patch('requests.post') as mock_post:
             mock_post.return_value = get_response(http_response, http_headers, is_raw_response)
