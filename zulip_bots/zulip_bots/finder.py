@@ -5,9 +5,7 @@ from typing import Any, Optional, Text, Tuple
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
-def import_module_from_source(path: Text, name: Optional[Text]=None) -> Any:
-    if not name:
-        name = splitext(basename(path))[0]
+def import_module_from_source(path: Text, name: Text) -> Any:
 
     # importlib.util.module_from_spec is supported from Python3.5
     py_version = sys.version_info
