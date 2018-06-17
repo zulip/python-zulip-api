@@ -1,6 +1,9 @@
-from matrix_bridge import check_zulip_message_validity
+from matrix_bridge import (
+    check_zulip_message_validity,
+    zulip_to_matrix,
+)
 
-from unittest import TestCase
+from unittest import TestCase, mock
 from subprocess import Popen, PIPE
 import os
 
@@ -117,3 +120,24 @@ class MatrixBridgeZulipToMatrixTests(TestCase):
 
         msg_from_bot = dict(self.valid_msg, sender_email=zulip_config['email'])
         self.assertFalse(check_zulip_message_validity(msg_from_bot, zulip_config))
+
+    def test_zulip_to_matrix(self):
+        # type: () -> None
+        room = mock.MagicMock()
+        zulip_config = self.valid_zulip_config
+        send_msg = zulip_to_matrix(zulip_config, room)
+
+        msg = dict(self.valid_msg, sender_full_name="John Smith")
+
+        expected = {
+            'hi': '{} hi',
+            '*hi*': '{} *hi*',
+            '**hi**': '{} **hi**',
+        }
+
+        for content in expected:
+            send_msg(dict(msg, content=content))
+
+        for (method, params, _), expect in zip(room.method_calls, expected.values()):
+            self.assertEqual(method, 'send_text')
+            self.assertEqual(params[0], expect.format('<JohnSmith>'))
