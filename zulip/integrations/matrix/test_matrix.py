@@ -96,3 +96,27 @@ class MatrixBridgeZulipToMatrixTests(TestCase):
         assert msg['sender_email'] != zulip_config['email']
 
         self.assertTrue(check_zulip_message_validity(msg, zulip_config))
+
+    def test_zulip_message_validity_failure(self):
+        # type: () -> None
+        zulip_config = dict(stream="some stream",
+                            topic="some topic",
+                            email="some@email")
+        msg = dict(
+            sender_email="John@Smith.smith",  # must not be equal to config:email
+            type="stream",  # Can only mirror Zulip streams
+            display_recipient=zulip_config['stream'],
+            subject=zulip_config['topic']
+        )
+
+        msg_wrong_stream = dict(msg, display_recipient='foo')
+        self.assertFalse(check_zulip_message_validity(msg_wrong_stream, zulip_config))
+
+        msg_wrong_topic = dict(msg, subject='foo')
+        self.assertFalse(check_zulip_message_validity(msg_wrong_topic, zulip_config))
+
+        msg_not_stream = dict(msg, type="private")
+        self.assertFalse(check_zulip_message_validity(msg_not_stream, zulip_config))
+
+        msg_from_bot = dict(msg, sender_email=zulip_config['email'])
+        self.assertFalse(check_zulip_message_validity(msg_from_bot, zulip_config))
