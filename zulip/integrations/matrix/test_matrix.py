@@ -81,17 +81,22 @@ class MatrixBridgeScriptTests(TestCase):
 
 
 class MatrixBridgeZulipToMatrixTests(TestCase):
+    valid_zulip_config = dict(
+        stream="some stream",
+        topic="some topic",
+        email="some@email"
+    )
+    valid_msg = dict(
+        sender_email="John@Smith.smith",  # must not be equal to config:email
+        type="stream",  # Can only mirror Zulip streams
+        display_recipient=valid_zulip_config['stream'],
+        subject=valid_zulip_config['topic']
+    )
+
     def test_zulip_message_validity_success(self):
         # type: () -> None
-        zulip_config = dict(stream="some stream",
-                            topic="some topic",
-                            email="some@email")
-        msg = dict(
-            sender_email="John@Smith.smith",  # must not be equal to config:email
-            type="stream",  # Can only mirror Zulip streams
-            display_recipient=zulip_config['stream'],
-            subject=zulip_config['topic']
-        )
+        zulip_config = self.valid_zulip_config
+        msg = self.valid_msg
         # Ensure the test inputs are valid for success
         assert msg['sender_email'] != zulip_config['email']
 
@@ -99,24 +104,16 @@ class MatrixBridgeZulipToMatrixTests(TestCase):
 
     def test_zulip_message_validity_failure(self):
         # type: () -> None
-        zulip_config = dict(stream="some stream",
-                            topic="some topic",
-                            email="some@email")
-        msg = dict(
-            sender_email="John@Smith.smith",  # must not be equal to config:email
-            type="stream",  # Can only mirror Zulip streams
-            display_recipient=zulip_config['stream'],
-            subject=zulip_config['topic']
-        )
+        zulip_config = self.valid_zulip_config
 
-        msg_wrong_stream = dict(msg, display_recipient='foo')
+        msg_wrong_stream = dict(self.valid_msg, display_recipient='foo')
         self.assertFalse(check_zulip_message_validity(msg_wrong_stream, zulip_config))
 
-        msg_wrong_topic = dict(msg, subject='foo')
+        msg_wrong_topic = dict(self.valid_msg, subject='foo')
         self.assertFalse(check_zulip_message_validity(msg_wrong_topic, zulip_config))
 
-        msg_not_stream = dict(msg, type="private")
+        msg_not_stream = dict(self.valid_msg, type="private")
         self.assertFalse(check_zulip_message_validity(msg_not_stream, zulip_config))
 
-        msg_from_bot = dict(msg, sender_email=zulip_config['email'])
+        msg_from_bot = dict(self.valid_msg, sender_email=zulip_config['email'])
         self.assertFalse(check_zulip_message_validity(msg_from_bot, zulip_config))
