@@ -1,3 +1,5 @@
+from matrix_bridge import check_zulip_message_validity
+
 from unittest import TestCase
 from subprocess import Popen, PIPE
 import os
@@ -37,7 +39,7 @@ def new_temp_dir():
     yield path
     shutil.rmtree(path)
 
-class MatrixBridgeTests(TestCase):
+class MatrixBridgeScriptTests(TestCase):
     def output_from_script(self, options):
         # type: (List[str]) -> List[str]
         popen = Popen(["python", script] + options, stdin=PIPE, stdout=PIPE, universal_newlines=True)
@@ -76,3 +78,21 @@ class MatrixBridgeTests(TestCase):
 
             with open(path) as sample_file:
                 self.assertEqual(sample_file.read(), sample_config_text)
+
+
+class MatrixBridgeZulipToMatrixTests(TestCase):
+    def test_zulip_message_validity_success(self):
+        # type: () -> None
+        zulip_config = dict(stream="some stream",
+                            topic="some topic",
+                            email="some@email")
+        msg = dict(
+            sender_email="John@Smith.smith",  # must not be equal to config:email
+            type="stream",  # Can only mirror Zulip streams
+            display_recipient=zulip_config['stream'],
+            subject=zulip_config['topic']
+        )
+        # Ensure the test inputs are valid for success
+        assert msg['sender_email'] != zulip_config['email']
+
+        self.assertTrue(check_zulip_message_validity(msg, zulip_config))
