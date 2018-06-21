@@ -686,6 +686,17 @@ class Client(object):
                 callback(event['message'])
         self.call_on_each_event(event_callback, ['message'])
 
+    def get_messages(self, message_filters):
+        # type: (Dict[str, Any]) -> Dict[str, Any]
+        '''
+            See examples/get-messages for example usage
+        '''
+        return self.call_endpoint(
+            url='messages',
+            method='GET',
+            request=message_filters
+        )
+
     def send_message(self, message_data):
         # type: (Dict[str, Any]) -> Dict[str, Any]
         '''
