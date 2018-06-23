@@ -5,11 +5,15 @@ import argparse
 
 import zulip
 
-usage = """ get-messages (--anchor <message_id> | --use-first-unread-anchor) \
---num-before <amount> --num-after <amount> [--narrow <narrow_dict>]
+usage = """get-messages (--anchor <message_id> | --use-first-unread-anchor) \\
+    --num-before <amount> --num-after <amount> \\
+    [--narrow <narrow_dict> --client-gravatar --apply-markdown]
 
-Example: get-messages --anchor=42 --num-before=3 --num-after=14 --narrow=\
-'[{"operator": "sender", "operand": "iago@zulip.com"}]'
+
+Example: get-messages --anchor=42 --num-before=3 --num-after=14 \\
+    --narrow='[{"operator": "sender", "operand": "iago@zulip.com"}]'
+Example: get-messages --use-first-unread-anchor --num-before=5 \\
+    --num-after=0 --apply-markdown --client-gravatar
 """
 
 
@@ -18,6 +22,8 @@ parser.add_argument('--anchor', type=int)
 parser.add_argument('--use-first-unread-anchor', action='store_true')
 parser.add_argument('--num-before', type=int, required=True)
 parser.add_argument('--num-after', type=int, required=True)
+parser.add_argument('--client-gravatar', action='store_true')
+parser.add_argument('--apply-markdown', action='store_true')
 parser.add_argument('--narrow')
 options = parser.parse_args()
 
@@ -29,4 +35,6 @@ print(client.get_messages({
     'num_before': options.num_before,
     'num_after': options.num_after,
     'narrow': options.narrow,
+    'client_gravatar': options.client_gravatar,
+    'apply_markdown': options.apply_markdown
 }))
