@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from zulip_bots.test_lib import BotTestCase, DefaultTests
 
@@ -35,9 +35,7 @@ class TestFrontBot(BotTestCase, DefaultTests):
                 self.verify_reply('archive', "Conversation was archived.")
 
     def test_archive_error(self) -> None:
-        with self.mock_config_info({'api_key': "TEST"}):
-            with self.mock_http_conversation('archive_error'):
-                self.verify_reply('archive', 'Something went wrong.')
+        self._test_command_error('archive')
 
     def test_delete(self) -> None:
         with self.mock_config_info({'api_key': "TEST"}):
@@ -45,9 +43,7 @@ class TestFrontBot(BotTestCase, DefaultTests):
                 self.verify_reply('delete', "Conversation was deleted.")
 
     def test_delete_error(self) -> None:
-        with self.mock_config_info({'api_key': "TEST"}):
-            with self.mock_http_conversation('delete_error'):
-                self.verify_reply('delete', 'Something went wrong.')
+        self._test_command_error('delete')
 
     def test_spam(self) -> None:
         with self.mock_config_info({'api_key': "TEST"}):
@@ -55,9 +51,7 @@ class TestFrontBot(BotTestCase, DefaultTests):
                 self.verify_reply('spam', "Conversation was marked as spam.")
 
     def test_spam_error(self) -> None:
-        with self.mock_config_info({'api_key': "TEST"}):
-            with self.mock_http_conversation('spam_error'):
-                self.verify_reply('spam', 'Something went wrong.')
+        self._test_command_error('spam')
 
     def test_restore(self) -> None:
         with self.mock_config_info({'api_key': "TEST"}):
@@ -65,9 +59,7 @@ class TestFrontBot(BotTestCase, DefaultTests):
                 self.verify_reply('open', "Conversation was restored.")
 
     def test_restore_error(self) -> None:
-        with self.mock_config_info({'api_key': "TEST"}):
-            with self.mock_http_conversation('open_error'):
-                self.verify_reply('open', 'Something went wrong.')
+        self._test_command_error('open')
 
     def test_comment(self) -> None:
         body = "@bender, I thought you were supposed to be cooking for this party."
@@ -77,9 +69,16 @@ class TestFrontBot(BotTestCase, DefaultTests):
 
     def test_comment_error(self) -> None:
         body = "@bender, I thought you were supposed to be cooking for this party."
+        self._test_command_error('comment', body)
+
+    def _test_command_error(self, command_name: str, command_arg: Optional[str] = None) -> None:
+        bot_command = command_name
+        if command_arg:
+            bot_command += ' {}'.format(command_arg)
         with self.mock_config_info({'api_key': "TEST"}):
-            with self.mock_http_conversation('comment_error'):
-                self.verify_reply('comment ' + body, 'Something went wrong.')
+            with self.mock_http_conversation('{}_error'.format(command_name)):
+                self.verify_reply(bot_command, 'Something went wrong.')
+
 
 class TestFrontBotWrongTopic(BotTestCase, DefaultTests):
     bot_name = 'front'
