@@ -697,6 +697,16 @@ class Client(object):
             request=message_filters
         )
 
+    def get_raw_message(self, message_id):
+        # type: (int) -> Dict[str, str]
+        '''
+            See examples/get-raw-message for example usage
+        '''
+        return self.call_endpoint(
+            url='messages/{}'.format(message_id),
+            method='GET'
+        )
+
     def send_message(self, message_data):
         # type: (Dict[str, Any]) -> Dict[str, Any]
         '''
