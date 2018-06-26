@@ -821,6 +821,18 @@ class Client(object):
             request=request,
         )
 
+    def update_stream(self, stream_data):
+        # type: (Dict[str, Any]) -> Dict[str, Any]
+        '''
+            See examples/edit-stream for example usage.
+        '''
+
+        return self.call_endpoint(
+            url='streams/{}'.format(stream_data['stream_id']),
+            method='PATCH',
+            request=stream_data,
+        )
+
     def get_members(self, request=None):
         # type: (Optional[Dict[str, Any]]) -> Dict[str, Any]
         '''
