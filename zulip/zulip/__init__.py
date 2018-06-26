@@ -728,6 +728,16 @@ class Client(object):
             request=message_data,
         )
 
+    def delete_message(self, message_id):
+        # type: (Dict[str, Any]) -> Dict[str, Any]
+        '''
+            See examples/delete-message for example usage.
+        '''
+        return self.call_endpoint(
+            url='messages/{}'.format(message_id),
+            method='DELETE'
+        )
+
     def get_events(self, **request):
         # type: (**Any) -> Dict[str, Any]
         '''
