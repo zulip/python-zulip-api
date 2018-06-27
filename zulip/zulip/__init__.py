@@ -748,6 +748,16 @@ class Client(object):
             method='DELETE'
         )
 
+    def get_message_history(self, message_id):
+        # type: (int) -> Dict[str, Any]
+        '''
+            See examples/message-history for example usage.
+        '''
+        return self.call_endpoint(
+            url='messages/{}/history'.format(message_id),
+            method='GET'
+        )
+
     def get_events(self, **request):
         # type: (**Any) -> Dict[str, Any]
         '''
