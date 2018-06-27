@@ -739,7 +739,7 @@ class Client(object):
         )
 
     def delete_message(self, message_id):
-        # type: (Dict[str, Any]) -> Dict[str, Any]
+        # type: (int) -> Dict[str, Any]
         '''
             See examples/delete-message for example usage.
         '''
