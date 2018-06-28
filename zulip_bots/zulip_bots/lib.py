@@ -69,7 +69,7 @@ class StateHandler(object):
         if key in self.state_:
             return self.demarshal(self.state_[key])
 
-        response = self._client.get_storage(keys=(key,))
+        response = self._client.get_storage({'keys': [key]})
         if response['result'] != 'success':
             raise StateHandlerError("Error fetching state: {}".format(str(response)))
 
