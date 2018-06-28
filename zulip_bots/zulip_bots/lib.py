@@ -145,6 +145,11 @@ class ExternalBotHandler(object):
             print("ERROR!: " + str(resp))
         return resp
 
+    def send_zgram(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        request = dict(data=data)
+        resp = self._client.call_endpoint(url='zgram', request=request)
+        return resp
+
     def send_reply(self, message: Dict[str, Any], response: str, widget_content: Optional[str]=None) -> Dict[str, Any]:
         if message['type'] == 'private':
             return self.send_message(dict(
@@ -335,5 +340,14 @@ def run_message_handler_for_bot(
     def event_callback(event: Dict[str, Any]) -> None:
         if event['type'] == 'message':
             handle_message(event['message'], event['flags'])
+            return
 
-    client.call_on_each_event(event_callback, ['message'])
+        if event['type'] == 'zgram':
+            if hasattr(message_handler, 'handle_zgram'):
+                message_handler.handle_zgram(
+                    data=event['data'],
+                    bot_handler=restricted_client
+                )
+            return
+
+    client.call_on_each_event(event_callback, ['message', 'zgram'])
