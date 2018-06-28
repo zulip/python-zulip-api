@@ -27,7 +27,7 @@ class FakeClient:
             result='success',
         )
 
-    def get_storage(self, keys):
+    def get_storage(self, request):
         return dict(
             result='success',
             storage=self.storage,
@@ -97,7 +97,7 @@ class LibTest(TestCase):
             result='success',
             storage=dict(non_cached_key='[5]')))
         val = state_handler.get('non_cached_key')
-        client.get_storage.assert_called_with(keys=('non_cached_key',))
+        client.get_storage.assert_called_with({'keys': ['non_cached_key']})
         self.assertEqual(val, [5])
 
         # value must already be cached

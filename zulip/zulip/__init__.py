@@ -1006,7 +1006,7 @@ class Client(object):
             >>> client.update_storage({'storage': {"entry 1": "value 1", "entry 2": "value 2", "entry 3": "value 3"}})
             >>> client.get_storage()
             {'result': 'success', 'storage': {"entry 1": "value 1", "entry 2": "value 2", "entry 3": "value 3"}, 'msg': ''}
-            >>> client.get_storage(keys=('entry 1', 'entry 3'))
+            >>> client.get_storage({'keys': ["entry 1", "entry 3"]})
             {'result': 'success', 'storage': {'entry 1': 'value 1', 'entry 3': 'value 3'}, 'msg': ''}
         '''
         return self.call_endpoint(
