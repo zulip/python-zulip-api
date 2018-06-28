@@ -25,7 +25,7 @@ class FakeClient:
             result='success',
         )
 
-    def get_storage(self):
+    def get_storage(self, keys):
         return dict(
             result='success',
             storage=self.storage,
@@ -73,7 +73,7 @@ class LibTest(TestCase):
         val = state_handler.get('key')
         self.assertEqual(val, [1, 2, 3])
 
-    def test_state_handler(self):
+    def test_state_handler_by_mock(self):
         client = MagicMock()
 
         state_handler = StateHandler(client)
