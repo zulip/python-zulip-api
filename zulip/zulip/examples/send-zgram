@@ -1,0 +1,34 @@
+#!/usr/bin/env python
+import argparse
+import zulip
+
+usage = """send-zgram [options] <target_user_id>
+
+Sends a test zgram to the specified user.  (You must supply an id.)
+Then waits for zgram response.
+
+Example: send-zgram --content="hello"
+"""
+parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage))
+parser.add_argument('target_user_id')
+parser.add_argument('--content', default='test zgram')
+options = parser.parse_args()
+
+client = zulip.init_from_options(options)
+res = client.register(event_types=['zgram'])
+queue_id = res['queue_id']
+last_event_id = res['last_event_id']
+
+request = dict(
+    data=dict(
+        target_user_id=int(options.target_user_id),
+        content=options.content,
+    ),
+)
+resp = client.call_endpoint(url='zgram', request=request)
+print(resp)
+
+print('\nStarting to wait for responses...\n')
+res = client.get_events(queue_id=queue_id, last_event_id=last_event_id)
+print(res)
+
