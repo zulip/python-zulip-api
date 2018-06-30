@@ -45,7 +45,6 @@ def unknown_command():
               "put (v,h), take (v,h), move (v,h) -> (v,h)"
     raise BadMoveException(message)
 
-# def beat(message, topic_name, merels_storage):
 def beat(message, topic_name, merels_storage):
     """ This gets triggered every time a user send a message in any topic
     :param message: User's message
@@ -133,6 +132,7 @@ def beat(message, topic_name, merels_storage):
                 mechanics.update_hill_uid(topic_name, merels_storage)
 
                 responses += mechanics.display_game(topic_name, merels_storage) + "\n"
+                responses += check_win(topic_name, merels_storage)
 
                 if no_moves != "":
                     same_player_move = no_moves

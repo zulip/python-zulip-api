@@ -5,7 +5,7 @@ from zulip_bots.bots.merels.libraries import (
     database,
     game_data
 )
-from zulip_bots.game_handler import GameAdapter, SamePlayerMove
+from zulip_bots.game_handler import GameAdapter, SamePlayerMove, GameInstance
 
 class Storage(object):
     data = {}
@@ -32,7 +32,7 @@ class MerelsModel(object):
             return 'current turn'
         return ''
 
-    def contains_winning_move(self, board: Any) -> bool:
+    def contains_winning_move(self, board: Any) ->bool:
         merels = database.MerelsStorage(self.topic, self.storage)
         data = game_data.GameData(merels.get_game_data(self.topic))
 
@@ -64,7 +64,7 @@ class MerelsMessageHandler(object):
         return self.tokens[turn]
 
     def alert_move_message(self, original_player: str, move_info: str) -> str:
-        return original_player + " :"
+        return original_player + " :" + move_info
 
     def game_start_message(self) -> str:
         return game.getHelp()
@@ -88,6 +88,7 @@ class MerelsHandler(GameAdapter):
         move_help_message = ""
         move_regex = '.*'
         model = MerelsModel
+        rules = game.getInfo()
         gameMessageHandler = MerelsMessageHandler
         super(MerelsHandler, self).__init__(
             game_name,
@@ -96,6 +97,9 @@ class MerelsHandler(GameAdapter):
             move_regex,
             model,
             gameMessageHandler,
+            rules,
+            max_players = 2,
+            min_players = 2,
             supports_computer=False
         )
 
