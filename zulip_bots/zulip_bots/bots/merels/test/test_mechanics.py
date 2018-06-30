@@ -167,8 +167,9 @@ class HillsTest(unittest.TestCase):
 class PhaseTest(unittest.TestCase):
     def test_new_game_phase(self):
         storage = SimpleStorage()
-        merels = database.MerelsStorage(storage)
-        merels.create_new_game("test")
+        topic_name = "test"
+        merels = database.MerelsStorage(topic_name, storage)
+        merels.update_game(topic_name, "X", 0, 0, "NNNNNNNNNNNNNNNNNNNNNNNN", "", 0)
 
         res = game_data.GameData(merels.get_game_data("test"))
         self.assertEqual(res.get_phase(), 1)
