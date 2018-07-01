@@ -10,7 +10,7 @@ import subprocess
 if False:
     from typing import Any, Dict, Optional
 
-ZULIP_BOTS_VERSION = "0.5.0"
+ZULIP_BOTS_VERSION = "0.5.1"
 IS_PYPA_PACKAGE = False
 
 
