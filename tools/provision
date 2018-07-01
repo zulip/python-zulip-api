@@ -84,7 +84,7 @@ the Python version this command is executed with."""
     def install_dependencies(requirements_filename):
         pip_path = os.path.join(venv_dir, venv_exec_dir, 'pip')
         # We first install a modern version of pip that supports --prefix
-        subprocess.call([pip_path, 'install', 'pip>=9.0'])
+        subprocess.call([pip_path, 'install', 'pip==9.0.3'])
         if subprocess.call([pip_path, 'install', '--prefix', venv_dir, '-r',
                             os.path.join(base_dir, requirements_filename)]):
             raise OSError("The command `pip install -r {}` failed. Dependencies not installed!"

@@ -27,6 +27,8 @@ class TicTacToeModel(object):
                      [0, 0, 0],
                      [0, 0, 0]]
 
+    current_board = initial_board
+
     def __init__(self, board: Any=None) -> None:
         if board is not None:
             self.current_board = board
