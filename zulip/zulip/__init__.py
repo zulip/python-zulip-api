@@ -748,6 +748,17 @@ class Client(object):
             method='DELETE'
         )
 
+    def update_message_flags(self, update_data):
+        # type: (Dict[str, Any]) -> Dict[str, Any]
+        '''
+            See examples/update-flags for example usage.
+        '''
+        return self.call_endpoint(
+            url='messages/flags',
+            method='POST',
+            request=update_data
+        )
+
     def get_message_history(self, message_id):
         # type: (int) -> Dict[str, Any]
         '''
