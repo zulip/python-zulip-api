@@ -769,6 +769,16 @@ class Client(object):
             method='GET'
         )
 
+    def get_realm_emoji(self):
+        # type: () -> Dict[str, Any]
+        '''
+            See examples/realm-emoji for example usage.
+        '''
+        return self.call_endpoint(
+            url='/realm/emoji',
+            method='GET'
+        )
+
     def get_events(self, **request):
         # type: (**Any) -> Dict[str, Any]
         '''
