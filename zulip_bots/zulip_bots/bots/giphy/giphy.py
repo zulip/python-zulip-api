@@ -7,6 +7,7 @@ from zulip_bots.custom_exceptions import ConfigValidationError
 
 GIPHY_TRANSLATE_API = 'http://api.giphy.com/v1/gifs/translate'
 GIPHY_RANDOM_API = 'http://api.giphy.com/v1/gifs/random'
+GIPHY_SEARCH = 'http://api.giphy.com/v1/gifs/search'
 
 
 class GiphyHandler(object):
@@ -51,6 +52,35 @@ class GiphyHandler(object):
         )
         bot_handler.send_reply(message, bot_response)
 
+    def handle_zgram(self, data: Dict[str, Any], bot_handler: Any) -> None:
+        reply_content = 'zgram: ' + data['content']
+        query = data.get('extra_data')
+        urls = get_many_giphy_gifs(query['query'], self.config_info['key'], 3)
+
+        def get_choice(url: str) -> Dict[str, str]:
+            title = "Cool GIF, isn't it?"
+            button_text = "Send"
+            return dict(
+                media_link=url,
+                media_title=title,
+                button_text=button_text,
+            )
+
+        choices = [get_choice(url) for url in urls]
+
+        extra_data = dict(
+            type='choices',
+            heading='Select any gif',
+            choices=choices,
+        )
+
+        reply_data = dict(
+            target_user_id=data['sender_id'],
+            content=reply_content,
+            extra_data=extra_data,
+            widget_type='zgram_box',
+        )
+        bot_handler.send_zgram(reply_data)
 
 class GiphyNoResultException(Exception):
     pass
@@ -98,7 +128,6 @@ def get_url_gif_giphy(keyword: str, api_key: str) -> Union[int, str]:
     except (TypeError, KeyError):  # Usually triggered by no result in Giphy.
         raise GiphyNoResultException()
     return gif_url
-
 
 def get_bot_giphy_response(message: Dict[str, str], bot_handler: Any, config_info: Dict[str, str]) -> str:
     # Each exception has a specific reply should "gif_url" return a number.
