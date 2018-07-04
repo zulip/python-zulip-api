@@ -5,10 +5,11 @@ import argparse
 
 import zulip
 
-usage = """update-flags (add | remove) <flag> <message_id1> [more_message_ids]
+usage = """update-message-flags (add | remove) <flag> <message_id1> \
+[more_message_ids]
 
-Example: update-flags add read 4 8 15
-Example: update-flags remove starred 16 23 42
+Example: update-message-flags add read 4 8 15
+Example: update-message-flags remove starred 16 23 42
 """
 
 parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage))
