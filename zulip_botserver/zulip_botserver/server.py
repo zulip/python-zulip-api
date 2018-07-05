@@ -4,7 +4,7 @@ import json
 import os
 import sys
 
-from configparser import MissingSectionHeaderError
+from configparser import MissingSectionHeaderError, NoOptionError
 from flask import Flask, request
 from importlib import import_module
 from typing import Any, Dict, Union, List, Optional
@@ -15,28 +15,46 @@ from zulip_bots import lib
 from zulip_botserver.input_parameters import parse_args
 
 
+def read_config_section(parser: configparser.ConfigParser, section: str) -> Dict[str, str]:
+    section_info = {
+        "email": parser.get(section, 'email'),
+        "key": parser.get(section, 'key'),
+        "site": parser.get(section, 'site'),
+        "token": parser.get(section, 'token'),
+    }
+    return section_info
+
+
 def read_config_file(config_file_path: str, bot_name: Optional[str]=None) -> Dict[str, Dict[str, str]]:
     parser = parse_config_file(config_file_path)
 
     bots_config = {}  # type: Dict[str, Dict[str, str]]
-    for section in parser.sections():
-        section_info = {
-            "email": parser.get(section, 'email'),
-            "key": parser.get(section, 'key'),
-            "site": parser.get(section, 'site'),
-            "token": parser.get(section, 'token'),
-        }
-        if bot_name is not None:
-            logging.warning("Single bot mode is enabled")
-            if bots_config:
-                logging.warning("'{}' bot will be ignored".format(section))
-            else:
-                bots_config[bot_name] = section_info
-                logging.warning(
-                    "First bot name in the config list was changed from '{}' to '{}'".format(section, bot_name)
-                )
-        else:
-            bots_config[section] = section_info
+    if bot_name is None:
+        bots_config = {section: read_config_section(parser, section)
+                       for section in parser.sections()}
+        return bots_config
+
+    logging.warning("Single bot mode is enabled")
+    if len(parser.sections()) == 0:
+        sys.exit("Error: Your Botserver config file `{0}` does not contain any sections!\n"
+                 "You need to write the name of the bot you want to run in the "
+                 "section header of `{0}`.".format(config_file_path))
+
+    if bot_name in parser.sections():
+        bot_section = bot_name
+        bots_config[bot_name] = read_config_section(parser, bot_name)
+        ignored_sections = [section for section in parser.sections() if section != bot_name]
+    else:
+        bot_section = parser.sections()[0]
+        bots_config[bot_name] = read_config_section(parser, bot_section)
+        logging.warning(
+            "First bot name in the config list was changed from '{}' to '{}'".format(bot_section, bot_name)
+        )
+        ignored_sections = parser.sections()[1:]
+
+    if len(ignored_sections) > 0:
+        logging.warning("Sections except the '{}' will be ignored".format(bot_section))
+
     return bots_config
 
 
@@ -150,6 +168,11 @@ def main() -> None:
         sys.exit("Error: Your Botserver config file `{0}` contains an empty section header!\n"
                  "You need to write the names of the bots you want to run in the "
                  "section headers of `{0}`.".format(options.config_file))
+    except NoOptionError as e:
+        sys.exit("Error: Your Botserver config file `{0}` has a missing option `{1}` in section `{2}`!\n"
+                 "You need to add option `{1}` with appropriate value in section `{2}` of `{0}`"
+                 .format(options.config_file, e.option, e.section))
+
     available_bots = list(bots_config.keys())
     bots_lib_modules = load_lib_modules(available_bots)
     third_party_bot_conf = parse_config_file(options.bot_config_file) if options.bot_config_file is not None else None
