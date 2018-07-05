@@ -35,6 +35,11 @@ def read_config_file(config_file_path: str, bot_name: Optional[str]=None) -> Dic
         return bots_config
 
     logging.warning("Single bot mode is enabled")
+    if len(parser.sections()) == 0:
+        sys.exit("Error: Your Botserver config file `{0}` does not contain any sections!\n"
+                 "You need to write the name of the bot you want to run in the "
+                 "section header of `{0}`.".format(config_file_path))
+
     for section in parser.sections():
         section_info = read_config_section(parser, section)
         if bots_config:
