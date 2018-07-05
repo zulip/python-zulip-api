@@ -40,15 +40,20 @@ def read_config_file(config_file_path: str, bot_name: Optional[str]=None) -> Dic
                  "You need to write the name of the bot you want to run in the "
                  "section header of `{0}`.".format(config_file_path))
 
-    for section in parser.sections():
-        section_info = read_config_section(parser, section)
-        if bots_config:
-            logging.warning("'{}' bot will be ignored".format(section))
-        else:
-            bots_config[bot_name] = section_info
-            logging.warning(
-                "First bot name in the config list was changed from '{}' to '{}'".format(section, bot_name)
-            )
+    if bot_name in parser.sections():
+        bots_config[bot_name] = read_config_section(parser, bot_name)
+        ignored_sections = [section for section in parser.sections() if section != bot_name]
+    else:
+        first_section = parser.sections()[0]
+        bots_config[bot_name] = read_config_section(parser, first_section)
+        logging.warning(
+            "First bot name in the config list was changed from '{}' to '{}'".format(first_section, bot_name)
+        )
+        ignored_sections = parser.sections()[1:]
+
+    for section in ignored_sections:
+        logging.warning("'{}' bot will be ignored".format(section))
+
     return bots_config
 
 
