@@ -15,17 +15,22 @@ from zulip_bots import lib
 from zulip_botserver.input_parameters import parse_args
 
 
+def read_config_section(parser: configparser.ConfigParser, section: str) -> Dict[str, str]:
+    section_info = {
+        "email": parser.get(section, 'email'),
+        "key": parser.get(section, 'key'),
+        "site": parser.get(section, 'site'),
+        "token": parser.get(section, 'token'),
+    }
+    return section_info
+
+
 def read_config_file(config_file_path: str, bot_name: Optional[str]=None) -> Dict[str, Dict[str, str]]:
     parser = parse_config_file(config_file_path)
 
     bots_config = {}  # type: Dict[str, Dict[str, str]]
     for section in parser.sections():
-        section_info = {
-            "email": parser.get(section, 'email'),
-            "key": parser.get(section, 'key'),
-            "site": parser.get(section, 'site'),
-            "token": parser.get(section, 'token'),
-        }
+        section_info = read_config_section(parser, section)
         if bot_name is not None:
             logging.warning("Single bot mode is enabled")
             if bots_config:
