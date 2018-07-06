@@ -41,18 +41,19 @@ def read_config_file(config_file_path: str, bot_name: Optional[str]=None) -> Dic
                  "section header of `{0}`.".format(config_file_path))
 
     if bot_name in parser.sections():
+        bot_section = bot_name
         bots_config[bot_name] = read_config_section(parser, bot_name)
         ignored_sections = [section for section in parser.sections() if section != bot_name]
     else:
-        first_section = parser.sections()[0]
-        bots_config[bot_name] = read_config_section(parser, first_section)
+        bot_section = parser.sections()[0]
+        bots_config[bot_name] = read_config_section(parser, bot_section)
         logging.warning(
-            "First bot name in the config list was changed from '{}' to '{}'".format(first_section, bot_name)
+            "First bot name in the config list was changed from '{}' to '{}'".format(bot_section, bot_name)
         )
         ignored_sections = parser.sections()[1:]
 
-    for section in ignored_sections:
-        logging.warning("'{}' bot will be ignored".format(section))
+    if len(ignored_sections) > 0:
+        logging.warning("Sections except the '{}' will be ignored".format(bot_section))
 
     return bots_config
 
