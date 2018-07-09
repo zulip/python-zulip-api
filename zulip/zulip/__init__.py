@@ -939,6 +939,17 @@ class Client(object):
             request=request,
         )
 
+    def mute_topic(self, request):
+        # type: (Dict[str, Any]) -> Dict[str, Any]
+        '''
+            See examples/mute-topic for example usage.
+        '''
+        return self.call_endpoint(
+            url='users/me/subscriptions/muted_topics',
+            method='PATCH',
+            request=request
+        )
+
     def get_stream_id(self, stream):
         # type: (str) -> Dict[str, Any]
         '''
