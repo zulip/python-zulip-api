@@ -3,10 +3,9 @@
     "api_url": "https://example.atlassian.net/rest/api/2/issue",
     "method": "POST",
     "headers": {
-      "Authorization": "Basic ZXhhbXBsZUBleGFtcGxlLmNvbTpxd2VydHkhMTIz",
-      "Content-type": "application/json"
+      "Authorization": "Basic ZXhhbXBsZUBleGFtcGxlLmNvbTpxd2VydHkhMTIz"
     },
-    "data": {
+    "json": {
       "fields": {
         "summary": "Testing",
         "project": { 
