@@ -177,8 +177,8 @@ class JiraHandler(object):
         elif create_match:
             jira_response = requests.post(
                 self.domain_with_protocol + '/rest/api/2/issue',
-                headers={'Authorization': self.auth, 'Content-type': 'application/json'},
-                data=make_create_json(create_match.group('summary'),
+                headers={'Authorization': self.auth},
+                json=make_create_json(create_match.group('summary'),
                                       create_match.group('project_key'),
                                       create_match.group('type_name'),
                                       create_match.group('description'),
@@ -202,8 +202,8 @@ class JiraHandler(object):
 
             jira_response = requests.put(
                 self.domain_with_protocol + '/rest/api/2/issue/' + key,
-                headers={'Authorization': self.auth, 'Content-type': 'application/json'},
-                data=make_edit_json(edit_match.group('summary'),
+                headers={'Authorization': self.auth},
+                json=make_edit_json(edit_match.group('summary'),
                                     edit_match.group('project_key'),
                                     edit_match.group('type_name'),
                                     edit_match.group('description'),
