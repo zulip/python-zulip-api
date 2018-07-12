@@ -160,8 +160,8 @@ def create_webhook(options: argparse.Namespace) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument('trello_board_name', help='The Trello board name.')
     parser.add_argument('trello_board_id', help='The Trello board short id.')
+    parser.add_argument('trello_board_name', help='The Trello board name.')
 
     options = parser.parse_args()
     check_configuration()
