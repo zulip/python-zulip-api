@@ -895,6 +895,13 @@ class Client(object):
             request=request,
         )
 
+    def get_alert_words(self):
+        # type: () -> Dict[str, Any]
+        return self.call_endpoint(
+            url='users/me/alert_words',
+            method='GET'
+        )
+
     def list_subscriptions(self, request=None):
         # type: (Optional[Dict[str, Any]]) -> Dict[str, Any]
         '''
