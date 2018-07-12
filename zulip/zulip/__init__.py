@@ -950,6 +950,29 @@ class Client(object):
             request=request
         )
 
+    def update_subscription_settings(self, subscription_data):
+        # type: (List[Dict[str, Any]]) -> Dict[str, Any]
+        '''
+            Example usage:
+
+            >>> client.update_subscription_settings([{
+                'stream_id': 1,
+                'property': 'pin_to_top',
+                'value': True
+            },
+            {
+                'stream_id': 3,
+                'property': 'color',
+                'value': 'f00'
+            }])
+            {'result': 'success', 'msg': '', 'subscription_data': [{...}, {...}]}
+        '''
+        return self.call_endpoint(
+            url='users/me/subscriptions/properties',
+            method='POST',
+            request={'subscription_data': subscription_data}
+        )
+
     def get_stream_id(self, stream):
         # type: (str) -> Dict[str, Any]
         '''
