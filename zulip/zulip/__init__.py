@@ -897,6 +897,9 @@ class Client(object):
 
     def get_alert_words(self):
         # type: () -> Dict[str, Any]
+        '''
+            See examples/alert-words for example usage.
+        '''
         return self.call_endpoint(
             url='users/me/alert_words',
             method='GET'
@@ -904,6 +907,9 @@ class Client(object):
 
     def add_alert_words(self, alert_words):
         # type: (List[str]) -> Dict[str, Any]
+        '''
+            See examples/alert-words for example usage.
+        '''
         return self.call_endpoint(
             url='users/me/alert_words',
             method='POST',
@@ -914,6 +920,9 @@ class Client(object):
 
     def remove_alert_words(self, alert_words):
         # type: (List[str]) -> Dict[str, Any]
+        '''
+            See examples/alert-words for example usage.
+        '''
         return self.call_endpoint(
             url='users/me/alert_words',
             method='DELETE',
