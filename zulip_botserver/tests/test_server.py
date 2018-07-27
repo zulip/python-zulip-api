@@ -134,6 +134,8 @@ class BotServerTests(BotServerTestCase):
         with self.assertRaises(IOError):
             server.read_config_file("nonexistentfile.conf")
         current_dir = os.path.dirname(os.path.abspath(__file__))
+
+        # No bot specified; should read all bot configs.
         bot_conf1 = server.read_config_file(os.path.join(current_dir, "test.conf"))
         expected_config1 = {
             'helloworld': {
@@ -150,6 +152,20 @@ class BotServerTests(BotServerTestCase):
             }
         }
         assert json.dumps(bot_conf1, sort_keys=True) == json.dumps(expected_config1, sort_keys=True)
+
+        # Specified bot exists; should read only that section.
+        bot_conf3 = server.read_config_file(os.path.join(current_dir, "test.conf"), "giphy")
+        expected_config3 = {
+            'giphy': {
+                'email': 'giphy-bot@zulip.com',
+                'key': 'value2',
+                'site': 'http://localhost',
+                'token': 'abcd1234',
+            }
+        }
+        assert json.dumps(bot_conf3, sort_keys=True) == json.dumps(expected_config3, sort_keys=True)
+
+        # Specified bot doesn't exist; should read the first section of the config.
         bot_conf2 = server.read_config_file(os.path.join(current_dir, "test.conf"), "redefined_bot")
         expected_config2 = {
             'redefined_bot': {
@@ -160,7 +176,6 @@ class BotServerTests(BotServerTestCase):
             }
         }
         assert json.dumps(bot_conf2, sort_keys=True) == json.dumps(expected_config2, sort_keys=True)
-
 
 if __name__ == '__main__':
     unittest.main()
