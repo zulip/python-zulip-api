@@ -657,7 +657,11 @@ class Client(object):
                 else:
                     if self.verbose:
                         print("Server returned error:\n%s" % res["msg"])
-                    if res["msg"].startswith("Bad event queue id:"):
+                    # Eventually, we'll only want the
+                    # BAD_EVENT_QUEUE_ID check, but we check for the
+                    # old string to support legacy Zulip servers.  We
+                    # should remove that legacy check in 2019.
+                    if res.get("code") == "BAD_EVENT_QUEUE_ID" or res["msg"].startswith("Bad event queue id:"):
                         # Our event queue went away, probably because
                         # we were asleep or the server restarted
                         # abnormally.  We may have missed some
