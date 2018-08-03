@@ -55,6 +55,30 @@ class GiphyHandler(object):
 class GiphyNoResultException(Exception):
     pass
 
+def request_giphy(url: str, query: str) -> str:
+    try:
+        data = requests.get(url, params=query)
+    except requests.exceptions.ConnectionError as e:  # Usually triggered by bad connection.
+        logging.exception('Bad connection')
+        raise
+    data.raise_for_status()
+    return data
+
+def get_many_giphy_gifs(keyword: str, api_key: str, count: int) -> Union[int, str]:
+    url = GIPHY_SEARCH
+    query = dict(
+        api_key=api_key,
+        q=keyword,
+        limit=count,
+    )
+
+    data = request_giphy(url, query)
+
+    try:
+        gifs = [item['images']['original']['url'] for item in data.json()['data']]
+    except (TypeError, KeyError, IndexError):  # Usually triggered by no result in Giphy.
+        raise GiphyNoResultException()
+    return gifs
 
 def get_url_gif_giphy(keyword: str, api_key: str) -> Union[int, str]:
     # Return a URL for a Giphy GIF based on keywords given.
@@ -67,12 +91,7 @@ def get_url_gif_giphy(keyword: str, api_key: str) -> Union[int, str]:
     else:
         url = GIPHY_RANDOM_API
 
-    try:
-        data = requests.get(url, params=query)
-    except requests.exceptions.ConnectionError as e:  # Usually triggered by bad connection.
-        logging.exception('Bad connection')
-        raise
-    data.raise_for_status()
+    data = request_giphy(url, query)
 
     try:
         gif_url = data.json()['data']['images']['original']['url']
