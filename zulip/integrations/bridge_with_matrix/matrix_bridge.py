@@ -7,7 +7,7 @@ import zulip
 import sys
 import argparse
 import re
-import configparser
+from six.moves import configparser
 
 from collections import OrderedDict
 
