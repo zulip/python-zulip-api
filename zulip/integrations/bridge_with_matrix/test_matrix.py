@@ -1,4 +1,4 @@
-from matrix_bridge import (
+from .matrix_bridge import (
     check_zulip_message_validity,
     zulip_to_matrix,
 )
