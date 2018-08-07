@@ -773,6 +773,25 @@ class Client(object):
             method='GET'
         )
 
+    def remove_reaction(self, reaction_data):
+        # type: (Dict[str, str]) -> Dict[str, Any]
+        '''
+            Example usage:
+
+            >>> client.remove_reaction({
+                'message_id': '100',
+                'emoji_name': 'joy',
+                'emoji_code': '1f602',
+                'emoji_type': 'unicode_emoji'
+            })
+            {'msg': '', 'result': 'success'}
+        '''
+        return self.call_endpoint(
+            url='messages/{}/reactions'.format(reaction_data['message_id']),
+            method='DELETE',
+            request=reaction_data,
+        )
+
     def get_realm_emoji(self):
         # type: () -> Dict[str, Any]
         '''
