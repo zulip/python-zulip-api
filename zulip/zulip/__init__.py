@@ -865,6 +865,24 @@ class Client(object):
             method='GET',
         )
 
+    def update_presence(self, request):
+        # type: (Dict[str, Any]) -> Dict[str, Any]
+        '''
+            Example usage:
+
+            >>> client.update_presence({
+                    status='active',
+                    ping_only=False,
+                    new_user_input=False,
+                })
+                {'result': 'success', 'server_timestamp': 1333649180.7073195, 'presences': {'iago@zulip.com': { ... }}, 'msg': ''}
+        '''
+        return self.call_endpoint(
+            url='users/me/presence',
+            method='POST',
+            request=request,
+        )
+
     def get_streams(self, **request):
         # type: (**Any) -> Dict[str, Any]
         '''
