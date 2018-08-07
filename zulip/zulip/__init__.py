@@ -773,6 +773,24 @@ class Client(object):
             method='GET'
         )
 
+    def add_reaction(self, reaction_data):
+        # type: (Dict[str, str]) -> Dict[str, Any]
+        '''
+            Example usage:
+
+            >>> client.add_emoji_reaction({
+                'message_id': '100',
+                'emoji_name': 'joy',
+                'emoji_code': '1f602',
+                'emoji_type': 'unicode_emoji'
+            })
+            {'result': 'success', 'msg': ''}
+        '''
+        return self.call_endpoint(
+            url='messages/{}/reactions'.format(reaction_data['message_id']),
+            method='POST',
+        )
+
     def remove_reaction(self, reaction_data):
         # type: (Dict[str, str]) -> Dict[str, Any]
         '''
