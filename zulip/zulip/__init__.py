@@ -1054,6 +1054,23 @@ class Client(object):
             method='GET'
         )
 
+    def create_user_group(self, group_data):
+        # type: (Dict[str, Any]) -> Dict[str, Any]
+        '''
+            Example usage:
+            >>> client.create_user_group({
+                'name': 'marketing',
+                'description': "Members of ACME Corp.'s marketing team.",
+                'members': [4, 8, 15, 16, 23, 42],
+            })
+            {'msg': '', 'result': 'success'}
+        '''
+        return self.call_endpoint(
+            url='user_groups/create',
+            method='POST',
+            request=group_data,
+        )
+
     def get_subscribers(self, **request):
         # type: (**Any) -> Dict[str, Any]
         '''
