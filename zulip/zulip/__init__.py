@@ -1068,6 +1068,23 @@ class Client(object):
             request={'subscription_data': subscription_data}
         )
 
+    def update_notification_settings(self, notification_settings):
+        # type: (Dict[str, Any]) -> Dict[str, Any]
+        '''
+            Example usage:
+
+            >>> client.update_notification_settings({
+                'enable_stream_push_notifications': True,
+                'enable_offline_push_notifications': False,
+            })
+            {'enable_offline_push_notifications': False, 'enable_stream_push_notifications': True, 'msg': '', 'result': 'success'}
+        '''
+        return self.call_endpoint(
+            url='settings/notifications',
+            method='PATCH',
+            request=notification_settings,
+        )
+
     def get_stream_id(self, stream):
         # type: (str) -> Dict[str, Any]
         '''
