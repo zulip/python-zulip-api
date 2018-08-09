@@ -1182,6 +1182,22 @@ class Client(object):
             request=request,
         )
 
+    def set_typing_status(self, request):
+        # type: (Dict[str, Any]) -> Dict[str, Any]
+        '''
+            Example usage:
+            >>> client.set_typing_status({
+                'op': 'start',
+                'to': ['iago@zulip.com', 'polonius@zulip.com'],
+            })
+            {'result': 'success', 'msg': ''}
+        '''
+        return self.call_endpoint(
+            url='typing',
+            method='POST',
+            request=request
+        )
+
 class ZulipStream(object):
     """
     A Zulip stream-like object
