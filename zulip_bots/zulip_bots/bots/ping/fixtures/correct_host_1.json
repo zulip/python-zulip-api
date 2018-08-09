@@ -1,0 +1,32 @@
+{
+  "request": {
+    "api_url": "https://check-host.net/check-ping",
+    "params": {
+      "host": "baidu.cn",
+      "max_nodes": "10"
+    },
+    "headers": {
+      "Accept": "application/json"
+    }
+  },
+  "response": {
+    "ok": 1,
+    "request_id": "71135d1kc3a",
+    "permanent_link": "https://check-host.net/check-report/71135d1kc3a",
+    "nodes": {
+      "ca2.node.check-host.net": ["ca", "Canada", "Toronto", "5.149.253.121", "AS201525", "OK"],
+      "de1.node.check-host.net": ["de", "Germany", "Falkenstein", "46.4.143.48", "AS24940", "OK"],
+      "it2.node.check-host.net": ["it", "Italy", "Milan", "185.25.204.60", "AS60798", "OK"],
+      "lv2.node.check-host.net": ["lv", "Latvia", "Riga", "178.159.42.229", "AS50979", "OK"],
+      "nl1.node.check-host.net": ["nl", "Netherlands", "Amsterdam", "31.148.219.169", "AS14576", "OK"],
+      "ru1.node.check-host.net": ["ru", "Russia", "Moscow", "185.159.82.88", "AS14576", "OK"],
+      "se2.node.check-host.net": ["se", "Sweden", "Stockholm", "185.29.8.135", "AS60567", "OK"],
+      "ua2.node.check-host.net": ["ua", "Ukraine", "Dnipropetrovsk", "5.22.157.52", "AS48964", "OK"],
+      "us1.node.check-host.net": ["us", "USA", "North Carolina", "198.37.112.208", "AS64200", "OK"],
+      "vn1.node.check-host.net": ["vn", "Vietnam", "Binh Thanh", "146.196.65.20", "AS7643", "OK"]
+    }
+  },
+  "response-headers": {
+    "Accept": "application/json"
+  }
+}
