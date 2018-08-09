@@ -1182,6 +1182,24 @@ class Client(object):
             request=group_data,
         )
 
+    def update_user_group(self, group_data):
+        # type: (Dict[str, Any]) -> Dict[str, Any]
+        '''
+            Example usage:
+
+            >>> client.update_user_group({
+                'group_id': 1,
+                'name': 'marketing',
+                'description': "Members of ACME Corp.'s marketing team.",
+            })
+            {'description': 'Description successfully updated.', 'name': 'Name successfully updated.', 'result': 'success', 'msg': ''}
+        '''
+        return self.call_endpoint(
+            url='user_groups/{}'.format(group_data['group_id']),
+            method='PATCH',
+            request=group_data,
+        )
+
     def get_subscribers(self, **request):
         # type: (**Any) -> Dict[str, Any]
         '''
