@@ -763,6 +763,19 @@ class Client(object):
             request=update_data
         )
 
+    def mark_all_as_read(self):
+        # type: () -> Dict[str, Any]
+        '''
+            Example usage:
+
+            >>> client.mark_all_as_read()
+            {'result': 'success', 'msg': ''}
+        '''
+        return self.call_endpoint(
+            url='mark_all_as_read',
+            method='POST',
+        )
+
     def get_message_history(self, message_id):
         # type: (int) -> Dict[str, Any]
         '''
