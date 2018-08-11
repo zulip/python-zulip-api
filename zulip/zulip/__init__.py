@@ -820,6 +820,19 @@ class Client(object):
             method='GET'
         )
 
+    def get_server_settings(self):
+        # type: () -> Dict[str, Any]
+        '''
+            Example usage:
+
+            >>> client.get_server_settings()
+            {'msg': '', 'result': 'success', 'zulip_version': '1.9.0', 'push_notifications_enabled': False, ...}
+        '''
+        return self.call_endpoint(
+            url='/server_settings',
+            method='GET',
+        )
+
     def get_events(self, **request):
         # type: (**Any) -> Dict[str, Any]
         '''
