@@ -790,6 +790,23 @@ class Client(object):
             request={'stream_id': stream_id},
         )
 
+    def mark_topic_as_read(self, stream_id, topic_name):
+        # type: (int, str) -> Dict[str, Any]
+        '''
+            Example usage:
+
+            >>> client.mark_all_as_read(42, 'new coffee machine')
+            {'result': 'success', 'msg': ''}
+        '''
+        return self.call_endpoint(
+            url='mark_topic_as_read',
+            method='POST',
+            request={
+                'stream_id': stream_id,
+                'topic_name': topic_name,
+            },
+        )
+
     def get_message_history(self, message_id):
         # type: (int) -> Dict[str, Any]
         '''
