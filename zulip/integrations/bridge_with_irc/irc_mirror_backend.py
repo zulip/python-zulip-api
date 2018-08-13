@@ -3,12 +3,6 @@ import irc.strings
 from irc.client import ip_numstr_to_quad, ip_quad_to_numstr, Event, ServerConnection
 from typing import Any, Dict
 
-IRC_DOMAIN = "irc.example.com"
-
-def zulip_sender(sender_string):
-    # type: (str) -> str
-    nick = sender_string.split("!")[0]
-    return nick + "@" + IRC_DOMAIN
 
 class IRCBot(irc.bot.SingleServerIRCBot):
     def __init__(self, zulip_client, stream, channel, nickname, server, port=6667):
@@ -17,6 +11,12 @@ class IRCBot(irc.bot.SingleServerIRCBot):
         self.channel = channel  # type: irc.bot.Channel
         self.zulip_client = zulip_client
         self.stream = stream
+        self.IRC_DOMAIN = server
+
+    def zulip_sender(self, sender_string):
+        # type: (str) -> str
+        nick = sender_string.split("!")[0]
+        return nick + "@" + self.IRC_DOMAIN
 
     def on_nicknameinuse(self, c, e):
         # type: (ServerConnection, Event) -> None
@@ -48,8 +48,8 @@ class IRCBot(irc.bot.SingleServerIRCBot):
     def on_privmsg(self, c, e):
         # type: (ServerConnection, Event) -> None
         content = e.arguments[0]
-        sender = zulip_sender(e.source)
-        if sender.endswith("_zulip@" + IRC_DOMAIN):
+        sender = self.zulip_sender(e.source)
+        if sender.endswith("_zulip@" + self.IRC_DOMAIN):
             return
 
         # Forward the PM to Zulip
@@ -64,18 +64,17 @@ class IRCBot(irc.bot.SingleServerIRCBot):
         # type: (ServerConnection, Event) -> None
         content = e.arguments[0]
         stream = self.stream
-        sender = zulip_sender(e.source)
-        if sender.endswith("_zulip@" + IRC_DOMAIN):
+        sender = self.zulip_sender(e.source)
+        if sender.endswith("_zulip@" + self.IRC_DOMAIN):
             return
 
         # Forward the stream message to Zulip
         print(self.zulip_client.send_message({
-            "forged": "yes",
-            "sender": sender,
             "type": "stream",
             "to": stream,
             "subject": "IRC",
             "content": content,
+            "content": "**{0}**: {1}".format(sender, content),
         }))
 
     def on_dccmsg(self, c, e):
