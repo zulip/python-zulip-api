@@ -3,8 +3,6 @@
 # EXPERIMENTAL
 # IRC <=> Zulip mirroring bot
 #
-# Setup: First, you need to install python-irc version 8.5.3
-# (https://github.com/jaraco/irc)
 
 from __future__ import print_function
 import argparse
