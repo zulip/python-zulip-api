@@ -2,6 +2,7 @@ import irc.bot
 import irc.strings
 from irc.client import ip_numstr_to_quad, ip_quad_to_numstr, Event, ServerConnection
 from irc.client_aio import AioReactor
+import multiprocessing as mp
 from typing import Any, Dict
 
 
@@ -41,7 +42,7 @@ class IRCBot(irc.bot.SingleServerIRCBot):
         def forward_to_irc(msg):
             # type: (Dict[str, Any]) -> None
             if msg["type"] == "stream":
-                send = lambda x: c.privmsg(msg["display_recipient"], x)
+                send = lambda x: c.privmsg(self.channel, x)
             else:
                 recipients = [u["short_name"] for u in msg["display_recipient"] if
                               u["email"] != msg["sender_email"]]
@@ -52,10 +53,8 @@ class IRCBot(irc.bot.SingleServerIRCBot):
             for line in msg["content"].split("\n"):
                 send(line)
 
-        ## Forwarding from Zulip => IRC is disabled; uncomment the next
-        ## line to make this bot forward in that direction instead.
-        #
-        # self.zulip_client.call_on_each_message(forward_to_irc)
+        z2i = mp.Process(target=self.zulip_client.call_on_each_message, args=(forward_to_irc,))
+        z2i.start()
 
     def on_privmsg(self, c, e):
         # type: (ServerConnection, Event) -> None

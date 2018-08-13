@@ -26,9 +26,6 @@ Example:
 Specify your Zulip API credentials and server in a ~/.zuliprc file or using the options.
 
 Note that "_zulip" will be automatically appended to the IRC nick provided
-
-Also note that at present you need to edit this code to do the Zulip => IRC side
-
 """
 
 if __name__ == "__main__":
