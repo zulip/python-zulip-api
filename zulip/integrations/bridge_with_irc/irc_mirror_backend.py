@@ -11,11 +11,12 @@ def zulip_sender(sender_string):
     return nick + "@" + IRC_DOMAIN
 
 class IRCBot(irc.bot.SingleServerIRCBot):
-    def __init__(self, zulip_client, channel, nickname, server, port=6667):
-        # type: (Any, irc.bot.Channel, str, str, int) -> None
+    def __init__(self, zulip_client, stream, channel, nickname, server, port=6667):
+        # type: (Any, str, irc.bot.Channel, str, str, int) -> None
         irc.bot.SingleServerIRCBot.__init__(self, [(server, port)], nickname, nickname)
         self.channel = channel  # type: irc.bot.Channel
         self.zulip_client = zulip_client
+        self.stream = stream
 
     def on_nicknameinuse(self, c, e):
         # type: (ServerConnection, Event) -> None
@@ -62,7 +63,7 @@ class IRCBot(irc.bot.SingleServerIRCBot):
     def on_pubmsg(self, c, e):
         # type: (ServerConnection, Event) -> None
         content = e.arguments[0]
-        stream = e.target
+        stream = self.stream
         sender = zulip_sender(e.source)
         if sender.endswith("_zulip@" + IRC_DOMAIN):
             return

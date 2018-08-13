@@ -15,11 +15,13 @@ import traceback
 if False:
     from typing import Any, Dict
 
-usage = """./irc-mirror.py --irc-server=IRC_SERVER --channel=<CHANNEL> --nick-prefix=<NICK> [optional args]
+usage = """./irc-mirror.py --irc-server=IRC_SERVER --channel=<CHANNEL> --nick-prefix=<NICK> --stream=<STREAM> [optional args]
 
 Example:
 
-./irc-mirror.py --irc-server=127.0.0.1 --channel='#test' --nick-prefix=username
+./irc-mirror.py --irc-server=127.0.0.1 --channel='#test' --nick-prefix=username --stream='test'
+
+--stream is a Zulip stream.
 
 Specify your Zulip API credentials and server in a ~/.zuliprc file or using the options.
 
@@ -35,6 +37,7 @@ if __name__ == "__main__":
     parser.add_argument('--port', default=6667)
     parser.add_argument('--nick-prefix', default=None)
     parser.add_argument('--channel', default=None)
+    parser.add_argument('--stream', default="general")
 
     options = parser.parse_args()
     # Setting the client to irc_mirror is critical for this to work
@@ -52,5 +55,5 @@ if __name__ == "__main__":
         parser.error("Missing required argument")
 
     nickname = options.nick_prefix + "_zulip"
-    bot = IRCBot(zulip_client, options.channel, nickname, options.irc_server, options.port)
+    bot = IRCBot(zulip_client, options.stream, options.channel, nickname, options.irc_server, options.port)
     bot.start()
