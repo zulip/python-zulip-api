@@ -41,6 +41,9 @@ class IRCBot(irc.bot.SingleServerIRCBot):
 
         def forward_to_irc(msg):
             # type: (Dict[str, Any]) -> None
+            if msg["sender_email"] == self.zulip_client.email:
+                # Do not forward echo
+                return
             if msg["type"] == "stream":
                 send = lambda x: c.privmsg(self.channel, x)
             else:
