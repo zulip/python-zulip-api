@@ -1,10 +1,13 @@
 import irc.bot
 import irc.strings
 from irc.client import ip_numstr_to_quad, ip_quad_to_numstr, Event, ServerConnection
+from irc.client_aio import AioReactor
 from typing import Any, Dict
 
 
 class IRCBot(irc.bot.SingleServerIRCBot):
+    reactor_class = AioReactor
+
     def __init__(self, zulip_client, stream, channel, nickname, server, port=6667):
         # type: (Any, str, irc.bot.Channel, str, str, int) -> None
         irc.bot.SingleServerIRCBot.__init__(self, [(server, port)], nickname, nickname)
@@ -17,6 +20,15 @@ class IRCBot(irc.bot.SingleServerIRCBot):
         # type: (str) -> str
         nick = sender_string.split("!")[0]
         return nick + "@" + self.IRC_DOMAIN
+
+    def connect(self, *args, **kwargs):
+        # type: (*Any, **Any) -> None
+        # Taken from
+        # https://github.com/jaraco/irc/blob/master/irc/client_aio.py,
+        # in particular the method of AioSimpleIRCClient
+        self.reactor.loop.run_until_complete(
+            self.connection.connect(*args, **kwargs)
+        )
 
     def on_nicknameinuse(self, c, e):
         # type: (ServerConnection, Event) -> None
