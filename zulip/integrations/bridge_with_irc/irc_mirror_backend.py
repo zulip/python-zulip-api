@@ -9,12 +9,13 @@ from typing import Any, Dict
 class IRCBot(irc.bot.SingleServerIRCBot):
     reactor_class = AioReactor
 
-    def __init__(self, zulip_client, stream, channel, nickname, server, port=6667):
-        # type: (Any, str, irc.bot.Channel, str, str, int) -> None
+    def __init__(self, zulip_client, stream, topic, channel, nickname, server, port=6667):
+        # type: (Any, str, str, irc.bot.Channel, str, str, int) -> None
         irc.bot.SingleServerIRCBot.__init__(self, [(server, port)], nickname, nickname)
         self.channel = channel  # type: irc.bot.Channel
         self.zulip_client = zulip_client
         self.stream = stream
+        self.topic = topic
         self.IRC_DOMAIN = server
 
     def zulip_sender(self, sender_string):
@@ -77,7 +78,6 @@ class IRCBot(irc.bot.SingleServerIRCBot):
     def on_pubmsg(self, c, e):
         # type: (ServerConnection, Event) -> None
         content = e.arguments[0]
-        stream = self.stream
         sender = self.zulip_sender(e.source)
         if sender.endswith("_zulip@" + self.IRC_DOMAIN):
             return
@@ -85,8 +85,8 @@ class IRCBot(irc.bot.SingleServerIRCBot):
         # Forward the stream message to Zulip
         print(self.zulip_client.send_message({
             "type": "stream",
-            "to": stream,
-            "subject": "IRC",
+            "to": self.stream,
+            "subject": self.topic,
             "content": content,
             "content": "**{0}**: {1}".format(sender, content),
         }))

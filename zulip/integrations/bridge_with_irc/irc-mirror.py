@@ -17,9 +17,10 @@ usage = """./irc-mirror.py --irc-server=IRC_SERVER --channel=<CHANNEL> --nick-pr
 
 Example:
 
-./irc-mirror.py --irc-server=127.0.0.1 --channel='#test' --nick-prefix=username --stream='test'
+./irc-mirror.py --irc-server=127.0.0.1 --channel='#test' --nick-prefix=username --stream='test' --topic='#mypy'
 
 --stream is a Zulip stream.
+--topic is a Zulip topic, is optionally specified, defaults to "IRC".
 
 Specify your Zulip API credentials and server in a ~/.zuliprc file or using the options.
 
@@ -33,6 +34,7 @@ if __name__ == "__main__":
     parser.add_argument('--nick-prefix', default=None)
     parser.add_argument('--channel', default=None)
     parser.add_argument('--stream', default="general")
+    parser.add_argument('--topic', default="IRC")
 
     options = parser.parse_args()
     # Setting the client to irc_mirror is critical for this to work
@@ -50,5 +52,5 @@ if __name__ == "__main__":
         parser.error("Missing required argument")
 
     nickname = options.nick_prefix + "_zulip"
-    bot = IRCBot(zulip_client, options.stream, options.channel, nickname, options.irc_server, options.port)
+    bot = IRCBot(zulip_client, options.stream, options.topic, options.channel, nickname, options.irc_server, options.port)
     bot.start()
