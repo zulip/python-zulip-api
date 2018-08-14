@@ -894,6 +894,19 @@ class Client(object):
             },
         )
 
+    def remove_realm_filter(self, filter_id):
+        # type: (int) -> Dict[str, Any]
+        '''
+            Example usage:
+
+            >>> client.remove_realm_filter(42)
+            {'result': 'success', 'msg': ''}
+        '''
+        return self.call_endpoint(
+            url='realm/filters/{}'.format(filter_id),
+            method='DELETE',
+        )
+
     def get_server_settings(self):
         # type: () -> Dict[str, Any]
         '''
