@@ -1200,6 +1200,19 @@ class Client(object):
             request=group_data,
         )
 
+    def remove_user_group(self, group_id):
+        # type: (int) -> Dict[str, Any]
+        '''
+            Example usage:
+
+            >>> client.remove_user_group(42)
+            {'msg': '', 'result': 'success'}
+        '''
+        return self.call_endpoint(
+            url='user_groups/{}'.format(group_id),
+            method='DELETE',
+        )
+
     def get_subscribers(self, **request):
         # type: (**Any) -> Dict[str, Any]
         '''
