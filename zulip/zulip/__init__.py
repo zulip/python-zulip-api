@@ -860,7 +860,7 @@ class Client(object):
             See examples/realm-emoji for example usage.
         '''
         return self.call_endpoint(
-            url='/realm/emoji',
+            url='realm/emoji',
             method='GET'
         )
 
@@ -873,7 +873,7 @@ class Client(object):
             {'msg': '', 'result': 'success', 'zulip_version': '1.9.0', 'push_notifications_enabled': False, ...}
         '''
         return self.call_endpoint(
-            url='/server_settings',
+            url='server_settings',
             method='GET',
         )
 
