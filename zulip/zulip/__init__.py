@@ -1213,6 +1213,23 @@ class Client(object):
             method='DELETE',
         )
 
+    def update_user_group_members(self, group_data):
+        # type: (Dict[str, Any]) -> Dict[str, Any]
+        '''
+            Example usage:
+
+            >>> client.update_user_group_members({
+                'delete': [4, 8, 15],
+                'add': [16, 23, 42],
+            })
+            {'msg': '', 'result': 'success'}
+        '''
+        return self.call_endpoint(
+            url='user_groups/{}/members'.format(group_data['group_id']),
+            method='POST',
+            request=group_data,
+        )
+
     def get_subscribers(self, **request):
         # type: (**Any) -> Dict[str, Any]
         '''
