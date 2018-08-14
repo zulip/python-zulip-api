@@ -864,6 +864,19 @@ class Client(object):
             method='GET'
         )
 
+    def get_realm_filters(self):
+        # type: () -> Dict[str, Any]
+        '''
+            Example usage:
+
+            >>> client.get_realm_filters()
+            {'result': 'success', 'msg': '', 'filters': [['#(?P<id>[0-9]+)', 'https://github.com/zulip/zulip/issues/%(id)s', 1]]}
+        '''
+        return self.call_endpoint(
+            url='realm/filters',
+            method='GET',
+        )
+
     def get_server_settings(self):
         # type: () -> Dict[str, Any]
         '''
