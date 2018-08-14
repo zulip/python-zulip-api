@@ -877,6 +877,23 @@ class Client(object):
             method='GET',
         )
 
+    def add_realm_filter(self, pattern, url_format_string):
+        # type: (str, str) -> Dict[str, Any]
+        '''
+            Example usage:
+
+            >>> client.add_realm_filter('#(?P<id>[0-9]+)', 'https://github.com/zulip/zulip/issues/%(id)s')
+            {'result': 'success', 'msg': '', 'id': 42}
+        '''
+        return self.call_endpoint(
+            url='realm/filters',
+            method='POST',
+            request={
+                'pattern': pattern,
+                'url_format_string': url_format_string,
+            },
+        )
+
     def get_server_settings(self):
         # type: () -> Dict[str, Any]
         '''
