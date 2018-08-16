@@ -1043,6 +1043,16 @@ class Client(object):
             request=stream_data,
         )
 
+    def delete_stream(self, stream_id):
+        # type: (int) -> Dict[str, Any]
+        '''
+            See examples/delete-stream for example usage.
+        '''
+        return self.call_endpoint(
+            url='streams/{}'.format(stream_id),
+            method='DELETE',
+        )
+
     def get_members(self, request=None):
         # type: (Optional[Dict[str, Any]]) -> Dict[str, Any]
         '''
