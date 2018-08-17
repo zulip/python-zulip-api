@@ -38,7 +38,7 @@ The source code is written in *Python 3*.
    python3 ./tools/provision -p <path_to_your_python_version>
    ```
 
-5. If that succeeds, it will print end with printing the following command:
+5. If that succeeds, it will end with printing the following command:
    ```
    source /.../python-zulip-api/.../activate
    ```
