@@ -42,11 +42,18 @@ class IRCBot(irc.bot.SingleServerIRCBot):
 
         def forward_to_irc(msg):
             # type: (Dict[str, Any]) -> None
-            if msg["sender_email"] == self.zulip_client.email:
+            not_from_zulip_bot = msg["sender_email"] != self.zulip_client.email
+            if not not_from_zulip_bot:
                 # Do not forward echo
                 return
-            if msg["type"] == "stream":
-                send = lambda x: c.privmsg(self.channel, x)
+            is_a_stream = msg["type"] == "stream"
+            if is_a_stream:
+                in_the_specified_stream = msg["display_recipient"] == self.stream
+                at_the_specified_subject = msg["subject"].casefold() == self.topic.casefold()
+                if in_the_specified_stream and at_the_specified_subject:
+                    send = lambda x: c.privmsg(self.channel, x)
+                else:
+                    return
             else:
                 recipients = [u["short_name"] for u in msg["display_recipient"] if
                               u["email"] != msg["sender_email"]]
