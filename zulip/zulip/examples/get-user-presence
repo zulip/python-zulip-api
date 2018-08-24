@@ -24,7 +24,7 @@
 from __future__ import print_function
 import argparse
 
-usage = """get-presence --email=<email address> [options]
+usage = """get-user-presence --email=<email address> [options]
 
 Get presence data for another user.
 """
@@ -37,4 +37,4 @@ options = parser.parse_args()
 
 client = zulip.init_from_options(options)
 
-print(client.get_presence(options.email))
+print(client.get_user_presence(options.email))
