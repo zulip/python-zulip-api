@@ -989,12 +989,12 @@ class Client(object):
             request=request,
         )
 
-    def get_presence(self, email):
+    def get_user_presence(self, email):
         # type: (Dict[str, Any]) -> Dict[str, Any]
         '''
             Example usage:
 
-            >>> client.get_presence()
+            >>> client.get_user_presence('iago@zulip.com')
             {'presence': {'website': {'timestamp': 1486799122, 'status': 'active'}}, 'result': 'success', 'msg': ''}
         '''
         return self.call_endpoint(
