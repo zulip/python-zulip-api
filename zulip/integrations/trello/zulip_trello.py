@@ -10,33 +10,6 @@ import sys
 import argparse
 import requests
 
-import zulip_trello_config as configuration
-
-
-def check_configuration() -> None:
-    """check_configuration
-
-    Check if configuration fields have been populated in
-    zulip_trello_config.py
-    """
-
-    errors = []
-
-    if not configuration.TRELLO_API_KEY:
-        errors.append('Error: TRELLO_API_KEY is not defined in zulip_trello_config.py')
-
-    if not configuration.TRELLO_TOKEN:
-        errors.append('Error: TRELLO_TOKEN is not defined in zulip_trello_config.py')
-
-    if not configuration.ZULIP_WEBHOOK_URL:
-        errors.append('Error: ZULIP_WEBHOOK_URL is not defined in zulip_trello_config.py')
-
-    if len(errors) > 0:
-        for error in errors:
-            print(error)
-
-        sys.exit(1)
-
 def get_model_id(options: argparse.Namespace) -> str:
     """get_model_id
 
@@ -53,8 +26,8 @@ def get_model_id(options: argparse.Namespace) -> str:
     )
 
     params = {
-        'key': configuration.TRELLO_API_KEY,
-        'token': configuration.TRELLO_TOKEN,
+        'key': options.trello_api_key,
+        'token': options.trello_token,
     }
 
     trello_response = requests.get(
@@ -86,12 +59,12 @@ def get_webhook_id(options: argparse.Namespace, id_model: str) -> str:
     trello_api_url = 'https://api.trello.com/1/webhooks/'
 
     data = {
-        'key': configuration.TRELLO_API_KEY,
-        'token': configuration.TRELLO_TOKEN,
+        'key': options.trello_api_key,
+        'token': options.trello_token,
         'description': 'Webhook for Zulip integration (From Trello {} to Zulip)'.format(
             options.trello_board_name,
         ),
-        'callbackURL': configuration.ZULIP_WEBHOOK_URL,
+        'callbackURL': options.zulip_webhook_url,
         'idModel': id_model
     }
 
@@ -160,11 +133,27 @@ def create_webhook(options: argparse.Namespace) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument('trello_board_name', help='The Trello board name.')
-    parser.add_argument('trello_board_id', help='The Trello board short id.')
+    parser.add_argument('--trello-board-name',
+                        required=True,
+                        help='The Trello board name.')
+    parser.add_argument('--trello-board-id',
+                        required=True,
+                        help=('The Trello board short ID. Can usually be found '
+                              'in the URL of the Trello board.'))
+    parser.add_argument('--trello-api-key',
+                        required=True,
+                        help=('Visit https://trello.com/1/appkey/generate to generate '
+                              'an APPLICATION_KEY (need to be logged into Trello).'))
+    parser.add_argument('--trello-token',
+                        required=True,
+                        help=('Visit https://trello.com/1/appkey/generate and under '
+                              '`Developer API Keys`, click on `Token` and generate '
+                              'a Trello access token.'))
+    parser.add_argument('--zulip-webhook-url',
+                        required=True,
+                        help='The webhook URL that Trello will query.')
 
     options = parser.parse_args()
-    check_configuration()
     create_webhook(options)
 
 if __name__ == '__main__':
