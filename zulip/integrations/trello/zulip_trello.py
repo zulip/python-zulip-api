@@ -5,12 +5,13 @@
 
 
 from __future__ import absolute_import
+from __future__ import print_function
 
 import sys
 import argparse
 import requests
 
-def get_model_id(options: argparse.Namespace) -> str:
+def get_model_id(options):
     """get_model_id
 
     Get Model Id from Trello API
@@ -44,7 +45,7 @@ def get_model_id(options: argparse.Namespace) -> str:
     return board_info_json['id']
 
 
-def get_webhook_id(options: argparse.Namespace, id_model: str) -> str:
+def get_webhook_id(options, id_model):
     """get_webhook_id
 
     Get webhook id from Trello API
@@ -81,7 +82,7 @@ def get_webhook_id(options: argparse.Namespace, id_model: str) -> str:
 
     return webhook_info_json['id']
 
-def create_webhook(options: argparse.Namespace) -> None:
+def create_webhook(options):
     """create_webhook
 
     Create Trello webhook
@@ -106,8 +107,17 @@ def create_webhook(options: argparse.Namespace) -> None:
     print('Success! The webhook for the {} Trello board was successfully created.'.format(
         options.trello_board_name))
 
-def main() -> None:
-    parser = argparse.ArgumentParser()
+def main():
+    description = """
+zulip_trello.py is a handy little script that allows Zulip users to
+quickly set up a Trello webhook.
+
+Note: The Trello webhook instructions available on your Zulip server
+may be outdated. Please make sure you follow the updated instructions
+at <https://zulipchat.com/integrations/doc/trello>.
+"""
+
+    parser = argparse.ArgumentParser(description=description)
     parser.add_argument('--trello-board-name',
                         required=True,
                         help='The Trello board name.')
