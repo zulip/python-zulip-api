@@ -81,24 +81,6 @@ def get_webhook_id(options: argparse.Namespace, id_model: str) -> str:
 
     return webhook_info_json['id']
 
-
-def log_webhook_info(options: argparse.Namespace, id_webhook: str) -> None:
-    """log_webhook_info
-
-    Log webhook info in csv file for possible future use
-
-    :options: argparse.Namespace arguments
-    :id_webhook: str Trello webhook id
-    """
-
-    with open('zulip_trello_webhooks.csv', 'a') as webhooks_file:
-        webhooks_file.write(
-            '{},{}\n'.format(
-                options.trello_board_name,
-                id_webhook
-            )
-        )
-
 def create_webhook(options: argparse.Namespace) -> None:
     """create_webhook
 
@@ -119,17 +101,10 @@ def create_webhook(options: argparse.Namespace) -> None:
     id_webhook = get_webhook_id(options, id_model)
 
     if id_webhook:
-        print('Success! The webhook id is', id_webhook)
+        print('Success! The webhook ID is', id_webhook)
 
-    # The webhook was successfully created,
-    # Log informations for possible future needs
-    print('Logging webhook information')
-
-    log_webhook_info(options, id_webhook)
     print('Success! The webhook for the {} Trello board was successfully created.'.format(
         options.trello_board_name))
-    print('\nYou can find the webhooks information in the zulip_trello_webhooks.csv file.')
-
 
 def main() -> None:
     parser = argparse.ArgumentParser()
