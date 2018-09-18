@@ -45,6 +45,9 @@ zuliprc
 botserverrc
 .botserverrc
 
+# vim
+.swp
+
 # mypy
 .mypy_cache
 
