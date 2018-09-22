@@ -9,7 +9,13 @@ from __future__ import print_function
 
 import sys
 import argparse
-import requests
+
+try:
+    import requests
+except ImportError:
+    print("Error: Please install the python requests library before running this script:")
+    print("http://docs.python-requests.org/en/master/user/install/")
+    sys.exit(1)
 
 def get_model_id(options):
     """get_model_id
