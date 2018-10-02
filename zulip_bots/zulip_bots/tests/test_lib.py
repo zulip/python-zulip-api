@@ -4,6 +4,7 @@ from zulip_bots.lib import (
     ExternalBotHandler,
     StateHandler,
     run_message_handler_for_bot,
+    extract_query_without_mention
 )
 
 import io
@@ -191,6 +192,23 @@ class LibTest(TestCase):
             handler.upload_file_from_path('file.txt')
 
         client.upload_file.assert_called_once_with(file)
+
+    def test_extract_query_without_mention(self):
+        client = FakeClient()
+        handler = ExternalBotHandler(
+            client=client,
+            root_dir=None,
+            bot_details=None,
+            bot_config_file=None
+        )
+        message = {'content': "@**Alice** Hello World"}
+        self.assertEqual(extract_query_without_mention(message, handler), "Hello World")
+        message = {'content': "@**Alice|alice** Hello World"}
+        self.assertEqual(extract_query_without_mention(message, handler), "Hello World")
+        message = {'content': "@**Alice Renamed|alice** Hello World"}
+        self.assertEqual(extract_query_without_mention(message, handler), "Hello World")
+        message = {'content': "Not at start @**Alice|alice** Hello World"}
+        self.assertEqual(extract_query_without_mention(message, handler), None)
 
     def _create_client_and_handler_for_file_upload(self):
         client = FakeClient()
