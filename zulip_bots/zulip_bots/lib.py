@@ -5,6 +5,7 @@ import os
 import signal
 import sys
 import time
+import re
 
 
 from typing import Any, Optional, List, Dict, IO, Text
@@ -238,10 +239,18 @@ def extract_query_without_mention(message: Dict[str, Any], client: ExternalBotHa
     If the bot is the first @mention in the message, then this function returns
     the stripped message with the bot's @mention removed.  Otherwise, it returns None.
     """
+    content = message['content']
     mention = '@**' + client.full_name + '**'
-    if not message['content'].startswith(mention):
-        return None
-    return message['content'][len(mention):].lstrip()
+    extended_mention_regex = re.compile(r'^@\*\*.*\|' + str(client.user_id) + r'\*\*')
+    extended_mention_match = extended_mention_regex.match(content)
+
+    if extended_mention_match:
+        return content[extended_mention_match.end():].lstrip()
+
+    if content.startswith(mention):
+        return content[len(mention):].lstrip()
+
+    return None
 
 
 def is_private_message_from_another_user(message_dict: Dict[str, Any], current_user_id: int) -> bool:
