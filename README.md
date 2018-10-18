@@ -42,7 +42,7 @@ The source code is written in *Python 3*.
    ```
    source /.../python-zulip-api/.../activate
    ```
-   You can run run this command to enter the virtual environment.
+   You can run this command to enter the virtual environment.
    You'll want to run this in each new shell before running commands from `python-zulip-api`.
 
 6. Once you've entered the virtualenv, you should see something like this on the terminal:
