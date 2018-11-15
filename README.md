@@ -17,6 +17,10 @@ The source code is written in *Python 3*.
 
 ## Development
 
+This is part of the Zulip open source project; see the
+[contributing guide](https://zulip.readthedocs.io/en/latest/overview/contributing.html)
+and [commit guidelines](https://zulip.readthedocs.io/en/latest/contributing/version-control.html).
+
 1. Fork and clone the Git repo:
    `git clone https://github.com/<your_username>/python-zulip-api.git`
 
