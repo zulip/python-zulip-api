@@ -76,7 +76,14 @@ the Python version this command is executed with."""
     # `import_module`.
     activate_module_dir = os.path.abspath(os.path.join(venv_dir, venv_exec_dir))
     sys.path.append(activate_module_dir)
+
     import_module('activate_this')
+
+    # On OS X, ensure we use the virtualenv version of the python binary for
+    # future subprocesses instead of the version that this script was launched with. See
+    # https://stackoverflow.com/questions/26323852/whats-the-meaning-of-pyvenv-launcher-environment-variable
+    if '__PYVENV_LAUNCHER__' in os.environ:
+        del os.environ['__PYVENV_LAUNCHER__']
 
     # In order to install all required packages for the venv, `pip` needs to be executed by
     # the venv's Python interpreter. `--prefix venv_dir` ensures that all modules are installed
