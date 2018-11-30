@@ -51,7 +51,13 @@ twitter-bot --config-file=<path/to/.zuliprc> --search="<search-query>"
 or
 twitter-bot --config-file=<path/to/.zuliprc> --twitter-name="<your-twitter-handle>"
 
-4. Configure a crontab entry for this script. A sample crontab entry
+- optional - Exclude any terms or users by using the flags `--exluded-terms` or `--excluded-users`:
+
+twitter-bot --config-file=<path/to/.zuliprc> --search="<search-query>" --excluded-users="test-username,other-username"
+or
+twitter-bot --config-file=<path/to/.zuliprc> --twitter-name="<your-twitter-handle>" --excluded-terms="test-term,other-term"
+
+5. Configure a crontab entry for this script. A sample crontab entry
 that will process tweets every 5 minutes is:
 
 */5 * * * * /usr/local/share/zulip/integrations/twitter/twitter-bot [options]
@@ -108,6 +114,12 @@ parser.add_argument('--stream',
 parser.add_argument('--twitter-name',
                     dest='twitter_name',
                     help='Twitter username to poll new tweets from"')
+parser.add_argument('--excluded-terms',
+                    dest='excluded_terms',
+                    help='Terms to exclude tweets on')
+parser.add_argument('--excluded-users',
+                    dest='excluded_users',
+                    help='Users to exclude tweets on')
 
 opts = parser.parse_args()
 
@@ -190,7 +202,26 @@ elif opts.twitter_name:
     else:
         statuses = api.GetUserTimeline(screen_name=opts.twitter_name, since_id=since_id)
 
+if opts.excluded_terms:
+    excluded_terms = opts.excluded_terms.split(",")
+else:
+    excluded_terms = []
+
+if opts.excluded_users:
+    excluded_users = opts.excluded_users.split(",")
+else:
+    excluded_users = []
+
 for status in statuses[::-1][:opts.limit_tweets]:
+    # Check if the tweet is from an excluded user
+    exclude = False
+    for user in excluded_users:
+        if user == status.user.screen_name:
+            exclude = True
+            break
+    if exclude:
+        continue  # Continue with the loop for the next tweet
+
     # https://twitter.com/eatevilpenguins/status/309995853408530432
     composed = "%s (%s)" % (status.user.name, status.user.screen_name)
     url = "https://twitter.com/%s/status/%s" % (status.user.screen_name, status.id)
@@ -198,10 +229,21 @@ for status in statuses[::-1][:opts.limit_tweets]:
     text_to_check = [status.text, status.user.screen_name]
     text_to_check.extend(url.expanded_url for url in status.urls)
 
+    text_to_check = [text.lower() for text in text_to_check]
+
+    # Check that the tweet doesn't contain any terms that
+    # are supposed to be excluded
+    for term in excluded_terms:
+        if any(term.lower() in text for text in text_to_check):
+            exclude = True  # Tweet should be excluded
+            break
+    if exclude:
+        continue  # Continue with the loop for the next tweet
+
     if opts.search_terms:
         search_term_used = None
         for term in opts.search_terms.split(","):
-            if any(term.lower() in text.lower() for text in text_to_check):
+            if any(term.lower() in text for text in text_to_check):
                 search_term_used = term
                 break
         # For some reason (perhaps encodings or message tranformations we
