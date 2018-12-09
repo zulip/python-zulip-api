@@ -62,7 +62,7 @@ To run the tests for
 
 * *zulip*: run `./tools/test-zulip`
 
-* *zulip_bots*: run `./tools/test-bots`
+* *zulip_bots*: run `./tools/test-lib && ./tools/test-bots`
 
 * *zulip_botserver*: run `./tools/test-botserver`
 
