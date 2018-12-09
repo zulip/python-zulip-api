@@ -30,6 +30,22 @@ def get_bots_directory_path() -> str:
     current_dir = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(current_dir, 'bots')
 
+def zulip_env_vars_are_present() -> bool:
+    # We generally require a Zulip config file, but if
+    # the user supplies the correct environment vars, we
+    # waive the requirement.  This can be helpful for
+    # containers like Heroku that prefer env vars to config
+    # files.
+    if os.environ.get('ZULIP_EMAIL') is None:
+        return False
+    if os.environ.get('ZULIP_API_KEY') is None:
+        return False
+    if os.environ.get('ZULIP_SITE') is None:
+        return False
+
+    # If none of the absolutely critical env vars are
+    # missing, we can proceed without a config file.
+    return True
 
 class RateLimit(object):
     def __init__(self, message_limit: int, interval_limit: int) -> None:

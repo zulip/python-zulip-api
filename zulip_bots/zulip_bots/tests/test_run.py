@@ -19,7 +19,7 @@ class TestDefaultArguments(TestCase):
     @patch('sys.argv', ['zulip-run-bot', 'giphy', '--config-file', '/foo/bar/baz.conf'])
     @patch('zulip_bots.run.run_message_handler_for_bot')
     def test_argument_parsing_with_bot_name(self, mock_run_message_handler_for_bot: mock.Mock) -> None:
-        with patch('zulip_bots.run.exit_gracefully_if_zulip_config_file_does_not_exist'):
+        with patch('zulip_bots.run.exit_gracefully_if_zulip_config_is_missing'):
             zulip_bots.run.main()
 
         mock_run_message_handler_for_bot.assert_called_with(bot_name='giphy',
@@ -31,7 +31,7 @@ class TestDefaultArguments(TestCase):
     @patch('sys.argv', ['zulip-run-bot', path_to_bot, '--config-file', '/foo/bar/baz.conf'])
     @patch('zulip_bots.run.run_message_handler_for_bot')
     def test_argument_parsing_with_bot_path(self, mock_run_message_handler_for_bot: mock.Mock) -> None:
-        with patch('zulip_bots.run.exit_gracefully_if_zulip_config_file_does_not_exist'):
+        with patch('zulip_bots.run.exit_gracefully_if_zulip_config_is_missing'):
             zulip_bots.run.main()
 
         mock_run_message_handler_for_bot.assert_called_with(
@@ -61,7 +61,7 @@ class TestDefaultArguments(TestCase):
         with patch('sys.argv', ['zulip-run-bot', bot_qualifier, '--config-file', '/path/to/config']):
             with patch('zulip_bots.finder.import_module_from_source', return_value=mock.Mock()):
                 with patch('zulip_bots.run.run_message_handler_for_bot'):
-                    with patch('zulip_bots.run.exit_gracefully_if_zulip_config_file_does_not_exist'):
+                    with patch('zulip_bots.run.exit_gracefully_if_zulip_config_is_missing'):
                         zulip_bots.run.main()
 
         self.assertIn(bot_dir_path, sys.path)
@@ -74,7 +74,7 @@ class TestDefaultArguments(TestCase):
         with patch('sys.argv', ['zulip-run-bot', 'bot.module.name', '--config-file', '/path/to/config']):
             with patch('importlib.import_module', return_value=mock_bot_module) as mock_import_module:
                 with patch('zulip_bots.run.run_message_handler_for_bot'):
-                        with patch('zulip_bots.run.exit_gracefully_if_zulip_config_file_does_not_exist'):
+                        with patch('zulip_bots.run.exit_gracefully_if_zulip_config_is_missing'):
                             zulip_bots.run.main()
                             mock_import_module.assert_called_once_with(bot_module_name)
 
