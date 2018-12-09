@@ -2,7 +2,7 @@ import html
 import json
 import random
 import re
-from zulip_bots.lib import Any, StateHandlerError
+from zulip_bots.lib import Any
 
 from typing import Optional, Any, Dict, Tuple
 
@@ -79,7 +79,7 @@ def parse_answer(query: str) -> Tuple[str, str]:
 def generate_ticket_id(storage: Any) -> str:
     try:
         incident_num = storage.get('ticket_id')
-    except (StateHandlerError, KeyError):
+    except (KeyError):
         incident_num = 0
     incident_num += 1
     incident_num = incident_num % (1000)

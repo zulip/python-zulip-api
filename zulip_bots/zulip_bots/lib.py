@@ -72,7 +72,7 @@ class StateHandler(object):
 
         response = self._client.get_storage({'keys': [key]})
         if response['result'] != 'success':
-            raise StateHandlerError("Error fetching state: {}".format(str(response)))
+            raise KeyError('key not found: ' + key)
 
         marshalled_value = response['storage'][key]
         self.state_[key] = marshalled_value
