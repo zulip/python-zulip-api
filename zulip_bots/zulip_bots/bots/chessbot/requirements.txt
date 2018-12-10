@@ -1,1 +1,1 @@
-python-chess[engine,gaviota]
+python-chess[engine,gaviota] == 0.22.0
