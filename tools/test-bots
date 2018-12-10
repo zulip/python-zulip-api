@@ -91,10 +91,6 @@ def main():
     # (from globbing multiple test_*.py files, or multiple on the command line)
     bots_to_test = {bot for bot in specified_bots if bot not in options.exclude}
 
-    # Temporary hack to get build running.  The chess bot didn't pin
-    # its dependency.
-    bots_to_test.discard('chessbot')
-
     if options.pytest:
         excluded_bots = ['merels']
         pytest_bots_to_test = sorted([bot for bot in bots_to_test if bot not in excluded_bots])
