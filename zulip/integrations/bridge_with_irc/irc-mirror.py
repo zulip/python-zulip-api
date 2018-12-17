@@ -21,6 +21,7 @@ Example:
 
 --stream is a Zulip stream.
 --topic is a Zulip topic, is optionally specified, defaults to "IRC".
+--nickserv-pw is a password for the nickserv, is optionally specified.
 
 Specify your Zulip API credentials and server in a ~/.zuliprc file or using the options.
 
@@ -35,6 +36,7 @@ if __name__ == "__main__":
     parser.add_argument('--channel', default=None)
     parser.add_argument('--stream', default="general")
     parser.add_argument('--topic', default="IRC")
+    parser.add_argument('--nickserv-pw', default='')
 
     options = parser.parse_args()
     # Setting the client to irc_mirror is critical for this to work
@@ -42,7 +44,7 @@ if __name__ == "__main__":
     zulip_client = zulip.init_from_options(options)
     try:
         from irc_mirror_backend import IRCBot
-    except ImportError as e:
+    except ImportError:
         traceback.print_exc()
         print("You have unsatisfied dependencies. Install all missing dependencies with "
               "{} --provision".format(sys.argv[0]))
@@ -52,5 +54,6 @@ if __name__ == "__main__":
         parser.error("Missing required argument")
 
     nickname = options.nick_prefix + "_zulip"
-    bot = IRCBot(zulip_client, options.stream, options.topic, options.channel, nickname, options.irc_server, options.port)
+    bot = IRCBot(zulip_client, options.stream, options.topic, options.channel,
+                 nickname, options.irc_server, options.nickserv_pw, options.port)
     bot.start()
