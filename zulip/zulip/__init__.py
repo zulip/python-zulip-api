@@ -864,6 +864,20 @@ class Client(object):
             method='GET'
         )
 
+    def upload_custom_emoji(self, emoji_name, file_obj):
+        # type: (str, IO[Any]) -> Dict[str, Any]
+        '''
+            Example usage:
+
+            >>> client.upload_custom_emoji(emoji_name, file_obj)
+            {'result': 'success', 'msg': ''}
+        '''
+        return self.call_endpoint(
+            'realm/emoji/{}'.format(emoji_name),
+            method='POST',
+            files=[file_obj]
+        )
+
     def get_realm_filters(self):
         # type: () -> Dict[str, Any]
         '''
