@@ -9,14 +9,16 @@ from typing import Any, Dict
 class IRCBot(irc.bot.SingleServerIRCBot):
     reactor_class = AioReactor
 
-    def __init__(self, zulip_client, stream, topic, channel, nickname, server, port=6667):
-        # type: (Any, str, str, irc.bot.Channel, str, str, int) -> None
+    def __init__(self, zulip_client, stream, topic, channel,
+                 nickname, server, nickserv_password='', port=6667):
+        # type: (Any, str, str, irc.bot.Channel, str, str, str, int) -> None
         irc.bot.SingleServerIRCBot.__init__(self, [(server, port)], nickname, nickname)
         self.channel = channel  # type: irc.bot.Channel
         self.zulip_client = zulip_client
         self.stream = stream
         self.topic = topic
         self.IRC_DOMAIN = server
+        self.nickserv_password = nickserv_password
 
     def zulip_sender(self, sender_string):
         # type: (str) -> str
@@ -38,6 +40,9 @@ class IRCBot(irc.bot.SingleServerIRCBot):
 
     def on_welcome(self, c, e):
         # type: (ServerConnection, Event) -> None
+        if len(self.nickserv_password) > 0:
+            msg = 'identify %s' % (self.nickserv_password,)
+            c.privmsg('NickServ', msg)
         c.join(self.channel)
 
         def forward_to_irc(msg):
