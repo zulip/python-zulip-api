@@ -973,8 +973,8 @@ class Client(object):
             request=request,
         )
 
-    def deregister(self, queue_id):
-        # type: (str) -> Dict[str, Any]
+    def deregister(self, queue_id, timeout=None):
+        # type: (str, Optional[float]) -> Dict[str, Any]
         '''
             Example usage:
 
@@ -989,6 +989,7 @@ class Client(object):
             url="events",
             method="DELETE",
             request=request,
+            timeout=timeout,
         )
 
     def get_profile(self, request=None):
