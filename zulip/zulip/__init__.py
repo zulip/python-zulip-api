@@ -472,8 +472,9 @@ class Client(object):
             vendor_version=vendor_version,
         )
 
-    def do_api_query(self, orig_request, url, method="POST", longpolling=False, files=None):
-        # type: (Mapping[str, Any], str, str, bool, Optional[List[IO[Any]]]) -> Dict[str, Any]
+    def do_api_query(self, orig_request, url, method="POST",
+                     longpolling=False, files=None, timeout=None):
+        # type: (Mapping[str, Any], str, str, bool, Optional[List[IO[Any]]], Optional[float]) -> Dict[str, Any]
         if files is None:
             files = []
 
@@ -481,10 +482,10 @@ class Client(object):
             # When long-polling, set timeout to 90 sec as a balance
             # between a low traffic rate and a still reasonable latency
             # time in case of a connection failure.
-            request_timeout = 90
+            request_timeout = 90.
         else:
             # Otherwise, 15s should be plenty of time.
-            request_timeout = 15
+            request_timeout = 15. if not timeout else timeout
 
         request = {}
         req_files = []
@@ -606,8 +607,9 @@ class Client(object):
             return {'msg': "Unexpected error from the server", "result": "http-error",
                     "status_code": res.status_code}
 
-    def call_endpoint(self, url=None, method="POST", request=None, longpolling=False, files=None):
-        # type: (Optional[str], str, Optional[Dict[str, Any]], bool, Optional[List[IO[Any]]]) -> Dict[str, Any]
+    def call_endpoint(self, url=None, method="POST", request=None,
+                      longpolling=False, files=None, timeout=None):
+        # type: (Optional[str], str, Optional[Dict[str, Any]], bool, Optional[List[IO[Any]]], Optional[float]) -> Dict[str, Any]
         if request is None:
             request = dict()
         marshalled_request = {}
@@ -616,7 +618,7 @@ class Client(object):
                 marshalled_request[k] = v
         versioned_url = API_VERSTRING + (url if url is not None else "")
         return self.do_api_query(marshalled_request, versioned_url, method=method,
-                                 longpolling=longpolling, files=files)
+                                 longpolling=longpolling, files=files, timeout=timeout)
 
     def call_on_each_event(self, callback, event_types=None, narrow=None):
         # type: (Callable[[Dict[str, Any]], None], Optional[List[str]], Optional[List[List[str]]]) -> None
