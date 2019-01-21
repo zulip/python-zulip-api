@@ -9,6 +9,8 @@
 `--stream` is a Zulip stream.
 `--topic` is a Zulip topic, is optionally specified, defaults to "IRC".
 
+IMPORTANT: Make sure the bot is subscribed to the relevant Zulip stream!!
+
 Specify your Zulip API credentials and server in a ~/.zuliprc file or using the options.
 
 Note that "_zulip" will be automatically appended to the IRC nick provided
