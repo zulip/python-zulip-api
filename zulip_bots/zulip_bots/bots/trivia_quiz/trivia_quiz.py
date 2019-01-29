@@ -43,7 +43,8 @@ class TriviaQuizHandler:
                 bot_handler.send_reply(message, bot_response)
                 return
             quiz = json.loads(quiz_payload)
-            start_new_question, bot_response = handle_answer(quiz, answer, quiz_id, bot_handler)
+            start_new_question, bot_response = handle_answer(quiz, answer, quiz_id,
+                                                             bot_handler, message['sender_full_name'])
             bot_handler.send_reply(message, bot_response)
             if start_new_question:
                 start_new_quiz(message, bot_handler)
@@ -203,16 +204,16 @@ def update_quiz(quiz: Dict[str, Any], quiz_id: str, bot_handler: Any) -> None:
 
 def build_response(is_correct: bool, num_answers: int) -> str:
     if is_correct:
-        response = '**CORRECT!** {answer} :tada:'
+        response = '**:tada: {answer} is correct, {sender_name}!**'
     else:
         if num_answers >= 3:
-            response = '**WRONG!** :disappointed: The correct answer is {answer}.'
+            response = '**:disappointed: WRONG, {sender_name}!** The correct answer is {answer}.'
         else:
-            response = '**WRONG!** {option} is not correct :disappointed:'
+            response = '**:disappointed: WRONG, {sender_name}!** {option} is not correct.'
     return response
 
 def handle_answer(quiz: Dict[str, Any], option: str, quiz_id: str,
-                  bot_handler: Any) -> Tuple[bool, str]:
+                  bot_handler: Any, sender_name: str) -> Tuple[bool, str]:
     answer = quiz['answers'][quiz['correct_letter']]
     is_new_answer = (option not in quiz['answered_options'])
     if is_new_answer:
@@ -229,7 +230,7 @@ def handle_answer(quiz: Dict[str, Any], option: str, quiz_id: str,
         update_quiz(quiz, quiz_id, bot_handler)
 
     response = build_response(is_correct, num_answers).format(
-        option=option, answer=answer, id=quiz_id)
+        option=option, answer=answer, id=quiz_id, sender_name=sender_name)
     return start_new_question, response
 
 
