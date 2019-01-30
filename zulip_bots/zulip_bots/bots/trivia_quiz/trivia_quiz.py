@@ -204,12 +204,12 @@ def update_quiz(quiz: Dict[str, Any], quiz_id: str, bot_handler: Any) -> None:
 
 def build_response(is_correct: bool, num_answers: int) -> str:
     if is_correct:
-        response = '**:tada: {answer} is correct, {sender_name}!**'
+        response = ':tada: **{answer}** is correct, {sender_name}!'
     else:
         if num_answers >= 3:
-            response = '**:disappointed: WRONG, {sender_name}!** The correct answer is {answer}.'
+            response = ':disappointed: WRONG, {sender_name}! The correct answer is **{answer}**.'
         else:
-            response = '**:disappointed: WRONG, {sender_name}!** {option} is not correct.'
+            response = ':disappointed: WRONG, {sender_name}! {option} is not correct.'
     return response
 
 def handle_answer(quiz: Dict[str, Any], option: str, quiz_id: str,
