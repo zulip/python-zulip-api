@@ -95,13 +95,13 @@ class TestTriviaQuizBot(BotTestCase, DefaultTests):
         # test incorrect answer
         with patch('zulip_bots.bots.trivia_quiz.trivia_quiz.get_quiz_from_id',
                    return_value=json.dumps(quiz)):
-            self._test('answer Q001 B', '**:disappointed: WRONG, Foo Test User!** B is not correct.')
+            self._test('answer Q001 B', ':disappointed: WRONG, Foo Test User! B is not correct.')
 
         # test correct answer
         with patch('zulip_bots.bots.trivia_quiz.trivia_quiz.get_quiz_from_id',
                    return_value=json.dumps(quiz)):
             with patch('zulip_bots.bots.trivia_quiz.trivia_quiz.start_new_quiz') as mock_new_quiz:
-                self._test('answer Q001 A', '**:tada: Amphibian is correct, Foo Test User!**')
+                self._test('answer Q001 A', ':tada: **Amphibian** is correct, Foo Test User!')
 
     def test_update_quiz(self) -> None:
         quiz, bot_handler = self.get_test_quiz()
@@ -122,12 +122,12 @@ class TestTriviaQuizBot(BotTestCase, DefaultTests):
         # test for a correct answer
         start_new_question, response = handle_answer(quiz, 'A', 'Q001', bot_handler, 'Test user')
         self.assertTrue(start_new_question)
-        self.assertEqual(response, '**:tada: Amphibian is correct, Test user!**')
+        self.assertEqual(response, ':tada: **Amphibian** is correct, Test user!')
 
         # test for an incorrect answer
         start_new_question, response = handle_answer(quiz, 'D', 'Q001', bot_handler, 'Test User')
         self.assertFalse(start_new_question)
-        self.assertEqual(response, '**:disappointed: WRONG, Test User!** D is not correct.')
+        self.assertEqual(response, ':disappointed: WRONG, Test User! D is not correct.')
 
     def test_handle_answer_three_failed_attempts(self) -> None:
         quiz, bot_handler = self.get_test_quiz()
@@ -137,7 +137,7 @@ class TestTriviaQuizBot(BotTestCase, DefaultTests):
 
         # test response  and storage after three failed attempts
         start_new_question, response = handle_answer(quiz, 'D', 'Q001', bot_handler, 'Test User')
-        self.assertEqual(response, '**:disappointed: WRONG, Test User!** The correct answer is Amphibian.')
+        self.assertEqual(response, ':disappointed: WRONG, Test User! The correct answer is **Amphibian**.')
         self.assertTrue(start_new_question)
         quiz_reset = json.loads(bot_handler.storage.get('Q001'))
         self.assertEqual(quiz_reset['pending'], False)
@@ -146,10 +146,10 @@ class TestTriviaQuizBot(BotTestCase, DefaultTests):
         incorrect_answers = ['B', 'C', 'D']
         for ans in incorrect_answers:
             start_new_question, response = handle_answer(quiz, ans, 'Q001', bot_handler, 'Test User')
-            self.assertEqual(response, '**:disappointed: WRONG, Test User!** The correct answer is Amphibian.')
+            self.assertEqual(response, ':disappointed: WRONG, Test User! The correct answer is **Amphibian**.')
             self.assertFalse(start_new_question)
         start_new_question, response = handle_answer(quiz, 'A', 'Q001', bot_handler, 'Test User')
-        self.assertEqual(response, '**:tada: Amphibian is correct, Test User!**')
+        self.assertEqual(response, ':tada: **Amphibian** is correct, Test User!')
         self.assertFalse(start_new_question)
 
         # test storage after question has ended
