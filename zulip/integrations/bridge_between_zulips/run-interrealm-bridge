@@ -34,6 +34,10 @@ def create_pipe_event(to_client: zulip.Client, from_bot: Dict[str, Any],
                 # comes from
                 msg["content"] = msg["content"].replace("/user_uploads/",
                                                         from_bot["site"] + "/user_uploads/")
+            if msg["content"].startswith(("```quote", "- ", "* ", "> ", "1. ")):
+                # If a message starts with special prefixes, make sure to prepend a newline for
+                # formatting purpose
+                msg["content"] = "\n" + msg["content"]
             msg_data = {
                 "sender": to_client.email,
                 "type": "stream",
