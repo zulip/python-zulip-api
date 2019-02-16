@@ -824,7 +824,7 @@ class Client(object):
         '''
             Example usage:
 
-            >>> client.add_emoji_reaction({
+            >>> client.add_reaction({
                 'message_id': '100',
                 'emoji_name': 'joy',
                 'emoji_code': '1f602',
@@ -835,6 +835,7 @@ class Client(object):
         return self.call_endpoint(
             url='messages/{}/reactions'.format(reaction_data['message_id']),
             method='POST',
+            request=reaction_data,
         )
 
     def remove_reaction(self, reaction_data):
