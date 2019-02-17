@@ -42,7 +42,7 @@ import logging
 import six
 from typing import Any, Callable, Dict, Iterable, IO, List, Mapping, Optional, Text, Tuple, Union
 
-__version__ = "0.5.8"
+__version__ = "0.5.9"
 
 logger = logging.getLogger(__name__)
 
