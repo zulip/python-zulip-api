@@ -828,7 +828,7 @@ class Client(object):
                 'message_id': '100',
                 'emoji_name': 'joy',
                 'emoji_code': '1f602',
-                'emoji_type': 'unicode_emoji'
+                'reaction_type': 'unicode_emoji'
             })
             {'result': 'success', 'msg': ''}
         '''
@@ -847,7 +847,7 @@ class Client(object):
                 'message_id': '100',
                 'emoji_name': 'joy',
                 'emoji_code': '1f602',
-                'emoji_type': 'unicode_emoji'
+                'reaction_type': 'unicode_emoji'
             })
             {'msg': '', 'result': 'success'}
         '''
