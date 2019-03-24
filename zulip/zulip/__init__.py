@@ -294,6 +294,9 @@ class ConfigNotFoundError(ZulipError):
 class MissingURLError(ZulipError):
     pass
 
+class UnrecoverableNetworkError(ZulipError):
+    pass
+
 class Client(object):
     def __init__(self, email=None, api_key=None, config_file=None,
                  verbose=False, retry_on_errors=True,
@@ -565,7 +568,7 @@ class Client(object):
                 # non-timeout other SSLErrors
                 if (isinstance(e, requests.exceptions.SSLError) and
                         str(e) != "The read operation timed out"):
-                    raise
+                    raise UnrecoverableNetworkError('SSL Error')
                 if longpolling:
                     # When longpolling, we expect the timeout to fire,
                     # and the correct response is to just retry
@@ -580,7 +583,7 @@ class Client(object):
                     # go into retry logic, because the most likely scenario here is
                     # that somebody just hasn't started their server, or they passed
                     # in an invalid site.
-                    raise ZulipError('cannot connect to server ' + self.base_url)
+                    raise UnrecoverableNetworkError('cannot connect to server ' + self.base_url)
 
                 if error_retry(""):
                     continue
