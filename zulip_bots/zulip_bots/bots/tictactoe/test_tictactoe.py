@@ -84,6 +84,37 @@ class TestTicTacToeBot(BotTestCase, DefaultTests):
         response = tictactoeboard.contains_winning_move(board)
         self.assertEqual(response, expected_response)
 
+    def test_get_locations_of_char(self) -> None:
+        board = [[0, 0, 0],
+                 [0, 0, 0],
+                 [0, 0, 1]]
+        response = [[2, 2]]
+        self._test_get_locations_of_char(board, response)
+
+    def _test_get_locations_of_char(self, board: List[List[int]], expected_response: List[List[int]]) -> None:
+        model, message_handler = self._get_game_handlers()
+        tictactoeboard = model(board)
+        response = tictactoeboard.get_locations_of_char(board, 1)
+        self.assertEqual(response, expected_response)
+
+    def test_is_valid_move(self) -> None:
+        board = [[0, 0, 0],
+                 [0, 0, 0],
+                 [1, 0, 2]]
+        move = "1,2"
+        response = True
+        self._test_is_valid_move(board, move, response)
+
+        move = "4,4"
+        response = False
+        self._test_is_valid_move(board, move, response)
+
+    def _test_is_valid_move(self, board: List[List[int]], move: str, expected_response: bool) -> None:
+        model, message_handler = self._get_game_handlers()
+        tictactoeboard = model(board)
+        response = tictactoeboard.is_valid_move(move)
+        self.assertEqual(response, expected_response)
+
     def test_player_color(self) -> None:
         turn = 0
         response = ':cross_mark_button:'
@@ -124,7 +155,7 @@ class TestTicTacToeBot(BotTestCase, DefaultTests):
         response = message_handler.parse_board(board)
         self.assertEqual(response, expected_response)
 
-    def add_user_to_cache(self, name: str, bot: Any=None) -> Any:
+    def add_user_to_cache(self, name: str, bot: Any = None) -> Any:
         if bot is None:
             bot, bot_handler = self._get_handlers()
         message = {
