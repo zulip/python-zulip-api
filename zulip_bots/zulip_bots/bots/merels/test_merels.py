@@ -1,6 +1,7 @@
 from zulip_bots.test_lib import BotTestCase, DefaultTests
 from zulip_bots.game_handler import GameInstance
-from libraries.constants import EMPTY_BOARD
+from . libraries.constants import EMPTY_BOARD
+# from libraries import *
 
 from typing import List, Tuple, Any
 
