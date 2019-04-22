@@ -17,8 +17,6 @@ class TestMerelsBot(BotTestCase, DefaultTests):
     # FIXME: Add tests for computer moves
     # FIXME: Add test lib for game_handler
 
-    # Merel Models
-
     def test_determine_game_over_continue(self) -> None:
         board = EMPTY_BOARD
         players = ['Human', 'Human']
