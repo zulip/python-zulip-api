@@ -28,7 +28,7 @@ import zulip
 import sys
 import json
 import requests
-
+import argparse
 from six.moves.configparser import ConfigParser, NoSectionError, NoOptionError
 
 CONFIGFILE = os.path.expanduser("~/.zulip_confluencerc")
@@ -40,9 +40,9 @@ Send Confluence space and page  to a Zulip stream.
 To use this script:
 0. Use `Confluence rest api ` to  `Confluence `
 1. Set up Confluence authentication, as described below
-2. Set up a Zulip bot user and download its `.zuliprc` 
+2. Set up a Zulip bot user and download its `.zuliprc`
    config file to e.g. `~/.zuliprc`
-3. Subscribe the bot to the stream that will receive Confluence updates 
+3. Subscribe the bot to the stream that will receive Confluence updates
    (default stream: confluence)
 4. Test the script by running it manually, like this:
 5. Configure a crontab entry for this script. A sample crontab entry
@@ -61,14 +61,13 @@ This bot uses OAuth to authenticate with Confluence. Please create a
 username =
 consumer_key =
 domain_Url =
-config_file=
 
 
 In order to obtain a consumer key & secret, you must register a
 new application under your Confluence account:
 
 1 Log in to https://id.atlassian.com.
-2 Click API tokens, then Create API token.  
+2 Click API tokens, then Create API token.
 3 Use Copy to clipboard, and paste the token to your script
   or elsewhere:
 
@@ -83,7 +82,7 @@ if opts.instructions:
     print(INSTRUCTIONS)
     sys.exit()
 if opts.zulip_config_file:
-   zuliprc_path = opts.zulip_config_file
+    zuliprc_path = opts.zulip_config_file
 
 try:
     config = ConfigParser()
@@ -91,31 +90,30 @@ try:
     username = config.get('Confluence_api', 'username')
     consumer_key = config.get('Confluence_api', 'consumer_key')
     domain_Url = config.get('Confluence_api', 'domain_Url')
-    local_file = config.get('Confluence_api', 'local_file')
-except:
+except Exception:
     parser.error("Please provide a ~/.zulip_confluencerc")
 
+local_file = "zulip.txt"
 f = open(local_file, "w+")
 f.write('0')
 f.close()
 
 def confluence_api() -> None:
 
-    params = ('type', 'page'),
-    base_url='https://{}/wiki/rest/api/content'.format(domain_Url)
-    auth=(username, consumer_key)
+    params = ('type', 'page')
+    base_url = 'https://{}/wiki/rest/api/content'.format(domain_Url)
+    auth = (username, consumer_key)
     response = requests.get(base_url, params=params, auth=auth)
     res = response.json()
-    print(res)
     # length of json data
     length_api = len(res['results'])
     # Fetch value from database models
     f = open(local_file, "r")
     length_confluence_data = int(f.read())
-    # compare the lenth of json from database to the new 
-    #length of json which is fetch from api
-    # if length of fetch json from api  is greater than 
-    #save length then we call zulip api
+    # compare the lenth of json from database to the new
+    # length of json which is fetch from api
+    # if length of fetch json from api  is greater than
+    # save length then we call zulip api
     if (length_api > length_confluence_data):
         test1_json = (res['results'][length_api-1]['_links']['webui'])
         title = res['results'][length_api-1]['title']
@@ -145,5 +143,3 @@ def spacepage(get_spaces_and_pages: str) -> str:
         return ("space\n")
 
 confluence_api()
-
-
