@@ -11,8 +11,6 @@ Run this bot as described in [here](https://zulipchat.com/api/running-bots#runni
 
 ## Usage
 
-The xkcd bot has four commands:
+The goal of the game is to arrange all numbers from smallest to largest, starting with the grey question mark in the upper left corner, and then moving through each row until we hit the end.
 
-1. `help` - This command is used to list all commands that can be used
-   with this bot. Example usage: `@xkcd help`:
-   ![](/static/generated/bots/xkcd/assets/xkcd-help.png)
+`move <tile1> <tile2>` - This command is used to pick which number to switch with the grey question mark. Only pieces adjacent to the grey question mark may be moved.
