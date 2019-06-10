@@ -1,5 +1,3 @@
-# GitHub detail bot
-
 This bot links and details issues and pull requests.
 To use it @-mention the bot then type an id:
 Ids can be specified in three different forms:
