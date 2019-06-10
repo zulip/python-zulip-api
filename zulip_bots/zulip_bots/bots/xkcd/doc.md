@@ -1,5 +1,3 @@
-# xkcd bot
-
 xkcd bot is a Zulip bot that can fetch a comic strip from xkcd. To use
 the xkcd bot, you can simply call it with `@xkcd` followed by a command,
 like so:
@@ -10,7 +8,7 @@ like so:
 
 Run this bot as described in [here](https://zulipchat.com/api/running-bots#running-a-bot).
 
-## Usage
+### Usage
 
 The xkcd bot has four commands:
 
