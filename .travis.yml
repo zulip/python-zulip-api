@@ -4,13 +4,28 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
-env: TEST_SUITE=test-main
+env:
+  matrix:
+    - TEST_SUITE=test-main
+  global:
+    - BOTO_CONFIG=/tmp/nowhere
 matrix:
   include:
   - python: "2.7"
     env: TEST_SUITE=test-py2-legacy-support
   - python: "3.6"
     env: TEST_SUITE=test-static-analysis
+  - python: "3.6"
+    sudo: required
+    env: TEST_SUITE=backend
+    script:
+    - echo $TRAVIS_PULL_REQUEST_BRANCH
+    - echo $TRAVIS_PULL_REQUEST_SLUG
+    - echo $TRAVIS_PULL_REQUEST
+    - cd
+    - git clone https://github.com/zulip/zulip.git
+    - cd zulip
+    - $TRAVIS_BUILD_DIR/tools/test-backend
     addons:
       postgresql: "9.3"
 install:
