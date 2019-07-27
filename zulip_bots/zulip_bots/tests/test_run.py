@@ -16,7 +16,8 @@ class TestDefaultArguments(TestCase):
 
     our_dir = os.path.dirname(__file__)
     path_to_bot = os.path.abspath(os.path.join(our_dir, '../bots/giphy/giphy.py'))
-    packaged_bot_entrypoint = entrypoints.EntryPoint("packaged_bot", "module_name", None)
+    packaged_bot_distro = entrypoints.Distribution("packaged-bot-source", "1.0.0")
+    packaged_bot_entrypoint = entrypoints.EntryPoint("packaged_bot", "module_name", None, distro=packaged_bot_distro)
 
     @patch('sys.argv', ['zulip-run-bot', 'giphy', '--config-file', '/foo/bar/baz.conf'])
     @patch('zulip_bots.run.run_message_handler_for_bot')
@@ -28,6 +29,7 @@ class TestDefaultArguments(TestCase):
                                                             config_file='/foo/bar/baz.conf',
                                                             bot_config_file=None,
                                                             lib_module=mock.ANY,
+                                                            bot_source='source',
                                                             quiet=False)
 
     @patch('sys.argv', ['zulip-run-bot', path_to_bot, '--config-file', '/foo/bar/baz.conf'])
@@ -41,6 +43,7 @@ class TestDefaultArguments(TestCase):
             config_file='/foo/bar/baz.conf',
             bot_config_file=None,
             lib_module=mock.ANY,
+            bot_source='source',
             quiet=False)
 
     @patch('sys.argv', ['zulip-run-bot', 'packaged_bot', '--config-file', '/foo/bar/baz.conf'])
@@ -56,6 +59,7 @@ class TestDefaultArguments(TestCase):
             config_file='/foo/bar/baz.conf',
             bot_config_file=None,
             lib_module=mock.ANY,
+            bot_source='packaged-bot-source: 1.0.0',
             quiet=False)
 
     def test_adding_bot_parent_dir_to_sys_path_when_bot_name_specified(self) -> None:
