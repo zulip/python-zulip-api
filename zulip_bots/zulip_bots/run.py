@@ -130,6 +130,14 @@ def main() -> None:
             if args.provision:
                 print("ERROR: Could not load bot's module for '{}'. Exiting now.")
                 sys.exit(1)
+        else:
+            try:
+                lib_module = finder.import_module_from_zulip_bot_registry(args.bot)
+            except finder.DuplicateRegisteredBotName as e:
+                print("ERROR: Found duplicate entries for bot name in zulip bot registry. Exiting now.")
+                sys.exit(1)
+            if lib_module:
+                bot_name = args.bot
 
     if lib_module is None:
         print("ERROR: Could not load bot module. Exiting now.")

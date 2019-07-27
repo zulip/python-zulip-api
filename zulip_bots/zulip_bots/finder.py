@@ -1,5 +1,6 @@
 import sys
 import os
+import entrypoints
 from os.path import basename, splitext
 from typing import Any, Optional, Text, Tuple
 
@@ -31,6 +32,21 @@ def import_module_by_name(name: Text) -> Any:
         return None
     except ModuleNotFoundError:  # Specific exception supported >=Python3.6
         return None
+
+class DuplicateRegisteredBotName(Exception):
+    pass
+
+def import_module_from_zulip_bot_registry(name: str) -> Any:
+    registered_bots = entrypoints.get_group_all('zulip_bots.registry')
+    matching_bots = [bot for bot in registered_bots if bot.name == name]
+
+    if len(matching_bots) == 1:  # Unique matching entrypoint
+        return matching_bots[0].load()
+
+    if len(matching_bots) > 1:
+        raise DuplicateRegisteredBotName(name)
+
+    return None  # no matches in registry
 
 def resolve_bot_path(name: Text) -> Optional[Tuple[Text, Text]]:
     if os.path.isfile(name):
