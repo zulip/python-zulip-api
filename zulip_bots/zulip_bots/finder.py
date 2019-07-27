@@ -27,7 +27,9 @@ def import_module_by_name(name: Text) -> Any:
     import importlib
     try:
         return importlib.import_module(name)
-    except ModuleNotFoundError:
+    except ImportError:
+        return None
+    except ModuleNotFoundError:  # Specific exception supported >=Python3.6
         return None
 
 def resolve_bot_path(name: Text) -> Optional[Tuple[Text, Text]]:
