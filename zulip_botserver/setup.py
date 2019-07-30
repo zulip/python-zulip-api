@@ -22,7 +22,12 @@ package_info = dict(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Topic :: Communications :: Chat',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ],
+    python_requires='>=3.5',
     url='https://www.zulip.org/',
     entry_points={
         'console_scripts': [
