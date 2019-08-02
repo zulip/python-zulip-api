@@ -137,7 +137,6 @@ prose_style_rules = [
 
 markdown_docs_length_exclude = {
     "zulip_bots/zulip_bots/bots/converter/doc.md",
-    "tools/server_lib/README.md",
 }
 
 markdown_rules = RuleList(
