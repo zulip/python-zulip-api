@@ -8,11 +8,11 @@
     "json": {
       "fields": {
         "summary": "Testing",
-        "project": { 
-          "key": "TEST" 
+        "project": {
+          "key": "TEST"
         },
-        "issuetype": { 
-          "name": "Task" 
+        "issuetype": {
+          "name": "Task"
         }
       }
     }
