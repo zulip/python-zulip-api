@@ -8,18 +8,18 @@
     "json": {
       "fields": {
         "summary": "Testing",
-        "project": { 
-          "key": "TEST" 
+        "project": {
+          "key": "TEST"
         },
-        "issuetype": { 
-          "name": "Task" 
+        "issuetype": {
+          "name": "Task"
         }
         ,"description": "This is a test description",
-        "assignee": { 
-          "name": "testuser" 
+        "assignee": {
+          "name": "testuser"
         },
-        "priority": { 
-          "name": "Medium" 
+        "priority": {
+          "name": "Medium"
         },
         "labels": ["issues","testing"],
         "duedate": "2018-06-11"

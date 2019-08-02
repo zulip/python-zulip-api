@@ -8,12 +8,12 @@
     }
   },
   "response": {
-    "error":{  
+    "error":{
       "status": "INVALID_ARGUMENT",
       "message": "API key not valid. Please pass a valid API key.",
       "code": 400,
-      "errors": [  
-        {  
+      "errors": [
+        {
           "domain":"global",
           "message":"API key not valid. Please pass a valid API key.",
           "reason":"badRequest"
