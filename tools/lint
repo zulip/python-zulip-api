@@ -1,39 +1,54 @@
 #! /usr/bin/env python
 
-from pep8 import check_pep8
-from custom_check import build_custom_checkers
-from server_lib import lister
+from __future__ import print_function
+from __future__ import absolute_import
+import argparse
 
-import sys
-import optparse
-from typing import cast, Callable, Dict, Iterator, List
+from zulint.command import add_default_linter_arguments, LinterConfig
+
+from custom_check import python_rules, non_py_rules
+from pep8 import check_pep8
 
 EXCLUDED_FILES = [
     # This is an external file that doesn't comply with our codestyle
     'zulip/integrations/perforce/git_p4.py',
 ]
 
-def lint_all(args, options):
-
-    by_lang = cast(Dict[str, List[str]],
-                   lister.list_files(args, modified_only=options.modified,
-                                     ftypes=['py', 'sh', 'js', 'pp', 'css', 'handlebars',
-                                             'html', 'json', 'md', 'txt', 'text', 'yaml'],
-                                     use_shebang=True, group_by_ftype=True, exclude=EXCLUDED_FILES))
-    check_custom_checks_py, check_custom_checks_nonpy = build_custom_checkers(by_lang)
-    return any([check_pep8(by_lang['py']),
-                check_custom_checks_py(),
-                check_custom_checks_nonpy()])
-
 def run():
     # type: () -> None
-    parser = optparse.OptionParser()
-    parser.add_option('--modified', '-m',
-                      action='store_true',
-                      help='Only check modified files')
-    (options, args) = parser.parse_args()
-    failed = lint_all(args, options)
-    sys.exit(1 if failed else 0)
+    parser = argparse.ArgumentParser()
+    add_default_linter_arguments(parser)
+    args = parser.parse_args()
+
+    linter_config = LinterConfig(args)
+
+    by_lang = linter_config.list_files(file_types=['py', 'sh', 'json', 'md', 'txt'],
+                                       exclude=EXCLUDED_FILES)
+
+    @linter_config.lint
+    def custom_py():
+        # type: () -> int
+        """Runs custom checks for python files (config: tools/linter_lib/custom_check.py)"""
+        failed = python_rules.check(by_lang, verbose=args.verbose)
+        return 1 if failed else 0
+
+    @linter_config.lint
+    def custom_nonpy():
+        # type: () -> int
+        """Runs custom checks for non-python files (config: tools/linter_lib/custom_check.py)"""
+        failed = False
+        for rule in non_py_rules:
+            failed = failed or rule.check(by_lang, verbose=args.verbose)
+        return 1 if failed else 0
+
+    @linter_config.lint
+    def pep8():
+        # type: () -> int
+        """Standard Python style linter on 50% of files (config: tools/linter_lib/pep8.py)"""
+        failed = check_pep8(by_lang['py'])
+        return 1 if failed else 0
+
+    linter_config.do_lint()
 
 if __name__ == '__main__':
     run()
