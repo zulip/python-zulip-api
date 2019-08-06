@@ -25,6 +25,9 @@ def run():
     by_lang = linter_config.list_files(file_types=['py', 'sh', 'json', 'md', 'txt'],
                                        exclude=EXCLUDED_FILES)
 
+    linter_config.external_linter('mypy', ['tools/run-mypy'], ['py'], pass_targets=False,
+                                  description="Static type checker for Python (config: mypy.ini)")
+
     @linter_config.lint
     def custom_py():
         # type: () -> int
