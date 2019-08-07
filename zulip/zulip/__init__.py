@@ -1011,7 +1011,7 @@ class Client(object):
         )
 
     def get_user_presence(self, email):
-        # type: (Dict[str, Any]) -> Dict[str, Any]
+        # type: (str) -> Dict[str, Any]
         '''
             Example usage:
 
