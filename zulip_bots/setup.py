@@ -15,7 +15,8 @@ IS_PYPA_PACKAGE = False
 
 
 package_data = {
-    '': ['doc.md', '*.conf', 'assets/*']
+    '': ['doc.md', '*.conf', 'assets/*'],
+    'zulip_bots': ['py.typed'],
 }
 
 # IS_PYPA_PACKAGE is set to True by tools/release-packages

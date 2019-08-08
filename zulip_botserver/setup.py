@@ -30,6 +30,7 @@ package_info = dict(
         ],
     },
     test_suite='tests',
+    package_data={'zulip_botserver': ['py.typed']},
 )  # type: Dict[str, Any]
 
 setuptools_info = dict(
