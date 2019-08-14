@@ -1,10 +1,12 @@
 from __future__ import print_function
 from __future__ import absolute_import
 
-from typing import cast, Any, Dict, List, Tuple
+from typing import Any, Dict, List, Tuple
 from zulint.custom_rules import RuleList
 
-Rule = List[Dict[str, Any]]
+MYPY = False
+if MYPY:
+    from zulint.custom_rules import Rule
 
 whitespace_rules = [
     # This linter should be first since bash_rules depends on it.
@@ -30,7 +32,7 @@ markdown_whitespace_rules = list([rule for rule in whitespace_rules if rule['pat
 
 python_rules = RuleList(
     langs=['py'],
-    rules=cast(Rule, [
+    rules=[
         {'pattern': '".*"%\([a-z_].*\)?$',
          'description': 'Missing space around "%"'},
         {'pattern': "'.*'%\([a-z_].*\)?$",
@@ -96,17 +98,17 @@ python_rules = RuleList(
          'bad_lines': ['class TestSomeBot(DefaultTests, BotTestCase):'],
          'good_lines': ['class TestSomeBot(BotTestCase, DefaultTests):'],
          'description': 'Bot test cases should inherit from BotTestCase before DefaultTests.'},
-    ]) + whitespace_rules,
+    ] + whitespace_rules,
     max_length=140,
 )
 
 bash_rules = RuleList(
     langs=['sh'],
-    rules=cast(Rule, [
+    rules=[
         {'pattern': '#!.*sh [-xe]',
          'description': 'Fix shebang line with proper call to /usr/bin/env for Bash path, change -x|-e switches'
                         ' to set -x|set -e'},
-    ]) + whitespace_rules[0:1],
+    ] + whitespace_rules[0:1],
 )
 
 
@@ -141,10 +143,10 @@ markdown_docs_length_exclude = {
 
 markdown_rules = RuleList(
     langs=['md'],
-    rules=markdown_whitespace_rules + prose_style_rules + cast(Rule, [
+    rules=markdown_whitespace_rules + prose_style_rules + [
         {'pattern': '\[(?P<url>[^\]]+)\]\((?P=url)\)',
          'description': 'Linkified markdown URLs should use cleaner <http://example.com> syntax.'}
-    ]),
+    ],
     max_length=120,
     length_exclude=markdown_docs_length_exclude,
 )
