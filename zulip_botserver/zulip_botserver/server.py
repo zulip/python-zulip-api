@@ -5,11 +5,13 @@ import logging
 import json
 import os
 import sys
+import importlib.util
 
 from configparser import MissingSectionHeaderError, NoOptionError
 from flask import Flask, request
 from importlib import import_module
 from typing import Any, Dict, Union, List, Optional
+from types import ModuleType
 from werkzeug.exceptions import BadRequest, Unauthorized
 
 from zulip import Client
@@ -68,13 +70,24 @@ def parse_config_file(config_file_path: str) -> configparser.ConfigParser:
     parser.read(config_file_path)
     return parser
 
+def load_module_from_file(file_path: str) -> ModuleType:
+    # Wrapper around importutil; see https://stackoverflow.com/a/67692/3909240.
+    spec = importlib.util.spec_from_file_location("custom_bot_module", file_path)
+    lib_module = importlib.util.module_from_spec(spec)
+    assert spec is not None
+    assert spec.loader is not None
+    spec.loader.exec_module(lib_module)
+    return lib_module
 
 def load_lib_modules(available_bots: List[str]) -> Dict[str, Any]:
     bots_lib_module = {}
     for bot in available_bots:
         try:
-            module_name = 'zulip_bots.bots.{bot}.{bot}'.format(bot=bot)
-            lib_module = import_module(module_name)
+            if bot.endswith('.py') and os.path.isfile(bot):
+                lib_module = load_module_from_file(bot)
+            else:
+                module_name = 'zulip_bots.bots.{bot}.{bot}'.format(bot=bot)
+                lib_module = import_module(module_name)
             bots_lib_module[bot] = lib_module
         except ImportError:
             error_message = ("Error: Bot \"{}\" doesn't exist. Please make sure "
