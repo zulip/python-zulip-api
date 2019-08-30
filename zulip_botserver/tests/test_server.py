@@ -4,6 +4,8 @@ from typing import Any, Dict
 import unittest
 from .server_test_lib import BotServerTestCase
 import json
+from importlib import import_module
+from types import ModuleType
 
 from zulip_botserver import server
 from zulip_botserver.input_parameters import parse_args
@@ -176,6 +178,36 @@ class BotServerTests(BotServerTestCase):
             }
         }
         assert json.dumps(bot_conf2, sort_keys=True) == json.dumps(expected_config2, sort_keys=True)
+
+    def test_load_lib_modules(self) -> None:
+        # This testcase requires hardcoded paths, which here is a good thing so if we ever
+        # restructure zulip_bots, this test would fail and we would also update Botserver
+        # at the same time.
+        helloworld = import_module('zulip_bots.bots.{bot}.{bot}'.format(bot='helloworld'))
+        root_dir = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../'))
+        # load valid module name
+        module = server.load_lib_modules(['helloworld'])['helloworld']
+        assert module == helloworld
+
+        # load valid file path
+        path = os.path.join(root_dir, 'zulip_bots/zulip_bots/bots/{bot}/{bot}.py'.format(bot='helloworld'))
+        module = server.load_lib_modules([path])[path]
+        assert module.__name__ == 'custom_bot_module'
+        assert module.__file__ == path
+        assert isinstance(module, ModuleType)
+
+        # load invalid module name
+        with self.assertRaisesRegexp(SystemExit,  # type: ignore
+                                     'Error: Bot "botserver-test-case-random-bot" doesn\'t exist. '
+                                     'Please make sure you have set up the botserverrc file correctly.'):
+            module = server.load_lib_modules(['botserver-test-case-random-bot'])['botserver-test-case-random-bot']
+
+        # load invalid file path
+        with self.assertRaisesRegexp(SystemExit,  # type: ignore
+                                     'Error: Bot "{}/zulip_bots/zulip_bots/bots/helloworld.py" doesn\'t exist. '
+                                     'Please make sure you have set up the botserverrc file correctly.'.format(root_dir)):
+            path = os.path.join(root_dir, 'zulip_bots/zulip_bots/bots/{bot}.py'.format(bot='helloworld'))
+            module = server.load_lib_modules([path])[path]
 
 if __name__ == '__main__':
     unittest.main()
