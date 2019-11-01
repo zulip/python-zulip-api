@@ -36,6 +36,7 @@ import random
 import types
 from distutils.version import LooseVersion
 
+import distro
 from six.moves.configparser import SafeConfigParser
 from six.moves import urllib
 import logging
@@ -463,7 +464,7 @@ class Client(object):
             pass
 
         if vendor == "Linux":
-            vendor, vendor_version, dummy = platform.linux_distribution()
+            vendor, vendor_version, dummy = distro.linux_distribution()
         elif vendor == "Windows":
             vendor_version = platform.win32_ver()[1]
         elif vendor == "Darwin":
