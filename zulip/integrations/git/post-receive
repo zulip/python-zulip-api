@@ -63,7 +63,7 @@ def git_commit_range(oldrev, newrev):
     log_cmd = ["git", "log", "--reverse",
                "--pretty=%aE %H %s", "%s..%s" % (oldrev, newrev)]
     commits = ''
-    for ln in subprocess.check_output(log_cmd).splitlines():
+    for ln in subprocess.check_output(log_cmd, universal_newlines=True).splitlines():
         author_email, commit_id, subject  = ln.split(None, 2)
         if hasattr(config, "format_commit_message"):
             commits += config.format_commit_message(author_email, subject, commit_id)
