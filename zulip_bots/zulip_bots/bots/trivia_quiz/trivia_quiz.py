@@ -129,7 +129,7 @@ def get_quiz_from_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
         answered_options=[],
         pending=True,
         correct_letter=correct_letter,
-    )
+    )  # type: Dict[str, Any]
     return quiz
 
 def generate_quiz_id(storage: Any) -> str:

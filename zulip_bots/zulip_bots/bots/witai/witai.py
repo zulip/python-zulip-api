@@ -78,7 +78,7 @@ def get_handle(location: str) -> Optional[Callable[[Dict[str, Any]], Optional[st
         loader = spec.loader
         if loader is None:
             return None
-        loader.exec_module(handler)
+        loader.exec_module(handler)  # type: ignore  # FIXME: typeshed issue?
         return handler.handle  # type: ignore
     except Exception as e:
         print(e)

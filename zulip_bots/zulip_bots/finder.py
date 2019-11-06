@@ -19,7 +19,7 @@ def import_module_from_source(path: Text, name: Text) -> Any:
         loader = spec.loader
         if loader is None:
             return None
-        loader.exec_module(module)
+        loader.exec_module(module)  # type: ignore  # FIXME: typeshed issue?
 
     return module
 
