@@ -70,13 +70,14 @@ def parse_config_file(config_file_path: str) -> configparser.ConfigParser:
     parser.read(config_file_path)
     return parser
 
+# TODO: Could we use the function from the bots library for this instead?
 def load_module_from_file(file_path: str) -> ModuleType:
     # Wrapper around importutil; see https://stackoverflow.com/a/67692/3909240.
     spec = importlib.util.spec_from_file_location("custom_bot_module", file_path)
     lib_module = importlib.util.module_from_spec(spec)
     assert spec is not None
     assert spec.loader is not None
-    spec.loader.exec_module(lib_module)
+    spec.loader.exec_module(lib_module)  # type: ignore  # FIXME: typeshed issue?
     return lib_module
 
 def load_lib_modules(available_bots: List[str]) -> Dict[str, Any]:
