@@ -361,7 +361,7 @@ def decrypt_zephyr(zephyr_class, instance, body):
     return decrypted
 
 def process_notice(notice, log):
-    # type: (zulip, Optional[IO[Any]]) -> None
+    # type: (Any, Optional[IO[Any]]) -> None
     (zsig, body) = parse_zephyr_body(notice.message, notice.format)
     is_personal = False
     is_huddle = False

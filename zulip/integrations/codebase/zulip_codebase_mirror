@@ -83,7 +83,7 @@ def make_api_call(path):
                                        "Content-Type": "application/json",
                                        "Accept": "application/json"})
     if response.status_code == 200:
-        return json.loads(response.text)
+        return json.loads(response.text)  # type: ignore  # dynamic import
 
     if response.status_code >= 500:
         logging.error(str(response.status_code))
