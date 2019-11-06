@@ -13,7 +13,7 @@ class DefineHandler(object):
     looks for messages starting with '@mention-bot'.
     '''
 
-    DEFINITION_API_URL = 'https://owlbot.info/api/v1/dictionary/{}?format=json'
+    DEFINITION_API_URL = 'https://owlbot.info/api/v2/dictionary/{}?format=json'
     REQUEST_ERROR_MESSAGE = 'Could not load definition.'
     EMPTY_WORD_REQUEST_ERROR_MESSAGE = 'Please enter a word to define.'
     PHRASE_ERROR_MESSAGE = 'Definitions for phrases are not available.'
@@ -64,7 +64,7 @@ class DefineHandler(object):
                     # Show definitions line by line.
                     for d in definitions:
                         example = d['example'] if d['example'] else '*No example available.*'
-                        response += '\n' + '* (**{}**) {}\n&nbsp;&nbsp;{}'.format(d['type'], d['defenition'], html2text.html2text(example))
+                        response += '\n' + '* (**{}**) {}\n&nbsp;&nbsp;{}'.format(d['type'], d['definition'], html2text.html2text(example))
 
             except Exception as e:
                 response += self.REQUEST_ERROR_MESSAGE
