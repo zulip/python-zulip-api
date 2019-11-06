@@ -37,7 +37,7 @@
 #               | other sender|  x  |    |        |
 # public mode   +-------------+-----+----+--------+----
 #               | self sender |     |    |        |
-from typing import Dict, List, Set
+from typing import Dict, List, Set, Optional
 
 import logging
 import threading
@@ -216,7 +216,7 @@ class ZulipToJabberBot(object):
     def __init__(self, zulip_client):
         # type: (Client) -> None
         self.client = zulip_client
-        self.jabber = None
+        self.jabber = None  # type: Optional[JabberToZulipBot]
 
     def set_jabber_client(self, client):
         # type: (JabberToZulipBot) -> None
