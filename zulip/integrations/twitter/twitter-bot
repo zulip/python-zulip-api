@@ -243,6 +243,10 @@ for status in statuses[::-1][:opts.limit_tweets]:
     if opts.search_terms:
         search_term_used = None
         for term in opts.search_terms.split(","):
+            # Remove quotes from phrase:
+            #   "Zulip API" -> Zulip API
+            if term.startswith('"') and term.endswith('"'):
+                term = term[1:-1]
             if any(term.lower() in text for text in text_to_check):
                 search_term_used = term
                 break
