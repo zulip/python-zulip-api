@@ -270,6 +270,10 @@ def get_default_config_filename():
             os.path.exists(os.path.join(os.environ["HOME"], ".humbugrc"))):
         raise ZulipError("The Zulip API configuration file is now ~/.zuliprc; please run:\n\n"
                          "  mv ~/.humbugrc ~/.zuliprc\n")
+    elif not os.path.exists(config_file):
+        if os.environ.get("PWD") is None:
+            return None
+        config_file = os.path.join(os.environ["PWD"], ".zuliprc")
     return config_file
 
 def validate_boolean_field(field):
