@@ -1397,7 +1397,7 @@ class Client(object):
             Example usage:
             >>> client.set_typing_status({
                 'op': 'start',
-                'to': ['iago@zulip.com', 'polonius@zulip.com'],
+                'to': [9, 10],
             })
             {'result': 'success', 'msg': ''}
         '''
