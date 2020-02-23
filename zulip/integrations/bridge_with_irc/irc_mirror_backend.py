@@ -19,11 +19,21 @@ class IRCBot(irc.bot.SingleServerIRCBot):
         self.topic = topic
         self.IRC_DOMAIN = server
         self.nickserv_password = nickserv_password
+        # Make sure the bot is subscribed to the stream
+        self.check_subscription_or_die()
 
     def zulip_sender(self, sender_string):
         # type: (str) -> str
         nick = sender_string.split("!")[0]
         return nick + "@" + self.IRC_DOMAIN
+
+    def check_subscription_or_die(self):
+        # type: () -> None
+        resp = self.zulip_client.list_subscriptions()
+        assert resp["result"] == "success"
+        subs = [s["name"] for s in resp["subscriptions"]]
+        if self.stream not in subs:
+            raise Exception("The bot is not yet subscribed to the specified stream")
 
     def connect(self, *args, **kwargs):
         # type: (*Any, **Any) -> None

@@ -262,18 +262,18 @@ def init_from_options(options, client=None):
 
 def get_default_config_filename():
     # type: () -> Optional[str]
-    if os.environ.get("HOME") is None:
+    if os.environ.get("PWD") is None:
         return None
-
-    config_file = os.path.join(os.environ["HOME"], ".zuliprc")
-    if (not os.path.exists(config_file) and
-            os.path.exists(os.path.join(os.environ["HOME"], ".humbugrc"))):
-        raise ZulipError("The Zulip API configuration file is now ~/.zuliprc; please run:\n\n"
-                         "  mv ~/.humbugrc ~/.zuliprc\n")
-    elif not os.path.exists(config_file):
-        if os.environ.get("PWD") is None:
+    config_file = os.path.join(os.environ["PWD"], ".zuliprc")
+    if not os.path.exists(config_file):
+        if os.environ.get("HOME") is None:
             return None
-        config_file = os.path.join(os.environ["PWD"], ".zuliprc")
+
+        config_file = os.path.join(os.environ["HOME"], ".zuliprc")
+        if (not os.path.exists(config_file) and
+                os.path.exists(os.path.join(os.environ["HOME"], ".humbugrc"))):
+            raise ZulipError("The Zulip API configuration file is now ~/.zuliprc; please run:\n\n"
+                             "  mv ~/.humbugrc ~/.zuliprc\n")
     return config_file
 
 def validate_boolean_field(field):
