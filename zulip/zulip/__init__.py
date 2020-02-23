@@ -137,7 +137,7 @@ def add_default_arguments(parser, patch_error_handling=True, allow_provisioning=
                        action='store',
                        dest="zulip_config_file",
                        help='''Location of an ini file containing the above
-                            information. (default ~/.zuliprc)''')
+                            information. (default ~/.zuliprc or $PWD/.zuliprc)''')
     group.add_argument('-v', '--verbose',
                        action='store_true',
                        help='Provide detailed output.')
@@ -196,7 +196,7 @@ def generate_option_group(parser, prefix=''):
     group.add_option('--%sconfig-file' % (prefix,),
                      action='store',
                      dest="zulip_config_file",
-                     help='Location of an ini file containing the\nabove information. (default ~/.zuliprc)')
+                     help='Location of an ini file containing the\nabove information. (default ~/.zuliprc or $PWD/.zuliprc)')
     group.add_option('-v', '--verbose',
                      action='store_true',
                      help='Provide detailed output.')
