@@ -46,8 +46,9 @@ and [commit guidelines](https://zulip.readthedocs.io/en/latest/contributing/vers
    ```
    source /.../python-zulip-api/.../activate
    ```
-   You can run this command to enter the virtual environment.
-   You'll want to run this in each new shell before running commands from `python-zulip-api`.
+   You should run the next command from your terminal(shell) to enter the virtual environment which would certainly look like    the one given above.
+   You'll want to run this in each new shell before running commands from `~/python-zulip-api$`.
+    
 
 6. Once you've entered the virtualenv, you should see something like this on the terminal:
    ```
