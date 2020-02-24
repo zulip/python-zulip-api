@@ -118,7 +118,7 @@ the Python version this command is executed with."""
                                     venv_dir,
                                     venv_exec_dir,
                                     'activate')
-    print('\nRun the below command to enter the virtualenv:\n')
+    print('\nRun the below command to enter into virtualenv:\n')
     print(bold + '  source ' + activate_command + end_format + "\n")
 
 
