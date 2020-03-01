@@ -42,6 +42,20 @@ if __name__ == "__main__":
     # Setting the client to irc_mirror is critical for this to work
     options.client = "irc_mirror"
     zulip_client = zulip.init_from_options(options)
+    # Check if bot is subscribed to the stream
+    subscribed = False
+    subscription_dict = zulip_client.list_subscriptions()
+    assert subscription_dict["result"] == "success"
+    subscription_list = subscription_dict["subscriptions"]
+    for subscriptions in subscription_list:
+        if subscriptions["name"] == options.stream:
+            subscribed = True
+        if subscribed:
+            break
+    if not subscribed:
+        traceback.print_exc()
+        print("ERROR: The Zulip bot is not subscribed to the stream.")
+        sys.exit(1)
     try:
         from irc_mirror_backend import IRCBot
     except ImportError:
