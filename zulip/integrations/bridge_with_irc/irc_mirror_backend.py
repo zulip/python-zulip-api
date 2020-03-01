@@ -33,6 +33,7 @@ class IRCBot(irc.bot.SingleServerIRCBot):
         self.reactor.loop.run_until_complete(
             self.connection.connect(*args, **kwargs)
         )
+        print("Connected to IRC server.")
 
     def on_nicknameinuse(self, c, e):
         # type: (ServerConnection, Event) -> None
