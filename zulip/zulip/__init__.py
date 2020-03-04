@@ -94,9 +94,8 @@ class RandomExponentialBackoff(CountingBackoff):
         super(RandomExponentialBackoff, self).fail()
         # Exponential growth with ratio sqrt(2); compute random delay
         # between x and 2x where x is growing exponentially
-        delay_scale = int(2 ** (self.number_of_retries / 2.0 - 1)) + 1
-        delay = min(delay_scale + random.randint(1, delay_scale), self.delay_cap)
-        message = "Sleeping for %ss [max %s] before retrying." % (delay, delay_scale * 2)
+        delay = random.random() * min(self.delay_cap, 2 ** self.number_of_retries)
+        message = "Sleeping for %ss before retrying." % (delay,)
         try:
             logger.warning(message)
         except NameError:
