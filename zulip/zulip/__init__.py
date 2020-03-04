@@ -509,13 +509,13 @@ class Client(object):
         query_state = {
             'had_error_retry': False,
             'request': request,
-            'failures': 0,
         }  # type: Dict[str, Any]
+
+        # create Random Exponential Backoff object to perform retries using the method
+        backoff = RandomExponentialBackoff(timeout_success_equivalent=300)
 
         def error_retry(error_string):
             # type: (str) -> bool
-            if not self.retry_on_errors or query_state["failures"] >= 10:
-                return False
             if self.verbose:
                 if not query_state["had_error_retry"]:
                     sys.stdout.write("zulip API(%s): connection error%s -- retrying." %
@@ -525,9 +525,8 @@ class Client(object):
                     sys.stdout.write(".")
                 sys.stdout.flush()
             query_state["request"]["dont_block"] = json.dumps(True)
-            time.sleep(1)
-            query_state["failures"] += 1
-            return True
+            backoff.fail()
+            return backoff.keep_going()
 
         def end_error_retry(succeeded):
             # type: (bool) -> None
