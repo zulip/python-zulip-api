@@ -56,12 +56,13 @@ requests_json_is_function = callable(requests.Response.json)
 API_VERSTRING = "v1/"
 
 class CountingBackoff(object):
-    def __init__(self, maximum_retries=10, timeout_success_equivalent=None):
-        # type: (int, Optional[float]) -> None
+    def __init__(self, maximum_retries=10, timeout_success_equivalent=None, delay_cap=90.0):
+        # type: (int, Optional[float], float) -> None
         self.number_of_retries = 0
         self.maximum_retries = maximum_retries
         self.timeout_success_equivalent = timeout_success_equivalent
         self.last_attempt_time = 0.0
+        self.delay_cap = delay_cap
 
     def keep_going(self):
         # type: () -> bool
@@ -94,7 +95,7 @@ class RandomExponentialBackoff(CountingBackoff):
         # Exponential growth with ratio sqrt(2); compute random delay
         # between x and 2x where x is growing exponentially
         delay_scale = int(2 ** (self.number_of_retries / 2.0 - 1)) + 1
-        delay = delay_scale + random.randint(1, delay_scale)
+        delay = min(delay_scale + random.randint(1, delay_scale), delay_cap)
         message = "Sleeping for %ss [max %s] before retrying." % (delay, delay_scale * 2)
         try:
             logger.warning(message)
