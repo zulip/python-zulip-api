@@ -685,6 +685,23 @@ class Client:
             request=message_filters
         )
 
+    def check_messages_match_narrow(self, **request):
+        # type: (Dict[str, Any]) -> Dict[str, Any]
+
+        '''
+            Example usage:
+
+            >>> client.check_messages_match_narrow(msg_ids=[11, 12],
+                narrow=[{'operator': 'has', 'operand': 'link'}]
+            )
+            {'result': 'success', 'msg': '', 'messages': [{...}, {...}]}
+        '''
+        return self.call_endpoint(
+            url='messages/matches_narrow',
+            method='GET',
+            request=request
+        )
+
     def get_raw_message(self, message_id):
         # type: (int) -> Dict[str, str]
         '''
