@@ -1056,6 +1056,21 @@ class Client(object):
             method='DELETE',
         )
 
+    def get_user_by_id(self, user_id, request=None):
+        # type: (int, Optional[Dict[str, Any]]) -> Dict[str, Any]
+
+        '''
+            Example usage:
+
+            >>> client.get_user_by_id(8, {'include_custom_profile_fields': True})
+            {'result': 'success', 'msg': '', 'user': [{...}, {...}]}
+        '''
+        return self.call_endpoint(
+            url='users/{}'.format(user_id),
+            method='GET',
+            request=request,
+        )
+
     def get_members(self, request=None):
         # type: (Optional[Dict[str, Any]]) -> Dict[str, Any]
         '''
