@@ -135,11 +135,6 @@ def main() -> None:
             # provision_bots require bot_path which 
             # could not be found, hence result == None
 
-            # if args.provision:
-            #     print("ERROR: Could not load bot's module for '{}'. Exiting now.")
-            #     sys.exit(1)
-
-
     if lib_module is None:
         print("ERROR: Could not load bot module. Exiting now.")
         sys.exit(1)
