@@ -131,9 +131,10 @@ def main() -> None:
             # Removed: Not needed as lib_module would have
             # been imported during runtime if control
             # flow reaches here. Adding any other provision
-            # check after this would be unnecessary as 
-            # provision_bots require bot_path which 
-            # could not be found, hence result == None
+            # check after this would be unnecessary as
+            # provision_bots require bot_path which
+            # could not be found, hence result is None
+            # and control is here.
 
     if lib_module is None:
         print("ERROR: Could not load bot module. Exiting now.")
