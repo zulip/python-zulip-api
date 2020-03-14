@@ -13,3 +13,8 @@ Steps to create an inter-realm bridge:
 4. Make sure `bot_1` is subscribed to `stream_1`
 5. Enter the stream and the subject into the config file.
 6. Do step 1-5 but for `bot_2` and with all occurrences of `_1` replaced with `_2`
+7. Run the script `run-interrealm-bridge`
+
+If the `--stream` flag is added (i.e. `run-interrealm-bridge --stream`), then
+the mirroring granularity becomes stream-wide. Instead of one subject, all
+subjects within the stream are mirrored as-is without translation.

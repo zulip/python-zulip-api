@@ -64,8 +64,10 @@ if __name__ == "__main__":
     Relay each message received at a specified subject in a specified stream from
     the first realm to a specified subject in a specified stream in the second realm.
 
-    If the --stream flag is added, then the tunnel granularity becomes
-    stream-wide. All subjects are mirrored as-is without translation.
+    If the --stream flag is added, then the mirroring
+    granularity becomes stream-wide. Instead of one subject,
+    all subjects within the stream are mirrored as-is without
+    translation.
     """
     sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
