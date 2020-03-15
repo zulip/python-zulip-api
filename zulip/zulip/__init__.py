@@ -627,6 +627,8 @@ class Client(object):
         # type: (Callable[[Dict[str, Any]], None], Optional[List[str]], Optional[List[List[str]]]) -> None
         if narrow is None:
             narrow = []
+        # Use exponential backoff for registering.
+        register_backoff = RandomExponentialBackoff(timeout_success_equivalent=300)
 
         def do_register():
             # type: () -> Tuple[str, int]
@@ -639,7 +641,7 @@ class Client(object):
                 if 'error' in res['result']:
                     if self.verbose:
                         print("Server returned error:\n%s" % res['msg'])
-                    time.sleep(1)
+                    register_backoff.fail()
                 else:
                     return (res['queue_id'], res['last_event_id'])
 
@@ -647,6 +649,9 @@ class Client(object):
         # Make long-polling requests with `get_events`. Once a request
         # has received an answer, pass it to the callback and before
         # making a new long-polling request.
+
+        # Use exponential backoff for fetching events from server.
+        fetch_events_backoff = RandomExponentialBackoff(timeout_success_equivalent=300)
         while True:
             if queue_id is None:
                 (queue_id, last_event_id) = do_register()
@@ -680,7 +685,7 @@ class Client(object):
                 # Add a pause here to cover against potential bugs in this library
                 # causing a DoS attack against a server when getting errors.
                 # TODO: Make this back off exponentially.
-                time.sleep(1)
+                fetch_events_backoff.fail()
                 continue
 
             for event in res['events']:
