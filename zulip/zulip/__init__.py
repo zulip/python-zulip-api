@@ -1322,12 +1322,17 @@ class Client(object):
         # type: (**Any) -> Dict[str, Any]
         '''
             Example usage: client.get_subscribers(stream='devel')
+            OR
+            client.get_subscribers(stream_id=1)
         '''
-        response = self.get_stream_id(request['stream'])
-        if response['result'] == 'error':
-            return response
+        if 'stream_id' in request.keys():
+            stream_id = request['stream_id']
+        else:
+            response = self.get_stream_id(request['stream'])
+            if response['result'] == 'error':
+                return response
+            stream_id = response['stream_id']
 
-        stream_id = response['stream_id']
         url = 'streams/%d/members' % (stream_id,)
         return self.call_endpoint(
             url=url,
