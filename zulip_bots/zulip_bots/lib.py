@@ -268,7 +268,7 @@ def extract_query_without_mention(message: Dict[str, Any], client: ExternalBotHa
     return None
 
 
-def is_private_message_from_another_user(message_dict: Dict[str, Any], current_user_id: int) -> bool:
+def is_private_message_but_not_group_pm(message_dict: Dict[str, Any], current_user: ExternalBotHandler) -> bool:
     """
     Checks whether a message dict represents a PM from another user.
 
@@ -276,9 +276,11 @@ def is_private_message_from_another_user(message_dict: Dict[str, Any], current_u
     zulip/zulip project, so refactor with care.  See the comments in
     extract_query_without_mention.
     """
-    if message_dict['type'] == 'private':
-        return current_user_id != message_dict['sender_id']
-    return False
+    if not message_dict['type'] == 'private':
+        return False
+    is_message_from_self = current_user.user_id == message_dict['sender_id']
+    recipients = [x['email'] for x in message_dict['display_recipient'] if current_user.email != x['email']]
+    return len(recipients) == 1 and not is_message_from_self
 
 
 def display_config_file_errors(error_msg: str, config_file: str) -> None:
@@ -346,7 +348,7 @@ def run_message_handler_for_bot(
         # `mentioned` will be in `flags` if the bot is mentioned at ANY position
         # (not necessarily the first @mention in the message).
         is_mentioned = 'mentioned' in flags
-        is_private_message = is_private_message_from_another_user(message, restricted_client.user_id)
+        is_private_message = is_private_message_but_not_group_pm(message, restricted_client)
 
         # Provide bots with a way to access the full, unstripped message
         message['full_content'] = message['content']

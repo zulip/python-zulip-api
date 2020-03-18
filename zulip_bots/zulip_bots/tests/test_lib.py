@@ -4,7 +4,8 @@ from zulip_bots.lib import (
     ExternalBotHandler,
     StateHandler,
     run_message_handler_for_bot,
-    extract_query_without_mention
+    extract_query_without_mention,
+    is_private_message_but_not_group_pm
 )
 
 import io
@@ -208,6 +209,27 @@ class LibTest(TestCase):
         self.assertEqual(extract_query_without_mention(message, handler), "Hello World")
         message = {'content': "Not at start @**Alice|alice** Hello World"}
         self.assertEqual(extract_query_without_mention(message, handler), None)
+
+    def test_is_private_message_but_not_group_pm(self):
+        client = FakeClient()
+        handler = ExternalBotHandler(
+            client=client,
+            root_dir=None,
+            bot_details=None,
+            bot_config_file=None
+        )
+        message = {}
+        message['display_recipient'] = 'some stream'
+        message['type'] = 'stream'
+        self.assertFalse(is_private_message_but_not_group_pm(message, handler))
+        message['type'] = 'private'
+        message['display_recipient'] = [{'email': 'a1@b.com'}]
+        message['sender_id'] = handler.user_id
+        self.assertFalse(is_private_message_but_not_group_pm(message, handler))
+        message['sender_id'] = 0  # someone else
+        self.assertTrue(is_private_message_but_not_group_pm(message, handler))
+        message['display_recipient'] = [{'email': 'a1@b.com'}, {'email': 'a2@b.com'}]
+        self.assertFalse(is_private_message_but_not_group_pm(message, handler))
 
     def _create_client_and_handler_for_file_upload(self):
         client = FakeClient()
