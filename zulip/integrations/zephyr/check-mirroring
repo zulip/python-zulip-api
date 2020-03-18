@@ -112,7 +112,8 @@ def send_zephyr(zwrite_args, content):
                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = p.communicate(input=content.encode("utf-8"))
     if p.returncode != 0:
-        if "Detected server failure while receiving acknowledgement for" in stdout:
+        # FIXME: This should really look for a byte form of the string in stdout
+        if "Detected server failure while receiving acknowledgement for" in stdout:  # type: ignore
             logger.warning("Got server failure error sending zephyr; retrying")
             logger.warning(stderr)
             return True
