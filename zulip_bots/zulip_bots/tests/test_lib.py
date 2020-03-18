@@ -120,7 +120,7 @@ class LibTest(TestCase):
         expected = [({'type': 'private', 'display_recipient': [to]},
                      {'type': 'private', 'to': [to['email']]}, None),
                     ({'type': 'private', 'display_recipient': [to, profile]},
-                     {'type': 'private', 'to': [to['email']]}, 'widget_content'),
+                     {'type': 'private', 'to': [to['email'], profile['email']]}, 'widget_content'),
                     ({'type': 'stream', 'display_recipient': 'Stream name', 'subject': 'Topic'},
                      {'type': 'stream', 'to': 'Stream name', 'subject': 'Topic'}, 'test widget')]
         response_text = "Response"
