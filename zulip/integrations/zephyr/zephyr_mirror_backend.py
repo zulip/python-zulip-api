@@ -335,10 +335,10 @@ def decrypt_zephyr(zephyr_class, instance, body):
                          stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE)
-    decrypted, _ = p.communicate(input=body)
+    decrypted, _ = p.communicate(input=body)  # type: ignore  # Optional[bytes] vs string
     # Restore our ignoring signals
     signal.signal(signal.SIGCHLD, signal.SIG_IGN)
-    return decrypted
+    return decrypted  # type: ignore  # bytes, expecting str
 
 def process_notice(notice, log):
     # type: (Any, Optional[IO[Any]]) -> None
@@ -566,13 +566,13 @@ def send_zephyr(zwrite_args, content):
         logger.error("zwrite command '%s' failed with return code %d:" % (
             " ".join(zwrite_args), p.returncode,))
         if stdout:
-            logger.info("stdout: " + stdout)
+            logger.info("stdout: " + stdout)  # type: ignore  # str + bytes
     elif stderr:
         logger.warning("zwrite command '%s' printed the following warning:" % (
             " ".join(zwrite_args),))
     if stderr:
-        logger.warning("stderr: " + stderr)
-    return (p.returncode, stderr)
+        logger.warning("stderr: " + stderr)  # type: ignore  # str + bytes
+    return (p.returncode, stderr)  # type: ignore  # bytes vs str
 
 def send_authed_zephyr(zwrite_args, content):
     # type: (List[str], str) -> Tuple[int, str]
@@ -605,8 +605,8 @@ def zcrypt_encrypt_content(zephyr_class, instance, content):
                          stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE)
-    encrypted, _ = p.communicate(input=content)
-    return encrypted
+    encrypted, _ = p.communicate(input=content)  # type: ignore  # Optional[bytes] vs string
+    return encrypted  # type: ignore  # bytes, expecting Optional[str]
 
 def forward_to_zephyr(message):
     # type: (Dict[str, Any]) -> None
@@ -688,7 +688,8 @@ Zulip users (like you) received it, Zephyr users did not.
 
     if options.test_mode:
         logger.debug("Would have forwarded: %s\n%s" %
-                     (zwrite_args, wrapped_content.encode("utf-8")))
+                     (zwrite_args, wrapped_content.encode("utf-8")))  # type: ignore
+        # NOTE: mypy indicates %s outputs the encoded wrapped_content as per %r
         return
 
     (code, stderr) = send_authed_zephyr(zwrite_args, wrapped_content)
