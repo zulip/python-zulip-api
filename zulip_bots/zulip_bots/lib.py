@@ -165,7 +165,7 @@ class ExternalBotHandler:
         if message['type'] == 'private':
             return self.send_message(dict(
                 type='private',
-                to=[x['email'] for x in message['display_recipient'] if self.email != x['email']],
+                to=[x['email'] for x in message['display_recipient']],
                 content=response,
                 widget_content=widget_content,
             ))
