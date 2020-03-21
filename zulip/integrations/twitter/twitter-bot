@@ -225,7 +225,6 @@ for status in statuses[::-1][:opts.limit_tweets]:
     # https://twitter.com/eatevilpenguins/status/309995853408530432
     composed = "%s (%s)" % (status.user.name, status.user.screen_name)
     url = "https://twitter.com/%s/status/%s" % (status.user.screen_name, status.id)
-    # This contains all strings that could have caused the tweet to match our query.
     text_to_check = [status.text, status.user.screen_name]
     text_to_check.extend(url.expanded_url for url in status.urls)
 
@@ -259,14 +258,47 @@ for status in statuses[::-1][:opts.limit_tweets]:
     elif opts.twitter_name:
         subject = composed
 
-    message = {
-        "type": "stream",
-        "to": [opts.stream],
-        "subject": subject,
-        "content": url
-    }
+    # If the tweet is a retweet then check if the original tweet has been sent before
+    # and try to edit it, else post new message with the original tweet.
+    # This contains all strings that could have caused the tweet to match our query.
+    message_id = 0
+    edit_message = False
+    if status.retweeted_status is not None:
+        try:
+            message_id = config_internal.getint('twitter', str(status.retweeted_status.id))
+            edit_message = True
+        except (NoOptionError, NoSectionError):
+            edit_message = False
+        url = (status.retweeted_status.urls[0].expanded_url + "\n") + ("Retweets: %s" % (status.retweeted_status.retweet_count,))
+    else:
+        url = url + "\nRetweets: " + str(status.retweet_count)
+    # If we are editing message it implies the current tweet is a retweet
+    # and has been posted before. Hence try to edit the older tweet and
+    # change its number of retweets but if it has passed its edit time
+    # do nothing.
+    if edit_message is True:
+        message_data = {
+            "message_id": message_id,
+            "content": url,
+        }
+        ret = client.update_message(message_data)
 
-    ret = client.send_message(message)
+    if edit_message is False:
+        message = {
+            "type": "stream",
+            "to": [opts.stream],
+            "subject": subject,
+            "content": url
+        }
+
+        ret = client.send_message(message)
+        if ret['result'] == 'success':
+            if 'twitter' not in config_internal.sections():
+                config_internal.add_section('twitter')
+            if status.retweeted_status is None:
+                config_internal.set('twitter', str(status.id), str(ret['id']))
+            else:
+                config_internal.set('twitter', str(status.retweeted_status.id), str(ret['id']))
 
     if ret['result'] == 'error':
         # If sending failed (e.g. no such stream), abort and retry next time
