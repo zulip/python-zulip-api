@@ -21,5 +21,3 @@ if (type(options.stream_id) == str):
     options.stream_id = client.get_stream_id(options.stream_id)
 
 print(client.delete_topic(options.stream_id.get("stream_id"), options.topic_name))
-
-

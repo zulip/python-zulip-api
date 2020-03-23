@@ -759,6 +759,17 @@ class Client(object):
             method='DELETE'
         )
 
+    def delete_topic(self, stream_id, topic_name):
+        # type: (int,str) -> Dict[str, Any]
+        '''
+            See examples/delete-topic for example usage
+        '''
+        return self.call_endpoint(
+            url='/streams/{}/delete_topic'.format(stream_id),
+            method='POST',
+            request={'topic_name': topic_name}
+        )
+
     def update_message_flags(self, update_data):
         # type: (Dict[str, Any]) -> Dict[str, Any]
         '''
