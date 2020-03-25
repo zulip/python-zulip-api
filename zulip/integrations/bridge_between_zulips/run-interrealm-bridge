@@ -60,12 +60,12 @@ def create_pipe_event(to_client: zulip.Client, from_bot: Dict[str, Any],
 if __name__ == "__main__":
     usage = """run-interrealm-bridge [--stream]
 
-    Relay each message received at a specified subject in a specified stream from
-    the first realm to a specified subject in a specified stream in the second realm.
+    Relay each message received at a specified topic in a specified stream from
+    the first realm to a specified topic in a specified stream in the second realm.
 
     If the --stream flag is added, then the mirroring
-    granularity becomes stream-wide. Instead of one subject,
-    all subjects within the stream are mirrored as-is without
+    granularity becomes stream-wide. Instead of one topic,
+    all topics within the stream are mirrored as-is without
     translation.
     """
     sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
