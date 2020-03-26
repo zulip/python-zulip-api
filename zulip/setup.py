@@ -45,6 +45,7 @@ package_info = dict(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
     ],
     python_requires='>=2.7,!=3.0.x,!=3.1.x,!=3.2.x,!=3.3.x,!=3.4.x',
     url='https://www.zulip.org/',
