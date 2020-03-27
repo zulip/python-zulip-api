@@ -74,18 +74,18 @@ class TestConnectFourBot(BotTestCase, DefaultTests):
 
     def test_game_message_handler_responses(self) -> None:
         board = ':one: :two: :three: :four: :five: :six: :seven:\n\n' + '\
-:heavy_large_circle: :heavy_large_circle: :heavy_large_circle: :heavy_large_circle: \
-:heavy_large_circle: :heavy_large_circle: :heavy_large_circle: \n\n\
-:heavy_large_circle: :heavy_large_circle: :heavy_large_circle: :heavy_large_circle: \
-:heavy_large_circle: :heavy_large_circle: :heavy_large_circle: \n\n\
-:heavy_large_circle: :heavy_large_circle: :heavy_large_circle: :heavy_large_circle: \
-:heavy_large_circle: :heavy_large_circle: :heavy_large_circle: \n\n\
-:blue_circle: :red_circle: :heavy_large_circle: :heavy_large_circle: :heavy_large_circle: \
-:heavy_large_circle: :heavy_large_circle: \n\n\
-:blue_circle: :red_circle: :heavy_large_circle: :heavy_large_circle: :heavy_large_circle: \
-:heavy_large_circle: :heavy_large_circle: \n\n\
-:blue_circle: :red_circle: :heavy_large_circle: :heavy_large_circle: :heavy_large_circle: \
-:heavy_large_circle: :heavy_large_circle: '
+:white_circle: :white_circle: :white_circle: :white_circle: \
+:white_circle: :white_circle: :white_circle: \n\n\
+:white_circle: :white_circle: :white_circle: :white_circle: \
+:white_circle: :white_circle: :white_circle: \n\n\
+:white_circle: :white_circle: :white_circle: :white_circle: \
+:white_circle: :white_circle: :white_circle: \n\n\
+:blue_circle: :red_circle: :white_circle: :white_circle: :white_circle: \
+:white_circle: :white_circle: \n\n\
+:blue_circle: :red_circle: :white_circle: :white_circle: :white_circle: \
+:white_circle: :white_circle: \n\n\
+:blue_circle: :red_circle: :white_circle: :white_circle: :white_circle: \
+:white_circle: :white_circle: '
         bot, bot_handler = self._get_handlers()
         self.assertEqual(bot.gameMessageHandler.parse_board(
             self.almost_win_board), board)
