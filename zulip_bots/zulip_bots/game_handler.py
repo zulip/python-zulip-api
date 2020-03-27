@@ -650,7 +650,7 @@ To move subjects, send your message again, otherwise join the game using the lin
         failed = False
         for u in users:
             user = u.strip().lstrip('@**').rstrip('**')
-            if user == self.get_bot_username() or user == self.email:
+            if (user == self.get_bot_username() or user == self.email) and not self.supports_computer:
                 self.send_reply(
                     message, 'You cannot play against the computer in this game.')
             if '@' not in user:
