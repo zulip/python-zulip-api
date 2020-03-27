@@ -35,15 +35,18 @@ class IRCBot(irc.bot.SingleServerIRCBot):
         self.reactor.loop.run_until_complete(
             self.connection.connect(*args, **kwargs)
         )
-        print("Connected to IRC server.")
+        print("Listening now. Please send an IRC message to verify operation")
 
     def check_subscription_or_die(self):
         # type: () -> None
         resp = self.zulip_client.list_subscriptions()
-        assert resp["result"] == "success"
+        if resp["result"] != "success":
+            print("ERROR: %s" % (resp["msg"],))
+            exit(1)
         subs = [s["name"] for s in resp["subscriptions"]]
         if self.stream not in subs:
-            raise Exception("The bot is not yet subscribed to the specified stream")
+            print("The bot is not yet subscribed to stream '%s'. Please subscribe the bot to the stream first." % (self.stream,))
+            exit(1)
 
     def on_nicknameinuse(self, c, e):
         # type: (ServerConnection, Event) -> None
