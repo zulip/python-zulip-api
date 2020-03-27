@@ -117,7 +117,7 @@ class TestTicTacToeBot(BotTestCase, DefaultTests):
 
     def test_player_color(self) -> None:
         turn = 0
-        response = ':cross_mark_button:'
+        response = ':x:'
         self._test_player_color(turn, response)
 
     def _test_player_color(self, turn: int, expected_response: str) -> None:
@@ -145,9 +145,9 @@ class TestTicTacToeBot(BotTestCase, DefaultTests):
         board = [[0, 1, 0],
                  [0, 0, 0],
                  [0, 0, 2]]
-        response = ':one: :cross_mark_button: :three:\n\n' +\
+        response = ':one: :x: :three:\n\n' +\
             ':four: :five: :six:\n\n' +\
-            ':seven: :eight: :o_button:\n\n'
+            ':seven: :eight: :o:\n\n'
         self._test_parse_board(board, response)
 
     def _test_parse_board(self, board: List[List[int]], expected_response: str) -> None:

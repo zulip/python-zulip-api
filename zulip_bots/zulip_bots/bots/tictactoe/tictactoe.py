@@ -209,7 +209,7 @@ class TicTacToeModel(object):
 
 
 class TicTacToeMessageHandler(object):
-    tokens = [':cross_mark_button:', ':o_button:']
+    tokens = [':x:', ':o:']
 
     def parse_row(self, row: Tuple[int, int], row_num: int) -> str:
         ''' Takes the row passed in as a list and returns it as a string. '''
