@@ -822,11 +822,21 @@ class GameInstance:
         if self.is_turn_of(player_email):
             self.handle_current_player_command(content)
         else:
-            if self.gameAdapter.is_single_player:
-                self.broadcast('It\'s your turn')
+            self.send_current_turn_message()
+            self.broadcast_current_message()
+
+    def send_current_turn_message(self) -> None:
+        if self.gameAdapter.is_single_player:
+            self.current_messages.append('It\'s your turn')
+        else:
+            user_turn_avatar = "!avatar({})".format(self.players[self.turn])
+            if self.gameAdapter.gameMessageHandler.get_player_color(self.turn) is None:
+                self.current_messages.append('{} It\'s **{}**\'s turn.'.format(
+                    user_turn_avatar,
+                    self.gameAdapter.get_username_by_email(
+                        self.players[self.turn])))
             else:
-                user_turn_avatar = "!avatar({})".format(self.players[self.turn])
-                self.broadcast('{} It\'s **{}**\'s ({}) turn.'.format(
+                self.current_messages.append('{} It\'s **{}**\'s ({}) turn.'.format(
                     user_turn_avatar,
                     self.gameAdapter.get_username_by_email(
                         self.players[self.turn]),
@@ -890,11 +900,7 @@ class GameInstance:
             self.end_game(game_over)
             return
         user_turn_avatar = "!avatar({})".format(self.players[self.turn])
-        self.current_messages.append('{} It\'s **{}**\'s ({}) turn.'.format(
-            user_turn_avatar,
-            self.gameAdapter.get_username_by_email(self.players[self.turn]),
-            self.gameAdapter.gameMessageHandler.get_player_color(self.turn)
-        ))
+        self.send_current_turn_message()
         self.broadcast_current_message()
         if self.players[self.turn] == self.gameAdapter.email:
             self.make_move('', True)
@@ -903,15 +909,7 @@ class GameInstance:
         self.turn += 1
         if self.turn >= len(self.players):
             self.turn = 0
-        if self.gameAdapter.is_single_player:
-            self.current_messages.append('It\'s your turn.')
-        else:
-            user_turn_avatar = "!avatar({})".format(self.players[self.turn])
-            self.current_messages.append('{} It\'s **{}**\'s ({}) turn.'.format(
-                user_turn_avatar,
-                self.gameAdapter.get_username_by_email(self.players[self.turn]),
-                self.gameAdapter.gameMessageHandler.get_player_color(self.turn)
-            ))
+        self.send_current_turn_message()
         self.broadcast_current_message()
         if self.players[self.turn] == self.gameAdapter.email:
             self.make_move('', True)
