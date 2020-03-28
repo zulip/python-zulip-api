@@ -3,7 +3,7 @@ import re
 import random
 import logging
 from copy import deepcopy
-from typing import Any, Dict, Tuple, List
+from typing import Any, Dict, Tuple, List, Union, Optional
 
 
 class BadMoveException(Exception):
@@ -152,16 +152,21 @@ class GameAdapter:
         host = self.invites[game_id]['host']
         return 'Declined invitation to play **{}** from @**{}**.'.format(self.game_name, self.get_username_by_email(host))
 
-    def send_message(self, to: str, content: str, is_private: bool, subject: str = '') -> None:
+    def send_message(self, to: str, content: str, is_private: bool, subject: str = '', widget_content: Optional[str] = '') -> None:
+        if widget_content == '':
+            widget_content = None
         self.bot_handler.send_message(dict(
             type='private' if is_private else 'stream',
             to=to,
             content=content,
-            subject=subject
+            subject=subject,
+            widget_content=widget_content
         ))
 
-    def send_reply(self, original_message: Dict[str, Any], content: str) -> None:
-        self.bot_handler.send_reply(original_message, content)
+    def send_reply(self, original_message: Dict[str, Any], content: str, widget_content: Optional[str] = '') -> None:
+        if widget_content == '':
+            widget_content = None
+        self.bot_handler.send_reply(original_message, content, widget_content)
 
     def usage(self) -> str:
         return '''
@@ -710,20 +715,20 @@ To move subjects, send your message again, otherwise join the game using the lin
             id += valid_characters[random.randrange(0, len(valid_characters))]
         return id
 
-    def broadcast(self, game_id: str, content: str, include_private: bool = True) -> bool:
+    def broadcast(self, game_id: str, content: str, include_private: bool = True, widget_content: str = '') -> bool:
         if include_private:
             private_recipients = self.get_players(game_id, parameter='p')
             if private_recipients is not None:
                 for user in private_recipients:
-                    self.send_message(user, content, True)
+                    self.send_message(user, content, True, '', widget_content)
         if game_id in self.invites.keys():
             if self.invites[game_id]['subject'] != '###private###':
                 self.send_message(
-                    self.invites[game_id]['stream'], content, False, self.invites[game_id]['subject'])
+                    self.invites[game_id]['stream'], content, False, self.invites[game_id]['subject'], widget_content)
                 return True
         if game_id in self.instances.keys():
             self.send_message(
-                self.instances[game_id].stream, content, False, self.instances[game_id].subject)
+                self.instances[game_id].stream, content, False, self.instances[game_id].subject, widget_content)
             return True
         return False
 
@@ -771,7 +776,7 @@ class GameInstance:
         self.board = self.model.current_board
         self.turn = random.randrange(0, len(players)) - 1
         self.current_draw = {}  # type: Dict[str, bool]
-        self.current_messages = []  # type: List[str]
+        self.current_messages = []  # type: List[Union[str, Tuple[str, str]]]
         self.is_changing_subject = False
 
     def start(self) -> None:
@@ -842,8 +847,8 @@ class GameInstance:
                         self.players[self.turn]),
                     self.gameAdapter.gameMessageHandler.get_player_color(self.turn)))
 
-    def broadcast(self, content: str) -> None:
-        self.gameAdapter.broadcast(self.game_id, content)
+    def broadcast(self, content: str, widget_content: str = '') -> None:
+        self.gameAdapter.broadcast(self.game_id, content, widget_content=widget_content)
 
     def check_draw(self) -> bool:
         for d in self.current_draw.values():
@@ -867,7 +872,11 @@ class GameInstance:
             return
         except BadMoveException as e:
             self.broadcast(e.message)
-            self.broadcast(self.parse_current_board())
+            current_board_message = self.parse_current_board()
+            if isinstance(current_board_message, tuple):
+                self.broadcast(
+                    current_board_message[0], current_board_message[1])
+            self.broadcast(str(current_board_message))
             return
         if not is_computer:
             self.current_messages.append(self.gameAdapter.gameMessageHandler.alert_move_message(
@@ -899,7 +908,6 @@ class GameInstance:
                 game_over = self.players[self.turn]
             self.end_game(game_over)
             return
-        user_turn_avatar = "!avatar({})".format(self.players[self.turn])
         self.send_current_turn_message()
         self.broadcast_current_message()
         if self.players[self.turn] == self.gameAdapter.email:
@@ -915,8 +923,15 @@ class GameInstance:
             self.make_move('', True)
 
     def broadcast_current_message(self) -> None:
-        content = '\n\n'.join(self.current_messages)
-        self.broadcast(content)
+        # if there are no widgets, send all the messages all at once
+        if len(list(filter(lambda x: isinstance(x, tuple), self.current_messages))) == 0:
+            self.broadcast("\n\n".join(str(m) for m in self.current_messages))
+        else:
+            for message in self.current_messages:
+                if isinstance(message, tuple):
+                    self.broadcast(message[0], message[1])
+                else:
+                    self.broadcast(str(message))
         self.current_messages = []
 
     def parse_current_board(self) -> Any:
