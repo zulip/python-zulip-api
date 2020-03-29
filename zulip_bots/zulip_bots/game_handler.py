@@ -865,7 +865,7 @@ class GameInstance:
 
     def make_move(self, content: str, is_computer: bool) -> None:
         try:
-            self.model.make_move(content, self.turn, is_computer)
+            move_data = self.model.make_move(content, self.turn, is_computer)
         # Keep the turn of the same player
         except SamePlayerMove as smp:
             self.same_player_turn(content, smp.message, is_computer)
@@ -880,7 +880,7 @@ class GameInstance:
             return
         if not is_computer:
             self.current_messages.append(self.gameAdapter.gameMessageHandler.alert_move_message(
-                '**{}**'.format(self.gameAdapter.get_username_by_email(self.players[self.turn])), content))
+                '**{}**'.format(self.gameAdapter.get_username_by_email(self.players[self.turn])), content, move_data))
         self.current_messages.append(self.parse_current_board())
         game_over = self.model.determine_game_over(self.players)
         if game_over:

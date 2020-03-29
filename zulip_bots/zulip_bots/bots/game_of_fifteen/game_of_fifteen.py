@@ -107,7 +107,7 @@ class GameOfFifteenMessageHandler:
                 board_str += self.tiles[str(board[row][column])]
         return board_str
 
-    def alert_move_message(self, original_player: str, move_info: str) -> str:
+    def alert_move_message(self, original_player: str, move_info: str, move_data: Any = None) -> str:
         tile = move_info.replace('move ', '')
         return original_player + ' moved ' + tile
 

@@ -238,7 +238,7 @@ class TicTacToeMessageHandler:
     def get_player_color(self, turn: int) -> str:
         return self.tokens[turn]
 
-    def alert_move_message(self, original_player: str, move_info: str) -> str:
+    def alert_move_message(self, original_player: str, move_info: str, move_data: Any = None) -> str:
         move_info = move_info.replace('move ', '')
         return '{} put a token at {}'.format(original_player, move_info)
 
