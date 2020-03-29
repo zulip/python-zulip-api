@@ -480,8 +480,14 @@ class GameAdapter:
         stream = self.invites[game_id]['stream']
         if self.invites[game_id]['subject'] != '###private###':
             subject = self.invites[game_id]['subject']
-        self.instances[game_id] = GameInstance(
-            self, False, subject, game_id, players, stream)
+        try:
+            self.instances[game_id] = GameInstance(
+                self, False, subject, game_id, players, stream)
+        except Exception as e:
+            # There was an error in creating the game. End the game
+            logging.exception(str(e))
+            self.cancel_game(game_id, "An error occured while creating the game\n{}".format(str(e)))
+            return
         self.broadcast(game_id, 'The game has started in #{} {}'.format(
             stream, self.instances[game_id].subject) + '\n' + self.get_formatted_game_object(game_id))
         del self.invites[game_id]
@@ -584,8 +590,12 @@ To move subjects, send your message again, otherwise join the game using the lin
             self.pending_subject_changes.remove(game_id)
             self.change_game_subject(
                 game_id, message['display_recipient'], message['subject'], message)
-        self.instances[game_id].handle_message(
-            message['content'], message['sender_email'])
+        try:
+            self.instances[game_id].handle_message(
+                message['content'], message['sender_email'])
+        except Exception as e:
+            logging.exception(str(e))
+            self.cancel_game(game_id, "An error occured in GameInstance.\n{}".format(str(e)))
 
     def change_game_subject(
         self,

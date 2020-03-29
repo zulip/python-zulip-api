@@ -1,0 +1,23 @@
+{
+    "request":{
+        "api_url":"https://opentdb.com/api.php?amount=1&type=multiple"
+    },
+    "response":{
+        "response_code":0,
+        "results":[
+            {
+                "category":"Animals",
+                "type":"multiple",
+                "difficulty":"easy",
+                "question":"Which class of animals are newts members of?",
+                "correct_answer":"Amphibian",
+                "incorrect_answers":["Fish","Reptiles","Mammals"]
+            }
+        ]
+    },
+    "response-headers":{
+        "status":200,
+        "ok":true,
+        "content-type":"application/json; charset=utf-8"
+    }
+}

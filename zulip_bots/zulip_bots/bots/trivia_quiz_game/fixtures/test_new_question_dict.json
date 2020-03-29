@@ -1,0 +1,10 @@
+{
+    "question": "Which class of animals are newts members of?",
+    "answers": {
+        "A": "Amphibian",
+        "B": "Fish",
+        "C": "Reptiles",
+        "D": "Mammals"
+    },
+    "correct_letter": "A"
+}
