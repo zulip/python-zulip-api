@@ -23,9 +23,9 @@ as we make any changes to them.
 The easiest way to use these API bindings is to base your tools off
 of the example tools under zulip/examples/ in this distribution.
 
-If you place your API key in the config file `~/.zuliprc` the Python
-API bindings will automatically read it in. The format of the config
-file is as follows:
+If you place your API key in the config file `~/.zuliprc` or '$PWD/.zuliprc'
+the Python API bindings will automatically read it in. The format of the
+config file is as follows:
 
     [api]
     key=<api key from the web interface>
@@ -124,7 +124,7 @@ API directly from existing scripts.
     zulip-send hamlet@example.com cordelia@example.com -m \
         "Conscience doth make cowards of us all."
 
-Alternatively, if you don't want to use your ~/.zuliprc file:
+Alternatively, if you don't want to use your ~/.zuliprc or $PWD/.zuliprc file:
 
     zulip-send --user shakespeare-bot@example.com \
         --api-key a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5 \

@@ -118,7 +118,7 @@ def add_default_arguments(parser, patch_error_handling=True, allow_provisioning=
                        action='store',
                        dest="zulip_config_file",
                        help='''Location of an ini file containing the above
-                            information. (default ~/.zuliprc)''')
+                            information. (default ~/.zuliprc or $PWD/.zuliprc)''')
     group.add_argument('-v', '--verbose',
                        action='store_true',
                        help='Provide detailed output.')
@@ -177,7 +177,7 @@ def generate_option_group(parser, prefix=''):
     group.add_option('--%sconfig-file' % (prefix,),
                      action='store',
                      dest="zulip_config_file",
-                     help='Location of an ini file containing the\nabove information. (default ~/.zuliprc)')
+                     help='Location of an ini file containing the\nabove information. (default ~/.zuliprc or $PWD/.zuliprc)')
     group.add_option('-v', '--verbose',
                      action='store_true',
                      help='Provide detailed output.')
@@ -243,14 +243,18 @@ def init_from_options(options, client=None):
 
 def get_default_config_filename():
     # type: () -> Optional[str]
-    if os.environ.get("HOME") is None:
+    if os.environ.get("PWD") is None:
         return None
+    config_file = os.path.join(os.environ["PWD"], ".zuliprc")
+    if not os.path.exists(config_file):
+        if os.environ.get("HOME") is None:
+            return None
 
-    config_file = os.path.join(os.environ["HOME"], ".zuliprc")
-    if (not os.path.exists(config_file) and
-            os.path.exists(os.path.join(os.environ["HOME"], ".humbugrc"))):
-        raise ZulipError("The Zulip API configuration file is now ~/.zuliprc; please run:\n\n"
-                         "  mv ~/.humbugrc ~/.zuliprc\n")
+        config_file = os.path.join(os.environ["HOME"], ".zuliprc")
+        if (not os.path.exists(config_file) and
+                os.path.exists(os.path.join(os.environ["HOME"], ".humbugrc"))):
+            raise ZulipError("The Zulip API configuration file is now ~/.zuliprc; please run:\n\n"
+                             "  mv ~/.humbugrc ~/.zuliprc\n")
     return config_file
 
 def validate_boolean_field(field):
