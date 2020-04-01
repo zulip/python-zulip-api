@@ -5,9 +5,8 @@ This bot allows to update directly Bugzilla from Zulip
 ## Setup
 
 To use Bugzilla Bot, first set up `bugzilla.conf`. `bugzilla.conf` takes 2 options:
-
- - site (the site like `https://bugs.xxx.net` that includes both the protocol and the domain), and
- - api_key (a Bugzilla API key), 
+ - site (the site like `https://bugs.xxx.net` that includes both the protocol and the domain)
+ - api_key (a Bugzilla API key)
 
 
 ## Usage

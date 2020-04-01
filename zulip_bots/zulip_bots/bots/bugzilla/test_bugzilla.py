@@ -1,5 +1,4 @@
 from typing import Any, Dict
-from unittest.mock import patch
 from zulip_bots.test_lib import BotTestCase, DefaultTests
 
 
