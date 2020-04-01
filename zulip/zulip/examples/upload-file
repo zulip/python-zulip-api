@@ -3,7 +3,7 @@
 
 import argparse
 
-from six.moves import StringIO as _StringIO
+from io import StringIO as _StringIO
 from typing import IO, Any
 import zulip
 
