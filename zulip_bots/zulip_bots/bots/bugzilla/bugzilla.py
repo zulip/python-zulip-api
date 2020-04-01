@@ -23,6 +23,7 @@ you:
 Then `A new comment` is added to bug 123
 '''
 
+
 class BugzillaHandler(object):
     '''
     A docstring documenting this bot.
@@ -51,7 +52,7 @@ class BugzillaHandler(object):
         content = message.get('content')
         topic = message.get('subject')
 
-        if HELP_REGEX.match (content):
+        if HELP_REGEX.match(content):
             self.handle_help(message, bot_handler)
             return None
 
@@ -63,19 +64,19 @@ class BugzillaHandler(object):
 
         comment = content
         self.handle_comment(bug_number, comment, message, bot_handler)
-    
+
     def handle_help(self, message: Dict[str, str], bot_handler: Any) -> None:
         bot_handler.send_reply(message, HELP_RESPONSE)
 
     def handle_comment(self, bug_number: str, comment: str, message: Dict[str, str], bot_handler: Any) -> None:
         url = '{}/rest/bug/{}/comment'.format(self.site, bug_number)
-        requests.post (url,
-            json=self.make_comment_json(comment))
+        requests.post(url,
+                      json=self.make_comment_json(comment))
 
     def make_comment_json(self, comment: str) -> Any:
         json = {
-          'api_key': self.api_key,
-          'comment': comment
+            'api_key': self.api_key,
+            'comment': comment
         }
         return json
 
@@ -86,5 +87,6 @@ class BugzillaHandler(object):
             raise ValueError
         else:
             return topic_match.group('bug_number')
+
 
 handler_class = BugzillaHandler

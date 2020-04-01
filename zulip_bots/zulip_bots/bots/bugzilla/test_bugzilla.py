@@ -2,6 +2,7 @@ from typing import Any, Dict
 from unittest.mock import patch
 from zulip_bots.test_lib import BotTestCase, DefaultTests
 
+
 class TestBugzillaBot(BotTestCase, DefaultTests):
     bot_name = 'bugzilla'
 
@@ -69,6 +70,7 @@ Then `A new comment` is added to bug 123
         with self.mock_config_info(self.MOCK_CONFIG_INFO):
             self.verify_reply('help', self.MOCK_HELP_RESPONSE)
 
+
 class TestBugzillaBotWrongTopic(BotTestCase, DefaultTests):
     bot_name = 'bugzilla'
 
@@ -89,4 +91,5 @@ class TestBugzillaBotWrongTopic(BotTestCase, DefaultTests):
 
     def test_no_bug_number(self) -> None:
         with self.mock_config_info(self.MOCK_CONFIG_INFO):
-            self.verify_reply('a comment', self.MOCK_COMMENT_INVALID_TOPIC_RESPONSE)
+            self.verify_reply(
+                'a comment', self.MOCK_COMMENT_INVALID_TOPIC_RESPONSE)
