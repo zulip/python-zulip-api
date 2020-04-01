@@ -9,6 +9,16 @@ import interrealm_bridge_config
 
 from typing import Any, Callable, Dict
 
+def check_subscription_or_die(zulip_client, stream):
+    # type: (zulip.Client, str) -> None
+    resp = zulip_client.list_subscriptions()
+    if resp["result"] != "success":
+        print("ERROR: %s" % (resp["msg"],))
+        sys.exit(1)
+    subs = [s["name"] for s in resp["subscriptions"]]
+    if stream not in subs:
+        print("The bot is not yet subscribed to stream '%s'. Please subscribe the bot to the stream first." % (stream,))
+        sys.exit(1)
 
 def create_pipe_event(to_client: zulip.Client, from_bot: Dict[str, Any],
                       to_bot: Dict[str, Any], stream_wide: bool
@@ -84,6 +94,9 @@ if __name__ == "__main__":
                            site=bot1["site"])
     client2 = zulip.Client(email=bot2["email"], api_key=bot2["api_key"],
                            site=bot2["site"])
+    # Check whether zulip bots are subscribed to their respective streams or not
+    check_subscription_or_die(client1, bot1["stream"])
+    check_subscription_or_die(client2, bot2["stream"])
     # A bidirectional tunnel
     pipe_event1 = create_pipe_event(client2, bot1, bot2, args.stream)
     p1 = mp.Process(target=client1.call_on_each_event, args=(pipe_event1, ["message"]))
