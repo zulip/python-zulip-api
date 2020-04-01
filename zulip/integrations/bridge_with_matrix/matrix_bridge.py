@@ -60,6 +60,17 @@ def die(signal: int, frame: FrameType) -> None:
     # We actually want to exit, so run os._exit (so as not to be caught and restarted)
     os._exit(1)
 
+def check_subscription_or_die(zulip_client, stream):
+    # type: (zulip.Client, str) -> None
+    resp = zulip_client.list_subscriptions()
+    if resp["result"] != "success":
+        print("ERROR: %s" % (resp["msg"],))
+        sys.exit(1)
+    subs = [s["name"] for s in resp["subscriptions"]]
+    if stream not in subs:
+        print("The bot is not yet subscribed to stream '%s'. Please subscribe the bot to the stream first." % (stream,))
+        sys.exit(1)
+
 def matrix_to_zulip(
     zulip_client: zulip.Client,
     zulip_config: Dict[str, Any],
@@ -286,6 +297,8 @@ def main() -> None:
                                         site=zulip_config["site"])
             matrix_client = MatrixClient(matrix_config["host"])
 
+            # Check whether zulip bot is subscribed to stream or not
+            check_subscription_or_die(zulip_client, zulip_config["stream"])
             # Login to Matrix
             matrix_login(matrix_client, matrix_config)
             # Join a room in Matrix
