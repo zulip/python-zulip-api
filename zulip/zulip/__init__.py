@@ -1084,6 +1084,25 @@ class Client(object):
             method='DELETE',
         )
 
+    def update_user_by_id(self, user_id, **request):
+        # type: (int, **Any) -> Dict[str, Any]
+
+        '''
+            Example usage:
+
+            >>> client.update_user_by_id(8, full_name="New Name")
+            {'result': 'success', 'msg': ''}
+        '''
+
+        for key, value in request.items():
+            request[key] = json.dumps(value)
+
+        return self.call_endpoint(
+            url='users/{}'.format(user_id),
+            method='PATCH',
+            request=request
+        )
+
     def get_members(self, request=None):
         # type: (Optional[Dict[str, Any]]) -> Dict[str, Any]
         '''
