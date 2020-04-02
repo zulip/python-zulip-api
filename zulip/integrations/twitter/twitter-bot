@@ -6,7 +6,7 @@
 import os
 import sys
 import argparse
-from six.moves.configparser import ConfigParser, NoSectionError, NoOptionError
+from configparser import ConfigParser, NoSectionError, NoOptionError
 
 import zulip
 VERSION = "0.9"

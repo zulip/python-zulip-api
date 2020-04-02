@@ -4,8 +4,6 @@ from typing import IO, Any, Dict, List, Text, Union, Set, Tuple, Optional, cast
 from types import FrameType
 
 import sys
-from six.moves import map
-from six.moves import range
 import json
 import re
 import time

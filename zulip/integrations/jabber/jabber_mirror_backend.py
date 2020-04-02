@@ -46,7 +46,7 @@ import optparse
 from sleekxmpp import ClientXMPP, InvalidJID, JID
 from sleekxmpp.stanza import Message as JabberMessage
 from sleekxmpp.exceptions import IqError, IqTimeout
-from six.moves.configparser import SafeConfigParser
+from configparser import SafeConfigParser
 import getpass
 import os
 import sys

@@ -8,10 +8,6 @@
 # License: MIT <http://www.opensource.org/licenses/mit-license.php>
 #
 import sys
-import six
-from six.moves import input
-from six.moves import range
-from six.moves import zip
 if sys.hexversion < 0x02040000:
     # The limiter is the subprocess module
     sys.stderr.write("git-p4: requires Python 2.4 or later.\n")
@@ -58,7 +54,7 @@ def p4_build_cmd(cmd):
     """
     real_cmd = ["p4"]
 
-    if isinstance(cmd, six.string_types):
+    if isinstance(cmd, str):
         real_cmd = ' '.join(real_cmd) + ' ' + cmd
     else:
         real_cmd += cmd
@@ -97,7 +93,7 @@ def write_pipe(c, stdin):
     if verbose:
         sys.stderr.write('Writing pipe: %s\n' % str(c))
 
-    expand = isinstance(c, six.string_types)
+    expand = isinstance(c, str)
     p = subprocess.Popen(c, stdin=subprocess.PIPE, shell=expand)
     pipe = p.stdin
     val = pipe.write(stdin)
@@ -115,7 +111,7 @@ def read_pipe(c, ignore_error=False):
     if verbose:
         sys.stderr.write('Reading pipe: %s\n' % str(c))
 
-    expand = isinstance(c, six.string_types)
+    expand = isinstance(c, str)
     p = subprocess.Popen(c, stdout=subprocess.PIPE, shell=expand)
     pipe = p.stdout
     val = pipe.read()
@@ -132,7 +128,7 @@ def read_pipe_lines(c):
     if verbose:
         sys.stderr.write('Reading pipe: %s\n' % str(c))
 
-    expand = isinstance(c, six.string_types)
+    expand = isinstance(c, str)
     p = subprocess.Popen(c, stdout=subprocess.PIPE, shell=expand)
     pipe = p.stdout
     val = pipe.readlines()
@@ -175,7 +171,7 @@ def p4_has_move_command():
     return True
 
 def system(cmd):
-    expand = isinstance(cmd, six.string_types)
+    expand = isinstance(cmd, str)
     if verbose:
         sys.stderr.write("executing %s\n" % str(cmd))
     retcode = subprocess.call(cmd, shell=expand)
@@ -185,7 +181,7 @@ def system(cmd):
 def p4_system(cmd):
     """Specifically invoke p4 as the system command. """
     real_cmd = p4_build_cmd(cmd)
-    expand = isinstance(real_cmd, six.string_types)
+    expand = isinstance(real_cmd, str)
     retcode = subprocess.call(real_cmd, shell=expand)
     if retcode:
         raise CalledProcessError(retcode, real_cmd)
@@ -362,7 +358,7 @@ def getP4OpenedType(file):
 # Return the set of all p4 labels
 def getP4Labels(depotPaths):
     labels = set()
-    if isinstance(depotPaths, six.string_types):
+    if isinstance(depotPaths, str):
         depotPaths = [depotPaths]
 
     for l in p4CmdList(["labels"] + ["%s..." % p for p in depotPaths]):
@@ -429,7 +425,7 @@ def isModeExecChanged(src_mode, dst_mode):
 
 def p4CmdList(cmd, stdin=None, stdin_mode='w+b', cb=None):
 
-    if isinstance(cmd, six.string_types):
+    if isinstance(cmd, str):
         cmd = "-G " + cmd
         expand = True
     else:
@@ -446,7 +442,7 @@ def p4CmdList(cmd, stdin=None, stdin_mode='w+b', cb=None):
     stdin_file = None
     if stdin is not None:
         stdin_file = tempfile.TemporaryFile(prefix='p4-stdin', mode=stdin_mode)
-        if isinstance(stdin, six.string_types):
+        if isinstance(stdin, str):
             stdin_file.write(stdin)
         else:
             for i in stdin:
