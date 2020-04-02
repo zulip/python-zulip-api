@@ -74,11 +74,6 @@ python_rules = RuleList(
          'description': 'Used % comprehension without a tuple'},
         {'pattern': '.*%s.* % \([a-zA-Z0-9_.]*\)$',
          'description': 'Used % comprehension without a tuple'},
-        # This rule might give false positives in virtualenv setup files which should be excluded,
-        # and comments which should be rewritten to avoid use of "python2", "python3", etc.
-        {'pattern': 'python[23]',
-         'include_only': set(['zulip/']),
-         'description': 'Explicit python invocations should not include a version'},
         {'pattern': '__future__',
          'include_only': set(['zulip_bots/zulip_bots/bots/']),
          'description': 'Bots no longer need __future__ imports.'},
