@@ -1,0 +1,2 @@
+google-api-python-client==1.6.7
+dateparser==0.7.0
