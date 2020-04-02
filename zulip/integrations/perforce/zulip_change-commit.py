@@ -14,7 +14,6 @@ For example:
   1234 //depot/security/src/
 
 '''
-from __future__ import print_function
 
 import os
 import sys

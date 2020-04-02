@@ -7,9 +7,6 @@
 #            2007 Trolltech ASA
 # License: MIT <http://www.opensource.org/licenses/mit-license.php>
 #
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import division
 import sys
 import six
 from six.moves import input
