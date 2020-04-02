@@ -2,7 +2,6 @@
 #
 # This script depends on python-dateutil and python-pytz for properly handling
 # times and time zones of calendar events.
-from __future__ import print_function
 import datetime
 import dateutil.parser
 import httplib2

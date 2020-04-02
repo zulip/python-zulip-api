@@ -5,7 +5,6 @@
 #
 # This hook is called when changesets are pushed to the master repository (ie
 # `hg push`). See https://zulipchat.com/integrations for installation instructions.
-from __future__ import absolute_import
 
 import zulip
 import sys
