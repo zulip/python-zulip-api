@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # This script depends on python-dateutil and python-pytz for properly handling
 # times and time zones of calendar events.
