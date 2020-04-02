@@ -10,7 +10,7 @@ import logging
 import argparse
 import os
 import pytz
-from six.moves import urllib
+import urllib
 import sys
 import time
 import traceback

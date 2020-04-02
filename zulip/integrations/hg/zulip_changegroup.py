@@ -8,7 +8,6 @@
 
 import zulip
 import sys
-from six.moves import range
 from typing import Any, Optional, Text
 from mercurial import ui, repository as repo
 

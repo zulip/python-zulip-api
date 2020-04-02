@@ -9,7 +9,6 @@ import subprocess
 import hashlib
 import zephyr
 import zulip
-from six.moves import range
 
 if False:
     from typing import Any, Dict, List, Set, Tuple

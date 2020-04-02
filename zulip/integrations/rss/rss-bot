@@ -7,14 +7,14 @@
 import calendar
 import errno
 import hashlib
-from six.moves.html_parser import HTMLParser
+from html.parser import HTMLParser
 import logging
 import argparse
 import os
 import re
 import sys
 import time
-from six.moves import urllib
+import urllib
 from typing import Dict, List, Tuple, Any
 
 import feedparser

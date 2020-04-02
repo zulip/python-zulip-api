@@ -31,7 +31,6 @@ VERSION = "0.9"
 
 if config.ZULIP_API_PATH is not None:
     sys.path.append(config.ZULIP_API_PATH)
-import six
 import zulip
 from typing import Any, List, Dict, Optional
 
@@ -301,7 +300,7 @@ def check_permissions():
         sys.stderr.write(str(e))
 
 if __name__ == "__main__":
-    if not isinstance(config.RESUME_FILE, six.string_types):
+    if not isinstance(config.RESUME_FILE, str):
         sys.stderr.write("RESUME_FILE path not given; refusing to continue")
     check_permissions()
     if config.LOG_FILE:
