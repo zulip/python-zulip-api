@@ -14,7 +14,7 @@ import os
 import re
 import sys
 import time
-import urllib
+import urllib.parse
 from typing import Dict, List, Tuple, Any
 
 import feedparser

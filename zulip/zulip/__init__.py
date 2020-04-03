@@ -15,10 +15,9 @@ import types
 from distutils.version import LooseVersion
 
 import distro
-from six.moves.configparser import SafeConfigParser
-from six.moves import urllib
+from configparser import SafeConfigParser
+import urllib.parse
 import logging
-import six
 from typing import Any, Callable, Dict, Iterable, IO, List, Mapping, Optional, Text, Tuple, Union
 
 __version__ = "0.6.4"
@@ -473,7 +472,7 @@ class Client(object):
         request = {}
         req_files = []
 
-        for (key, val) in six.iteritems(orig_request):
+        for (key, val) in orig_request.items():
             if isinstance(val, str) or isinstance(val, Text):
                 request[key] = val
             else:

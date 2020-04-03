@@ -2,16 +2,13 @@
 
 import argparse
 import os
-import six
+import io
 import unittest
 import zulip
 
 from unittest import TestCase
 from zulip import ZulipError
-if six.PY2:
-    from mock import patch
-else:
-    from unittest.mock import patch
+from unittest.mock import patch
 
 class TestDefaultArguments(TestCase):
 
@@ -19,7 +16,7 @@ class TestDefaultArguments(TestCase):
         # type: () -> None
         parser = zulip.add_default_arguments(argparse.ArgumentParser(usage="lorem ipsum"))
         with self.assertRaises(SystemExit) as cm:  # type: ignore # error: "assertRaises" doesn't match argument types
-            with patch('sys.stderr', new=six.StringIO()) as mock_stderr:
+            with patch('sys.stderr', new=io.StringIO()) as mock_stderr:
                 parser.parse_args(['invalid argument'])
         self.assertEqual(cm.exception.code, 2)
         # Assert that invalid arguments exit with printing the full usage (non-standard behavior)
