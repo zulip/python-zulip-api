@@ -1,9 +1,6 @@
 # This file has been copied and modified from the Zulip server repository
 # Original path: zulip/tools/linter_lib/pep8.py
 
-from __future__ import print_function
-from __future__ import absolute_import
-
 import subprocess
 import sys
 
