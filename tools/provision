@@ -98,8 +98,6 @@ the Python version this command is executed with."""
                           .format(os.path.join(base_dir, requirements_filename)))
 
     install_dependencies('requirements.txt')
-    if py_version > (3, 1):
-        install_dependencies('py3_requirements.txt')
 
     # Install all requirements for all bots. get_bot_paths()
     # has requirements that must be satisfied prior to calling
