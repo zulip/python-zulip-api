@@ -39,7 +39,6 @@ def create_pipe_event(to_client: zulip.Client, from_bot: Dict[str, Any],
                 # formatting purpose
                 msg["content"] = "\n" + msg["content"]
             msg_data = {
-                "sender": to_client.email,
                 "type": "stream",
                 "to": to_bot["stream"],
                 "subject": subject,

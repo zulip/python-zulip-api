@@ -81,7 +81,6 @@ def matrix_to_zulip(zulip_client, zulip_config, matrix_config, no_noise):
         if not_from_zulip_bot and content:
             try:
                 result = zulip_client.send_message({
-                    "sender": zulip_client.email,
                     "type": "stream",
                     "to": zulip_config["stream"],
                     "subject": zulip_config["topic"],
