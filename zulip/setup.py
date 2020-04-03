@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
 if False:
     from typing import Any, Dict, Generator, List, Tuple
 

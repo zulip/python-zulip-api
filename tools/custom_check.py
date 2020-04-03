@@ -1,6 +1,3 @@
-from __future__ import print_function
-from __future__ import absolute_import
-
 from typing import Any, Dict, List, Tuple
 from zulint.custom_rules import RuleList
 
