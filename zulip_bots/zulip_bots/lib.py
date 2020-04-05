@@ -337,7 +337,10 @@ def run_message_handler_for_bot(
         print("Running {} Bot:".format(bot_details['name']))
         if bot_details['description'] != "":
             print("\n\t{}".format(bot_details['description']))
-        print(message_handler.usage())
+        if hasattr(message_handler, 'usage'):
+            print(message_handler.usage())
+        else:
+            print('WARNING: {} is missing usage handler, please add one eventually'.format(bot_name))
 
     def handle_message(message: Dict[str, Any], flags: List[str]) -> None:
         logging.info('waiting for next message')
