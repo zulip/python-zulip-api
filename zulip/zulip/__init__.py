@@ -1070,6 +1070,20 @@ class Client(object):
             request=request,
         )
 
+    def deactivate_user_by_id(self, user_id):
+        # type: (int) -> Dict[str, Any]
+
+        '''
+            Example usage:
+
+            >>> client.deactivate_user_by_id(8)
+            {'result': 'success', 'msg': ''}
+        '''
+        return self.call_endpoint(
+            url='users/{}'.format(user_id),
+            method='DELETE',
+        )
+
     def get_members(self, request=None):
         # type: (Optional[Dict[str, Any]]) -> Dict[str, Any]
         '''
