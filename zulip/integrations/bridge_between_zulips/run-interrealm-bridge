@@ -58,18 +58,24 @@ def create_pipe_event(to_client: zulip.Client, from_bot: Dict[str, Any],
     return _pipe_event
 
 if __name__ == "__main__":
-    usage = """run-interrealm-bridge [--stream]
+    usage = """run-interrealm-bridge [--stream] [--oneway]
 
     Relay each message received at a specified subject in a specified stream from
     the first realm to a specified subject in a specified stream in the second realm.
 
     If the --stream flag is added, then the tunnel granularity becomes
     stream-wide. All subjects are mirrored as-is without translation.
+
+    If the --oneway flag is added, then messages from the second realm are not relayed.
     """
     sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
     parser = argparse.ArgumentParser(usage=usage)
     parser.add_argument('--stream',
+                        action='store_true',
+                        help="",
+                        default=False)
+    parser.add_argument('--oneway',
                         action='store_true',
                         help="",
                         default=False)
@@ -86,10 +92,16 @@ if __name__ == "__main__":
     # A bidirectional tunnel
     pipe_event1 = create_pipe_event(client2, bot1, bot2, args.stream)
     p1 = mp.Process(target=client1.call_on_each_event, args=(pipe_event1, ["message"]))
-    pipe_event2 = create_pipe_event(client1, bot2, bot1, args.stream)
-    p2 = mp.Process(target=client2.call_on_each_event, args=(pipe_event2, ["message"]))
-    p1.start()
-    p2.start()
-    print("Listening...")
-    p1.join()
-    p2.join()
+
+    if args.oneway:
+        p1.start()
+        print("Listening...")
+        p1.join()
+    else:
+        pipe_event2 = create_pipe_event(client1, bot2, bot1, args.stream)
+        p2 = mp.Process(target=client2.call_on_each_event, args=(pipe_event2, ["message"]))
+        p1.start()
+        p2.start()
+        print("Listening...")
+        p1.join()
+        p2.join()
