@@ -717,6 +717,19 @@ class Client(object):
             files=[file]
         )
 
+    def get_attachments(self):
+        # type: () -> Dict[str, Any]
+        '''
+            Example usage:
+
+            >>> client.get_attachments()
+            {'result': 'success', 'msg': '', 'attachments': [{...}, {...}]}
+        '''
+        return self.call_endpoint(
+            url='attachments',
+            method='GET'
+        )
+
     def update_message(self, message_data):
         # type: (Dict[str, Any]) -> Dict[str, Any]
         '''
