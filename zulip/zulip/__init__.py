@@ -1017,6 +1017,19 @@ class Client(object):
             method='GET',
         )
 
+    def get_realm_presence(self):
+        # type: () -> Dict[str, Any]
+        '''
+            Example usage:
+
+            >>> client.get_realm_presence()
+            {'presences': {...}, 'result': 'success', 'msg': ''}
+        '''
+        return self.call_endpoint(
+            url='realm/presence',
+            method='GET',
+        )
+
     def update_presence(self, request):
         # type: (Dict[str, Any]) -> Dict[str, Any]
         '''
