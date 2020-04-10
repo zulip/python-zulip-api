@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # See zulip_trac.py for installation and configuration instructions
 
 # Change these constants to configure the plugin:

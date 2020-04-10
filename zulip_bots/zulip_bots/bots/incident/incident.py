@@ -59,7 +59,7 @@ def start_new_incident(query: str, message: Dict[str, Any], bot_handler: Any) ->
     bot_handler.send_reply(message, bot_response, widget_content)
 
 def parse_answer(query: str) -> Tuple[str, str]:
-    m = re.match('answer\s+(TICKET....)\s+(.)', query)
+    m = re.match(r'answer\s+(TICKET....)\s+(.)', query)
     if not m:
         raise InvalidAnswerException()
 

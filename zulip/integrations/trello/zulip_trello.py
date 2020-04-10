@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 #
 # An easy Trello integration for Zulip.
 
@@ -39,7 +38,7 @@ def get_model_id(options):
         params=params
     )
 
-    if trello_response.status_code is not 200:
+    if trello_response.status_code != 200:
         print('Error: Can\'t get the idModel. Please check the configuration')
         sys.exit(1)
 
@@ -77,7 +76,7 @@ def get_webhook_id(options, id_model):
         data=data
     )
 
-    if trello_response.status_code is not 200:
+    if trello_response.status_code != 200:
         print('Error: Can\'t create the Webhook:', trello_response.text)
         sys.exit(1)
 

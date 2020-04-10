@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # https://github.com/python/mypy/issues/1141
 from typing import Dict, Text, Optional
 
@@ -25,7 +23,7 @@ def deployment_notice_destination(branch):
     # type: (str) -> Optional[Dict[str, Text]]
     if branch in ['master', 'test-post-receive']:
         return dict(stream  = 'deployments',
-                    subject = u'%s' % (branch,))
+                    subject = '%s' % (branch,))
 
     # Return None for cases where you don't want a notice sent
     return None

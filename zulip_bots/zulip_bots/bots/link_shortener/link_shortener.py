@@ -4,7 +4,7 @@ import logging
 
 from typing import Any, Dict
 
-class LinkShortenerHandler(object):
+class LinkShortenerHandler:
     '''A Zulip bot that will shorten URLs ("links") in a conversation using the
     goo.gl URL shortener.
     '''
@@ -33,10 +33,10 @@ class LinkShortenerHandler(object):
     def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
         REGEX_STR = (
             '('
-            '(?:http|https):\/\/'  # This allows for the HTTP or HTTPS
-                                   # protocol.
-            '[^"<>\{\}|\\^~[\]` ]+'  # This allows for any character except
-                                     # for certain non-URL-safe ones.
+            r'(?:http|https):\/\/'  # This allows for the HTTP or HTTPS
+                                    # protocol.
+            '[^"<>\\{\\}|\\^~[\\]` ]+'  # This allows for any character except
+                                        # for certain non-URL-safe ones.
             ')'
         )
 

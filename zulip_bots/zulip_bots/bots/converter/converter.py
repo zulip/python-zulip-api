@@ -25,7 +25,7 @@ def is_float(value: Any) -> bool:
 def round_to(x: float, digits: int) -> float:
     return round(x, digits-int(floor(log10(abs(x)))))
 
-class ConverterHandler(object):
+class ConverterHandler:
     '''
     This plugin allows users to make conversions between various units,
     e.g. Celsius to Fahrenheit, or kilobytes to gigabytes.

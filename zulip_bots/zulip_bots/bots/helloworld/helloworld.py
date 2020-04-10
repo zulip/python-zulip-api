@@ -2,7 +2,7 @@
 
 from typing import Any, Dict
 
-class HelloWorldHandler(object):
+class HelloWorldHandler:
     def usage(self) -> str:
         return '''
         This is a boilerplate bot that responds to a user query with

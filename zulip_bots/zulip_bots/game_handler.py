@@ -23,7 +23,7 @@ class SamePlayerMove(Exception):
     def __str__(self) -> str:
         return self.message
 
-class GameAdapter(object):
+class GameAdapter:
     '''
     Class that serves as a template to easily
     create multiplayer games.
@@ -248,7 +248,7 @@ class GameAdapter(object):
             elif content.lower() == 'join':
                 self.command_join(message, sender, content)
 
-            elif self.is_user_in_game(sender) is not '':
+            elif self.is_user_in_game(sender) != '':
                 self.parse_message(message)
 
             elif self.move_regex.match(content) is not None or content.lower() == 'draw' or content.lower() == 'forfeit':
@@ -299,7 +299,7 @@ class GameAdapter(object):
                 message, self.already_in_game_message())
             return
         game_id = self.set_invite_by_user(sender, True, message)
-        if game_id is '':
+        if game_id == '':
             self.send_reply(
                 message, 'No active invites. Type `help` for commands.')
             return
@@ -366,7 +366,7 @@ class GameAdapter(object):
                 message, self.already_in_game_message())
             return
         game_id = self.set_invite_by_user(sender, False, message)
-        if game_id is '':
+        if game_id == '':
             self.send_reply(
                 message, 'No active invites. Type `help` for commands.')
             return
@@ -381,7 +381,7 @@ class GameAdapter(object):
         if message['type'] == 'private' and self.is_single_player:
             self.send_reply(message, 'You are not allowed to play games in private messages.')
             return
-        if game_id is '':
+        if game_id == '':
             self.send_reply(
                 message, 'You are not in a game. Type `help` for all commands.')
         sender_avatar = "!avatar({})".format(sender)
@@ -399,7 +399,7 @@ class GameAdapter(object):
             return
         game_id = self.get_invite_in_subject(
             message['subject'], message['display_recipient'])
-        if game_id is '':
+        if game_id == '':
             self.send_reply(
                 message, 'There is not a game in this subject. Type `help` for all commands.')
             return
@@ -408,7 +408,7 @@ class GameAdapter(object):
     def command_play(self, message: Dict[str, Any], sender: str, content: str) -> None:
         game_id = self.get_invite_in_subject(
             message['subject'], message['display_recipient'])
-        if game_id is '':
+        if game_id == '':
             self.send_reply(
                 message, 'There is not a game in this subject. Type `help` for all commands.')
             return
@@ -683,7 +683,7 @@ To move subjects, send your message again, otherwise join the game using the lin
         return ''
 
     def is_game_in_subject(self, subject_name: str, stream_name: str) -> bool:
-        return self.get_invite_in_subject(subject_name, stream_name) is not '' or \
+        return self.get_invite_in_subject(subject_name, stream_name) != '' or \
             self.get_game_instance_by_subject(
                 subject_name, stream_name) is not None
 
@@ -752,7 +752,7 @@ To move subjects, send your message again, otherwise join the game using the lin
         return self.bot_handler.full_name
 
 
-class GameInstance(object):
+class GameInstance:
     '''
     The GameInstance class handles the game logic for a certain game,
     and is associated with a certain stream.

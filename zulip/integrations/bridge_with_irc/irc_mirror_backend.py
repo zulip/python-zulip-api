@@ -116,7 +116,7 @@ class IRCBot(irc.bot.SingleServerIRCBot):
             "to": self.stream,
             "subject": self.topic,
             "content": content,
-            "content": "**{0}**: {1}".format(sender, content),
+            "content": "**{}**: {}".format(sender, content),
         }))
 
     def on_dccmsg(self, c, e):

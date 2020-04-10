@@ -285,7 +285,7 @@ def create_room(topic_name, merels_storage):
 
         return response
     else:
-        return "Failed: Cannot create an already existing game in {0}. " \
+        return "Failed: Cannot create an already existing game in {}. " \
                "Please finish the game first.".format(topic_name)
 
 
@@ -358,7 +358,7 @@ def move_man(topic_name, p1, p2, merels_storage):
         merels.update_game(data.topic_name, data.turn, data.x_taken,
                            data.o_taken, data.board, data.hill_uid,
                            data.take_mode)
-        return "Moved a man from ({0}, {1}) -> ({2}, {3}) for {4}.".format(
+        return "Moved a man from ({}, {}) -> ({}, {}) for {}.".format(
             p1[0], p1[1], p2[0], p2[1], data.turn)
     else:
         raise BadMoveException("Failed: That's not a legal move. Please try again.")
@@ -390,7 +390,7 @@ def put_man(topic_name, v, h, merels_storage):
         merels.update_game(data.topic_name, data.turn, data.x_taken,
                            data.o_taken, data.board, data.hill_uid,
                            data.take_mode)
-        return "Put a man to ({0}, {1}) for {2}.".format(v, h, data.turn)
+        return "Put a man to ({}, {}) for {}.".format(v, h, data.turn)
     else:
         raise BadMoveException("Failed: That's not a legal put. Please try again.")
 
@@ -428,7 +428,7 @@ def take_man(topic_name, v, h, merels_storage):
         merels.update_game(data.topic_name, data.turn, data.x_taken,
                            data.o_taken, data.board, data.hill_uid,
                            data.take_mode)
-        return "Taken a man from ({0}, {1}) for {2}.".format(v, h, data.turn)
+        return "Taken a man from ({}, {}) for {}.".format(v, h, data.turn)
     else:
         raise BadMoveException("Failed: That's not a legal take. Please try again.")
 

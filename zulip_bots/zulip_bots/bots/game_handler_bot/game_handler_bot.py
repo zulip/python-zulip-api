@@ -2,7 +2,7 @@ from zulip_bots.game_handler import GameAdapter, BadMoveException
 from typing import List, Any
 
 
-class GameHandlerBotMessageHandler(object):
+class GameHandlerBotMessageHandler:
     tokens = [':blue_circle:', ':red_circle:']
 
     def parse_board(self, board: Any) -> str:
@@ -21,7 +21,7 @@ The first player to get 4 in a row wins!\n \
 Good Luck!'
 
 
-class MockModel(object):
+class MockModel:
     def __init__(self) -> None:
         self.current_board = 'mock board'
 
@@ -53,12 +53,12 @@ class GameHandlerBotHandler(GameAdapter):
         bot_name = 'game_handler_bot'
         move_help_message = '* To make your move during a game, type\n' \
                             '```move <column-number>```'
-        move_regex = 'move (\d)$'
+        move_regex = r'move (\d)$'
         model = MockModel
         gameMessageHandler = GameHandlerBotMessageHandler
         rules = ''
 
-        super(GameHandlerBotHandler, self).__init__(
+        super().__init__(
             game_name,
             bot_name,
             move_help_message,

@@ -28,7 +28,7 @@ class ServiceUnavailableError(Exception):
     '''raise this when the service is unavailable.'''
 
 
-class YodaSpeakHandler(object):
+class YodaSpeakHandler:
     '''
     This bot will allow users to translate a sentence into 'Yoda speak'.
     It looks for messages starting with '@mention-bot'.

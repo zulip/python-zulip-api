@@ -7,7 +7,7 @@ if MYPY:
 
 whitespace_rules = [
     # This linter should be first since bash_rules depends on it.
-    {'pattern': '\s+$',
+    {'pattern': r'\s+$',
      'strip': '\n',
      'description': 'Fix trailing whitespace'},
     {'pattern': '\t',
@@ -15,11 +15,11 @@ whitespace_rules = [
      'description': 'Fix tab-based whitespace'},
 ]  # type: Rule
 
-markdown_whitespace_rules = list([rule for rule in whitespace_rules if rule['pattern'] != '\s+$']) + [
+markdown_whitespace_rules = list([rule for rule in whitespace_rules if rule['pattern'] != r'\s+$']) + [
     # Two spaces trailing a line with other content is okay--it's a markdown line break.
     # This rule finds one space trailing a non-space, three or more trailing spaces, and
     # spaces on an empty line.
-    {'pattern': '((?<!\s)\s$)|(\s\s\s+$)|(^\s+$)',
+    {'pattern': r'((?<!\s)\s$)|(\s\s\s+$)|(^\s+$)',
      'strip': '\n',
      'description': 'Fix trailing whitespace'},
     {'pattern': '^#+[A-Za-z0-9]',
@@ -30,18 +30,18 @@ markdown_whitespace_rules = list([rule for rule in whitespace_rules if rule['pat
 python_rules = RuleList(
     langs=['py'],
     rules=[
-        {'pattern': '".*"%\([a-z_].*\)?$',
+        {'pattern': r'".*"%\([a-z_].*\)?$',
          'description': 'Missing space around "%"'},
-        {'pattern': "'.*'%\([a-z_].*\)?$",
+        {'pattern': r"'.*'%\([a-z_].*\)?$",
          'description': 'Missing space around "%"'},
         # This rule is constructed with + to avoid triggering on itself
         {'pattern': " =" + '[^ =>~"]',
          'description': 'Missing whitespace after "="'},
-        {'pattern': '":\w[^"]*$',
+        {'pattern': r'":\w[^"]*$',
          'description': 'Missing whitespace after ":"'},
-        {'pattern': "':\w[^']*$",
+        {'pattern': r"':\w[^']*$",
          'description': 'Missing whitespace after ":"'},
-        {'pattern': "^\s+[#]\w",
+        {'pattern': r"^\s+[#]\w",
          'strip': '\n',
          'description': 'Missing whitespace after "#"'},
         {'pattern': "assertEquals[(]",
@@ -67,26 +67,26 @@ python_rules = RuleList(
         # This next check could have false positives, but it seems pretty
         # rare; if we find any, they can be added to the exclude list for
         # this rule.
-        {'pattern': ' % [a-zA-Z0-9_.]*\)?$',
+        {'pattern': r' % [a-zA-Z0-9_.]*\)?$',
          'description': 'Used % comprehension without a tuple'},
-        {'pattern': '.*%s.* % \([a-zA-Z0-9_.]*\)$',
+        {'pattern': r'.*%s.* % \([a-zA-Z0-9_.]*\)$',
          'description': 'Used % comprehension without a tuple'},
         {'pattern': '__future__',
-         'include_only': set(['zulip_bots/zulip_bots/bots/']),
+         'include_only': {'zulip_bots/zulip_bots/bots/'},
          'description': 'Bots no longer need __future__ imports.'},
         {'pattern': '#!/usr/bin/env python$',
-         'include_only': set(['zulip_bots/']),
+         'include_only': {'zulip_bots/'},
          'description': 'Python shebangs must be python3'},
-        {'pattern': '(^|\s)open\s*\(',
+        {'pattern': r'(^|\s)open\s*\(',
          'description': 'open() should not be used in Zulip\'s bots. Use functions'
                         ' provided by the bots framework to access the filesystem.',
-         'include_only': set(['zulip_bots/zulip_bots/bots/'])},
+         'include_only': {'zulip_bots/zulip_bots/bots/'}},
         {'pattern': 'pprint',
          'description': 'Used pprint, which is most likely a debugging leftover. For user output, use print().'},
-        {'pattern': '\(BotTestCase\)',
+        {'pattern': r'\(BotTestCase\)',
          'bad_lines': ['class TestSomeBot(BotTestCase):'],
          'description': 'Bot test cases should directly inherit from BotTestCase *and* DefaultTests.'},
-        {'pattern': '\(DefaultTests, BotTestCase\)',
+        {'pattern': r'\(DefaultTests, BotTestCase\)',
          'bad_lines': ['class TestSomeBot(DefaultTests, BotTestCase):'],
          'good_lines': ['class TestSomeBot(BotTestCase, DefaultTests):'],
          'description': 'Bot test cases should inherit from BotTestCase before DefaultTests.'},
@@ -117,9 +117,9 @@ json_rules = RuleList(
 )
 
 prose_style_rules = [
-    {'pattern': '[^\/\#\-\"]([jJ]avascript)',  # exclude usage in hrefs/divs
+    {'pattern': '[^\\/\\#\\-\"]([jJ]avascript)',  # exclude usage in hrefs/divs
      'description': "javascript should be spelled JavaScript"},
-    {'pattern': '[^\/\-\.\"\'\_\=\>]([gG]ithub)[^\.\-\_\"\<]',  # exclude usage in hrefs/divs
+    {'pattern': '[^\\/\\-\\.\"\'\\_\\=\\>]([gG]ithub)[^\\.\\-\\_\"\\<]',  # exclude usage in hrefs/divs
      'description': "github should be spelled GitHub"},
     {'pattern': '[oO]rganisation',  # exclude usage in hrefs/divs
      'description': "Organization is spelled with a z"},
@@ -136,7 +136,7 @@ markdown_docs_length_exclude = {
 markdown_rules = RuleList(
     langs=['md'],
     rules=markdown_whitespace_rules + prose_style_rules + [
-        {'pattern': '\[(?P<url>[^\]]+)\]\((?P=url)\)',
+        {'pattern': r'\[(?P<url>[^\]]+)\]\((?P=url)\)',
          'description': 'Linkified markdown URLs should use cleaner <http://example.com> syntax.'}
     ],
     max_length=120,

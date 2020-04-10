@@ -5,7 +5,7 @@ from zulip_bots.bots.monkeytestit.lib import parse
 from zulip_bots.lib import NoBotConfigException
 
 
-class MonkeyTestitBot(object):
+class MonkeyTestitBot:
     def __init__(self):
         self.api_key = "None"
         self.config = None

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # zulip-send -- Sends a message to the specified recipients.
 
 import sys

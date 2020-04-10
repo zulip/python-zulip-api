@@ -8,7 +8,7 @@ from typing import Optional, Any, Dict
 
 # See readme.md for instructions on running this code.
 
-class WikipediaHandler(object):
+class WikipediaHandler:
     '''
     This plugin facilitates searching Wikipedia for a
     specific key term and returns the top 3 articles from the

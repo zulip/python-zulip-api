@@ -9,7 +9,7 @@ GIPHY_TRANSLATE_API = 'http://api.giphy.com/v1/gifs/translate'
 GIPHY_RANDOM_API = 'http://api.giphy.com/v1/gifs/random'
 
 
-class GiphyHandler(object):
+class GiphyHandler:
     """
     This plugin posts a GIF in response to the keywords provided by the user.
     Images are provided by Giphy, through the public API.

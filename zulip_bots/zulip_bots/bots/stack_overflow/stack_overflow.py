@@ -7,7 +7,7 @@ from typing import Optional, Any, Dict
 
 # See readme.md for instructions on running this code.
 
-class StackOverflowHandler(object):
+class StackOverflowHandler:
     '''
     This plugin facilitates searching Stack Overflow for a
     specific query and returns the top 3 questions from the

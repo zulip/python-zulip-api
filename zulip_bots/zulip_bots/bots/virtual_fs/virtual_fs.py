@@ -5,7 +5,7 @@ import os
 
 from typing import Any, Dict, List, Tuple, Callable, Set, Union
 
-class VirtualFsHandler(object):
+class VirtualFsHandler:
     META = {
         'name': 'VirtualFs',
         'description': 'Provides a simple, permanent file system to store and retrieve strings.',
@@ -112,8 +112,8 @@ def sample_conversation() -> List[Tuple[str, str]]:
 
 REGEXES = dict(
     command='(cd|ls|mkdir|read|rmdir|rm|write|pwd)',
-    path='(\S+)',
-    optional_path='(\S*)',
+    path=r'(\S+)',
+    optional_path=r'(\S*)',
     some_text='(.+)',
 )
 

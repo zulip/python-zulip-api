@@ -7,7 +7,7 @@ from typing import Dict, Any, Union, List, Tuple, Optional
 
 commands_list = ('list', 'top', 'help')
 
-class YoutubeHandler(object):
+class YoutubeHandler:
 
     def usage(self) -> str:
         return '''

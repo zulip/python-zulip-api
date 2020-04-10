@@ -1,7 +1,7 @@
 import requests
 from typing import Dict, Any, Tuple, Union
 
-class SusiHandler(object):
+class SusiHandler:
     '''
     Susi AI Bot
     To create and know more of SUSI skills go to `https://skills.susi.ai/`

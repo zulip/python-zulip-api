@@ -100,7 +100,7 @@ def get_credentials():
         return credentials
     except client.Error:
         logging.exception('Error while trying to open the `google-credentials.json` file.')
-    except IOError:
+    except OSError:
         logging.error("Run the get-google-credentials script from this directory first.")
 
 

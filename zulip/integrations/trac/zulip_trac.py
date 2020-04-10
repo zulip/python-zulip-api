@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Zulip trac plugin -- sends zulips when tickets change.
 #
 # Install by copying this file and zulip_trac_config.py to the trac

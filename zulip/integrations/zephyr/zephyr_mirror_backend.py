@@ -20,7 +20,7 @@ import select
 
 DEFAULT_SITE = "https://api.zulip.com"
 
-class States(object):
+class States:
     Startup, ZulipToZephyr, ZephyrToZulip, ChildSending = list(range(4))
 CURRENT_STATE = States.Startup
 
@@ -142,7 +142,7 @@ def zephyr_bulk_subscribe(subs):
     # type: (List[Tuple[str, str, str]]) -> None
     try:
         zephyr._z.subAll(subs)
-    except IOError:
+    except OSError:
         # Since we haven't added the subscription to
         # current_zephyr_subs yet, we can just return (so that we'll
         # continue processing normal messages) and we'll end up
@@ -153,7 +153,7 @@ def zephyr_bulk_subscribe(subs):
         return
     try:
         actual_zephyr_subs = [cls for (cls, _, _) in zephyr._z.getSubscriptions()]
-    except IOError:
+    except OSError:
         logger.exception("Error getting current Zephyr subscriptions")
         # Don't add anything to current_zephyr_subs so that we'll
         # retry the next time we check for streams to subscribe to
@@ -169,7 +169,7 @@ def zephyr_bulk_subscribe(subs):
                 # missing 15 seconds of messages on the affected
                 # classes
                 zephyr._z.sub(cls, instance, recipient)
-            except IOError:
+            except OSError:
                 pass
         else:
             current_zephyr_subs.add(cls)
@@ -177,7 +177,7 @@ def zephyr_bulk_subscribe(subs):
 def update_subscriptions():
     # type: () -> None
     try:
-        f = open(options.stream_file_path, "r")
+        f = open(options.stream_file_path)
         public_streams = json.loads(f.read())
         f.close()
     except Exception:
@@ -217,7 +217,7 @@ def maybe_restart_mirroring_script():
         maybe_kill_child()
         try:
             zephyr._z.cancelSubs()
-        except IOError:
+        except OSError:
             # We don't care whether we failed to cancel subs properly, but we should log it
             logger.exception("")
         while True:
@@ -288,14 +288,14 @@ def parse_crypt_table(zephyr_class, instance):
     # type: (Text, str) -> Optional[str]
     try:
         crypt_table = open(os.path.join(os.environ["HOME"], ".crypt-table"))
-    except IOError:
+    except OSError:
         return None
 
     for line in crypt_table.readlines():
         if line.strip() == "":
             # Ignore blank lines
             continue
-        match = re.match("^crypt-(?P<class>\S+):\s+((?P<algorithm>(AES|DES)):\s+)?(?P<keypath>\S+)$", line)
+        match = re.match(r"^crypt-(?P<class>\S+):\s+((?P<algorithm>(AES|DES)):\s+)?(?P<keypath>\S+)$", line)
         if match is None:
             # Malformed crypt_table line
             logger.debug("Invalid crypt_table line!")
@@ -464,7 +464,7 @@ def zephyr_init_autoretry():
             zephyr.init()
             backoff.succeed()
             return
-        except IOError:
+        except OSError:
             logger.exception("Error initializing Zephyr library (retrying).  Traceback:")
             backoff.fail()
 
@@ -475,12 +475,12 @@ def zephyr_load_session_autoretry(session_path):
     backoff = zulip.RandomExponentialBackoff()
     while backoff.keep_going():
         try:
-            session = open(session_path, "r").read()
+            session = open(session_path).read()
             zephyr._z.initialize()
             zephyr._z.load_session(session)
             zephyr.__inited = True
             return
-        except IOError:
+        except OSError:
             logger.exception("Error loading saved Zephyr session (retrying).  Traceback:")
             backoff.fail()
 
@@ -494,7 +494,7 @@ def zephyr_subscribe_autoretry(sub):
             zephyr.Subscriptions().add(sub)
             backoff.succeed()
             return
-        except IOError:
+        except OSError:
             # Probably a SERVNAK from the zephyr server, but log the
             # traceback just in case it's something else
             logger.exception("Error subscribing to personals (retrying).  Traceback:")
@@ -522,7 +522,7 @@ def zephyr_to_zulip(options):
             open(options.session_path, "w").write(zephyr._z.dump_session())
 
     if options.logs_to_resend is not None:
-        with open(options.logs_to_resend, 'r') as log:
+        with open(options.logs_to_resend) as log:
             for ln in log:
                 try:
                     zeph = json.loads(ln)
@@ -884,7 +884,7 @@ def parse_zephyr_subs(verbose=False):
             logger.error("Couldn't find ~/.zephyr.subs!")
         return zephyr_subscriptions
 
-    for line in open(subs_file, "r").readlines():
+    for line in open(subs_file).readlines():
         line = line.strip()
         if len(line) == 0:
             continue
@@ -1039,7 +1039,7 @@ def die_gracefully(signal, frame):
         try:
             # zephyr=>zulip processes may have added subs, so run cancelSubs
             zephyr._z.cancelSubs()
-        except IOError:
+        except OSError:
             # We don't care whether we failed to cancel subs properly, but we should log it
             logger.exception("")
 

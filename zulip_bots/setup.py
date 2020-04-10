@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 import os
 import sys
@@ -23,7 +22,7 @@ if not IS_PYPA_PACKAGE:
     package_data[''].append('fixtures/*.json')
     package_data[''].append('logo.*')
 
-with open("README.md", "r") as fh:
+with open("README.md") as fh:
     long_description = fh.read()
 
 # We should be installable with either setuptools or distutils.

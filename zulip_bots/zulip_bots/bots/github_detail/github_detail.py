@@ -8,14 +8,14 @@ import requests
 
 from typing import Dict, Any, Tuple, Union
 
-class GithubHandler(object):
+class GithubHandler:
     '''
     This bot provides details on github issues and pull requests when they're
     referenced in the chat.
     '''
 
     GITHUB_ISSUE_URL_TEMPLATE = 'https://api.github.com/repos/{owner}/{repo}/issues/{id}'
-    HANDLE_MESSAGE_REGEX = re.compile("(?:([\w-]+)\/)?([\w-]+)?#(\d+)")
+    HANDLE_MESSAGE_REGEX = re.compile(r"(?:([\w-]+)\/)?([\w-]+)?#(\d+)")
 
     def initialize(self, bot_handler: Any) -> None:
         self.config_info = bot_handler.get_config_info('github_detail', optional=True)

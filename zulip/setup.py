@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 if False:
     from typing import Any, Dict, Generator, List, Tuple
@@ -9,7 +8,7 @@ import sys
 
 import itertools
 
-with open("README.md", "r") as fh:
+with open("README.md") as fh:
     long_description = fh.read()
 
 def version():

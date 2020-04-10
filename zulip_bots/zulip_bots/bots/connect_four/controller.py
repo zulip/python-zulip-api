@@ -4,7 +4,7 @@ from functools import reduce
 from zulip_bots.game_handler import BadMoveException
 
 
-class ConnectFourModel(object):
+class ConnectFourModel:
     '''
     Object that manages running the Connect
     Four logic for the Connect Four Bot

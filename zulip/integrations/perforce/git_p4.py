@@ -339,7 +339,7 @@ def setP4ExecBit(file, mode):
     if not isModeExec(mode):
         p4Type = getP4OpenedType(file)
         p4Type = re.sub('^([cku]?)x(.*)', '\\1\\2', p4Type)
-        p4Type = re.sub('(.*?\+.*?)x(.*?)', '\\1\\2', p4Type)
+        p4Type = re.sub(r'(.*?\+.*?)x(.*?)', '\\1\\2', p4Type)
         if p4Type[-1] == "+":
             p4Type = p4Type[0:-1]
 
@@ -349,7 +349,7 @@ def getP4OpenedType(file):
     # Returns the perforce file type for the given file.
 
     result = p4_read_pipe(["opened", wildcard_encode(file)])
-    match = re.match(".*\((.+)\)\r?$", result)
+    match = re.match(".*\\((.+)\\)\r?$", result)
     if match:
         return match.group(1)
     else:
@@ -378,7 +378,7 @@ def getGitTags():
 def diffTreePattern():
     # This is a simple generator for the diff tree regex pattern. This could be
     # a class variable if this and parseDiffTreeEntry were a part of a class.
-    pattern = re.compile(':(\d+) (\d+) (\w+) (\w+) ([A-Z])(\d+)?\t(.*?)((\t(.*))|$)')
+    pattern = re.compile(':(\\d+) (\\d+) (\\w+) (\\w+) ([A-Z])(\\d+)?\t(.*?)((\t(.*))|$)')
     while True:
         yield pattern
 
@@ -820,13 +820,13 @@ def wildcard_present(path):
     m = re.search("[*#@%]", path)
     return m is not None
 
-class Command(object):
+class Command:
     def __init__(self):
         self.usage = "usage: %prog [options]"
         self.needsGit = True
         self.verbose = False
 
-class P4UserMap(object):
+class P4UserMap:
     def __init__(self):
         self.userMapFromPerforceServer = False
         self.myP4UserId = None
@@ -883,7 +883,7 @@ class P4UserMap(object):
             for line in lines:
                 entry = line.strip().split("\t")
                 self.users[entry[0]] = entry[1]
-        except IOError:
+        except OSError:
             self.getUserMapFromPerforceServer()
 
 class P4Debug(Command):
@@ -1056,7 +1056,7 @@ class P4Submit(Command, P4UserMap):
         (handle, outFileName) = tempfile.mkstemp(dir='.')
         try:
             outFile = os.fdopen(handle, "w+")
-            inFile = open(file, "r")
+            inFile = open(file)
             regexp = re.compile(pattern, re.VERBOSE)
             for line in inFile.readlines():
                 line = regexp.sub(r'$\1$', line)
@@ -1391,7 +1391,7 @@ class P4Submit(Command, P4UserMap):
             newdiff += "==== new file ====\n"
             newdiff += "--- /dev/null\n"
             newdiff += "+++ %s\n" % newFile
-            f = open(newFile, "r")
+            f = open(newFile)
             for line in f.readlines():
                 newdiff += "+" + line
             f.close()
@@ -1773,7 +1773,7 @@ class P4Submit(Command, P4UserMap):
 
         return True
 
-class View(object):
+class View:
     """Represent a p4 view ("p4 help views"), and map files in a
        repo according to the view."""
 
@@ -2377,7 +2377,7 @@ class P4Sync(Command, P4UserMap):
                 # find the corresponding git commit; take the oldest commit
                 changelist = int(change['change'])
                 gitCommit = read_pipe(["git", "rev-list", "--max-count=1",
-                     "--reverse", ":/\[git-p4:.*change = %d\]" % changelist])
+                     "--reverse", r":/\[git-p4:.*change = %d\]" % changelist])
                 if len(gitCommit) == 0:
                     print("could not find git commit for changelist %d" % changelist)
                 else:
@@ -2657,7 +2657,7 @@ class P4Sync(Command, P4UserMap):
                                 self.initialParent)
                     # only needed once, to connect to the previous commit
                     self.initialParent = ""
-            except IOError:
+            except OSError:
                 print(self.gitError.read())
                 sys.exit(1)
 
@@ -2712,7 +2712,7 @@ class P4Sync(Command, P4UserMap):
         self.updateOptionDict(details)
         try:
             self.commit(details, self.extractFilesFromCommit(details), self.branch)
-        except IOError:
+        except OSError:
             print("IO error with git fast-import. Is your git version recent enough?")
             print(self.gitError.read())
 
@@ -2878,7 +2878,7 @@ class P4Sync(Command, P4UserMap):
                 if len(self.changesFile) == 0:
                     revision = "#head"
 
-            p = re.sub ("\.\.\.$", "", p)
+            p = re.sub (r"\.\.\.$", "", p)
             if not p.endswith("/"):
                 p += "/"
 

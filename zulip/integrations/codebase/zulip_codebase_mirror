@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 # Zulip mirror of Codebase HQ activity
 # The "zulip_codebase_mirror" script is run continuously, possibly on a work
@@ -256,7 +255,7 @@ def run_mirror():
             since = default_since()
         else:
             since = datetime.fromtimestamp(float(timestamp), tz=pytz.utc)
-    except (ValueError, IOError) as e:
+    except (ValueError, OSError) as e:
         logging.warn("Could not open resume file: %s" % (str(e)))
         since = default_since()
 
@@ -289,13 +288,13 @@ def check_permissions():
     if config.LOG_FILE:
         try:
             open(config.LOG_FILE, "w")
-        except IOError as e:
+        except OSError as e:
             sys.stderr.write("Could not open up log for writing:")
             sys.stderr.write(str(e))
     # check that the resume file can be written (this creates if it doesn't exist)
     try:
         open(config.RESUME_FILE, "a+")
-    except IOError as e:
+    except OSError as e:
         sys.stderr.write("Could not open up the file %s for reading and writing" % (config.RESUME_FILE,))
         sys.stderr.write(str(e))
 
