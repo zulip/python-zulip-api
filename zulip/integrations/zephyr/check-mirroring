@@ -155,7 +155,7 @@ for tries in range(10):
         if missing == 0:
             actually_subscribed = True
             break
-    except IOError as e:
+    except OSError as e:
         if "SERVNAK received" in e:  # type: ignore # https://github.com/python/mypy/issues/2118
             logger.error("SERVNAK repeatedly received, punting rest of test")
         else:
@@ -283,8 +283,8 @@ def process_keys(content_list):
         key_counts[key] = 0
     for key in content_keys:
         key_counts[key] += 1
-    z_missing = set(key for key in zhkeys.keys() if key_counts[key] == 0)
-    h_missing = set(key for key in hzkeys.keys() if key_counts[key] == 0)
+    z_missing = {key for key in zhkeys.keys() if key_counts[key] == 0}
+    h_missing = {key for key in hzkeys.keys() if key_counts[key] == 0}
     duplicates = any(val > 1 for val in key_counts.values())
     success = all(val == 1 for val in key_counts.values())
     return key_counts, z_missing, h_missing, duplicates, success

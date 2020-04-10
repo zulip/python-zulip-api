@@ -2,7 +2,7 @@
 
 from typing import Dict, Any
 
-class IncrementorHandler(object):
+class IncrementorHandler:
     META = {
         'name': 'Incrementor',
         'description': 'Example bot to test the update_message() function.',

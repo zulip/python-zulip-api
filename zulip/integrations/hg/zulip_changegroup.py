@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 # Zulip hook for Mercurial changeset pushes.
 #
@@ -35,7 +34,7 @@ def format_summary_line(web_url, user, base, tip, branch, node):
         formatted_commit_count = "{revcount} commit{s}".format(
             revcount=revcount, s=plural)
 
-    return u"**{user}** pushed {commits} to **{branch}** (`{tip}:{node}`):\n\n".format(
+    return "**{user}** pushed {commits} to **{branch}** (`{tip}:{node}`):\n\n".format(
         user=user, commits=formatted_commit_count, branch=branch, tip=tip,
         node=node[:12])
 

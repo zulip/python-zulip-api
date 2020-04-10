@@ -95,7 +95,7 @@ class TestBotLib(TestCase):
         test_message("brokenmention", "@**brokenmention* foo", None)
         test_message("nomention", "foo", None)
         test_message("Max Mustermann", "@**Max Mustermann** foo", "foo")
-        test_message("Max (Mustermann)#(*$&12]\]", "@**Max (Mustermann)#(*$&12]\]** foo", "foo")
+        test_message(r"Max (Mustermann)#(*$&12]\]", r"@**Max (Mustermann)#(*$&12]\]** foo", "foo")
 
 if __name__ == '__main__':
     unittest.main()

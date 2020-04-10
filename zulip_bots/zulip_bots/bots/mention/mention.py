@@ -4,7 +4,7 @@ import requests
 from typing import Any, List, Dict
 import logging
 
-class MentionHandler(object):
+class MentionHandler:
     def initialize(self, bot_handler: Any) -> None:
         self.config_info = bot_handler.get_config_info('mention')
         self.access_token = self.config_info['access_token']

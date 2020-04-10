@@ -3,7 +3,7 @@ from zulip_bots.bots.connect_four.controller import ConnectFourModel
 from typing import Any
 
 
-class ConnectFourMessageHandler(object):
+class ConnectFourMessageHandler:
     tokens = [':blue_circle:', ':red_circle:']
 
     def parse_board(self, board: Any) -> str:
@@ -52,7 +52,7 @@ class ConnectFourBotHandler(GameAdapter):
         gameMessageHandler = ConnectFourMessageHandler
         rules = '''Try to get four pieces in row, Diagonals count too!'''
 
-        super(ConnectFourBotHandler, self).__init__(
+        super().__init__(
             game_name,
             bot_name,
             move_help_message,

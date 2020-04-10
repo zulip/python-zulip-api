@@ -63,7 +63,7 @@ def get_google_result(search_keywords: str) -> str:
             logging.exception(str(e))
             return 'Error: Search failed. {}.'.format(e)
 
-class GoogleSearchHandler(object):
+class GoogleSearchHandler:
     '''
     This plugin allows users to enter a search
     term in Zulip and get the top URL sent back

@@ -201,7 +201,7 @@ def print_bots(bots: List[Any], pretty_print: bool) -> None:
         print_bots_pretty(bots)
     else:
         for bot in bots:
-            print('{0}\t{1}\t{2}\t{3}'.format(bot['name'], bot['status'], bot['email'], bot['site']))
+            print('{}\t{}\t{}\t{}'.format(bot['name'], bot['status'], bot['email'], bot['site']))
 
 def print_bots_pretty(bots: List[Any]) -> None:
     if len(bots) == 0:

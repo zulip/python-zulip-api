@@ -74,7 +74,7 @@ at syntax by: @mention-botname help"
 right now.\nPlease try again later"
 
 
-class BeeminderHandler(object):
+class BeeminderHandler:
     '''
     This plugin allows users to easily add datapoints
     towards their beeminder goals via zulip

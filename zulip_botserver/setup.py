@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 import sys
 if False:
@@ -7,7 +6,7 @@ if False:
 
 ZULIP_BOTSERVER_VERSION = "0.6.4"
 
-with open("README.md", "r") as fh:
+with open("README.md") as fh:
     long_description = fh.read()
 
 # We should be installable with either setuptools or distutils.

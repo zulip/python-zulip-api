@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 #
 # RSS integration for Zulip
 #
@@ -174,9 +173,9 @@ def send_zulip(entry, feed_name):
     return client.send_message(message)
 
 try:
-    with open(opts.feed_file, "r") as f:
+    with open(opts.feed_file) as f:
         feed_urls = [feed.strip() for feed in f.readlines()]  # type: List[str]
-except IOError:
+except OSError:
     log_error_and_exit("Unable to read feed file at %s." % (opts.feed_file,))
 
 client = zulip.Client(email=opts.zulip_email, api_key=opts.zulip_api_key,
@@ -189,9 +188,9 @@ for feed_url in feed_urls:
     feed_file = os.path.join(opts.data_dir, urllib.parse.urlparse(feed_url).netloc)  # Type: str
 
     try:
-        with open(feed_file, "r") as f:
-            old_feed_hashes = dict((line.strip(), True) for line in f.readlines())  # type: Dict[str, bool]
-    except IOError:
+        with open(feed_file) as f:
+            old_feed_hashes = {line.strip(): True for line in f.readlines()}  # type: Dict[str, bool]
+    except OSError:
         old_feed_hashes = {}
 
     new_hashes = []  # type: List[str]

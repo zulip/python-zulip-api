@@ -65,7 +65,7 @@ def read_config_file(config_file_path: str, bot_name: Optional[str]=None) -> Dic
 def parse_config_file(config_file_path: str) -> configparser.ConfigParser:
     config_file_path = os.path.abspath(os.path.expanduser(config_file_path))
     if not os.path.isfile(config_file_path):
-        raise IOError("Could not read config file {}: File not found.".format(config_file_path))
+        raise OSError("Could not read config file {}: File not found.".format(config_file_path))
     parser = configparser.ConfigParser()
     parser.read(config_file_path)
     return parser

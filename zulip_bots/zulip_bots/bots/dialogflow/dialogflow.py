@@ -35,7 +35,7 @@ def get_bot_result(message_content: str, config: Dict[str, str], sender_id: str)
         logging.exception(str(e))
         return 'Error. {}.'.format(str(e))
 
-class DialogFlowHandler(object):
+class DialogFlowHandler:
     '''
     This plugin allows users to easily add their own
     DialogFlow bots to zulip

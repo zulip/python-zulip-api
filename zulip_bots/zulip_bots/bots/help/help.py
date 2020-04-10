@@ -1,7 +1,7 @@
 # See readme.md for instructions on running this code.
 from typing import Any, Dict
 
-class HelpHandler(object):
+class HelpHandler:
     def usage(self) -> str:
         return '''
             This plugin will give info about Zulip to

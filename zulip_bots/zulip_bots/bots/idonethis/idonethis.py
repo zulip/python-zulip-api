@@ -128,7 +128,7 @@ More information in my help""")
     data = api_create_entry(new_message, team_id)
     return "Great work :thumbs_up:. New entry `{}` created!".format(data['body_formatted'])
 
-class IDoneThisHandler(object):
+class IDoneThisHandler:
     def initialize(self, bot_handler: Any) -> None:
         global api_key, default_team
         self.config_info = bot_handler.get_config_info('idonethis')

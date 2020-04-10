@@ -47,7 +47,7 @@ def zulip_env_vars_are_present() -> bool:
     # missing, we can proceed without a config file.
     return True
 
-class RateLimit(object):
+class RateLimit:
     def __init__(self, message_limit: int, interval_limit: int) -> None:
         self.message_limit = message_limit
         self.interval_limit = interval_limit
@@ -69,7 +69,7 @@ class RateLimit(object):
         sys.exit(1)
 
 
-class StateHandler(object):
+class StateHandler:
     def __init__(self, client: Client) -> None:
         self._client = client
         self.marshal = lambda obj: json.dumps(obj)
@@ -97,13 +97,13 @@ class StateHandler(object):
     def contains(self, key: Text) -> bool:
         return key in self.state_
 
-class BotIdentity(object):
+class BotIdentity:
     def __init__(self, name: str, email: str) -> None:
         self.name = name
         self.email = email
         self.mention = '@**' + name + '**'
 
-class ExternalBotHandler(object):
+class ExternalBotHandler:
     def __init__(
         self,
         client: Client,

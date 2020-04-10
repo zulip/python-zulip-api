@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 import sys
 import os
@@ -42,7 +41,7 @@ def create_pipe_event(to_client: zulip.Client, from_bot: Dict[str, Any],
                 "type": "stream",
                 "to": to_bot["stream"],
                 "subject": subject,
-                "content": "**{0}**: {1}".format(msg["sender_full_name"], msg["content"]),
+                "content": "**{}**: {}".format(msg["sender_full_name"], msg["content"]),
                 "has_attachment": msg.get("has_attachment", False),
                 "has_image": msg.get("has_image", False),
                 "has_link": msg.get("has_link", False)

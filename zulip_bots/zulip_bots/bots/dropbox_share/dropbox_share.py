@@ -4,7 +4,7 @@ import re
 
 URL = "[{name}](https://www.dropbox.com/home{path})"
 
-class DropboxHandler(object):
+class DropboxHandler:
     '''
     This bot allows you to easily share, search and upload files
     between zulip and your dropbox account.
@@ -60,11 +60,11 @@ def get_usage_examples() -> str:
 
 REGEXES = dict(
     command='(ls|mkdir|read|rm|write|search|usage|help)',
-    path='(\S+)',
-    optional_path='(\S*)',
+    path=r'(\S+)',
+    optional_path=r'(\S*)',
     some_text='(.+?)',
-    folder='?(?:--fd (\S+))?',
-    max_results='?(?:--mr (\d+))?'
+    folder=r'?(?:--fd (\S+))?',
+    max_results=r'?(?:--mr (\d+))?'
 )
 
 def get_commands() -> Dict[str, Tuple[Any, List[str]]]:
@@ -137,7 +137,7 @@ def dbx_ls(client: Any, fn: str) -> str:
             files_list += [" - " + URL.format(name=meta.name, path=meta.path_lower)]
 
         msg = '\n'.join(files_list)
-        if msg is '':
+        if msg == '':
             msg = '`No files available`'
 
     except Exception:

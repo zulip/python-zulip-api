@@ -5,7 +5,7 @@ import wit
 import sys
 import importlib.util
 
-class WitaiHandler(object):
+class WitaiHandler:
     def usage(self) -> str:
         return '''
         Wit.ai bot uses pywit API to interact with Wit.ai. In order to use

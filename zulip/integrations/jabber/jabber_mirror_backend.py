@@ -161,7 +161,7 @@ class JabberToZulipBot(ClientXMPP):
 
     def private(self, msg):
         # type: (JabberMessage) -> None
-        if options.mode == 'public' or msg['thread'] == u'\u1FFFE':
+        if options.mode == 'public' or msg['thread'] == '\u1FFFE':
             return
         sender = jid_to_zulip(msg["from"])
         recipient = jid_to_zulip(msg["to"])
@@ -178,7 +178,7 @@ class JabberToZulipBot(ClientXMPP):
 
     def group(self, msg):
         # type: (JabberMessage) -> None
-        if options.mode == 'personal' or msg["thread"] == u'\u1FFFE':
+        if options.mode == 'personal' or msg["thread"] == '\u1FFFE':
             return
 
         subject = msg["subject"]
@@ -212,7 +212,7 @@ class JabberToZulipBot(ClientXMPP):
         else:
             return jid
 
-class ZulipToJabberBot(object):
+class ZulipToJabberBot:
     def __init__(self, zulip_client):
         # type: (Client) -> None
         self.client = zulip_client
@@ -254,7 +254,7 @@ class ZulipToJabberBot(object):
             mto   = jabber_recipient,
             mbody = msg['content'],
             mtype = 'groupchat')
-        outgoing['thread'] = u'\u1FFFE'
+        outgoing['thread'] = '\u1FFFE'
         outgoing.send()
 
     def private_message(self, msg):
@@ -271,7 +271,7 @@ class ZulipToJabberBot(object):
                 mto   = jabber_recipient,
                 mbody = msg['content'],
                 mtype = 'chat')
-            outgoing['thread'] = u'\u1FFFE'
+            outgoing['thread'] = '\u1FFFE'
             outgoing.send()
 
     def process_subscription(self, event):
@@ -415,9 +415,9 @@ option does not affect login credentials.'''.replace("\n", " "))
 
     config = SafeConfigParser()
     try:
-        with open(config_file, 'r') as f:
+        with open(config_file) as f:
             config.readfp(f, config_file)
-    except IOError:
+    except OSError:
         pass
     for option in ("jid", "jabber_password", "conference_domain", "mode", "zulip_email_suffix",
                    "jabber_server_address", "jabber_server_port"):

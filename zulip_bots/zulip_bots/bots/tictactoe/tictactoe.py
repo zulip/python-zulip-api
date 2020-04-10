@@ -9,7 +9,7 @@ from zulip_bots.game_handler import GameAdapter, BadMoveException
 State = List[List[str]]
 
 
-class TicTacToeModel(object):
+class TicTacToeModel:
     smarter = True
     # If smarter is True, the computer will do some extra thinking - it'll be harder for the user.
 
@@ -208,7 +208,7 @@ class TicTacToeModel(object):
         return board
 
 
-class TicTacToeMessageHandler(object):
+class TicTacToeMessageHandler:
     tokens = [':x:', ':o:']
 
     def parse_row(self, row: Tuple[int, int], row_num: int) -> str:
@@ -259,11 +259,11 @@ class ticTacToeHandler(GameAdapter):
         game_name = 'Tic Tac Toe'
         bot_name = 'tictactoe'
         move_help_message = '* To move during a game, type\n`move <number>` or `<number>`'
-        move_regex = '(move (\d)$)|((\d)$)'
+        move_regex = r'(move (\d)$)|((\d)$)'
         model = TicTacToeModel
         gameMessageHandler = TicTacToeMessageHandler
         rules = '''Try to get three in horizontal or vertical or diagonal row to win the game.'''
-        super(ticTacToeHandler, self).__init__(
+        super().__init__(
             game_name,
             bot_name,
             move_help_message,

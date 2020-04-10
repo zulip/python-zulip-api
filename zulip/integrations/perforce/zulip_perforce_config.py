@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from typing import Dict, Optional, Text
 
 # Change these values to configure authentication for the plugin

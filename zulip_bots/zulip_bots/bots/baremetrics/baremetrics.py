@@ -3,7 +3,7 @@
 from typing import Any, List, Dict
 import requests
 
-class BaremetricsHandler(object):
+class BaremetricsHandler:
     def initialize(self, bot_handler: Any) -> None:
         self.config_info = bot_handler.get_config_info('baremetrics')
         self.api_key = self.config_info['api_key']

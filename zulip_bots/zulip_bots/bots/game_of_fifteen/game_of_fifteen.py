@@ -4,7 +4,7 @@ import random
 from typing import List, Any, Tuple, Dict
 from zulip_bots.game_handler import GameAdapter, BadMoveException
 
-class GameOfFifteenModel(object):
+class GameOfFifteenModel:
 
     final_board = [[0, 1, 2],
                    [3, 4, 5],
@@ -84,7 +84,7 @@ class GameOfFifteenModel(object):
             if m == moves - 1:
                 return board
 
-class GameOfFifteenMessageHandler(object):
+class GameOfFifteenMessageHandler:
 
     tiles = {
         '0': ':grey_question:',
@@ -127,14 +127,14 @@ class GameOfFifteenBotHandler(GameAdapter):
         bot_name = 'Game of Fifteen'
         move_help_message = '* To make your move during a game, type\n' \
                             '```move <tile1> <tile2> ...```'
-        move_regex = 'move [\d{1}\s]+$'
+        move_regex = r'move [\d{1}\s]+$'
         model = GameOfFifteenModel
         gameMessageHandler = GameOfFifteenMessageHandler
         rules = '''Arrange the board’s tiles from smallest to largest, left to right,
                   top to bottom, and tiles adjacent to :grey_question: can only be moved.
                   Final configuration will have :grey_question: in top left.'''
 
-        super(GameOfFifteenBotHandler, self).__init__(
+        super().__init__(
             game_name,
             bot_name,
             move_help_message,

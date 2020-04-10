@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Change these values to configure authentication for your codebase account
 # Note that this is the Codebase API Username, found in the Settings page
 # for your account

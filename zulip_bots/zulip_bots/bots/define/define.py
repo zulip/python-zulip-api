@@ -7,7 +7,7 @@ import string
 
 from typing import Any, Dict
 
-class DefineHandler(object):
+class DefineHandler:
     '''
     This plugin define a word that the user inputs. It
     looks for messages starting with '@mention-bot'.

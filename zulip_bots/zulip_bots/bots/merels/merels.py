@@ -7,7 +7,7 @@ from zulip_bots.bots.merels.libraries import (
 )
 from zulip_bots.game_handler import GameAdapter, SamePlayerMove, GameInstance
 
-class Storage(object):
+class Storage:
     data = {}
 
     def __init__(self, topic_name):
@@ -19,7 +19,7 @@ class Storage(object):
     def get(self, topic_name):
         return self.data[topic_name]
 
-class MerelsModel(object):
+class MerelsModel:
 
     def __init__(self, board: Any=None) -> None:
         self.topic = "merels"
@@ -54,7 +54,7 @@ class MerelsModel(object):
             raise SamePlayerMove(same_player_move)
         return self.current_board
 
-class MerelsMessageHandler(object):
+class MerelsMessageHandler:
     tokens = [':o_button:', ':cross_mark_button:']
 
     def parse_board(self, board: Any) -> str:
@@ -90,7 +90,7 @@ class MerelsHandler(GameAdapter):
         model = MerelsModel
         rules = game.getInfo()
         gameMessageHandler = MerelsMessageHandler
-        super(MerelsHandler, self).__init__(
+        super().__init__(
             game_name,
             bot_name,
             move_help_message,

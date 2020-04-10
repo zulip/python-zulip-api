@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 from typing import Dict, Text, Optional
 
@@ -28,7 +27,7 @@ def commit_notice_destination(repo, branch, commit):
     # type: (Text, Text, Text) -> Optional[Dict[Text, Text]]
     if branch in ["master", "test-post-receive"]:
         return dict(stream  = STREAM_NAME,
-                    subject = u"%s" % (branch,))
+                    subject = "%s" % (branch,))
 
     # Return None for cases where you don't want a notice sent
     return None

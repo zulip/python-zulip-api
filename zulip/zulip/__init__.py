@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import json
 import requests
 import time
@@ -34,7 +32,7 @@ requests_json_is_function = callable(requests.Response.json)
 
 API_VERSTRING = "v1/"
 
-class CountingBackoff(object):
+class CountingBackoff:
     def __init__(self, maximum_retries=10, timeout_success_equivalent=None, delay_cap=90.0):
         # type: (int, Optional[float], float) -> None
         self.number_of_retries = 0
@@ -70,7 +68,7 @@ class CountingBackoff(object):
 class RandomExponentialBackoff(CountingBackoff):
     def fail(self):
         # type: () -> None
-        super(RandomExponentialBackoff, self).fail()
+        super().fail()
         # Exponential growth with ratio sqrt(2); compute random delay
         # between x and 2x where x is growing exponentially
         delay_scale = int(2 ** (self.number_of_retries / 2.0 - 1)) + 1
@@ -278,7 +276,7 @@ class MissingURLError(ZulipError):
 class UnrecoverableNetworkError(ZulipError):
     pass
 
-class Client(object):
+class Client:
     def __init__(self, email=None, api_key=None, config_file=None,
                  verbose=False, retry_on_errors=True,
                  site=None, client=None,
@@ -324,7 +322,7 @@ class Client(object):
 
         if config_file is not None and os.path.exists(config_file):
             config = SafeConfigParser()
-            with open(config_file, 'r') as f:
+            with open(config_file) as f:
                 config.readfp(f, config_file)
             if api_key is None:
                 api_key = config.get("api", "key")
@@ -438,7 +436,7 @@ class Client(object):
         try:
             vendor = platform.system()
             vendor_version = platform.release()
-        except IOError:
+        except OSError:
             # If the calling process is handling SIGCHLD, platform.system() can
             # fail with an IOError.  See http://bugs.python.org/issue9127
             pass
@@ -1475,7 +1473,7 @@ class Client(object):
             request=request
         )
 
-class ZulipStream(object):
+class ZulipStream:
     """
     A Zulip stream-like object
     """
