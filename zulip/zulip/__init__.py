@@ -1110,6 +1110,20 @@ class Client(object):
             method='DELETE',
         )
 
+    def reactivate_user_by_id(self, user_id):
+        # type: (int) -> Dict[str, Any]
+
+        '''
+            Example usage:
+
+            >>> client.reactivate_user_by_id(8)
+            {'result': 'success', 'msg': ''}
+        '''
+        return self.call_endpoint(
+            url='users/{}/reactivate'.format(user_id),
+            method='POST',
+        )
+
     def update_user_by_id(self, user_id, **request):
         # type: (int, **Any) -> Dict[str, Any]
 
