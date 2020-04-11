@@ -1096,6 +1096,21 @@ class Client:
             method='DELETE',
         )
 
+    def add_default_stream(self, stream_id):
+        # type: (int) -> Dict[str, Any]
+
+        '''
+            Example usage:
+
+            >>> client.add_default_stream(5)
+            {'result': 'success', 'msg': ''}
+        '''
+        return self.call_endpoint(
+            url='default_streams',
+            method='POST',
+            request={'stream_id': stream_id},
+        )
+
     def get_user_by_id(self, user_id, **request):
         # type: (int, **Any) -> Dict[str, Any]
 
