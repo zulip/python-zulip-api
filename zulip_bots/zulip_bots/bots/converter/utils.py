@@ -42,7 +42,14 @@ UNITS = {'bit': [0, 1, 'bit'],
          'square-mile': [0, 2589988.110336, 'square-meter'],
          'are': [0, 100, 'square-meter'],
          'hectare': [0, 10000, 'square-meter'],
-         'acre': [0, 4046.8564224, 'square-meter']}
+         'acre': [0, 4046.8564224, 'square-meter'],
+         'second': [0, 1, 'second'],
+         'minute': [0, 60, 'second'],
+         'hour': [0, 3600, 'second'],
+         'psi': [0, 1, 'psi'],
+         'bar': [0, 14.5, 'psi'],
+         'radian': [0, 1, 'radian'],
+         'degree': [0, 0.0174533, 'radian']}
 
 PREFIXES = {'atto': -18,
             'femto': -15,
