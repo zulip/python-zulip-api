@@ -9,6 +9,9 @@ import sys
 
 import itertools
 
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
 def version():
     # type: () -> str
     version_py = os.path.join(os.path.dirname(__file__), "zulip", "__init__.py")
@@ -30,6 +33,8 @@ package_info = dict(
     name='zulip',
     version=version(),
     description='Bindings for the Zulip message API',
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     author='Zulip Open Source Project',
     author_email='zulip-devel@googlegroups.com',
     classifiers=[

@@ -7,11 +7,16 @@ if False:
 
 ZULIP_BOTSERVER_VERSION = "0.6.4"
 
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
 # We should be installable with either setuptools or distutils.
 package_info = dict(
     name='zulip_botserver',
     version=ZULIP_BOTSERVER_VERSION,
     description='Zulip\'s Flask server for running bots',
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     author='Zulip Open Source Project',
     author_email='zulip-devel@googlegroups.com',
     classifiers=[
