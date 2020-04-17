@@ -18,7 +18,7 @@ package_info = dict(
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
+        'License :: OSI Approved :: Apache Software License',
         'Topic :: Communications :: Chat',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',
