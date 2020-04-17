@@ -23,11 +23,16 @@ if not IS_PYPA_PACKAGE:
     package_data[''].append('fixtures/*.json')
     package_data[''].append('logo.*')
 
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
 # We should be installable with either setuptools or distutils.
 package_info = dict(
     name='zulip_bots',
     version=ZULIP_BOTS_VERSION,
     description='Zulip\'s Bot framework',
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     author='Zulip Open Source Project',
     author_email='zulip-devel@googlegroups.com',
     classifiers=[
