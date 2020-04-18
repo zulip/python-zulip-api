@@ -54,7 +54,7 @@ def beat(message, topic_name, merels_storage):
              we want to keep the turn of the same played,
              an empty string otherwise.
     """
-    merels = database.MerelsStorage(topic_name, merels_storage)
+    database.MerelsStorage(topic_name, merels_storage)
     match = COMMAND_PATTERN.match(message)
     same_player_move = ""  # message indicating move of the same player
 

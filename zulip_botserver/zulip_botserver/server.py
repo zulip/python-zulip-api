@@ -155,7 +155,7 @@ def handle_bot() -> str:
         raise Unauthorized("Request token does not match token found for bot {} in the "
                            "Botserver configuration file. Do the outgoing webhooks in "
                            "Zulip point to the right Botserver?".format(event['bot_email']))
-    lib_module = app.config.get("BOTS_LIB_MODULES", {})[bot]
+    app.config.get("BOTS_LIB_MODULES", {})[bot]
     bot_handler = app.config.get("BOT_HANDLERS", {})[bot]
     message_handler = app.config.get("MESSAGE_HANDLERS", {})[bot]
     is_mentioned = event['trigger'] == "mention"

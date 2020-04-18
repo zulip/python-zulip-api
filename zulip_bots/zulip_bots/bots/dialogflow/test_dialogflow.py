@@ -28,7 +28,7 @@ class MockTextRequest():
 def mock_dialogflow(test_name: str, bot_name: str) -> Iterator[None]:
     response_data = read_bot_fixture_data(bot_name, test_name)
     try:
-        df_request = response_data['request']
+        response_data['request']
         df_response = response_data['response']
     except KeyError:
         print("ERROR: 'request' or 'response' field not found in fixture.")

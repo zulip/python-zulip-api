@@ -451,7 +451,7 @@ option does not affect login credentials.'''.replace("\n", " "))
         logging.info("Connecting to Zulip.")
         zulipToJabber.client.call_on_each_event(zulipToJabber.process_event,
                                                 event_types=event_types)
-    except BaseException as e:
+    except BaseException:
         logging.exception("Exception in main loop")
         xmpp.abort()
         sys.exit(1)

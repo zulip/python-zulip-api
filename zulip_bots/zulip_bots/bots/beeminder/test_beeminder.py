@@ -67,8 +67,8 @@ at syntax by: @mention-botname help"
 right now.\nPlease try again later')
 
     def test_invalid_when_handle_message(self) -> None:
-        bot = get_bot_message_handler(self.bot_name)
-        bot_handler = StubBotHandler()
+        get_bot_message_handler(self.bot_name)
+        StubBotHandler()
 
         with self.mock_config_info({'auth_token': 'someInvalidKey',
                                     'username': 'aaron',
