@@ -33,8 +33,8 @@ class TestGiphyBot(BotTestCase, DefaultTests):
             )
 
     def test_invalid_config(self) -> None:
-        bot = get_bot_message_handler(self.bot_name)
-        bot_handler = StubBotHandler()
+        get_bot_message_handler(self.bot_name)
+        StubBotHandler()
         with self.mock_http_conversation('test_403'):
             self.validate_invalid_config({'key': '12345678'},
                                          "This is likely due to an invalid key.\n")
@@ -45,8 +45,8 @@ class TestGiphyBot(BotTestCase, DefaultTests):
             self.validate_invalid_config({'key': '12345678'}, str(error))
 
     def test_valid_config(self) -> None:
-        bot = get_bot_message_handler(self.bot_name)
-        bot_handler = StubBotHandler()
+        get_bot_message_handler(self.bot_name)
+        StubBotHandler()
         with self.mock_http_conversation('test_normal'):
             self.validate_valid_config({'key': '12345678'})
 

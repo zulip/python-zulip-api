@@ -53,8 +53,8 @@ class TestYoutubeBot(BotTestCase, DefaultTests):
                     bot.initialize(bot_handler)
 
     def test_multiple(self) -> None:
-        bot = get_bot_message_handler(self.bot_name)
-        bot_handler = StubBotHandler()
+        get_bot_message_handler(self.bot_name)
+        StubBotHandler()
 
         bot_response = 'Here is what I found for `marvel` : ' \
                        '\n * Marvel Studios\' Avengers: Infinity War Official Trailer - [Watch now](https://www.youtube.com/watch/6ZfuNTqbHE8)' \

@@ -43,7 +43,7 @@ def matrix_login(matrix_client: Any, matrix_config: Dict[str, Any]) -> None:
             raise Bridge_FatalMatrixException("Bad username or password.")
         else:
             raise Bridge_FatalMatrixException("Check if your server details are correct.")
-    except MissingSchema as exception:
+    except MissingSchema:
         raise Bridge_FatalMatrixException("Bad URL format.")
 
 def matrix_join_room(matrix_client: Any, matrix_config: Dict[str, Any]) -> Any:
@@ -304,7 +304,7 @@ def main() -> None:
             sys.exit("Zulip bridge error: {}".format(exception))
         except zulip.ZulipError as exception:
             sys.exit("Zulip error: {}".format(exception))
-        except Exception as e:
+        except Exception:
             traceback.print_exc()
         backoff.fail()
 

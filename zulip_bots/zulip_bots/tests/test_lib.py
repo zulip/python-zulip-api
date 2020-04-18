@@ -132,7 +132,7 @@ class LibTest(TestCase):
 
     def test_content_and_full_content(self):
         client = FakeClient()
-        profile = client.get_profile()
+        client.get_profile()
         handler = ExternalBotHandler(
             client=client,
             root_dir=None,

@@ -121,5 +121,5 @@ if __name__ == "__main__":
     finally:
         try:
             os.remove(lock_path)
-        except OSError as IOError:
+        except OSError:
             pass

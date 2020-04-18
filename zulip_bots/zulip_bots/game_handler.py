@@ -637,7 +637,7 @@ To move subjects, send your message again, otherwise join the game using the lin
     def get_user_cache(self) -> Dict[str, Any]:
         try:
             user_cache_str = self.bot_handler.storage.get('users')
-        except KeyError as e:
+        except KeyError:
             return {}
         self.user_cache = json.loads(user_cache_str)
         return self.user_cache
@@ -850,7 +850,7 @@ class GameInstance:
 
     def make_move(self, content: str, is_computer: bool) -> None:
         try:
-            board = self.model.make_move(content, self.turn, is_computer)
+            self.model.make_move(content, self.turn, is_computer)
         # Keep the turn of the same player
         except SamePlayerMove as smp:
             self.same_player_turn(content, smp.message, is_computer)
