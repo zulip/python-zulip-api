@@ -5,7 +5,6 @@ import argparse
 from zulint.command import add_default_linter_arguments, LinterConfig
 
 from custom_check import python_rules, non_py_rules
-from pep8 import check_pep8
 
 EXCLUDED_FILES = [
     # This is an external file that doesn't comply with our codestyle
@@ -24,6 +23,8 @@ def run() -> None:
 
     linter_config.external_linter('mypy', ['tools/run-mypy'], ['py'], pass_targets=False,
                                   description="Static type checker for Python (config: mypy.ini)")
+    linter_config.external_linter('flake8', ['flake8'], ['py'],
+                                  description="Standard Python linter (config: .flake8)")
 
     @linter_config.lint
     def custom_py() -> int:
@@ -37,12 +38,6 @@ def run() -> None:
         failed = False
         for rule in non_py_rules:
             failed = failed or rule.check(by_lang, verbose=args.verbose)
-        return 1 if failed else 0
-
-    @linter_config.lint
-    def pep8() -> int:
-        """Standard Python style linter on 50% of files (config: tools/linter_lib/pep8.py)"""
-        failed = check_pep8(by_lang['py'])
         return 1 if failed else 0
 
     linter_config.do_lint()
