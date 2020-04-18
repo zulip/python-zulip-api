@@ -32,12 +32,12 @@ class LinkShortenerHandler:
 
     def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
         REGEX_STR = (
-            '('
+            r'('
             r'(?:http|https):\/\/'  # This allows for the HTTP or HTTPS
                                     # protocol.
-            '[^"<>\\{\\}|\\^~[\\]` ]+'  # This allows for any character except
-                                        # for certain non-URL-safe ones.
-            ')'
+            r'[^"<>\{\}|\^~[\]` ]+'  # This allows for any character except
+                                     # for certain non-URL-safe ones.
+            r')'
         )
 
         HELP_STR = (

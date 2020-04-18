@@ -22,7 +22,7 @@ markdown_whitespace_rules = list([rule for rule in whitespace_rules if rule['pat
     {'pattern': r'((?<!\s)\s$)|(\s\s\s+$)|(^\s+$)',
      'strip': '\n',
      'description': 'Fix trailing whitespace'},
-    {'pattern': '^#+[A-Za-z0-9]',
+    {'pattern': r'^#+[A-Za-z0-9]',
      'strip': '\n',
      'description': 'Missing space after # in heading'},
 ]  # type: Rule
@@ -35,7 +35,7 @@ python_rules = RuleList(
         {'pattern': r"'.*'%\([a-z_].*\)?$",
          'description': 'Missing space around "%"'},
         # This rule is constructed with + to avoid triggering on itself
-        {'pattern': " =" + '[^ =>~"]',
+        {'pattern': r" =" + r'[^ =>~"]',
          'description': 'Missing whitespace after "="'},
         {'pattern': r'":\w[^"]*$',
          'description': 'Missing whitespace after ":"'},
@@ -44,25 +44,25 @@ python_rules = RuleList(
         {'pattern': r"^\s+[#]\w",
          'strip': '\n',
          'description': 'Missing whitespace after "#"'},
-        {'pattern': "assertEquals[(]",
+        {'pattern': r"assertEquals[(]",
          'description': 'Use assertEqual, not assertEquals (which is deprecated).'},
-        {'pattern': 'self: Any',
+        {'pattern': r'self: Any',
          'description': 'you can omit Any annotation for self',
          'good_lines': ['def foo (self):'],
          'bad_lines': ['def foo(self: Any):']},
-        {'pattern': "== None",
+        {'pattern': r"== None",
          'description': 'Use `is None` to check whether something is None'},
-        {'pattern': "type:[(]",
+        {'pattern': r"type:[(]",
          'description': 'Missing whitespace after ":" in type annotation'},
-        {'pattern': "# type [(]",
+        {'pattern': r"# type [(]",
          'description': 'Missing : after type in type annotation'},
-        {'pattern': "#type",
+        {'pattern': r"#type",
          'description': 'Missing whitespace after "#" in type annotation'},
-        {'pattern': 'if[(]',
+        {'pattern': r'if[(]',
          'description': 'Missing space between if and ('},
-        {'pattern': ", [)]",
+        {'pattern': r", [)]",
          'description': 'Unnecessary whitespace between "," and ")"'},
-        {'pattern': "%  [(]",
+        {'pattern': r"%  [(]",
          'description': 'Unnecessary whitespace between "%" and "("'},
         # This next check could have false positives, but it seems pretty
         # rare; if we find any, they can be added to the exclude list for
@@ -71,17 +71,17 @@ python_rules = RuleList(
          'description': 'Used % comprehension without a tuple'},
         {'pattern': r'.*%s.* % \([a-zA-Z0-9_.]*\)$',
          'description': 'Used % comprehension without a tuple'},
-        {'pattern': '__future__',
+        {'pattern': r'__future__',
          'include_only': {'zulip_bots/zulip_bots/bots/'},
          'description': 'Bots no longer need __future__ imports.'},
-        {'pattern': '#!/usr/bin/env python$',
+        {'pattern': r'#!/usr/bin/env python$',
          'include_only': {'zulip_bots/'},
          'description': 'Python shebangs must be python3'},
         {'pattern': r'(^|\s)open\s*\(',
          'description': 'open() should not be used in Zulip\'s bots. Use functions'
                         ' provided by the bots framework to access the filesystem.',
          'include_only': {'zulip_bots/zulip_bots/bots/'}},
-        {'pattern': 'pprint',
+        {'pattern': r'pprint',
          'description': 'Used pprint, which is most likely a debugging leftover. For user output, use print().'},
         {'pattern': r'\(BotTestCase\)',
          'bad_lines': ['class TestSomeBot(BotTestCase):'],
@@ -97,7 +97,7 @@ python_rules = RuleList(
 bash_rules = RuleList(
     langs=['sh'],
     rules=[
-        {'pattern': '#!.*sh [-xe]',
+        {'pattern': r'#!.*sh [-xe]',
          'description': 'Fix shebang line with proper call to /usr/bin/env for Bash path, change -x|-e switches'
                         ' to set -x|set -e'},
     ] + whitespace_rules[0:1],
@@ -117,15 +117,15 @@ json_rules = RuleList(
 )
 
 prose_style_rules = [
-    {'pattern': '[^\\/\\#\\-\"]([jJ]avascript)',  # exclude usage in hrefs/divs
+    {'pattern': r'[^\/\#\-"]([jJ]avascript)',  # exclude usage in hrefs/divs
      'description': "javascript should be spelled JavaScript"},
-    {'pattern': '[^\\/\\-\\.\"\'\\_\\=\\>]([gG]ithub)[^\\.\\-\\_\"\\<]',  # exclude usage in hrefs/divs
+    {'pattern': r'''[^\/\-\."'\_\=\>]([gG]ithub)[^\.\-\_"\<]''',  # exclude usage in hrefs/divs
      'description': "github should be spelled GitHub"},
-    {'pattern': '[oO]rganisation',  # exclude usage in hrefs/divs
+    {'pattern': r'[oO]rganisation',  # exclude usage in hrefs/divs
      'description': "Organization is spelled with a z"},
-    {'pattern': '!!! warning',
+    {'pattern': r'!!! warning',
      'description': "!!! warning is invalid; it's spelled '!!! warn'"},
-    {'pattern': '[^-_]botserver(?!rc)|bot server',
+    {'pattern': r'[^-_]botserver(?!rc)|bot server',
      'description': "Use Botserver instead of botserver or Botserver."},
 ]  # type: Rule
 
