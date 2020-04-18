@@ -91,7 +91,7 @@ def beat(message, topic_name, merels_storage):
             return unknown_command()
 
         if mechanics.get_take_status(topic_name, merels_storage) == 1:
-                same_player_move = "Take is required to proceed.\n"
+            same_player_move = "Take is required to proceed.\n"
         return responses, same_player_move
 
     elif match.group(4) is not None and match.group(5) is not None:

@@ -16,11 +16,11 @@ class TestGoogleTranslateBot(BotTestCase, DefaultTests):
     def _test(self, message, response, http_config_fixture, http_fixture=None):
         with self.mock_config_info({'key': 'abcdefg'}), \
                 self.mock_http_conversation(http_config_fixture):
-                    if http_fixture:
-                        with self.mock_http_conversation(http_fixture):
-                            self.verify_reply(message, response)
-                    else:
-                            self.verify_reply(message, response)
+            if http_fixture:
+                with self.mock_http_conversation(http_fixture):
+                    self.verify_reply(message, response)
+            else:
+                self.verify_reply(message, response)
 
     def test_normal(self):
         self._test('"hello" de', 'Hallo (from Foo Test User)', 'test_languages', 'test_normal')
@@ -76,6 +76,6 @@ class TestGoogleTranslateBot(BotTestCase, DefaultTests):
     def test_connection_error(self):
         with patch('requests.post', side_effect=ConnectionError()), \
                 patch('logging.warning'):
-                    self._test('"test" en',
-                               'Could not connect to Google Translate. .',
-                               'test_languages')
+            self._test('"test" en',
+                       'Could not connect to Google Translate. .',
+                       'test_languages')

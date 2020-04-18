@@ -292,9 +292,9 @@ def get_rooms(zulipToJabber: ZulipToJabberBot) -> List[str]:
 
     rooms = []  # type: List[str]
     for stream_info in stream_infos:
-            stream = stream_info['name']
-            if stream.endswith("/xmpp"):
-                rooms.append(stream_to_room(stream))
+        stream = stream_info['name']
+        if stream.endswith("/xmpp"):
+            rooms.append(stream_to_room(stream))
     return rooms
 
 def config_error(msg: str) -> None:

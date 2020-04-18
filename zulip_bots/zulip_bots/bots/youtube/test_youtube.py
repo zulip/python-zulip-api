@@ -23,7 +23,7 @@ class TestYoutubeBot(BotTestCase, DefaultTests):
     def test_bot_responds_to_empty_message(self) -> None:
         with self.mock_config_info(self.normal_config), \
                 self.mock_http_conversation('test_keyok'):
-                    self.verify_reply('', self.help_content)
+            self.verify_reply('', self.help_content)
 
     def test_single(self) -> None:
         bot_response = 'Here is what I found for `funny cats` : \n'\
@@ -32,7 +32,7 @@ class TestYoutubeBot(BotTestCase, DefaultTests):
 
         with self.mock_config_info(self.normal_config), \
                 self.mock_http_conversation('test_single'):
-                    self.verify_reply('funny cats', bot_response)
+            self.verify_reply('funny cats', bot_response)
 
     def test_invalid_key(self) -> None:
         bot = get_bot_message_handler(self.bot_name)
@@ -41,7 +41,7 @@ class TestYoutubeBot(BotTestCase, DefaultTests):
         with self.mock_config_info({'key': 'somethinginvalid', 'number_of_results': '5', 'video_region': 'US'}), \
                 self.mock_http_conversation('test_invalid_key'), \
                 self.assertRaises(bot_handler.BotQuitException):
-                    bot.initialize(bot_handler)
+            bot.initialize(bot_handler)
 
     def test_unknown_error(self) -> None:
         bot = get_bot_message_handler(self.bot_name)
@@ -50,7 +50,7 @@ class TestYoutubeBot(BotTestCase, DefaultTests):
         with self.mock_config_info(self.normal_config), \
                 self.mock_http_conversation('test_unknown_error'), \
                 self.assertRaises(HTTPError):
-                    bot.initialize(bot_handler)
+            bot.initialize(bot_handler)
 
     def test_multiple(self) -> None:
         get_bot_message_handler(self.bot_name)
@@ -65,7 +65,7 @@ class TestYoutubeBot(BotTestCase, DefaultTests):
 
         with self.mock_config_info(self.normal_config), \
                 self.mock_http_conversation('test_multiple'):
-                    self.verify_reply('list marvel', bot_response)
+            self.verify_reply('list marvel', bot_response)
 
     def test_noresult(self) -> None:
         bot_response = 'Oops ! Sorry I couldn\'t find any video for  `somethingrandomwithnoresult` ' \
@@ -79,10 +79,10 @@ class TestYoutubeBot(BotTestCase, DefaultTests):
         help_content = self.help_content
         with self.mock_config_info(self.normal_config), \
                 self.mock_http_conversation('test_keyok'):
-                    self.verify_reply('help', help_content)
-                    self.verify_reply('list', help_content)
-                    self.verify_reply('help list', help_content)
-                    self.verify_reply('top', help_content)
+            self.verify_reply('help', help_content)
+            self.verify_reply('list', help_content)
+            self.verify_reply('help list', help_content)
+            self.verify_reply('top', help_content)
 
     def test_connection_error(self) -> None:
         with self.mock_config_info(self.normal_config), \
