@@ -19,8 +19,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 import zulip_trac_config as config
 VERSION = "0.9"
 
-if False:
-    from typing import Any, Dict
+from typing import Any, Dict
 
 if config.ZULIP_API_PATH is not None:
     sys.path.append(config.ZULIP_API_PATH)

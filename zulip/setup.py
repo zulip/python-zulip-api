@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
-if False:
-    from typing import Any, Dict, Generator, List, Tuple
+from typing import Any, Dict, Generator, List, Tuple
 
 import os
 import sys

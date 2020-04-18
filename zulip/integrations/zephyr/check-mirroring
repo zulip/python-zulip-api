@@ -10,8 +10,7 @@ import hashlib
 import zephyr
 import zulip
 
-if False:
-    from typing import Any, Dict, List, Set, Tuple
+from typing import Any, Dict, List, Set, Tuple
 
 parser = optparse.OptionParser()
 parser.add_option('--verbose',
