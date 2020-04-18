@@ -32,7 +32,7 @@ class MerelsModel:
             return 'current turn'
         return ''
 
-    def contains_winning_move(self, board: Any) ->bool:
+    def contains_winning_move(self, board: Any) -> bool:
         merels = database.MerelsStorage(self.topic, self.storage)
         data = game_data.GameData(merels.get_game_data(self.topic))
 

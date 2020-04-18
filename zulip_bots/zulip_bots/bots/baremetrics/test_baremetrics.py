@@ -74,7 +74,7 @@ class TestBaremetricsBot(BotTestCase, DefaultTests):
             with self.mock_http_conversation('list_subscriptions'):
                 self.verify_reply('list-subscriptions TEST', r)
 
-    def test_exception_when_api_key_is_invalid(self)-> None:
+    def test_exception_when_api_key_is_invalid(self) -> None:
         bot_test_instance = BaremetricsHandler()
 
         with self.mock_config_info({'api_key': 'TEST'}):
