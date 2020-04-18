@@ -11,12 +11,17 @@ import subprocess
 import tempfile
 import traceback
 
+# Use the Zulip virtualenv if available
+sys.path.append("/home/zulip/deployments/current")
 try:
-    # Use the Zulip virtualenv if available
-    sys.path.append("/home/zulip/deployments/current")
-    import scripts.lib.setup_path_on_import
+    from scripts.lib.setup_path import setup_path
+    setup_path()
 except ImportError:
-    pass
+    try:
+        import scripts.lib.setup_path_on_import
+        scripts.lib.setup_path_on_import  # Suppress unused import warning
+    except ImportError:
+        pass
 
 import json
 
