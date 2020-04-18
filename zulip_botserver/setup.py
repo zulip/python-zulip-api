@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
-if False:
-    from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional
 
 ZULIP_BOTSERVER_VERSION = "0.6.4"
 
