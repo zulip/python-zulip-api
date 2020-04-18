@@ -1,3 +1,5 @@
+from typing import Any, Dict, List
+
 link_query = 'SELECT {} FROM {} WHERE Id=\'{}\''
 default_query = 'SELECT {} FROM {} WHERE Name LIKE \'%{}%\' LIMIT {}'
 
