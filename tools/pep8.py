@@ -8,11 +8,9 @@ from zulint.printer import print_err, colors
 
 from typing import List
 
-def check_pep8(files):
-    # type: (List[str]) -> bool
+def check_pep8(files: List[str]) -> bool:
 
-    def run_pycodestyle(files, ignored_rules):
-        # type: (List[str], List[str]) -> bool
+    def run_pycodestyle(files: List[str], ignored_rules: List[str]) -> bool:
         failed = False
         color = next(colors)
         pep8 = subprocess.Popen(

@@ -31,8 +31,7 @@ from typing import List
 
 temp_dir = "/var/tmp/" if os.name == "posix" else tempfile.gettempdir()
 
-def mkdir_p(path):
-    # type: (str) -> None
+def mkdir_p(path: str) -> None:
     # Python doesn't have an analog to `mkdir -p` < Python 3.2.
     try:
         os.makedirs(path)
@@ -42,8 +41,7 @@ def mkdir_p(path):
         else:
             raise
 
-def send_log_zulip(file_name, count, lines, extra=""):
-    # type: (str, int, List[str], str) -> None
+def send_log_zulip(file_name: str, count: int, lines: List[str], extra: str = "") -> None:
     content = "%s new errors%s:\n```\n%s\n```" % (count, extra, "\n".join(lines))
     zulip_client.send_message({
         "type": "stream",
@@ -52,8 +50,7 @@ def send_log_zulip(file_name, count, lines, extra=""):
         "content": content,
     })
 
-def process_lines(raw_lines, file_name):
-    # type: (List[str], str) -> None
+def process_lines(raw_lines: List[str], file_name: str) -> None:
     lines = []
     for line in raw_lines:
         # Add any filtering or modification code here
@@ -68,8 +65,7 @@ def process_lines(raw_lines, file_name):
     else:
         send_log_zulip(file_name, len(lines), lines)
 
-def process_logs():
-    # type: () -> None
+def process_logs() -> None:
     data_file_path = os.path.join(temp_dir, "log2zulip.state")
     mkdir_p(os.path.dirname(data_file_path))
     if not os.path.exists(data_file_path):

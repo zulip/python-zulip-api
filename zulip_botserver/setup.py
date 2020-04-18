@@ -59,8 +59,7 @@ except ImportError:
     from importlib import import_module
 
     # Manual dependency check
-    def check_dependency_manually(module_name, version=None):
-        # type: (str, Optional[str]) -> None
+    def check_dependency_manually(module_name: str, version: Optional[str] = None) -> None:
         try:
             module = import_module(module_name)  # type: Any
             if version is not None:

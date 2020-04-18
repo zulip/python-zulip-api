@@ -26,8 +26,7 @@ CURRENT_STATE = States.Startup
 
 logger = cast(logging.Logger, None)  # type: logging.Logger  # FIXME cast should not be needed?
 
-def to_zulip_username(zephyr_username):
-    # type: (str) -> str
+def to_zulip_username(zephyr_username: str) -> str:
     if "@" in zephyr_username:
         (user, realm) = zephyr_username.split("@")
     else:
@@ -39,8 +38,7 @@ def to_zulip_username(zephyr_username):
         return user.lower() + "@mit.edu"
     return user.lower() + "|" + realm.upper() + "@mit.edu"
 
-def to_zephyr_username(zulip_username):
-    # type: (str) -> str
+def to_zephyr_username(zulip_username: str) -> str:
     (user, realm) = zulip_username.split("@")
     if "|" not in user:
         # Hack to make ctl's fake username setup work :)
@@ -62,8 +60,7 @@ def to_zephyr_username(zulip_username):
 # characters (our assumed minimum linewrapping threshold for Zephyr)
 # or (3) the first word of the next line is longer than this entire
 # line.
-def different_paragraph(line, next_line):
-    # type: (str, str) -> bool
+def different_paragraph(line: str, next_line: str) -> bool:
     words = next_line.split()
     return (len(line + " " + words[0]) < len(next_line) * 0.8 or
             len(line + " " + words[0]) < 50 or
@@ -71,8 +68,7 @@ def different_paragraph(line, next_line):
 
 # Linewrapping algorithm based on:
 # http://gcbenison.wordpress.com/2011/07/03/a-program-to-intelligently-remove-carriage-returns-so-you-can-paste-text-without-having-it-look-awful/ #ignorelongline
-def unwrap_lines(body):
-    # type: (str) -> str
+def unwrap_lines(body: str) -> str:
     lines = body.split("\n")
     result = ""
     previous_line = lines[0]
@@ -95,8 +91,7 @@ def unwrap_lines(body):
     result += previous_line
     return result
 
-def send_zulip(zeph):
-    # type: (Dict[str, str]) -> Dict[str, str]
+def send_zulip(zeph: Dict[str, str]) -> Dict[str, str]:
     message = {}
     if options.forward_class_messages:
         message["forged"] = "yes"
@@ -128,8 +123,7 @@ def send_zulip(zeph):
 
     return zulip_client.send_message(message)
 
-def send_error_zulip(error_msg):
-    # type: (str) -> None
+def send_error_zulip(error_msg: str) -> None:
     message = {"type": "private",
                "sender": zulip_account_email,
                "to": zulip_account_email,
@@ -138,8 +132,7 @@ def send_error_zulip(error_msg):
     zulip_client.send_message(message)
 
 current_zephyr_subs = set()
-def zephyr_bulk_subscribe(subs):
-    # type: (List[Tuple[str, str, str]]) -> None
+def zephyr_bulk_subscribe(subs: List[Tuple[str, str, str]]) -> None:
     try:
         zephyr._z.subAll(subs)
     except OSError:
@@ -174,8 +167,7 @@ def zephyr_bulk_subscribe(subs):
         else:
             current_zephyr_subs.add(cls)
 
-def update_subscriptions():
-    # type: () -> None
+def update_subscriptions() -> None:
     try:
         f = open(options.stream_file_path)
         public_streams = json.loads(f.read())
@@ -198,8 +190,7 @@ def update_subscriptions():
     if len(classes_to_subscribe) > 0:
         zephyr_bulk_subscribe(list(classes_to_subscribe))
 
-def maybe_kill_child():
-    # type: () -> None
+def maybe_kill_child() -> None:
     try:
         if child_pid is not None:
             os.kill(child_pid, signal.SIGTERM)
@@ -207,8 +198,7 @@ def maybe_kill_child():
         # We don't care if the child process no longer exists, so just log the error
         logger.exception("")
 
-def maybe_restart_mirroring_script():
-    # type: () -> None
+def maybe_restart_mirroring_script() -> None:
     if os.stat(os.path.join(options.stamp_path, "stamps", "restart_stamp")).st_mtime > start_time or \
             ((options.user == "tabbott" or options.user == "tabbott/extra") and
              os.stat(os.path.join(options.stamp_path, "stamps", "tabbott_stamp")).st_mtime > start_time):
@@ -227,8 +217,7 @@ def maybe_restart_mirroring_script():
                 logger.exception("Error restarting mirroring script; trying again... Traceback:")
                 time.sleep(1)
 
-def process_loop(log):
-    # type: (Optional[IO[Any]]) -> None
+def process_loop(log: Optional[IO[Any]]) -> None:
     restart_check_count = 0
     last_check_time = time.time()
     while True:
@@ -267,8 +256,7 @@ def process_loop(log):
                 except Exception:
                     logger.exception("Error updating subscriptions from Zulip:")
 
-def parse_zephyr_body(zephyr_data, notice_format):
-    # type: (str, str) -> Tuple[str, str]
+def parse_zephyr_body(zephyr_data: str, notice_format: str) -> Tuple[str, str]:
     try:
         (zsig, body) = zephyr_data.split("\x00", 1)
         if (notice_format == 'New transaction [$1] entered in $2\nFrom: $3 ($5)\nSubject: $4' or
@@ -284,8 +272,7 @@ def parse_zephyr_body(zephyr_data, notice_format):
     body = body.replace('\x00', '')
     return (zsig, body)
 
-def parse_crypt_table(zephyr_class, instance):
-    # type: (Text, str) -> Optional[str]
+def parse_crypt_table(zephyr_class: Text, instance: str) -> Optional[str]:
     try:
         crypt_table = open(os.path.join(os.environ["HOME"], ".crypt-table"))
     except OSError:
@@ -306,8 +293,7 @@ def parse_crypt_table(zephyr_class, instance):
             return groups["keypath"]
     return None
 
-def decrypt_zephyr(zephyr_class, instance, body):
-    # type: (Text, str, str) -> str
+def decrypt_zephyr(zephyr_class: Text, instance: str, body: str) -> str:
     keypath = parse_crypt_table(zephyr_class, instance)
     if keypath is None:
         # We can't decrypt it, so we just return the original body
@@ -337,8 +323,7 @@ def decrypt_zephyr(zephyr_class, instance, body):
     signal.signal(signal.SIGCHLD, signal.SIG_IGN)
     return decrypted  # type: ignore  # bytes, expecting str
 
-def process_notice(notice, log):
-    # type: (Any, Optional[IO[Any]]) -> None
+def process_notice(notice: Any, log: Optional[IO[Any]]) -> None:
     (zsig, body) = parse_zephyr_body(notice.message, notice.format)
     is_personal = False
     is_huddle = False
@@ -436,8 +421,7 @@ def process_notice(notice, log):
         finally:
             os._exit(0)
 
-def decode_unicode_byte_strings(zeph):
-    # type: (Dict[str, Any]) -> Dict[str, str]
+def decode_unicode_byte_strings(zeph: Dict[str, Any]) -> Dict[str, str]:
     # 'Any' can be of any type of text that is converted to str.
     for field in zeph.keys():
         if isinstance(zeph[field], str):
@@ -448,14 +432,12 @@ def decode_unicode_byte_strings(zeph):
             zeph[field] = decoded
     return zeph
 
-def quit_failed_initialization(message):
-    # type: (str) -> str
+def quit_failed_initialization(message: str) -> str:
     logger.error(message)
     maybe_kill_child()
     sys.exit(1)
 
-def zephyr_init_autoretry():
-    # type: () -> None
+def zephyr_init_autoretry() -> None:
     backoff = zulip.RandomExponentialBackoff()
     while backoff.keep_going():
         try:
@@ -470,8 +452,7 @@ def zephyr_init_autoretry():
 
     quit_failed_initialization("Could not initialize Zephyr library, quitting!")
 
-def zephyr_load_session_autoretry(session_path):
-    # type: (str) -> None
+def zephyr_load_session_autoretry(session_path: str) -> None:
     backoff = zulip.RandomExponentialBackoff()
     while backoff.keep_going():
         try:
@@ -486,8 +467,7 @@ def zephyr_load_session_autoretry(session_path):
 
     quit_failed_initialization("Could not load saved Zephyr session, quitting!")
 
-def zephyr_subscribe_autoretry(sub):
-    # type: (Tuple[str, str, str]) -> None
+def zephyr_subscribe_autoretry(sub: Tuple[str, str, str]) -> None:
     backoff = zulip.RandomExponentialBackoff()
     while backoff.keep_going():
         try:
@@ -502,8 +482,7 @@ def zephyr_subscribe_autoretry(sub):
 
     quit_failed_initialization("Could not subscribe to personals, quitting!")
 
-def zephyr_to_zulip(options):
-    # type: (Any) -> None
+def zephyr_to_zulip(options: Any) -> None:
     if options.use_sessions and os.path.exists(options.session_path):
         logger.info("Loading old session")
         zephyr_load_session_autoretry(options.session_path)
@@ -554,8 +533,7 @@ def zephyr_to_zulip(options):
     else:
         process_loop(None)
 
-def send_zephyr(zwrite_args, content):
-    # type: (List[str], str) -> Tuple[int, str]
+def send_zephyr(zwrite_args: List[str], content: str) -> Tuple[int, str]:
     p = subprocess.Popen(zwrite_args, stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = p.communicate(input=content.encode("utf-8"))
@@ -571,16 +549,13 @@ def send_zephyr(zwrite_args, content):
         logger.warning("stderr: " + stderr)  # type: ignore  # str + bytes
     return (p.returncode, stderr)  # type: ignore  # bytes vs str
 
-def send_authed_zephyr(zwrite_args, content):
-    # type: (List[str], str) -> Tuple[int, str]
+def send_authed_zephyr(zwrite_args: List[str], content: str) -> Tuple[int, str]:
     return send_zephyr(zwrite_args, content)
 
-def send_unauthed_zephyr(zwrite_args, content):
-    # type: (List[str], str) -> Tuple[int, str]
+def send_unauthed_zephyr(zwrite_args: List[str], content: str) -> Tuple[int, str]:
     return send_zephyr(zwrite_args + ["-d"], content)
 
-def zcrypt_encrypt_content(zephyr_class, instance, content):
-    # type: (str, str, str) -> Optional[str]
+def zcrypt_encrypt_content(zephyr_class: str, instance: str, content: str) -> Optional[str]:
     keypath = parse_crypt_table(zephyr_class, instance)
     if keypath is None:
         return None
@@ -605,8 +580,7 @@ def zcrypt_encrypt_content(zephyr_class, instance, content):
     encrypted, _ = p.communicate(input=content)  # type: ignore  # Optional[bytes] vs string
     return encrypted  # type: ignore  # bytes, expecting Optional[str]
 
-def forward_to_zephyr(message):
-    # type: (Dict[str, Any]) -> None
+def forward_to_zephyr(message: Dict[str, Any]) -> None:
     # 'Any' can be of any type of text
     support_heading = "Hi there! This is an automated message from Zulip."
     support_closing = """If you have any questions, please be in touch through the \
@@ -735,8 +709,7 @@ received it, Zephyr users did not.  The error message from zwrite was:
 %s""" % (support_heading, stderr, support_closing))
     return
 
-def maybe_forward_to_zephyr(message):
-    # type: (Dict[str, Any]) -> None
+def maybe_forward_to_zephyr(message: Dict[str, Any]) -> None:
     # The key string can be used to direct any type of text.
     if (message["sender_email"] == zulip_account_email):
         if not ((message["type"] == "stream") or
@@ -758,8 +731,7 @@ def maybe_forward_to_zephyr(message):
             # whole process
             logger.exception("Error forwarding message:")
 
-def zulip_to_zephyr(options):
-    # type: (int) -> None
+def zulip_to_zephyr(options: int) -> None:
     # Sync messages from zulip to zephyr
     logger.info("Starting syncing messages.")
     while True:
@@ -769,8 +741,7 @@ def zulip_to_zephyr(options):
             logger.exception("Error syncing messages:")
             time.sleep(1)
 
-def subscribed_to_mail_messages():
-    # type: () -> bool
+def subscribed_to_mail_messages() -> bool:
     # In case we have lost our AFS tokens and those won't be able to
     # parse the Zephyr subs file, first try reading in result of this
     # query from the environment so we can avoid the filesystem read.
@@ -784,8 +755,7 @@ def subscribed_to_mail_messages():
     os.environ["HUMBUG_FORWARD_MAIL_ZEPHYRS"] = "False"
     return False
 
-def add_zulip_subscriptions(verbose):
-    # type: (bool) -> None
+def add_zulip_subscriptions(verbose: bool) -> None:
     zephyr_subscriptions = set()
     skipped = set()
     for (cls, instance, recipient) in parse_zephyr_subs(verbose=verbose):
@@ -871,12 +841,10 @@ to these .zephyrs.subs lines, please do so via the Zulip
 web interface.
 """)) + "\n")
 
-def valid_stream_name(name):
-    # type: (str) -> bool
+def valid_stream_name(name: str) -> bool:
     return name != ""
 
-def parse_zephyr_subs(verbose=False):
-    # type: (bool) -> Set[Tuple[str, str, str]]
+def parse_zephyr_subs(verbose: bool = False) -> Set[Tuple[str, str, str]]:
     zephyr_subscriptions = set()  # type: Set[Tuple[str, str, str]]
     subs_file = os.path.join(os.environ["HOME"], ".zephyr.subs")
     if not os.path.exists(subs_file):
@@ -904,8 +872,7 @@ def parse_zephyr_subs(verbose=False):
         zephyr_subscriptions.add((cls.strip(), instance.strip(), recipient.strip()))
     return zephyr_subscriptions
 
-def open_logger():
-    # type: () -> logging.Logger
+def open_logger() -> logging.Logger:
     if options.log_path is not None:
         log_file = options.log_path
     elif options.forward_class_messages:
@@ -930,8 +897,7 @@ def open_logger():
     logger.addHandler(file_handler)
     return logger
 
-def configure_logger(logger, direction_name):
-    # type: (logging.Logger, Optional[str]) -> None
+def configure_logger(logger: logging.Logger, direction_name: Optional[str]) -> None:
     if direction_name is None:
         log_format = "%(message)s"
     else:
@@ -945,8 +911,7 @@ def configure_logger(logger, direction_name):
     for handler in root_logger.handlers:
         handler.setFormatter(formatter)
 
-def parse_args():
-    # type: () -> Tuple[Any, ...]
+def parse_args() -> Tuple[Any, ...]:
     parser = optparse.OptionParser()
     parser.add_option('--forward-class-messages',
                       default=False,
@@ -1029,8 +994,7 @@ def parse_args():
                       default=os.path.join(os.environ["HOME"], "Private", ".humbug-api-key"))
     return parser.parse_args()
 
-def die_gracefully(signal, frame):
-    # type: (int, FrameType) -> None
+def die_gracefully(signal: int, frame: FrameType) -> None:
     if CURRENT_STATE == States.ZulipToZephyr or CURRENT_STATE == States.ChildSending:
         # this is a child process, so we want os._exit (no clean-up necessary)
         os._exit(1)

@@ -56,8 +56,7 @@ class TestDefaultArguments(TestCase):
         expected_bot_dir_path = '/path/to'
         self._test_adding_bot_parent_dir_to_sys_path(bot_qualifier=bot_path, bot_dir_path=expected_bot_dir_path)
 
-    def _test_adding_bot_parent_dir_to_sys_path(self, bot_qualifier, bot_dir_path):
-        # type: (str, str) -> None
+    def _test_adding_bot_parent_dir_to_sys_path(self, bot_qualifier: str, bot_dir_path: str) -> None:
         with patch('sys.argv', ['zulip-run-bot', bot_qualifier, '--config-file', '/path/to/config']):
             with patch('zulip_bots.finder.import_module_from_source', return_value=mock.Mock()):
                 with patch('zulip_bots.run.run_message_handler_for_bot'):

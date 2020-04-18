@@ -12,8 +12,7 @@ EXCLUDED_FILES = [
     'zulip/integrations/perforce/git_p4.py',
 ]
 
-def run():
-    # type: () -> None
+def run() -> None:
     parser = argparse.ArgumentParser()
     add_default_linter_arguments(parser)
     args = parser.parse_args()
@@ -27,15 +26,13 @@ def run():
                                   description="Static type checker for Python (config: mypy.ini)")
 
     @linter_config.lint
-    def custom_py():
-        # type: () -> int
+    def custom_py() -> int:
         """Runs custom checks for python files (config: tools/linter_lib/custom_check.py)"""
         failed = python_rules.check(by_lang, verbose=args.verbose)
         return 1 if failed else 0
 
     @linter_config.lint
-    def custom_nonpy():
-        # type: () -> int
+    def custom_nonpy() -> int:
         """Runs custom checks for non-python files (config: tools/linter_lib/custom_check.py)"""
         failed = False
         for rule in non_py_rules:
@@ -43,8 +40,7 @@ def run():
         return 1 if failed else 0
 
     @linter_config.lint
-    def pep8():
-        # type: () -> int
+    def pep8() -> int:
         """Standard Python style linter on 50% of files (config: tools/linter_lib/pep8.py)"""
         failed = check_pep8(by_lang['py'])
         return 1 if failed else 0

@@ -19,8 +19,7 @@ ZULIP_API_KEY = '0123456789abcdef0123456789abcdef'
 # * stream "deployments"
 # * topic "master"
 # And similarly for branch "test-post-receive" (for use when testing).
-def deployment_notice_destination(branch):
-    # type: (str) -> Optional[Dict[str, Text]]
+def deployment_notice_destination(branch: str) -> Optional[Dict[str, Text]]:
     if branch in ['master', 'test-post-receive']:
         return dict(stream  = 'deployments',
                     subject = '%s' % (branch,))
@@ -40,8 +39,7 @@ def deployment_notice_destination(branch):
 # * dep_id    = deployment id
 # * dep_time  = deployment timestamp
 def format_deployment_message(
-        app_name='', url='', branch='', commit_id='', dep_id='', dep_time=''):
-    # type: (str, str, str, str, str, str) -> str
+        app_name: str = '', url: str = '', branch: str = '', commit_id: str = '', dep_id: str = '', dep_time: str = '') -> str:
     return 'Deployed commit `%s` (%s) in [%s](%s)' % (
         commit_id, branch, app_name, url)
 

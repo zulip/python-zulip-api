@@ -31,26 +31,21 @@ client = zulip.Client(
     api_key=config.ZULIP_API_KEY,
     client="ZulipTrac/" + VERSION)
 
-def markdown_ticket_url(ticket, heading="ticket"):
-    # type: (Any, str) -> str
+def markdown_ticket_url(ticket: Any, heading: str = "ticket") -> str:
     return "[%s #%s](%s/%s)" % (heading, ticket.id, config.TRAC_BASE_TICKET_URL, ticket.id)
 
-def markdown_block(desc):
-    # type: (str) -> str
+def markdown_block(desc: str) -> str:
     return "\n\n>" + "\n> ".join(desc.split("\n")) + "\n"
 
-def truncate(string, length):
-    # type: (str, int) -> str
+def truncate(string: str, length: int) -> str:
     if len(string) <= length:
         return string
     return string[:length - 3] + "..."
 
-def trac_subject(ticket):
-    # type: (Any) -> str
+def trac_subject(ticket: Any) -> str:
     return truncate("#%s: %s" % (ticket.id, ticket.values.get("summary")), 60)
 
-def send_update(ticket, content):
-    # type: (Any, str) -> None
+def send_update(ticket: Any, content: str) -> None:
     client.send_message({
         "type": "stream",
         "to": config.STREAM_FOR_NOTIFICATIONS,
@@ -61,8 +56,7 @@ def send_update(ticket, content):
 class ZulipPlugin(Component):
     implements(ITicketChangeListener)
 
-    def ticket_created(self, ticket):
-        # type: (Any) -> None
+    def ticket_created(self, ticket: Any) -> None:
         """Called when a ticket is created."""
         content = "%s created %s in component **%s**, priority **%s**:\n" % \
             (ticket.values.get("reporter"), markdown_ticket_url(ticket),
@@ -74,8 +68,7 @@ class ZulipPlugin(Component):
             content += "%s" % (markdown_block(ticket.values.get("description")),)
         send_update(ticket, content)
 
-    def ticket_changed(self, ticket, comment, author, old_values):
-        # type: (Any, str, str, Dict[str, Any]) -> None
+    def ticket_changed(self, ticket: Any, comment: str, author: str, old_values: Dict[str, Any]) -> None:
         """Called when a ticket is modified.
 
         `old_values` is a dictionary containing the previous values of the
@@ -106,8 +99,7 @@ class ZulipPlugin(Component):
 
         send_update(ticket, content)
 
-    def ticket_deleted(self, ticket):
-        # type: (Any) -> None
+    def ticket_deleted(self, ticket: Any) -> None:
         """Called when a ticket is deleted."""
         content = "%s was deleted." % markdown_ticket_url(ticket, heading="Ticket")
         send_update(ticket, content)

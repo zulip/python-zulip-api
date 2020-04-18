@@ -79,8 +79,7 @@ if not (options.zulip_email):
 
 zulip_client = zulip.init_from_options(options)
 
-def get_credentials():
-    # type: () -> client.Credentials
+def get_credentials() -> client.Credentials:
     """Gets valid user credentials from storage.
 
     If nothing has been stored, or if the stored credentials are invalid,
@@ -104,8 +103,7 @@ def get_credentials():
         logging.error("Run the get-google-credentials script from this directory first.")
 
 
-def populate_events():
-    # type: () -> Optional[None]
+def populate_events() -> Optional[None]:
     global events
 
     credentials = get_credentials()
@@ -145,8 +143,7 @@ def populate_events():
             events.append((event["id"], start, "(No Title)"))
 
 
-def send_reminders():
-    # type: () -> Optional[None]
+def send_reminders() -> Optional[None]:
     global sent
 
     messages = []

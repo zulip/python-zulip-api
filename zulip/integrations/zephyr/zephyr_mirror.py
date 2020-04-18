@@ -14,8 +14,7 @@ from zephyr_mirror_backend import parse_args
 from types import FrameType
 from typing import Any
 
-def die(signal, frame):
-    # type: (int, FrameType) -> None
+def die(signal: int, frame: FrameType) -> None:
 
     # We actually want to exit, so run os._exit (so as not to be caught and restarted)
     os._exit(1)
@@ -40,8 +39,7 @@ if options.forward_class_messages and not options.noshard:
     print("Starting parallel zephyr class mirroring bot")
     jobs = list("0123456789abcdef")
 
-    def run_job(shard):
-        # type: (str) -> int
+    def run_job(shard: str) -> int:
         subprocess.call(args + ["--shard=%s" % (shard,)])
         return 0
     for (status, job) in run_parallel(run_job, jobs, threads=16):

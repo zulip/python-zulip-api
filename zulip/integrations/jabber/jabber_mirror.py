@@ -9,8 +9,7 @@ from types import FrameType
 from typing import Any
 from zulip import RandomExponentialBackoff
 
-def die(signal, frame):
-    # type: (int, FrameType) -> None
+def die(signal: int, frame: FrameType) -> None:
     """We actually want to exit, so run os._exit (so as not to be caught and restarted)"""
     os._exit(1)
 

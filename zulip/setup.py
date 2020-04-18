@@ -10,8 +10,7 @@ import itertools
 with open("README.md") as fh:
     long_description = fh.read()
 
-def version():
-    # type: () -> str
+def version() -> str:
     version_py = os.path.join(os.path.dirname(__file__), "zulip", "__init__.py")
     with open(version_py) as in_handle:
         version_line = next(itertools.dropwhile(lambda x: not x.startswith("__version__"),
@@ -19,8 +18,7 @@ def version():
     version = version_line.split('=')[-1].strip().replace('"', '')
     return version
 
-def recur_expand(target_root, dir):
-    # type: (Any, Any) -> Generator[Tuple[str, List[str]], None, None]
+def recur_expand(target_root: Any, dir: Any) -> Generator[Tuple[str, List[str]], None, None]:
     for root, _, files in os.walk(dir):
         paths = [os.path.join(root, f) for f in files]
         if len(paths):

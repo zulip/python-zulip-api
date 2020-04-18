@@ -36,20 +36,17 @@ topic = matrix
 """
 
 @contextmanager
-def new_temp_dir():
-    # type: () -> Iterator[str]
+def new_temp_dir() -> Iterator[str]:
     path = mkdtemp()
     yield path
     shutil.rmtree(path)
 
 class MatrixBridgeScriptTests(TestCase):
-    def output_from_script(self, options):
-        # type: (List[str]) -> List[str]
+    def output_from_script(self, options: List[str]) -> List[str]:
         popen = Popen(["python", script] + options, stdin=PIPE, stdout=PIPE, universal_newlines=True)
         return popen.communicate()[0].strip().split("\n")
 
-    def test_no_args(self):
-        # type: () -> None
+    def test_no_args(self) -> None:
         output_lines = self.output_from_script([])
         expected_lines = [
             "Options required: -c or --config to run, OR --write-sample-config.",
@@ -58,8 +55,7 @@ class MatrixBridgeScriptTests(TestCase):
         for expected, output in zip(expected_lines, output_lines):
             self.assertIn(expected, output)
 
-    def test_help_usage_and_description(self):
-        # type: () -> None
+    def test_help_usage_and_description(self) -> None:
         output_lines = self.output_from_script(["-h"])
         usage = "usage: {} [-h]".format(script_file)
         description = "Script to bridge"
@@ -72,8 +68,7 @@ class MatrixBridgeScriptTests(TestCase):
         # Minimal description should be in the first line of the 2nd "paragraph"
         self.assertIn(description, output_lines[blank_lines[0] + 1])
 
-    def test_write_sample_config(self):
-        # type: () -> None
+    def test_write_sample_config(self) -> None:
         with new_temp_dir() as tempdir:
             path = os.path.join(tempdir, sample_config_path)
             output_lines = self.output_from_script(["--write-sample-config", path])
@@ -82,8 +77,7 @@ class MatrixBridgeScriptTests(TestCase):
             with open(path) as sample_file:
                 self.assertEqual(sample_file.read(), sample_config_text)
 
-    def test_write_sample_config_from_zuliprc(self):
-        # type: () -> None
+    def test_write_sample_config_from_zuliprc(self) -> None:
         zuliprc_template = ["[api]", "email={email}", "key={key}", "site={site}"]
         zulip_params = {'email': 'foo@bar',
                         'key': 'some_api_key',
@@ -107,8 +101,7 @@ class MatrixBridgeScriptTests(TestCase):
                 expected_lines[9] = 'site = {}'.format(zulip_params['site'])
                 self.assertEqual(sample_lines, expected_lines[:-1])
 
-    def test_detect_zuliprc_does_not_exist(self):
-        # type: () -> None
+    def test_detect_zuliprc_does_not_exist(self) -> None:
         with new_temp_dir() as tempdir:
             path = os.path.join(tempdir, sample_config_path)
             zuliprc_path = os.path.join(tempdir, "zuliprc")
@@ -132,8 +125,7 @@ class MatrixBridgeZulipToMatrixTests(TestCase):
         subject=valid_zulip_config['topic']
     )
 
-    def test_zulip_message_validity_success(self):
-        # type: () -> None
+    def test_zulip_message_validity_success(self) -> None:
         zulip_config = self.valid_zulip_config
         msg = self.valid_msg
         # Ensure the test inputs are valid for success
@@ -141,8 +133,7 @@ class MatrixBridgeZulipToMatrixTests(TestCase):
 
         self.assertTrue(check_zulip_message_validity(msg, zulip_config))
 
-    def test_zulip_message_validity_failure(self):
-        # type: () -> None
+    def test_zulip_message_validity_failure(self) -> None:
         zulip_config = self.valid_zulip_config
 
         msg_wrong_stream = dict(self.valid_msg, display_recipient='foo')
@@ -157,8 +148,7 @@ class MatrixBridgeZulipToMatrixTests(TestCase):
         msg_from_bot = dict(self.valid_msg, sender_email=zulip_config['email'])
         self.assertFalse(check_zulip_message_validity(msg_from_bot, zulip_config))
 
-    def test_zulip_to_matrix(self):
-        # type: () -> None
+    def test_zulip_to_matrix(self) -> None:
         room = mock.MagicMock()
         zulip_config = self.valid_zulip_config
         send_msg = zulip_to_matrix(zulip_config, room)

@@ -29,16 +29,14 @@ client = zulip.Client(
     api_key=config.ZULIP_API_KEY,
     client="ZulipGit/" + VERSION)
 
-def git_repository_name():
-    # type: () -> Text
+def git_repository_name() -> Text:
     output = subprocess.check_output(["git", "rev-parse", "--is-bare-repository"])
     if output.strip() == "true":
         return os.path.basename(os.getcwd())[:-len(".git")]
     else:
         return os.path.basename(os.path.dirname(os.getcwd()))
 
-def git_commit_range(oldrev, newrev):
-    # type: (str, str) -> str
+def git_commit_range(oldrev: str, newrev: str) -> str:
     log_cmd = ["git", "log", "--reverse",
                "--pretty=%aE %H %s", "%s..%s" % (oldrev, newrev)]
     commits = ''
@@ -50,8 +48,7 @@ def git_commit_range(oldrev, newrev):
             commits += '!avatar(%s) %s\n' % (author_email, subject)
     return commits
 
-def send_bot_message(oldrev, newrev, refname):
-    # type: (str, str, str) -> None
+def send_bot_message(oldrev: str, newrev: str, refname: str) -> None:
     repo_name   = git_repository_name()
     branch      = refname.replace('refs/heads/', '')
     destination = config.commit_notice_destination(repo_name, branch, newrev)

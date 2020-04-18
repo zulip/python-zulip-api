@@ -13,8 +13,7 @@ import zulip
 
 from typing import Set, Optional
 
-def fetch_public_streams():
-    # type: () -> Optional[Set[bytes]]
+def fetch_public_streams() -> Optional[Set[bytes]]:
     public_streams = set()
 
     try:
