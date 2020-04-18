@@ -73,9 +73,9 @@ class TestDefaultArguments(TestCase):
         with patch('sys.argv', ['zulip-run-bot', 'bot.module.name', '--config-file', '/path/to/config']):
             with patch('importlib.import_module', return_value=mock_bot_module) as mock_import_module:
                 with patch('zulip_bots.run.run_message_handler_for_bot'):
-                        with patch('zulip_bots.run.exit_gracefully_if_zulip_config_is_missing'):
-                            zulip_bots.run.main()
-                            mock_import_module.assert_called_once_with(bot_module_name)
+                    with patch('zulip_bots.run.exit_gracefully_if_zulip_config_is_missing'):
+                        zulip_bots.run.main()
+                        mock_import_module.assert_called_once_with(bot_module_name)
 
 
 class TestBotLib(TestCase):
