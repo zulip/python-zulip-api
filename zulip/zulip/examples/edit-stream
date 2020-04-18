@@ -14,8 +14,7 @@ Example: edit-stream --stream-id=3 --history-public-to-subscribers
 """
 
 
-def quote(string):
-    # type: (str) -> str
+def quote(string: str) -> str:
     return '"{}"'.format(string)
 
 

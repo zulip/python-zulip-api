@@ -12,8 +12,7 @@ from mercurial import ui, repository as repo
 
 VERSION = "0.9"
 
-def format_summary_line(web_url, user, base, tip, branch, node):
-    # type: (str, str, int, int, str, Text) -> Text
+def format_summary_line(web_url: str, user: str, base: int, tip: int, branch: str, node: Text) -> Text:
     """
     Format the first line of the message, which contains summary
     information about the changeset and links to the changelog if a
@@ -38,8 +37,7 @@ def format_summary_line(web_url, user, base, tip, branch, node):
         user=user, commits=formatted_commit_count, branch=branch, tip=tip,
         node=node[:12])
 
-def format_commit_lines(web_url, repo, base, tip):
-    # type: (str, repo, int, int) -> str
+def format_commit_lines(web_url: str, repo: repo, base: int, tip: int) -> str:
     """
     Format the per-commit information for the message, including the one-line
     commit summary and a link to the diff if a web URL has been configured:
@@ -64,8 +62,7 @@ def format_commit_lines(web_url, repo, base, tip):
 
     return "\n".join(summary for summary in commit_summaries)
 
-def send_zulip(email, api_key, site, stream, subject, content):
-    # type: (str, str, str, str, str, Text) -> None
+def send_zulip(email: str, api_key: str, site: str, stream: str, subject: str, content: Text) -> None:
     """
     Send a message to Zulip using the provided credentials, which should be for
     a bot in most cases.
@@ -83,8 +80,7 @@ def send_zulip(email, api_key, site, stream, subject, content):
 
     client.send_message(message_data)
 
-def get_config(ui, item):
-    # type: (ui, str) -> str
+def get_config(ui: ui, item: str) -> str:
     try:
         # config returns configuration value.
         return ui.config('zulip', item)
@@ -92,8 +88,7 @@ def get_config(ui, item):
         ui.warn("Zulip: Could not find required item {} in hg config.".format(item))
         sys.exit(1)
 
-def hook(ui, repo, **kwargs):
-    # type: (ui, repo, **Text) -> None
+def hook(ui: ui, repo: repo, **kwargs: Text) -> None:
     """
     Invoked by configuring a [hook] entry in .hg/hgrc.
     """

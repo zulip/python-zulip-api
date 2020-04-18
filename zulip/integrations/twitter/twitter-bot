@@ -66,8 +66,7 @@ Make sure to go the application you created and click "create my
 access token" as well. Fill in the values displayed.
 """
 
-def write_config(config, configfile_path):
-    # type: (ConfigParser, str) -> None
+def write_config(config: ConfigParser, configfile_path: str) -> None:
     with open(configfile_path, 'w') as configfile:
         config.write(configfile)
 

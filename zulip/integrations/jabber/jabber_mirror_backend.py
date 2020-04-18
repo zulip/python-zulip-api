@@ -57,23 +57,19 @@ from typing import Any, Callable
 
 __version__ = "1.1"
 
-def room_to_stream(room):
-    # type: (str) -> str
+def room_to_stream(room: str) -> str:
     return room + "/xmpp"
 
-def stream_to_room(stream):
-    # type: (str) -> str
+def stream_to_room(stream: str) -> str:
     return stream.lower().rpartition("/xmpp")[0]
 
-def jid_to_zulip(jid):
-    # type: (JID) -> str
+def jid_to_zulip(jid: JID) -> str:
     suffix = ''
     if not jid.username.endswith("-bot"):
         suffix = options.zulip_email_suffix
     return "%s%s@%s" % (jid.username, suffix, options.zulip_domain)
 
-def zulip_to_jid(email, jabber_domain):
-    # type: (str, str) -> JID
+def zulip_to_jid(email: str, jabber_domain: str) -> JID:
     jid = JID(email, domain=jabber_domain)
     if (options.zulip_email_suffix and
         options.zulip_email_suffix in jid.username and
@@ -82,8 +78,7 @@ def zulip_to_jid(email, jabber_domain):
     return jid
 
 class JabberToZulipBot(ClientXMPP):
-    def __init__(self, jid, password, rooms):
-        # type: (JID, str, List[str]) -> None
+    def __init__(self, jid: JID, password: str, rooms: List[str]) -> None:
         if jid.resource:
             self.nick = jid.resource
         else:
@@ -100,19 +95,16 @@ class JabberToZulipBot(ClientXMPP):
         self.register_plugin('xep_0045')  # Jabber chatrooms
         self.register_plugin('xep_0199')  # XMPP Ping
 
-    def set_zulip_client(self, zulipToJabberClient):
-        # type: (ZulipToJabberBot) -> None
+    def set_zulip_client(self, zulipToJabberClient: 'ZulipToJabberBot') -> None:
         self.zulipToJabber = zulipToJabberClient
 
-    def session_start(self, event):
-        # type: (Dict[str, Any]) -> None
+    def session_start(self, event: Dict[str, Any]) -> None:
         self.get_roster()
         self.send_presence()
         for room in self.rooms_to_join:
             self.join_muc(room)
 
-    def join_muc(self, room):
-        # type: (str) -> None
+    def join_muc(self, room: str) -> None:
         if room in self.rooms:
             return
         logging.debug("Joining " + room)
@@ -137,8 +129,7 @@ class JabberToZulipBot(ClientXMPP):
         else:
             logging.error("Could not configure room: " + str(muc_jid))
 
-    def leave_muc(self, room):
-        # type: (str) -> None
+    def leave_muc(self, room: str) -> None:
         if room not in self.rooms:
             return
         logging.debug("Leaving " + room)
@@ -146,8 +137,7 @@ class JabberToZulipBot(ClientXMPP):
         muc_jid = JID(local=room, domain=options.conference_domain)
         self.plugin['xep_0045'].leaveMUC(muc_jid, self.nick)
 
-    def message(self, msg):
-        # type: (JabberMessage) -> Any
+    def message(self, msg: JabberMessage) -> Any:
         try:
             if msg["type"] == "groupchat":
                 return self.group(msg)
@@ -159,8 +149,7 @@ class JabberToZulipBot(ClientXMPP):
         except Exception:
             logging.exception("Error forwarding Jabber => Zulip")
 
-    def private(self, msg):
-        # type: (JabberMessage) -> None
+    def private(self, msg: JabberMessage) -> None:
         if options.mode == 'public' or msg['thread'] == '\u1FFFE':
             return
         sender = jid_to_zulip(msg["from"])
@@ -176,8 +165,7 @@ class JabberToZulipBot(ClientXMPP):
         if ret.get("result") != "success":
             logging.error(str(ret))
 
-    def group(self, msg):
-        # type: (JabberMessage) -> None
+    def group(self, msg: JabberMessage) -> None:
         if options.mode == 'personal' or msg["thread"] == '\u1FFFE':
             return
 
@@ -204,8 +192,7 @@ class JabberToZulipBot(ClientXMPP):
         if ret.get("result") != "success":
             logging.error(str(ret))
 
-    def nickname_to_jid(self, room, nick):
-        # type: (str, str) -> JID
+    def nickname_to_jid(self, room: str, nick: str) -> JID:
         jid = self.plugin['xep_0045'].getJidProperty(room, nick, "jid")
         if (jid is None or jid == ''):
             return JID(local=nick.replace(' ', ''), domain=self.boundjid.domain)
@@ -213,17 +200,14 @@ class JabberToZulipBot(ClientXMPP):
             return jid
 
 class ZulipToJabberBot:
-    def __init__(self, zulip_client):
-        # type: (Client) -> None
+    def __init__(self, zulip_client: Client) -> None:
         self.client = zulip_client
         self.jabber = None  # type: Optional[JabberToZulipBot]
 
-    def set_jabber_client(self, client):
-        # type: (JabberToZulipBot) -> None
+    def set_jabber_client(self, client: JabberToZulipBot) -> None:
         self.jabber = client
 
-    def process_event(self, event):
-        # type: (Dict[str, Any]) -> None
+    def process_event(self, event: Dict[str, Any]) -> None:
         if event['type'] == 'message':
             message = event["message"]
             if message['sender_email'] != self.client.email:
@@ -241,8 +225,7 @@ class ZulipToJabberBot:
         elif event['type'] == 'stream':
             self.process_stream(event)
 
-    def stream_message(self, msg):
-        # type: (Dict[str, str]) -> None
+    def stream_message(self, msg: Dict[str, str]) -> None:
         assert(self.jabber is not None)
         stream = msg['display_recipient']
         if not stream.endswith("/xmpp"):
@@ -257,8 +240,7 @@ class ZulipToJabberBot:
         outgoing['thread'] = '\u1FFFE'
         outgoing.send()
 
-    def private_message(self, msg):
-        # type: (Dict[str, Any]) -> None
+    def private_message(self, msg: Dict[str, Any]) -> None:
         assert(self.jabber is not None)
         for recipient in msg['display_recipient']:
             if recipient["email"] == self.client.email:
@@ -274,8 +256,7 @@ class ZulipToJabberBot:
             outgoing['thread'] = '\u1FFFE'
             outgoing.send()
 
-    def process_subscription(self, event):
-        # type: (Dict[str, Any]) -> None
+    def process_subscription(self, event: Dict[str, Any]) -> None:
         assert(self.jabber is not None)
         if event['op'] == 'add':
             streams = [s['name'].lower() for s in event['subscriptions']]
@@ -288,8 +269,7 @@ class ZulipToJabberBot:
             for stream in streams:
                 self.jabber.leave_muc(stream_to_room(stream))
 
-    def process_stream(self, event):
-        # type: (Dict[str, Any]) -> None
+    def process_stream(self, event: Dict[str, Any]) -> None:
         assert(self.jabber is not None)
         if event['op'] == 'occupy':
             streams = [s['name'].lower() for s in event['streams']]
@@ -302,10 +282,8 @@ class ZulipToJabberBot:
             for stream in streams:
                 self.jabber.leave_muc(stream_to_room(stream))
 
-def get_rooms(zulipToJabber):
-    # type: (ZulipToJabberBot) -> List[str]
-    def get_stream_infos(key, method):
-        # type: (str, Callable[[], Dict[str, Any]]) -> Any
+def get_rooms(zulipToJabber: ZulipToJabberBot) -> List[str]:
+    def get_stream_infos(key: str, method: Callable[[], Dict[str, Any]]) -> Any:
         ret = method()
         if ret.get("result") != "success":
             logging.error(str(ret))
@@ -324,8 +302,7 @@ def get_rooms(zulipToJabber):
                 rooms.append(stream_to_room(stream))
     return rooms
 
-def config_error(msg):
-    # type: (str) -> None
+def config_error(msg: str) -> None:
     sys.stderr.write("%s\n" % (msg,))
     sys.exit(2)
 

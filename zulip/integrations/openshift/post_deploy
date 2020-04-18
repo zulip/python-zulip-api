@@ -21,8 +21,7 @@ client = zulip.Client(
     api_key=config.ZULIP_API_KEY,
     client='ZulipOpenShift/' + VERSION)
 
-def get_deployment_details():
-    # type: () -> Dict[str, str]
+def get_deployment_details() -> Dict[str, str]:
     # "gear deployments" output example:
     #   Activation time - Deployment ID - Git Ref - Git SHA1
     #   2017-01-07 15:40:30 -0500 - 9e2b7143 - master - b9ce57c - ACTIVE
@@ -34,8 +33,7 @@ def get_deployment_details():
                 branch=splits[2],
                 commit_id=splits[3])
 
-def send_bot_message(deployment):
-    # type: (Dict[str, str]) -> None
+def send_bot_message(deployment: Dict[str, str]) -> None:
     destination = config.deployment_notice_destination(deployment['branch'])
     if destination is None:
         # No message should be sent

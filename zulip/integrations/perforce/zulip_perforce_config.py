@@ -28,8 +28,7 @@ P4_WEB = None
 # "master-plan" and "secret" subdirectories of //depot/ to:
 # * stream "depot_subdirectory-commits"
 # * subject "change_root"
-def commit_notice_destination(path, changelist):
-    # type: (Text, int) -> Optional[Dict[Text, Text]]
+def commit_notice_destination(path: Text, changelist: int) -> Optional[Dict[Text, Text]]:
     dirs = path.split('/')
     if len(dirs) >= 4 and dirs[3] not in ("*", "..."):
         directory = dirs[3]

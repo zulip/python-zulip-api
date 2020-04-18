@@ -20,8 +20,7 @@ options = parser.parse_args()
 
 client = zulip.init_from_options(options)
 
-def print_message(message):
-    # type: (Dict[str, Any]) -> None
+def print_message(message: Dict[str, Any]) -> None:
     print(message)
 
 # This is a blocking call, and will continuously poll for new messages

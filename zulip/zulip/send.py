@@ -13,8 +13,7 @@ logging.basicConfig()
 
 log = logging.getLogger('zulip-send')
 
-def do_send_message(client, message_data):
-    # type: (zulip.Client, Dict[str, Any]) -> bool
+def do_send_message(client: zulip.Client, message_data: Dict[str, Any]) -> bool:
     '''Sends a message and optionally prints status about the same.'''
 
     if message_data['type'] == 'stream':
@@ -30,8 +29,7 @@ def do_send_message(client, message_data):
         log.error(response['msg'])
         return False
 
-def main():
-    # type: () -> int
+def main() -> int:
     usage = """zulip-send [options] [recipient...]
 
     Sends a message to specified recipients.

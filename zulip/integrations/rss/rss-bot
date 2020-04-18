@@ -75,8 +75,7 @@ parser.add_argument('--math',
 
 opts = parser.parse_args()  # type: Any
 
-def mkdir_p(path):
-    # type: (str) -> None
+def mkdir_p(path: str) -> None:
     # Python doesn't have an analog to `mkdir -p` < Python 3.2.
     try:
         os.makedirs(path)
@@ -105,53 +104,44 @@ logger = logging.getLogger(__name__)  # type: logging.Logger
 logger.setLevel(logging.DEBUG)
 logger.addHandler(file_handler)
 
-def log_error_and_exit(error):
-    # type: (str) -> None
+def log_error_and_exit(error: str) -> None:
     logger.error(error)
     logger.error(usage)
     exit(1)
 
 class MLStripper(HTMLParser):
-    def __init__(self):
-        # type: () -> None
+    def __init__(self) -> None:
         self.reset()
         self.fed = []  # type: List[str]
 
-    def handle_data(self, data):
-        # type: (str) -> None
+    def handle_data(self, data: str) -> None:
         self.fed.append(data)
 
-    def get_data(self):
-        # type: () -> str
+    def get_data(self) -> str:
         return ''.join(self.fed)
 
-def strip_tags(html):
-    # type: (str) -> str
+def strip_tags(html: str) -> str:
     stripper = MLStripper()
     stripper.feed(html)
     return stripper.get_data()
 
-def compute_entry_hash(entry):
-    # type: (Dict[str, Any]) -> str
+def compute_entry_hash(entry: Dict[str, Any]) -> str:
     entry_time = entry.get("published", entry.get("updated"))
     entry_id = entry.get("id", entry.get("link"))
     return hashlib.md5(entry_id + str(entry_time)).hexdigest()
 
-def unwrap_text(body):
-    # type: (str) -> str
+def unwrap_text(body: str) -> str:
     # Replace \n by space if it is preceded and followed by a non-\n.
     # Example: '\na\nb\nc\n\nd\n' -> '\na b c\n\nd\n'
     return re.sub('(?<=[^\n])\n(?=[^\n])', ' ', body)
 
-def elide_subject(subject):
-    # type: (str) -> str
+def elide_subject(subject: str) -> str:
     MAX_TOPIC_LENGTH = 60
     if len(subject) > MAX_TOPIC_LENGTH:
         subject = subject[:MAX_TOPIC_LENGTH - 3].rstrip() + '...'
     return subject
 
-def send_zulip(entry, feed_name):
-    # type: (Any, str) -> Dict[str, Any]
+def send_zulip(entry: Any, feed_name: str) -> Dict[str, Any]:
     body = entry.summary  # type: str
     if opts.unwrap:
         body = unwrap_text(body)

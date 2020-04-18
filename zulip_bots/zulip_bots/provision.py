@@ -9,16 +9,14 @@ import glob
 import pip
 from typing import Iterator
 
-def get_bot_paths():
-    # type: () -> Iterator[str]
+def get_bot_paths() -> Iterator[str]:
     current_dir = os.path.dirname(os.path.abspath(__file__))
     bots_dir = os.path.join(current_dir, "bots")
     bots_subdirs = map(lambda d: os.path.abspath(d), glob.glob(bots_dir + '/*'))
     paths = filter(lambda d: os.path.isdir(d), bots_subdirs)
     return paths
 
-def provision_bot(path_to_bot, force):
-    # type: (str, bool) -> None
+def provision_bot(path_to_bot: str, force: bool) -> None:
     req_path = os.path.join(path_to_bot, 'requirements.txt')
     if os.path.isfile(req_path):
         bot_name = os.path.basename(path_to_bot)
@@ -36,8 +34,7 @@ def provision_bot(path_to_bot, force):
             logging.info('Installed dependencies successfully.')
 
 
-def parse_args(available_bots):
-    # type: (Iterator[str]) -> argparse.Namespace
+def parse_args(available_bots: Iterator[str]) -> argparse.Namespace:
     usage = """
 Installs dependencies of bots in the bots/<bot_name>
 directories. Add a requirements.txt file in a bot's folder
@@ -71,8 +68,7 @@ Example: ./provision.py helloworld xkcd wikipedia
     return parser.parse_args()
 
 
-def main():
-    # type: () -> None
+def main() -> None:
     options = parse_args(available_bots=get_bot_paths())
 
     if not options.quiet:
