@@ -1,5 +1,4 @@
 import copy
-import random
 
 from typing import List, Any, Tuple, Dict
 from zulip_bots.game_handler import GameAdapter, BadMoveException

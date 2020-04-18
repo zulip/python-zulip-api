@@ -2,7 +2,6 @@
 
 from typing import Dict, Any, Optional, Callable
 import wit
-import sys
 import importlib.util
 
 class WitaiHandler:

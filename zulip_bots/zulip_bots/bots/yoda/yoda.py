@@ -1,7 +1,6 @@
 # See readme.md for instructions on running this code.
 import logging
 import ssl
-import sys
 import requests
 
 from typing import Any, Dict

@@ -1,12 +1,11 @@
 # See readme.md for instructions on running this code.
 import logging
-from urllib import parse
 
 import requests
 
 from bs4 import BeautifulSoup
 
-from typing import Dict, Any, Union, List
+from typing import Any, Dict, List
 
 def google_search(keywords: str) -> List[Dict[str, str]]:
     query = {'q': keywords}

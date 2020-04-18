@@ -2,7 +2,6 @@
 
 import requests
 from typing import Any, List, Dict
-import logging
 
 class MentionHandler:
     def initialize(self, bot_handler: Any) -> None:

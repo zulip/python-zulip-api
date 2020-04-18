@@ -1,4 +1,4 @@
-from unittest.mock import patch, MagicMock, Mock
+from unittest.mock import Mock, patch
 
 from zulip_bots.test_lib import (
     get_bot_message_handler,

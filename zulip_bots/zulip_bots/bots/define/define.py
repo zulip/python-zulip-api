@@ -1,6 +1,5 @@
 # See readme.md for instructions on running this code.
 import logging
-import json
 import requests
 import html2text
 import string

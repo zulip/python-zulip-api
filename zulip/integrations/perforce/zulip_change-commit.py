@@ -23,7 +23,7 @@ import git_p4
 __version__ = "0.1"
 
 sys.path.insert(0, os.path.dirname(__file__))
-from typing import Any, Dict, Optional, Text
+from typing import Any, Dict, Optional
 import zulip_perforce_config as config
 
 if config.ZULIP_API_PATH is not None:

@@ -1,8 +1,5 @@
 import re
-import os
-import sys
 import logging
-import configparser
 
 import requests
 

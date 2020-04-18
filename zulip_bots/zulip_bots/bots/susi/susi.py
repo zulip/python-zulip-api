@@ -1,5 +1,5 @@
 import requests
-from typing import Dict, Any, Tuple, Union
+from typing import Any, Dict
 
 class SusiHandler:
     '''

@@ -10,13 +10,11 @@ import logging
 import argparse
 import os
 import pytz
-import urllib
 import sys
 import time
-import traceback
-from typing import List, Set, Tuple, Iterable, Optional
+from typing import List, Optional, Set, Tuple
 
-from oauth2client import client, tools
+from oauth2client import client
 from oauth2client.file import Storage
 try:
     from googleapiclient import discovery

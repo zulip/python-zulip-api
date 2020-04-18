@@ -1,11 +1,10 @@
 # See readme.md for instructions on running this code.
 import logging
-from urllib import parse
 import json
 
 import apiai
 
-from typing import Dict, Any, List
+from typing import Any, Dict
 
 help_message = '''DialogFlow bot
 This bot will interact with dialogflow bots.

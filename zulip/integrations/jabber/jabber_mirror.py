@@ -6,7 +6,6 @@ import os
 import traceback
 import signal
 from types import FrameType
-from typing import Any
 from zulip import RandomExponentialBackoff
 
 def die(signal: int, frame: FrameType) -> None:

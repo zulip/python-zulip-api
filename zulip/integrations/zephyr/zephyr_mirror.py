@@ -12,7 +12,6 @@ from zephyr_mirror_backend import parse_args
 (options, args) = parse_args()
 
 from types import FrameType
-from typing import Any
 
 def die(signal: int, frame: FrameType) -> None:
 
@@ -44,7 +43,6 @@ if options.forward_class_messages and not options.noshard:
         return 0
     for (status, job) in run_parallel(run_job, jobs, threads=16):
         print("A mirroring shard died!")
-        pass
     sys.exit(0)
 
 backoff = RandomExponentialBackoff(timeout_success_equivalent=300)

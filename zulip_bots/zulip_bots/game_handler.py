@@ -4,8 +4,6 @@ import random
 import logging
 from copy import deepcopy
 from typing import Any, Dict, Tuple, List
-from zulip_bots.test_lib import BotTestCase
-import operator
 import random
 
 

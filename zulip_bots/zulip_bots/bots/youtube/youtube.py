@@ -1,6 +1,5 @@
 import requests
 import logging
-import sys
 
 from requests.exceptions import HTTPError, ConnectionError
 from typing import Dict, Any, Union, List, Tuple, Optional

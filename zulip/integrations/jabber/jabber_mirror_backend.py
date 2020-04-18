@@ -40,19 +40,14 @@
 from typing import Dict, List, Set, Optional
 
 import logging
-import threading
 import optparse
 
 from sleekxmpp import ClientXMPP, InvalidJID, JID
 from sleekxmpp.stanza import Message as JabberMessage
-from sleekxmpp.exceptions import IqError, IqTimeout
 from configparser import SafeConfigParser
-import getpass
-import os
 import sys
 import zulip
 from zulip import Client
-import re
 from typing import Any, Callable
 
 __version__ = "1.1"

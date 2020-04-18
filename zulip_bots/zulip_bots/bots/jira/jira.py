@@ -1,7 +1,7 @@
 import base64
 import re
 import requests
-from typing import Any, Dict, Iterable, Optional
+from typing import Any, Dict, Optional
 
 GET_REGEX = re.compile('get "(?P<issue_key>.+)"$')
 CREATE_REGEX = re.compile(
