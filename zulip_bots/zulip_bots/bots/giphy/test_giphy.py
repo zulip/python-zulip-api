@@ -1,5 +1,5 @@
 from unittest.mock import patch
-from requests.exceptions import HTTPError, ConnectionError
+from requests.exceptions import ConnectionError
 
 from zulip_bots.test_lib import StubBotHandler, BotTestCase, DefaultTests, get_bot_message_handler
 

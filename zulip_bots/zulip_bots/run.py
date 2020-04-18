@@ -4,7 +4,6 @@ import logging
 import argparse
 import sys
 import os
-from os.path import basename, splitext
 
 from zulip_bots.lib import (
     zulip_env_vars_are_present,

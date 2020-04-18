@@ -1,7 +1,5 @@
 # See readme.md for instructions on running this code.
 import requests
-import json
-import logging
 
 from typing import Any, Dict
 

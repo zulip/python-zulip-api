@@ -5,7 +5,7 @@ from zulip_bots.bots.merels.libraries import (
     database,
     game_data
 )
-from zulip_bots.game_handler import GameAdapter, SamePlayerMove, GameInstance
+from zulip_bots.game_handler import GameAdapter, SamePlayerMove
 
 class Storage:
     data = {}

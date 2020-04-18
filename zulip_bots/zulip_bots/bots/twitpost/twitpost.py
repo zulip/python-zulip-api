@@ -1,6 +1,5 @@
-import zulip
 import tweepy
-from typing import Dict, Any, Union, List, Tuple, Optional
+from typing import Any, Dict
 
 
 class TwitpostBot:

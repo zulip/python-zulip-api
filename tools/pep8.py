@@ -2,7 +2,6 @@
 # Original path: zulip/tools/linter_lib/pep8.py
 
 import subprocess
-import sys
 
 from zulint.printer import print_err, colors
 

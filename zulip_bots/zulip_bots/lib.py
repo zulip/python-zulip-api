@@ -11,7 +11,6 @@ import re
 from typing import Any, Optional, List, Dict, IO, Text
 
 from zulip import Client, ZulipError
-from zulip_bots.custom_exceptions import ConfigValidationError
 
 
 class NoBotConfigException(Exception):

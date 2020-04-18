@@ -2,7 +2,6 @@ from unittest.mock import patch
 from requests.exceptions import ConnectionError
 
 from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler
-from zulip_bots.bots.google_translate.google_translate import TranslateError
 
 help_text = '''
 Google translate bot

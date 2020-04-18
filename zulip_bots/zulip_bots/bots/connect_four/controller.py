@@ -1,5 +1,4 @@
 from copy import deepcopy
-from random import randint
 from functools import reduce
 from zulip_bots.game_handler import BadMoveException
 

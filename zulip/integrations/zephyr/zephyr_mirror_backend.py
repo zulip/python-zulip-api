@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from typing import IO, Any, Dict, List, Text, Union, Set, Tuple, Optional, cast
+from typing import Any, Dict, IO, List, Optional, Set, Text, Tuple, cast
 from types import FrameType
 
 import sys
@@ -10,7 +10,6 @@ import time
 import subprocess
 import optparse
 import os
-import datetime
 import textwrap
 import signal
 import logging

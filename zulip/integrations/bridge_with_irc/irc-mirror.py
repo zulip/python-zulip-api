@@ -8,7 +8,6 @@ import argparse
 import zulip
 import sys
 import traceback
-from typing import Any, Dict
 
 usage = """./irc-mirror.py --irc-server=IRC_SERVER --channel=<CHANNEL> --nick-prefix=<NICK> --stream=<STREAM> [optional args]
 

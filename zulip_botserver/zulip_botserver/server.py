@@ -10,7 +10,7 @@ import importlib.util
 from configparser import MissingSectionHeaderError, NoOptionError
 from flask import Flask, request
 from importlib import import_module
-from typing import Any, Dict, Union, List, Optional
+from typing import Any, Dict, List, Optional
 from types import ModuleType
 from werkzeug.exceptions import BadRequest, Unauthorized
 

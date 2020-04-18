@@ -6,7 +6,6 @@ import os
 import sys
 import subprocess
 import glob
-import pip
 from typing import Iterator
 
 def get_bot_paths() -> Iterator[str]:

@@ -2,8 +2,6 @@
 
 import os
 import sys
-import glob
-import subprocess
 from typing import Any, Dict, Optional
 
 ZULIP_BOTS_VERSION = "0.6.4"

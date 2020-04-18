@@ -19,7 +19,6 @@ class TeamNotFoundException(Exception):
 class UnknownCommandSyntax(Exception):
     def __init__(self, detail: str) -> None:
         self.detail = detail
-    pass
 
 class UnspecifiedProblemException(Exception):
     pass

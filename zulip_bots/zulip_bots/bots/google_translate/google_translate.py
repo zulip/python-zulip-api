@@ -2,7 +2,6 @@
 # googletranslate.conf in this (zulip_bots/bots/googletranslate/) directory.
 
 import requests
-from requests.exceptions import HTTPError, ConnectionError
 
 class GoogleTranslateHandler:
     '''

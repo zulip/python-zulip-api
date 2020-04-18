@@ -10,8 +10,6 @@ finished yet so any matches that are finished will be removed.
 
 import json
 
-from .constants import EMPTY_BOARD
-
 
 class MerelsStorage():
     def __init__(self, topic_name, storage):

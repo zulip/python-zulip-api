@@ -9,7 +9,6 @@ import zipfile
 import textwrap
 import requests
 import urllib.parse
-import json
 from requests import Response
 
 red = '\033[91m'  # type: str

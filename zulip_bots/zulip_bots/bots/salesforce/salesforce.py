@@ -2,10 +2,8 @@
 
 import simple_salesforce
 from typing import Dict, Any, List
-import getpass
 import re
 import logging
-import json
 from zulip_bots.bots.salesforce.utils import commands, object_types, link_query, default_query
 
 base_help_text = '''Salesforce bot

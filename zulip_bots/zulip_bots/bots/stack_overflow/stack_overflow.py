@@ -1,7 +1,5 @@
 import requests
 import logging
-import re
-import urllib
 
 from typing import Optional, Any, Dict
 

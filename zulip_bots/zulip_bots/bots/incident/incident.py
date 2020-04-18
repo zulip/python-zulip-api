@@ -1,10 +1,8 @@
-import html
 import json
-import random
 import re
 from zulip_bots.lib import Any
 
-from typing import Optional, Any, Dict, Tuple
+from typing import Any, Dict, Tuple
 
 QUESTION = 'How should we handle this?'
 

@@ -7,7 +7,7 @@
 
 import zulip
 import sys
-from typing import Any, Optional, Text
+from typing import Text
 from mercurial import ui, repository as repo
 
 VERSION = "0.9"

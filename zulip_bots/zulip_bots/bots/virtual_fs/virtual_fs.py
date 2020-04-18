@@ -3,7 +3,7 @@
 import re
 import os
 
-from typing import Any, Dict, List, Tuple, Callable, Set, Union
+from typing import Any, Dict, List, Set, Tuple, Union
 
 class VirtualFsHandler:
     META = {

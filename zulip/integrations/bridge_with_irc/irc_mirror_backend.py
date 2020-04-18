@@ -1,6 +1,6 @@
 import irc.bot
 import irc.strings
-from irc.client import ip_numstr_to_quad, ip_quad_to_numstr, Event, ServerConnection
+from irc.client import Event, ServerConnection, ip_numstr_to_quad
 from irc.client_aio import AioReactor
 import multiprocessing as mp
 from typing import Any, Dict
