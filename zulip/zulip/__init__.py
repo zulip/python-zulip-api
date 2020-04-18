@@ -89,7 +89,7 @@ def add_default_arguments(parser, patch_error_handling=True, allow_provisioning=
 
     if patch_error_handling:
         def custom_error_handling(self, message):
-            # type: (Any, str) -> None
+            # type: (argparse.ArgumentParser, str) -> None
             self.print_help(sys.stderr)
             self.exit(2, '{}: error: {}\n'.format(self.prog, message))
         parser.error = types.MethodType(custom_error_handling, parser)  # type: ignore # patching function
