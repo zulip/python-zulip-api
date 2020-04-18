@@ -13,7 +13,7 @@ whitespace_rules = [
     {'pattern': '\t',
      'strip': '\n',
      'description': 'Fix tab-based whitespace'},
-]  # type: Rule
+]  # type: List[Rule]
 
 markdown_whitespace_rules = list([rule for rule in whitespace_rules if rule['pattern'] != r'\s+$']) + [
     # Two spaces trailing a line with other content is okay--it's a markdown line break.
@@ -25,7 +25,7 @@ markdown_whitespace_rules = list([rule for rule in whitespace_rules if rule['pat
     {'pattern': r'^#+[A-Za-z0-9]',
      'strip': '\n',
      'description': 'Missing space after # in heading'},
-]  # type: Rule
+]
 
 python_rules = RuleList(
     langs=['py'],
@@ -90,7 +90,8 @@ python_rules = RuleList(
          'bad_lines': ['class TestSomeBot(DefaultTests, BotTestCase):'],
          'good_lines': ['class TestSomeBot(BotTestCase, DefaultTests):'],
          'description': 'Bot test cases should inherit from BotTestCase before DefaultTests.'},
-    ] + whitespace_rules,
+        *whitespace_rules,
+    ],
     max_length=140,
 )
 
@@ -100,7 +101,8 @@ bash_rules = RuleList(
         {'pattern': r'#!.*sh [-xe]',
          'description': 'Fix shebang line with proper call to /usr/bin/env for Bash path, change -x|-e switches'
                         ' to set -x|set -e'},
-    ] + whitespace_rules[0:1],
+        *whitespace_rules[0:1],
+    ],
 )
 
 
@@ -127,7 +129,7 @@ prose_style_rules = [
      'description': "!!! warning is invalid; it's spelled '!!! warn'"},
     {'pattern': r'[^-_]botserver(?!rc)|bot server',
      'description': "Use Botserver instead of botserver or Botserver."},
-]  # type: Rule
+]  # type: List[Rule]
 
 markdown_docs_length_exclude = {
     "zulip_bots/zulip_bots/bots/converter/doc.md",
@@ -135,7 +137,9 @@ markdown_docs_length_exclude = {
 
 markdown_rules = RuleList(
     langs=['md'],
-    rules=markdown_whitespace_rules + prose_style_rules + [
+    rules=[
+        *markdown_whitespace_rules,
+        *prose_style_rules,
         {'pattern': r'\[(?P<url>[^\]]+)\]\((?P=url)\)',
          'description': 'Linkified markdown URLs should use cleaner <http://example.com> syntax.'}
     ],

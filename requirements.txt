@@ -7,5 +7,5 @@ pytest
 -e ./zulip
 -e ./zulip_bots
 -e ./zulip_botserver
--e git+https://github.com/zulip/zulint@aaed679f1ad38b230090eadd3870b7682500f60c#egg=zulint==1.0.0
+-e git+https://github.com/zulip/zulint@8cb430b64eec1e98ef637bafd06272ebe715aa87#egg=zulint==1.0.0
 mypy==0.770
