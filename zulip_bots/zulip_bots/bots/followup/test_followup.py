@@ -1,8 +1,6 @@
 from zulip_bots.test_lib import (
-    StubBotHandler,
     BotTestCase,
     DefaultTests,
-    get_bot_message_handler,
 )
 
 
