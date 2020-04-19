@@ -1133,9 +1133,9 @@ class Client:
             request=request
         )
 
-    def get_members(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def get_users(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         '''
-            See examples/list-members for example usage.
+            See examples/list-users for example usage.
         '''
         return self.call_endpoint(
             url='users',
