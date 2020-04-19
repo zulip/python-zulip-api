@@ -3,8 +3,6 @@ import json
 import requests
 import random
 import re
-from zulip_bots.lib import Any
-
 from typing import Optional, Any, Dict, Tuple
 
 class NotAvailableException(Exception):
