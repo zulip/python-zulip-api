@@ -332,14 +332,14 @@ def check_is_editing_something(match: Any) -> bool:
      - match: The regex match object.
     '''
     return bool(
-        match.group('summary') or
-        match.group('project_key') or
-        match.group('type_name') or
-        match.group('description') or
-        match.group('assignee') or
-        match.group('priority_name') or
-        match.group('labels') or
-        match.group('due_date')
+        match.group('summary')
+        or match.group('project_key')
+        or match.group('type_name')
+        or match.group('description')
+        or match.group('assignee')
+        or match.group('priority_name')
+        or match.group('labels')
+        or match.group('due_date')
     )
 
 handler_class = JiraHandler

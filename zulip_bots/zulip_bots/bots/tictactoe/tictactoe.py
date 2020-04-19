@@ -56,8 +56,12 @@ class TicTacToeModel:
         ''' Returns true if all coordinates in a triplet have the same value in them (x or o) and no coordinates
         in the triplet are blank. '''
         for triplet in self.triplets:
-            if (self.get_value(board, triplet[0]) == self.get_value(board, triplet[1]) ==
-                    self.get_value(board, triplet[2]) != 0):
+            if (
+                self.get_value(board, triplet[0])
+                == self.get_value(board, triplet[1])
+                == self.get_value(board, triplet[2])
+                != 0
+            ):
                 return True
         return False
 
@@ -144,8 +148,12 @@ class TicTacToeModel:
 
         # Assuming nobody will win in their next move, now I'll find the best place for the computer to win.
         for row, col in blank_locations:
-            if (1 not in my_board[row] and my_board[0][col] != 1 and my_board[1][col] !=
-                    1 and my_board[2][col] != 1):
+            if (
+                1 not in my_board[row]
+                and my_board[0][col] != 1
+                and my_board[1][col] != 1
+                and my_board[2][col] != 1
+            ):
                 board[row][col] = 2
                 return board
 

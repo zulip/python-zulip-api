@@ -68,6 +68,10 @@ def check_pep8(files: List[str]) -> bool:
         # own check for this (see max_length)
         'E501',
 
+        # "line break before binary operator"
+        # This was obsoleted in favor of the opposite W504.
+        'W503',
+
         # "do not assign a lambda expression, use a def"
         # Fixing these would probably reduce readability in most cases.
         'E731',

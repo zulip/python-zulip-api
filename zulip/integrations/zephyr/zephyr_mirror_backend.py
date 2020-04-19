@@ -61,9 +61,11 @@ def to_zephyr_username(zulip_username: str) -> str:
 # line.
 def different_paragraph(line: str, next_line: str) -> bool:
     words = next_line.split()
-    return (len(line + " " + words[0]) < len(next_line) * 0.8 or
-            len(line + " " + words[0]) < 50 or
-            len(line) < len(words[0]))
+    return (
+        len(line + " " + words[0]) < len(next_line) * 0.8
+        or len(line + " " + words[0]) < 50
+        or len(line) < len(words[0])
+    )
 
 # Linewrapping algorithm based on:
 # http://gcbenison.wordpress.com/2011/07/03/a-program-to-intelligently-remove-carriage-returns-so-you-can-paste-text-without-having-it-look-awful/ #ignorelongline
@@ -73,13 +75,17 @@ def unwrap_lines(body: str) -> str:
     previous_line = lines[0]
     for line in lines[1:]:
         line = line.rstrip()
-        if (re.match(r'^\W', line, flags=re.UNICODE) and
-                re.match(r'^\W', previous_line, flags=re.UNICODE)):
+        if (
+            re.match(r'^\W', line, flags=re.UNICODE)
+            and re.match(r'^\W', previous_line, flags=re.UNICODE)
+        ):
             result += previous_line + "\n"
-        elif (line == "" or
-              previous_line == "" or
-              re.match(r'^\W', line, flags=re.UNICODE) or
-              different_paragraph(previous_line, line)):
+        elif (
+            line == ""
+            or previous_line == ""
+            or re.match(r'^\W', line, flags=re.UNICODE)
+            or different_paragraph(previous_line, line)
+        ):
             # Use 2 newlines to separate sections so that we
             # trigger proper Markdown processing on things like
             # bulleted lists
@@ -178,8 +184,10 @@ def update_subscriptions() -> None:
     classes_to_subscribe = set()
     for stream in public_streams:
         zephyr_class = stream.encode("utf-8")
-        if (options.shard is not None and
-                not hashlib.sha1(zephyr_class).hexdigest().startswith(options.shard)):
+        if (
+            options.shard is not None
+            and not hashlib.sha1(zephyr_class).hexdigest().startswith(options.shard)
+        ):
             # This stream is being handled by a different zephyr_mirror job.
             continue
         if zephyr_class in current_zephyr_subs:
@@ -198,9 +206,10 @@ def maybe_kill_child() -> None:
         logger.exception("")
 
 def maybe_restart_mirroring_script() -> None:
-    if os.stat(os.path.join(options.stamp_path, "stamps", "restart_stamp")).st_mtime > start_time or \
-            ((options.user == "tabbott" or options.user == "tabbott/extra") and
-             os.stat(os.path.join(options.stamp_path, "stamps", "tabbott_stamp")).st_mtime > start_time):
+    if os.stat(os.path.join(options.stamp_path, "stamps", "restart_stamp")).st_mtime > start_time or (
+        (options.user == "tabbott" or options.user == "tabbott/extra")
+        and os.stat(os.path.join(options.stamp_path, "stamps", "tabbott_stamp")).st_mtime > start_time
+    ):
         logger.warning("")
         logger.warning("zephyr mirroring script has been updated; restarting...")
         maybe_kill_child()
@@ -258,8 +267,10 @@ def process_loop(log: Optional[IO[Any]]) -> None:
 def parse_zephyr_body(zephyr_data: str, notice_format: str) -> Tuple[str, str]:
     try:
         (zsig, body) = zephyr_data.split("\x00", 1)
-        if (notice_format == 'New transaction [$1] entered in $2\nFrom: $3 ($5)\nSubject: $4' or
-                notice_format == 'New transaction [$1] entered in $2\nFrom: $3\nSubject: $4'):
+        if (
+            notice_format == 'New transaction [$1] entered in $2\nFrom: $3 ($5)\nSubject: $4'
+            or notice_format == 'New transaction [$1] entered in $2\nFrom: $3\nSubject: $4'
+        ):
             # Logic based off of owl_zephyr_get_message in barnowl
             fields = body.split('\x00')
             if len(fields) == 5:
@@ -351,8 +362,12 @@ def process_notice(notice: Any, log: Optional[IO[Any]]) -> None:
     if notice.format.startswith("Zephyr error: See") or notice.format.endswith("@(@color(blue))"):
         logger.debug("Skipping message we got from Zulip!")
         return
-    if (zephyr_class == "mail" and notice.instance.lower() == "inbox" and is_personal and
-            not options.forward_mail_zephyrs):
+    if (
+        zephyr_class == "mail"
+        and notice.instance.lower() == "inbox"
+        and is_personal
+        and not options.forward_mail_zephyrs
+    ):
         # Only forward mail zephyrs if forwarding them is enabled.
         return
 
@@ -606,8 +621,10 @@ Feedback button or at support@zulipchat.com."""
             # Forward messages sent to '(instance "WHITESPACE")' back to the
             # appropriate WHITESPACE instance for bidirectional mirroring
             instance = match_whitespace_instance.group(1)
-        elif (instance == "instance %s" % (zephyr_class,) or
-              instance == "test instance %s" % (zephyr_class,)):
+        elif (
+            instance == "instance %s" % (zephyr_class,)
+            or instance == "test instance %s" % (zephyr_class,)
+        ):
             # Forward messages to e.g. -c -i white-magic back from the
             # place we forward them to
             if instance.startswith("test"):
@@ -675,8 +692,10 @@ returned the following warning:
 
 %s""" % (support_heading, stderr, support_closing))
         return
-    elif code != 0 and (stderr.startswith("zwrite: Ticket expired while sending notice to ") or
-                        stderr.startswith("zwrite: No credentials cache found while sending notice to ")):
+    elif code != 0 and (
+        stderr.startswith("zwrite: Ticket expired while sending notice to ")
+        or stderr.startswith("zwrite: No credentials cache found while sending notice to ")
+    ):
         # Retry sending the message unauthenticated; if that works,
         # just notify the user that they need to renew their tickets
         (code, stderr) = send_unauthed_zephyr(zwrite_args, wrapped_content)
@@ -711,10 +730,17 @@ received it, Zephyr users did not.  The error message from zwrite was:
 def maybe_forward_to_zephyr(message: Dict[str, Any]) -> None:
     # The key string can be used to direct any type of text.
     if (message["sender_email"] == zulip_account_email):
-        if not ((message["type"] == "stream") or
-                (message["type"] == "private" and
-                 False not in [u["email"].lower().endswith("mit.edu") for u in
-                               message["display_recipient"]])):
+        if not (
+            (message["type"] == "stream")
+            or (
+                message["type"] == "private"
+                and False
+                not in [
+                    u["email"].lower().endswith("mit.edu")
+                    for u in message["display_recipient"]
+                ]
+            )
+        ):
             # Don't try forward private messages with non-MIT users
             # to MIT Zephyr.
             return

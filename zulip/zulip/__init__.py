@@ -55,9 +55,11 @@ class CountingBackoff:
         self.last_attempt_time = time.time()
 
     def _check_success_timeout(self) -> None:
-        if (self.timeout_success_equivalent is not None and
-            self.last_attempt_time != 0 and
-                time.time() - self.last_attempt_time > self.timeout_success_equivalent):
+        if (
+            self.timeout_success_equivalent is not None
+            and self.last_attempt_time != 0
+            and time.time() - self.last_attempt_time > self.timeout_success_equivalent
+        ):
             self.number_of_retries = 0
 
 class RandomExponentialBackoff(CountingBackoff):
@@ -236,8 +238,10 @@ def get_default_config_filename() -> Optional[str]:
         return None
 
     config_file = os.path.join(os.environ["HOME"], ".zuliprc")
-    if (not os.path.exists(config_file) and
-            os.path.exists(os.path.join(os.environ["HOME"], ".humbugrc"))):
+    if (
+        not os.path.exists(config_file)
+        and os.path.exists(os.path.join(os.environ["HOME"], ".humbugrc"))
+    ):
         raise ZulipError("The Zulip API configuration file is now ~/.zuliprc; please run:\n\n"
                          "  mv ~/.humbugrc ~/.zuliprc\n")
     return config_file
@@ -530,8 +534,10 @@ class Client:
                 # Timeouts are either a Timeout or an SSLError; we
                 # want the later exception handlers to deal with any
                 # non-timeout other SSLErrors
-                if (isinstance(e, requests.exceptions.SSLError) and
-                        str(e) != "The read operation timed out"):
+                if (
+                    isinstance(e, requests.exceptions.SSLError)
+                    and str(e) != "The read operation timed out"
+                ):
                     raise UnrecoverableNetworkError('SSL Error')
                 if longpolling:
                     # When longpolling, we expect the timeout to fire,

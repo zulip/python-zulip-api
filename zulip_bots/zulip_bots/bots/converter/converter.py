@@ -95,8 +95,10 @@ def get_bot_converter_response(message: Dict[str, str], bot_handler: Any) -> str
             base_unit = uf_to_std[2]
             if uf_to_std[2] != ut_to_std[2]:
                 unit_from = unit_from.capitalize() if uf_to_std[2] == 'kelvin' else unit_from
-                results.append('`' + unit_to.capitalize() + '` and `' + unit_from + '`' +
-                               ' are not from the same category. ' + utils.QUICK_HELP)
+                results.append(
+                    '`' + unit_to.capitalize() + '` and `' + unit_from + '`'
+                    + ' are not from the same category. ' + utils.QUICK_HELP
+                )
                 continue
 
             # perform the conversion between the units
