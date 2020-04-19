@@ -229,10 +229,7 @@ def main():
 
         for setup_file in setup_py_files:
             package_name = os.path.basename(os.path.dirname(setup_file))
-            if package_name == 'zulip_bots':
-                generate_bdist_wheel(setup_file, package_name)
-            else:
-                generate_bdist_wheel(setup_file, package_name, universal=True)
+            generate_bdist_wheel(setup_file, package_name)
 
         set_variable(bots_setup, 'IS_PYPA_PACKAGE', False)
 
