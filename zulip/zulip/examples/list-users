@@ -18,5 +18,5 @@ options = parser.parse_args()
 
 client = zulip.init_from_options(options)
 
-for user in client.get_members()["members"]:
+for user in client.get_users()["members"]:
     print(user["full_name"], user["email"])
