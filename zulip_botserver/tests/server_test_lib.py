@@ -17,13 +17,13 @@ class BotServerTestCase(TestCase):
     def assert_bot_server_response(
         self,
         mock_ExternalBotHandler: mock.Mock,
-        available_bots: Optional[List[str]]=None,
-        bots_config: Optional[Dict[str, Dict[str, str]]]=None,
-        bot_handlers: Optional[Dict[str, Any]]=None,
-        event: Optional[Dict[str, Any]]=None,
-        expected_response: Optional[str]=None,
-        check_success: bool=False,
-        third_party_bot_conf: Optional[configparser.ConfigParser]=None,
+        available_bots: Optional[List[str]] = None,
+        bots_config: Optional[Dict[str, Dict[str, str]]] = None,
+        bot_handlers: Optional[Dict[str, Any]] = None,
+        event: Optional[Dict[str, Any]] = None,
+        expected_response: Optional[str] = None,
+        check_success: bool = False,
+        third_party_bot_conf: Optional[configparser.ConfigParser] = None,
     ) -> None:
         if available_bots is not None and bots_config is not None:
             server.bots_config = bots_config

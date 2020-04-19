@@ -39,10 +39,10 @@ def get_help_text() -> str:
 
 def format_result(
         result: Dict[str, Any],
-        exclude_keys: List[str]=[],
-        force_keys: List[str]=[],
-        rank_output: bool=False,
-        show_all_keys: bool=False
+        exclude_keys: List[str] = [],
+        force_keys: List[str] = [],
+        rank_output: bool = False,
+        show_all_keys: bool = False
 ) -> str:
     exclude_keys += ['Name', 'attributes', 'Id']
     output = ''

@@ -108,8 +108,8 @@ class ExternalBotHandler:
         client: Client,
         root_dir: str,
         bot_details: Dict[str, Any],
-        bot_config_file: Optional[str]=None,
-        bot_config_parser: Optional[configparser.ConfigParser]=None,
+        bot_config_file: Optional[str] = None,
+        bot_config_parser: Optional[configparser.ConfigParser] = None,
     ) -> None:
         # Only expose a subset of our Client's functionality
         try:
@@ -161,7 +161,7 @@ class ExternalBotHandler:
             print("ERROR!: " + str(resp))
         return resp
 
-    def send_reply(self, message: Dict[str, Any], response: str, widget_content: Optional[str]=None) -> Dict[str, Any]:
+    def send_reply(self, message: Dict[str, Any], response: str, widget_content: Optional[str] = None) -> Dict[str, Any]:
         if message['type'] == 'private':
             return self.send_message(dict(
                 type='private',
@@ -183,7 +183,7 @@ class ExternalBotHandler:
             self._rate_limit.show_error_and_exit()
         return self._client.update_message(message)
 
-    def get_config_info(self, bot_name: str, optional: Optional[bool]=False) -> Dict[str, Any]:
+    def get_config_info(self, bot_name: str, optional: Optional[bool] = False) -> Dict[str, Any]:
         if self._bot_config_parser is not None:
             config_parser = self._bot_config_parser
         else:
@@ -245,7 +245,7 @@ class ExternalBotHandler:
             raise PermissionError("Cannot open file \"{}\". Bots may only access "
                                   "files in their local directory.".format(abs_filepath))
 
-    def quit(self, message: str="") -> None:
+    def quit(self, message: str = "") -> None:
         sys.exit(message)
 
 

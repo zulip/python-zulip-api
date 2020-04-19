@@ -24,9 +24,9 @@ class UnspecifiedProblemException(Exception):
     pass
 
 def make_API_request(endpoint: str,
-                     method: str="GET",
-                     body: Optional[Dict[str, str]]=None,
-                     params: Optional[Dict[str, str]]=None) -> Any:
+                     method: str = "GET",
+                     body: Optional[Dict[str, str]] = None,
+                     params: Optional[Dict[str, str]] = None) -> Any:
     headers = {'Authorization': 'Token ' + api_key}
     if method == "GET":
         r = requests.get(API_BASE_URL + endpoint, headers=headers, params=params)
@@ -54,7 +54,7 @@ def api_show_team(hash_id: str) -> Dict[str, str]:
 def api_show_users(hash_id: str) -> Any:
     return make_API_request("/teams/{}/members".format(hash_id))
 
-def api_list_entries(team_id: Optional[str]=None) -> List[Dict[str, Any]]:
+def api_list_entries(team_id: Optional[str] = None) -> List[Dict[str, Any]]:
     if team_id:
         return make_API_request("/entries", params=dict(team_id=team_id))
     else:

@@ -29,7 +29,7 @@ class MockModel:
         self,
         move: str,
         player: int,
-        is_computer: bool=False
+        is_computer: bool = False
     ) -> Any:
         if not is_computer:
             if int(move.replace('move ', '')) < 9:
