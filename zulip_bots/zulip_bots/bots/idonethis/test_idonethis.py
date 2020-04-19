@@ -61,7 +61,7 @@ class TestIDoneThisBot(BotTestCase, DefaultTests):
     def test_entries_list(self) -> None:
         with self.mock_config_info({'api_key': '12345678', 'default_team': 'testing team 1'}), \
                 self.mock_http_conversation('test_entries_list'), \
-                patch('zulip_bots.bots.idonethis.idonethis.get_team_hash', return_value='31415926535') as get_team_hashFunction:
+                patch('zulip_bots.bots.idonethis.idonethis.get_team_hash', return_value='31415926535'):
             self.verify_reply('entries list testing team 1',
                               'Entries for testing team 1:\n'
                               ' * TESTING\n'

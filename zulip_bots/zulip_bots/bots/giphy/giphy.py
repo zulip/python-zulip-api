@@ -69,7 +69,7 @@ def get_url_gif_giphy(keyword: str, api_key: str) -> Union[int, str]:
 
     try:
         data = requests.get(url, params=query)
-    except requests.exceptions.ConnectionError as e:  # Usually triggered by bad connection.
+    except requests.exceptions.ConnectionError:  # Usually triggered by bad connection.
         logging.exception('Bad connection')
         raise
     data.raise_for_status()

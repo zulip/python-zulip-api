@@ -133,13 +133,12 @@ class LibTest(TestCase):
     def test_content_and_full_content(self):
         client = FakeClient()
         client.get_profile()
-        handler = ExternalBotHandler(
+        ExternalBotHandler(
             client=client,
             root_dir=None,
             bot_details=None,
             bot_config_file=None
         )
-        to = {'email': 'Some@User'}
 
     def test_run_message_handler_for_bot(self):
         with patch('zulip_bots.lib.Client', new=FakeClient) as fake_client:

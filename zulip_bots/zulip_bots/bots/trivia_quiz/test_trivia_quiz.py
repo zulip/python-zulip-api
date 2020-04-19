@@ -100,7 +100,7 @@ class TestTriviaQuizBot(BotTestCase, DefaultTests):
         # test correct answer
         with patch('zulip_bots.bots.trivia_quiz.trivia_quiz.get_quiz_from_id',
                    return_value=json.dumps(quiz)):
-            with patch('zulip_bots.bots.trivia_quiz.trivia_quiz.start_new_quiz') as mock_new_quiz:
+            with patch('zulip_bots.bots.trivia_quiz.trivia_quiz.start_new_quiz'):
                 self._test('answer Q001 A', ':tada: **Amphibian** is correct, Foo Test User!')
 
     def test_update_quiz(self) -> None:
