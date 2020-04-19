@@ -71,9 +71,8 @@ class RandomExponentialBackoff(CountingBackoff):
         super().fail()
         # Exponential growth with ratio sqrt(2); compute random delay
         # between x and 2x where x is growing exponentially
-        delay_scale = int(2 ** (self.number_of_retries / 2.0 - 1)) + 1
-        delay = min(delay_scale + random.randint(1, delay_scale), self.delay_cap)
-        message = "Sleeping for %ss [max %s] before retrying." % (delay, delay_scale * 2)
+        delay = random.random() * min(self.delay_cap, 2 ** self.number_of_retries)
+        message = "Sleeping for %ss before retrying." % (delay,)
         try:
             logger.warning(message)
         except NameError:
@@ -487,13 +486,13 @@ class Client:
         query_state = {
             'had_error_retry': False,
             'request': request,
-            'failures': 0,
         }  # type: Dict[str, Any]
+
+        # create Random Exponential Backoff object to perform retries using the method
+        backoff = RandomExponentialBackoff(timeout_success_equivalent=300)
 
         def error_retry(error_string):
             # type: (str) -> bool
-            if not self.retry_on_errors or query_state["failures"] >= 10:
-                return False
             if self.verbose:
                 if not query_state["had_error_retry"]:
                     sys.stdout.write("zulip API(%s): connection error%s -- retrying." %
@@ -503,9 +502,8 @@ class Client:
                     sys.stdout.write(".")
                 sys.stdout.flush()
             query_state["request"]["dont_block"] = json.dumps(True)
-            time.sleep(1)
-            query_state["failures"] += 1
-            return True
+            backoff.fail()
+            return backoff.keep_going()
 
         def end_error_retry(succeeded):
             # type: (bool) -> None
@@ -606,6 +604,8 @@ class Client:
         # type: (Callable[[Dict[str, Any]], None], Optional[List[str]], Optional[List[List[str]]]) -> None
         if narrow is None:
             narrow = []
+        # Use exponential backoff for registering.
+        register_backoff = RandomExponentialBackoff(timeout_success_equivalent=300)
 
         def do_register():
             # type: () -> Tuple[str, int]
@@ -618,7 +618,7 @@ class Client:
                 if 'error' in res['result']:
                     if self.verbose:
                         print("Server returned error:\n%s" % res['msg'])
-                    time.sleep(1)
+                    register_backoff.fail()
                 else:
                     return (res['queue_id'], res['last_event_id'])
 
@@ -626,6 +626,9 @@ class Client:
         # Make long-polling requests with `get_events`. Once a request
         # has received an answer, pass it to the callback and before
         # making a new long-polling request.
+
+        # Use exponential backoff for fetching events from server.
+        fetch_events_backoff = RandomExponentialBackoff(timeout_success_equivalent=300)
         while True:
             if queue_id is None:
                 (queue_id, last_event_id) = do_register()
@@ -659,7 +662,7 @@ class Client:
                 # Add a pause here to cover against potential bugs in this library
                 # causing a DoS attack against a server when getting errors.
                 # TODO: Make this back off exponentially.
-                time.sleep(1)
+                fetch_events_backoff.fail()
                 continue
 
             for event in res['events']:
