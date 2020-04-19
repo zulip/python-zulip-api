@@ -1,8 +1,6 @@
 from unittest.mock import Mock, patch
 
 from zulip_bots.test_lib import (
-    get_bot_message_handler,
-    StubBotHandler,
     BotTestCase,
     DefaultTests,
 )
