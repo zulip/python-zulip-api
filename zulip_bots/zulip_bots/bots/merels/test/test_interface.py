@@ -1,6 +1,6 @@
 import unittest
 
-from libraries import interface
+from .. libraries import interface
 
 
 class BoardLayoutTest(unittest.TestCase):

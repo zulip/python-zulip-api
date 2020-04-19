@@ -1,11 +1,11 @@
 import unittest
 
-from libraries import database
-from libraries import game_data
+from .. libraries import database
+from .. libraries import game_data
 from zulip_bots.simple_lib import SimpleStorage
 from zulip_bots.test_lib import BotTestCase, DefaultTests
 from zulip_bots.game_handler import GameInstance
-from merels import MerelsHandler
+from .. merels import MerelsHandler
 
 class DatabaseTest(BotTestCase, DefaultTests):
     bot_name = 'merels'

@@ -1,6 +1,8 @@
 from zulip_bots.test_lib import BotTestCase, DefaultTests
 from zulip_bots.game_handler import GameInstance
-from libraries.constants import EMPTY_BOARD
+from . libraries.constants import EMPTY_BOARD
+from . libraries import interface
+from . libraries import database
 
 from typing import List, Tuple, Any
 
@@ -14,6 +16,50 @@ class TestMerelsBot(BotTestCase, DefaultTests):
 
     # FIXME: Add tests for computer moves
     # FIXME: Add test lib for game_handler
+
+    def test_determine_game_over_continue(self) -> None:
+        board = EMPTY_BOARD
+        players = ['Human', 'Human']
+        expected_response = ''
+        self._test_determine_game_over_continue(board, players, expected_response)
+
+    def _test_determine_game_over_continue(self, board: List[List[int]], players: List[str], expected_response: str) -> None:
+        model, message_handler = self._get_game_handlers()
+        merelsGame = model(board)
+        response = merelsGame.determine_game_over(players)
+        self.assertEqual(response, expected_response)
+
+    def test_determine_game_over_winning(self) -> None:
+        board = EMPTY_BOARD
+        players = ['Human', 'Human']
+        expected_response = 'current turn'
+        self._test_determine_game_over_winning(board, players, expected_response)
+
+    def _test_determine_game_over_winning(self, board: List[List[int]], players: List[str], expected_response: str) -> None:
+        model, message_handler = self._get_game_handlers()
+        merelsGame = model(board)
+
+        boardValues = "NONNONNONONNNONNNNONXOXN"
+        grid = interface.construct_grid(boardValues)
+        boardUpdated = interface.construct_board(grid)
+        merels = database.MerelsStorage(merelsGame.topic, merelsGame.storage)
+        merels.update_game('merels', 'O', 7, 2, boardUpdated, "", 0)
+        response = merelsGame.determine_game_over(players)
+        self.assertEqual(response, expected_response)
+
+    def test_make_move(self) -> None:
+        board = EMPTY_BOARD
+        move = "put(0,0)"
+        player_number = 0
+        computer_move = False
+        self._test_make_move(board, move, player_number, computer_move)
+
+    def _test_make_move(self, board: List[List[int]], move: str, player_number: int, computer_move: bool=False) -> None:
+        model, message_handler = self._get_game_handlers()
+        merelsGame = model(board)
+        response = merelsGame.make_move(move, player_number, computer_move)
+        expected_response = merelsGame.current_board
+        self.assertEqual(response, expected_response)
 
     # Test for unchanging aspects within the game
     # Player Color, Start Message, Moving Message
@@ -73,9 +119,4 @@ class TestMerelsBot(BotTestCase, DefaultTests):
     def _test_parse_board(self, board: str, expected_response: str) -> None:
         model, message_handler = self._get_game_handlers()
         response = message_handler.parse_board(board)
-        self.assertEqual(response, expected_response)
-
-    def _test_determine_game_over(self, board: List[List[int]], players: List[str], expected_response: str) -> None:
-        model, message_handler = self._get_game_handlers()
-        response = model.determine_game_over(players)
         self.assertEqual(response, expected_response)
