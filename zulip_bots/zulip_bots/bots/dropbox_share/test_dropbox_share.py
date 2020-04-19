@@ -226,7 +226,6 @@ class TestDropboxBot(BotTestCase, DefaultTests):
         mkdir_error_response = "ERROR: syntax: mkdir <path>"
         rm_error_response = "ERROR: syntax: rm <path>"
         write_error_response = "ERROR: syntax: write <path> <some_text>"
-        search_error_response = "ERROR: syntax: search <path> <some_text> <max_results>"
         share_error_response = "ERROR: syntax: share <path>"
         usage_error_response = "ERROR: syntax: usage"
 

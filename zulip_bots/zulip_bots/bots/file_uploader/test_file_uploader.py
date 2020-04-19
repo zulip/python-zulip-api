@@ -19,7 +19,7 @@ class TestFileUploaderBot(BotTestCase, DefaultTests):
     def test_file_upload_failed(self, is_file: Mock, resolve: Mock) -> None:
         server_reply = dict(result='', msg='error')
         with patch('zulip_bots.test_lib.StubBotHandler.upload_file_from_path',
-                   return_value=server_reply) as m:
+                   return_value=server_reply):
             self.verify_reply('file.txt', 'Failed to upload `/file.txt` file: error')
 
     @patch('pathlib.Path.resolve', return_value=Path('/file.txt'))
@@ -27,7 +27,7 @@ class TestFileUploaderBot(BotTestCase, DefaultTests):
     def test_file_upload_success(self, is_file: Mock, resolve: Mock) -> None:
         server_reply = dict(result='success', uri='https://file/uri')
         with patch('zulip_bots.test_lib.StubBotHandler.upload_file_from_path',
-                   return_value=server_reply) as m:
+                   return_value=server_reply):
             self.verify_reply('file.txt', '[file.txt](https://file/uri)')
 
     def test_help(self):

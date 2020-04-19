@@ -113,7 +113,7 @@ def fetch_xkcd_query(mode: int, comic_id: Optional[str]=None) -> Dict[str, str]:
             raise XkcdServerError()
 
         xkcd_json = fetched.json()
-    except requests.exceptions.ConnectionError as e:
+    except requests.exceptions.ConnectionError:
         logging.exception("Connection Error")
         raise
 

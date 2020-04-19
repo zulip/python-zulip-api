@@ -66,7 +66,7 @@ def search_youtube(query: str, key: str,
     url = 'https://www.googleapis.com/youtube/v3/search'
     try:
         r = requests.get(url, params=params)
-    except ConnectionError as e:  # Usually triggered by bad connection.
+    except ConnectionError:  # Usually triggered by bad connection.
         logging.exception('Bad connection')
         raise
     r.raise_for_status()
