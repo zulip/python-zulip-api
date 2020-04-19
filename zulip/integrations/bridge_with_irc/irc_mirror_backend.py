@@ -106,7 +106,6 @@ class IRCBot(irc.bot.SingleServerIRCBot):
             "type": "stream",
             "to": self.stream,
             "subject": self.topic,
-            "content": content,
             "content": "**{}**: {}".format(sender, content),
         }))
 
