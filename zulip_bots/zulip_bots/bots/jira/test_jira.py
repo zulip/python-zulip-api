@@ -1,4 +1,3 @@
-from unittest.mock import patch
 from zulip_bots.test_lib import BotTestCase, DefaultTests
 
 class TestJiraBot(BotTestCase, DefaultTests):
@@ -158,17 +157,6 @@ Jira Bot:
                               'with description "This is a test description" assigned to "testuser" '
                               'with priority "Medium" labeled "issues, testing" due "2018-06-11"',
                               'Oh no! Jira raised an error:\n > error1')
-
-    def test_edit(self) -> None:
-        with patch('requests.put') as response, \
-                self.mock_config_info(self.MOCK_CONFIG_INFO):
-            response.return_value.text = 'text so that it isn\'t assumed to be an error'
-            response.return_value.json = lambda: self.MOCK_EDIT_JSON
-
-            self.verify_reply(
-                'edit issue "TEST-16" to use description "description"',
-                self.MOCK_EDIT_RESPONSE
-            )
 
     def test_edit(self) -> None:
         with self.mock_config_info(self.MOCK_CONFIG_INFO), \
