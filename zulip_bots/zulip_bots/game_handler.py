@@ -4,7 +4,6 @@ import random
 import logging
 from copy import deepcopy
 from typing import Any, Dict, Tuple, List
-import random
 
 
 class BadMoveException(Exception):

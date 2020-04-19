@@ -1,7 +1,5 @@
 import requests
 import logging
-from zulip_bots.lib import Any
-
 from typing import Optional, Any, Dict
 
 # See readme.md for instructions on running this code.
