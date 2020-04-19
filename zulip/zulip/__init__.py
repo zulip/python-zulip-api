@@ -1143,6 +1143,13 @@ class Client:
             request=request,
         )
 
+    def get_members(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        # This exists for backwards-compatibility; we renamed this
+        # function get_users for consistency with the rest of the API.
+        # Later, we may want to add a warning for clients using this
+        # legacy name.
+        return self.get_users(request=request)
+
     def get_alert_words(self) -> Dict[str, Any]:
         '''
             See examples/alert-words for example usage.
