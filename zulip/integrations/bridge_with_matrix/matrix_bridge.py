@@ -75,8 +75,10 @@ def matrix_to_zulip(
         zulip_bot_user = ('@%s:matrix.org' % matrix_config['username'])
         # We do this to identify the messages generated from Zulip -> Matrix
         # and we make sure we don't forward it again to the Zulip stream.
-        not_from_zulip_bot = ('body' not in event['content'] or
-                              event['sender'] != zulip_bot_user)
+        not_from_zulip_bot = (
+            'body' not in event['content']
+            or event['sender'] != zulip_bot_user
+        )
 
         if not_from_zulip_bot and content:
             try:

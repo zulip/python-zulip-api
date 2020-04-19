@@ -59,8 +59,10 @@ def send_bot_message(oldrev: str, newrev: str, refname: str) -> None:
     new_head = newrev[:12]
     old_head = oldrev[:12]
 
-    if (oldrev == '0000000000000000000000000000000000000000' or
-            newrev == '0000000000000000000000000000000000000000'):
+    if (
+        oldrev == '0000000000000000000000000000000000000000'
+        or newrev == '0000000000000000000000000000000000000000'
+    ):
         # New branch pushed or old branch removed
         added = ''
         removed = ''

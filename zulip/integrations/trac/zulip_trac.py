@@ -74,8 +74,10 @@ class ZulipPlugin(Component):
         `old_values` is a dictionary containing the previous values of the
         fields that have changed.
         """
-        if not (set(old_values.keys()).intersection(set(config.TRAC_NOTIFY_FIELDS)) or
-                (comment and "comment" in set(config.TRAC_NOTIFY_FIELDS))):
+        if not (
+            set(old_values.keys()).intersection(set(config.TRAC_NOTIFY_FIELDS))
+            or (comment and "comment" in set(config.TRAC_NOTIFY_FIELDS))
+        ):
             return
 
         content = "%s updated %s" % (author, markdown_ticket_url(ticket))

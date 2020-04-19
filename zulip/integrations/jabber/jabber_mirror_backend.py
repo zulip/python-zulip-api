@@ -66,9 +66,11 @@ def jid_to_zulip(jid: JID) -> str:
 
 def zulip_to_jid(email: str, jabber_domain: str) -> JID:
     jid = JID(email, domain=jabber_domain)
-    if (options.zulip_email_suffix and
-        options.zulip_email_suffix in jid.username and
-            not jid.username.endswith("-bot")):
+    if (
+        options.zulip_email_suffix
+        and options.zulip_email_suffix in jid.username
+        and not jid.username.endswith("-bot")
+    ):
         jid.username = jid.username.rpartition(options.zulip_email_suffix)[0]
     return jid
 
@@ -393,8 +395,10 @@ option does not affect login credentials.'''.replace("\n", " "))
         pass
     for option in ("jid", "jabber_password", "conference_domain", "mode", "zulip_email_suffix",
                    "jabber_server_address", "jabber_server_port"):
-        if (getattr(options, option) is None and
-                config.has_option("jabber_mirror", option)):
+        if (
+            getattr(options, option) is None
+            and config.has_option("jabber_mirror", option)
+        ):
             setattr(options, option, config.get("jabber_mirror", option))
 
     for option in ("no_use_tls",):
