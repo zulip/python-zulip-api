@@ -8,6 +8,9 @@ following dependencies:
 * six
 * typing (version >= 3.5.2.2)
 
+**Note**: If you'd like to use the Zulip bindings with Python 2, we
+recommend installing version 0.6.4.
+
 #### Installing
 
 This package uses distutils, so you can just run:
