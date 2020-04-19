@@ -27,7 +27,7 @@ class TicTacToeModel:
                      [0, 0, 0],
                      [0, 0, 0]]
 
-    def __init__(self, board: Any=None) -> None:
+    def __init__(self, board: Any = None) -> None:
         if board is not None:
             self.current_board = board
         else:
@@ -190,7 +190,7 @@ class TicTacToeModel:
             valid = False
         return valid
 
-    def make_move(self, move: str, player_number: int, computer_move: bool=False) -> Any:
+    def make_move(self, move: str, player_number: int, computer_move: bool = False) -> Any:
         if computer_move:
             return self.computer_move(self.current_board, player_number + 1)
         move_coords_str = coords_from_command(move)

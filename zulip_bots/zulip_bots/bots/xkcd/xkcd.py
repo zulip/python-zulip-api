@@ -85,7 +85,7 @@ def get_xkcd_bot_response(message: Dict[str, str], quoted_name: str) -> str:
                                            fetched['alt'],
                                            fetched['img']))
 
-def fetch_xkcd_query(mode: int, comic_id: Optional[str]=None) -> Dict[str, str]:
+def fetch_xkcd_query(mode: int, comic_id: Optional[str] = None) -> Dict[str, str]:
     try:
         if mode == XkcdBotCommand.LATEST:  # Fetch the latest comic strip.
             url = LATEST_XKCD_URL

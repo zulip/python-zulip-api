@@ -11,8 +11,8 @@ class TestConnectFourBot(BotTestCase, DefaultTests):
     def make_request_message(
         self,
         content: str,
-        user: str='foo@example.com',
-        user_name: str='foo'
+        user: str = 'foo@example.com',
+        user_name: str = 'foo'
     ) -> Dict[str, str]:
         message = dict(
             sender_email=user,
@@ -22,7 +22,7 @@ class TestConnectFourBot(BotTestCase, DefaultTests):
         return message
 
     # Function that serves similar purpose to BotTestCase.verify_dialog, but allows for multiple responses to be handled
-    def verify_response(self, request: str, expected_response: str, response_number: int, user: str='foo@example.com') -> None:
+    def verify_response(self, request: str, expected_response: str, response_number: int, user: str = 'foo@example.com') -> None:
         '''
         This function serves a similar purpose
         to BotTestCase.verify_dialog, but allows

@@ -48,7 +48,7 @@ class TestMerelsBot(BotTestCase, DefaultTests):
     def test_setup_game(self):
         self.setup_game()
 
-    def add_user_to_cache(self, name: str, bot: Any=None) -> Any:
+    def add_user_to_cache(self, name: str, bot: Any = None) -> Any:
         if bot is None:
             bot, bot_handler = self._get_handlers()
         message = {

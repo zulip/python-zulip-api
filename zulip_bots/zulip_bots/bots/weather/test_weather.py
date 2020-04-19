@@ -16,7 +16,7 @@ class TestWeatherBot(BotTestCase, DefaultTests):
             @**Weather Bot** Portland, Me
             '''.strip()
 
-    def _test(self, message: str, response: str, fixture: Optional[str]=None) -> None:
+    def _test(self, message: str, response: str, fixture: Optional[str] = None) -> None:
         with self.mock_config_info({'key': '123456'}):
             if fixture:
                 with self.mock_http_conversation(fixture):

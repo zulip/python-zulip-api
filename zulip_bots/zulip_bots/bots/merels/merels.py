@@ -21,7 +21,7 @@ class Storage:
 
 class MerelsModel:
 
-    def __init__(self, board: Any=None) -> None:
+    def __init__(self, board: Any = None) -> None:
         self.topic = "merels"
         self.storage = Storage(self.topic)
         self.current_board = mechanics.display_game(self.topic, self.storage)
@@ -42,7 +42,7 @@ class MerelsModel:
                 return True
         return False
 
-    def make_move(self, move: str, player_number: int, computer_move: bool=False) -> Any:
+    def make_move(self, move: str, player_number: int, computer_move: bool = False) -> Any:
         if self.storage.get(self.topic) == '["X", 0, 0, "NNNNNNNNNNNNNNNNNNNNNNNN", "", 0]':
             self.storage.put(
                 self.topic,

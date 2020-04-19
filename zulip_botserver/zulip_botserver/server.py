@@ -29,7 +29,7 @@ def read_config_section(parser: configparser.ConfigParser, section: str) -> Dict
     return section_info
 
 
-def read_config_file(config_file_path: str, bot_name: Optional[str]=None) -> Dict[str, Dict[str, str]]:
+def read_config_file(config_file_path: str, bot_name: Optional[str] = None) -> Dict[str, Dict[str, str]]:
     parser = parse_config_file(config_file_path)
 
     bots_config = {}  # type: Dict[str, Dict[str, str]]
@@ -102,7 +102,7 @@ def load_lib_modules(available_bots: List[str]) -> Dict[str, Any]:
 def load_bot_handlers(
     available_bots: List[str],
     bots_config: Dict[str, Dict[str, str]],
-    third_party_bot_conf: Optional[configparser.ConfigParser]=None,
+    third_party_bot_conf: Optional[configparser.ConfigParser] = None,
 ) -> Dict[str, lib.ExternalBotHandler]:
     bot_handlers = {}
     for bot in available_bots:

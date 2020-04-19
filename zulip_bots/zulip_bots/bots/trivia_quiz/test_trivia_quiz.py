@@ -40,7 +40,7 @@ class TestTriviaQuizBot(BotTestCase, DefaultTests):
             quiz = get_quiz_from_payload(quiz_payload)
         return quiz, bot_handler
 
-    def _test(self, message: str, response: str, fixture: Optional[str]=None) -> None:
+    def _test(self, message: str, response: str, fixture: Optional[str] = None) -> None:
         if fixture:
             with self.mock_http_conversation(fixture):
                 self.verify_reply(message, response)

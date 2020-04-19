@@ -13,7 +13,7 @@ class GameOfFifteenModel:
                      [5, 4, 3],
                      [2, 1, 0]]
 
-    def __init__(self, board: Any=None) -> None:
+    def __init__(self, board: Any = None) -> None:
         if board is not None:
             self.current_board = board
         else:
@@ -52,7 +52,7 @@ class GameOfFifteenModel:
     def update_board(self, board):
         self.current_board = copy.deepcopy(board)
 
-    def make_move(self, move: str, player_number: int, computer_move: bool=False) -> Any:
+    def make_move(self, move: str, player_number: int, computer_move: bool = False) -> Any:
         board = self.current_board
         move = move.strip()
         move = move.split(' ')

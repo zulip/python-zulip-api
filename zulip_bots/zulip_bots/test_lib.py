@@ -42,7 +42,7 @@ class StubBotHandler:
         return self.message_server.send(message)
 
     def send_reply(self, message: Dict[str, Any], response: str,
-                   widget_content: Optional[str]=None) -> Dict[str, Any]:
+                   widget_content: Optional[str] = None) -> Dict[str, Any]:
         response_message = dict(
             content=response,
             widget_content=widget_content
@@ -63,10 +63,10 @@ class StubBotHandler:
     class BotQuitException(Exception):
         pass
 
-    def quit(self, message: str="") -> None:
+    def quit(self, message: str = "") -> None:
         raise self.BotQuitException()
 
-    def get_config_info(self, bot_name: str, optional: bool=False) -> Dict[str, Any]:
+    def get_config_info(self, bot_name: str, optional: bool = False) -> Dict[str, Any]:
         return {}
 
     def unique_reply(self) -> Dict[str, Any]:
