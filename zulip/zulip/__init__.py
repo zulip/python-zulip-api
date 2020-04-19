@@ -1143,6 +1143,9 @@ class Client:
             request=request,
         )
 
+    def get_members(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        return self.get_users(request=request)
+
     def get_alert_words(self) -> Dict[str, Any]:
         '''
             See examples/alert-words for example usage.
