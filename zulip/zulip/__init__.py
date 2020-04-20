@@ -233,6 +233,38 @@ def init_from_options(options: Any, client: Optional[str] = None) -> 'Client':
                   client_cert=options.client_cert,
                   client_cert_key=options.client_cert_key)
 
+def validate_credentials(options, client=None):
+    # type: (Any, Optional[str]) -> Dict[str, str]
+
+    if getattr(options, 'provision', False):
+        requirements_path = os.path.abspath(os.path.join(sys.path[0], 'requirements.txt'))
+        try:
+            import pip
+        except ImportError:
+            traceback.print_exc()
+            print("Module `pip` is not installed. To install `pip`, follow the instructions here: "
+                  "https://pip.pypa.io/en/stable/installing/")
+            sys.exit(1)
+        if not pip.main(['install', '--upgrade', '--requirement', requirements_path]):
+            print("{color_green}You successfully provisioned the dependencies for {script}.{end_color}".format(
+                color_green='\033[92m', end_color='\033[0m',
+                script=os.path.splitext(os.path.basename(sys.argv[0]))[0]))
+            sys.exit(0)
+
+    if options.zulip_client is not None:
+        client = options.zulip_client
+    elif client is None:
+        client = _default_client()
+
+    result = Client(email=options.zulip_email, api_key=options.zulip_api_key,
+                    config_file=options.zulip_config_file, verbose=options.verbose,
+                    site=options.zulip_site, client=client,
+                    cert_bundle=options.cert_bundle, insecure=options.insecure,
+                    client_cert=options.client_cert,
+                    client_cert_key=options.client_cert_key)
+
+    return result.get_profile()
+
 def get_default_config_filename() -> Optional[str]:
     if os.environ.get("HOME") is None:
         return None
