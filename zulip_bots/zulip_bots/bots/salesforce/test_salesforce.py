@@ -108,14 +108,14 @@ mock_object_types = {
 class TestSalesforceBot(BotTestCase, DefaultTests):
     bot_name = "salesforce"  # type: str
 
-    def _test(self, test_name: str, message: str, response: str, auth_success: bool=True) -> None:
+    def _test(self, test_name: str, message: str, response: str, auth_success: bool = True) -> None:
         with self.mock_config_info(mock_config), \
                 mock_salesforce_auth(auth_success), \
                 mock_salesforce_query(test_name, 'salesforce'), \
                 mock_salesforce_commands_types():
             self.verify_reply(message, response)
 
-    def _test_initialize(self, auth_success: bool=True) -> None:
+    def _test_initialize(self, auth_success: bool = True) -> None:
         with self.mock_config_info(mock_config), \
                 mock_salesforce_auth(auth_success), \
                 mock_salesforce_commands_types():

@@ -2,10 +2,8 @@
 
 import simple_salesforce
 from typing import Dict, Any, List
-import getpass
 import re
 import logging
-import json
 from zulip_bots.bots.salesforce.utils import commands, object_types, link_query, default_query
 
 base_help_text = '''Salesforce bot
@@ -41,10 +39,10 @@ def get_help_text() -> str:
 
 def format_result(
         result: Dict[str, Any],
-        exclude_keys: List[str]=[],
-        force_keys: List[str]=[],
-        rank_output: bool=False,
-        show_all_keys: bool=False
+        exclude_keys: List[str] = [],
+        force_keys: List[str] = [],
+        rank_output: bool = False,
+        show_all_keys: bool = False
 ) -> str:
     exclude_keys += ['Name', 'attributes', 'Id']
     output = ''
@@ -82,7 +80,7 @@ def query_salesforce(arg: str, salesforce: simple_salesforce.Salesforce, command
         raw_arg = ' -' + arg.split(' -', 1)[1]
         split_args = raw_arg.split(' -')
     limit_num = 5
-    re_limit = re.compile('-limit \d+')
+    re_limit = re.compile(r'-limit \d+')
     limit = re_limit.search(raw_arg)
     if limit:
         limit_num = int(limit.group().rsplit(' ', 1)[1])
@@ -122,7 +120,7 @@ def get_salesforce_link_details(link: str, sf: Any) -> str:
     return 'No object found. Make sure it is of the supported types. Type `help` for more info.'
 
 
-class SalesforceHandler(object):
+class SalesforceHandler:
     def usage(self) -> str:
         return '''
         This is a Salesforce bot, which can search for Contacts,
@@ -136,7 +134,7 @@ class SalesforceHandler(object):
 
     def get_salesforce_response(self, content: str) -> str:
         content = content.strip()
-        if content is '' or content == 'help':
+        if content == '' or content == 'help':
             return get_help_text()
         if content.startswith('http') and 'force' in content:
             return get_salesforce_link_details(content, self.sf)

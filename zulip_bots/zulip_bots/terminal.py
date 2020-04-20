@@ -38,8 +38,8 @@ def main():
     try:
         lib_module = import_module_from_source(bot_path, bot_name)
         if lib_module is None:
-            raise IOError
-    except IOError:
+            raise OSError
+    except OSError:
         print("Could not find and import bot '{}'".format(bot_name))
         sys.exit(1)
 

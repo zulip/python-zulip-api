@@ -2,9 +2,8 @@
 # googletranslate.conf in this (zulip_bots/bots/googletranslate/) directory.
 
 import requests
-from requests.exceptions import HTTPError, ConnectionError
 
-class GoogleTranslateHandler(object):
+class GoogleTranslateHandler:
     '''
     This bot will translate any messages sent to it using google translate.
     Before using it, make sure you set up google api keys, and enable google

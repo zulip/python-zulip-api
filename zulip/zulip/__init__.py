@@ -1,28 +1,3 @@
-# -*- coding: utf-8 -*-
-
-# Copyright © 2012-2014 Zulip, Inc.
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import division
 import json
 import requests
 import time
@@ -37,13 +12,15 @@ import types
 from distutils.version import LooseVersion
 
 import distro
-from six.moves.configparser import SafeConfigParser
-from six.moves import urllib
+from configparser import SafeConfigParser
+import urllib.parse
 import logging
-import six
 from typing import Any, Callable, Dict, Iterable, IO, List, Mapping, Optional, Text, Tuple, Union
 
-__version__ = "0.6.3"
+__version__ = "0.6.4"
+
+# Ensure the Python version is supported
+assert sys.version_info >= (3, 5)
 
 logger = logging.getLogger(__name__)
 
@@ -55,43 +32,39 @@ requests_json_is_function = callable(requests.Response.json)
 
 API_VERSTRING = "v1/"
 
-class CountingBackoff(object):
-    def __init__(self, maximum_retries=10, timeout_success_equivalent=None, delay_cap=90.0):
-        # type: (int, Optional[float], float) -> None
+class CountingBackoff:
+    def __init__(self, maximum_retries: int = 10, timeout_success_equivalent: Optional[float] = None, delay_cap: float = 90.0) -> None:
         self.number_of_retries = 0
         self.maximum_retries = maximum_retries
         self.timeout_success_equivalent = timeout_success_equivalent
         self.last_attempt_time = 0.0
         self.delay_cap = delay_cap
 
-    def keep_going(self):
-        # type: () -> bool
+    def keep_going(self) -> bool:
         self._check_success_timeout()
         return self.number_of_retries < self.maximum_retries
 
-    def succeed(self):
-        # type: () -> None
+    def succeed(self) -> None:
         self.number_of_retries = 0
         self.last_attempt_time = time.time()
 
-    def fail(self):
-        # type: () -> None
+    def fail(self) -> None:
         self._check_success_timeout()
         self.number_of_retries = min(self.number_of_retries + 1,
                                      self.maximum_retries)
         self.last_attempt_time = time.time()
 
-    def _check_success_timeout(self):
-        # type: () -> None
-        if (self.timeout_success_equivalent is not None and
-            self.last_attempt_time != 0 and
-                time.time() - self.last_attempt_time > self.timeout_success_equivalent):
+    def _check_success_timeout(self) -> None:
+        if (
+            self.timeout_success_equivalent is not None
+            and self.last_attempt_time != 0
+            and time.time() - self.last_attempt_time > self.timeout_success_equivalent
+        ):
             self.number_of_retries = 0
 
 class RandomExponentialBackoff(CountingBackoff):
-    def fail(self):
-        # type: () -> None
-        super(RandomExponentialBackoff, self).fail()
+    def fail(self) -> None:
+        super().fail()
         # Exponential growth with ratio sqrt(2); compute random delay
         # between x and 2x where x is growing exponentially
         delay_scale = int(2 ** (self.number_of_retries / 2.0 - 1)) + 1
@@ -103,16 +76,17 @@ class RandomExponentialBackoff(CountingBackoff):
             print(message)
         time.sleep(delay)
 
-def _default_client():
-    # type: () -> str
+def _default_client() -> str:
     return "ZulipPython/" + __version__
 
-def add_default_arguments(parser, patch_error_handling=True, allow_provisioning=False):
-    # type: (argparse.ArgumentParser, bool, bool) ->  argparse.ArgumentParser
+def add_default_arguments(
+    parser: argparse.ArgumentParser,
+    patch_error_handling: bool = True,
+    allow_provisioning: bool = False,
+) -> argparse.ArgumentParser:
 
     if patch_error_handling:
-        def custom_error_handling(self, message):
-            # type: (Any, str) -> None
+        def custom_error_handling(self: argparse.ArgumentParser, message: str) -> None:
             self.print_help(sys.stderr)
             self.exit(2, '{}: error: {}\n'.format(self.prog, message))
         parser.error = types.MethodType(custom_error_handling, parser)  # type: ignore # patching function
@@ -177,8 +151,7 @@ def add_default_arguments(parser, patch_error_handling=True, allow_provisioning=
 # except for the fact that is uses the deprecated `optparse` module.
 # We still keep it for legacy support of out-of-tree bots and integrations
 # depending on it.
-def generate_option_group(parser, prefix=''):
-    # type: (optparse.OptionParser, str) ->  optparse.OptionGroup
+def generate_option_group(parser: optparse.OptionParser, prefix: str = '') -> optparse.OptionGroup:
     logging.warning("""zulip.generate_option_group is based on optparse, which
                     is now deprecated. We recommend migrating to argparse and
                     using zulip.add_default_arguments instead.""")
@@ -232,8 +205,7 @@ def generate_option_group(parser, prefix=''):
                           file).''')
     return group
 
-def init_from_options(options, client=None):
-    # type: (Any, Optional[str]) -> Client
+def init_from_options(options: Any, client: Optional[str] = None) -> 'Client':
 
     if getattr(options, 'provision', False):
         requirements_path = os.path.abspath(os.path.join(sys.path[0], 'requirements.txt'))
@@ -261,20 +233,20 @@ def init_from_options(options, client=None):
                   client_cert=options.client_cert,
                   client_cert_key=options.client_cert_key)
 
-def get_default_config_filename():
-    # type: () -> Optional[str]
+def get_default_config_filename() -> Optional[str]:
     if os.environ.get("HOME") is None:
         return None
 
     config_file = os.path.join(os.environ["HOME"], ".zuliprc")
-    if (not os.path.exists(config_file) and
-            os.path.exists(os.path.join(os.environ["HOME"], ".humbugrc"))):
+    if (
+        not os.path.exists(config_file)
+        and os.path.exists(os.path.join(os.environ["HOME"], ".humbugrc"))
+    ):
         raise ZulipError("The Zulip API configuration file is now ~/.zuliprc; please run:\n\n"
                          "  mv ~/.humbugrc ~/.zuliprc\n")
     return config_file
 
-def validate_boolean_field(field):
-    # type: (Optional[Text]) -> Union[bool, None]
+def validate_boolean_field(field: Optional[Text]) -> Union[bool, None]:
     if not isinstance(field, str):
         return None
 
@@ -299,13 +271,12 @@ class MissingURLError(ZulipError):
 class UnrecoverableNetworkError(ZulipError):
     pass
 
-class Client(object):
-    def __init__(self, email=None, api_key=None, config_file=None,
-                 verbose=False, retry_on_errors=True,
-                 site=None, client=None,
-                 cert_bundle=None, insecure=None,
-                 client_cert=None, client_cert_key=None):
-        # type: (Optional[str], Optional[str], Optional[str], bool, bool, Optional[str], Optional[str], Optional[str], Optional[bool], Optional[str], Optional[str]) -> None
+class Client:
+    def __init__(self, email: Optional[str] = None, api_key: Optional[str] = None, config_file: Optional[str] = None,
+                 verbose: bool = False, retry_on_errors: bool = True,
+                 site: Optional[str] = None, client: Optional[str] = None,
+                 cert_bundle: Optional[str] = None, insecure: Optional[bool] = None,
+                 client_cert: Optional[str] = None, client_cert_key: Optional[str] = None) -> None:
         if client is None:
             client = _default_client()
 
@@ -345,7 +316,7 @@ class Client(object):
 
         if config_file is not None and os.path.exists(config_file):
             config = SafeConfigParser()
-            with open(config_file, 'r') as f:
+            with open(config_file) as f:
                 config.readfp(f, config_file)
             if api_key is None:
                 api_key = config.get("api", "key")
@@ -429,8 +400,7 @@ class Client(object):
 
         self.has_connected = False
 
-    def ensure_session(self):
-        # type: () -> None
+    def ensure_session(self) -> None:
 
         # Check if the session has been created already, and return
         # immediately if so.
@@ -452,14 +422,13 @@ class Client(object):
         session.headers.update({"User-agent": self.get_user_agent()})
         self.session = session
 
-    def get_user_agent(self):
-        # type: () -> str
+    def get_user_agent(self) -> str:
         vendor = ''
         vendor_version = ''
         try:
             vendor = platform.system()
             vendor_version = platform.release()
-        except IOError:
+        except OSError:
             # If the calling process is handling SIGCHLD, platform.system() can
             # fail with an IOError.  See http://bugs.python.org/issue9127
             pass
@@ -477,9 +446,8 @@ class Client(object):
             vendor_version=vendor_version,
         )
 
-    def do_api_query(self, orig_request, url, method="POST",
-                     longpolling=False, files=None, timeout=None):
-        # type: (Mapping[str, Any], str, str, bool, Optional[List[IO[Any]]], Optional[float]) -> Dict[str, Any]
+    def do_api_query(self, orig_request: Mapping[str, Any], url: str, method: str = "POST",
+                     longpolling: bool = False, files: Optional[List[IO[Any]]] = None, timeout: Optional[float] = None) -> Dict[str, Any]:
         if files is None:
             files = []
 
@@ -495,7 +463,7 @@ class Client(object):
         request = {}
         req_files = []
 
-        for (key, val) in six.iteritems(orig_request):
+        for (key, val) in orig_request.items():
             if isinstance(val, str) or isinstance(val, Text):
                 request[key] = val
             else:
@@ -513,8 +481,7 @@ class Client(object):
             'failures': 0,
         }  # type: Dict[str, Any]
 
-        def error_retry(error_string):
-            # type: (str) -> bool
+        def error_retry(error_string: str) -> bool:
             if not self.retry_on_errors or query_state["failures"] >= 10:
                 return False
             if self.verbose:
@@ -530,8 +497,7 @@ class Client(object):
             query_state["failures"] += 1
             return True
 
-        def end_error_retry(succeeded):
-            # type: (bool) -> None
+        def end_error_retry(succeeded: bool) -> None:
             if query_state["had_error_retry"] and self.verbose:
                 if succeeded:
                     print("Success!")
@@ -568,8 +534,10 @@ class Client(object):
                 # Timeouts are either a Timeout or an SSLError; we
                 # want the later exception handlers to deal with any
                 # non-timeout other SSLErrors
-                if (isinstance(e, requests.exceptions.SSLError) and
-                        str(e) != "The read operation timed out"):
+                if (
+                    isinstance(e, requests.exceptions.SSLError)
+                    and str(e) != "The read operation timed out"
+                ):
                     raise UnrecoverableNetworkError('SSL Error')
                 if longpolling:
                     # When longpolling, we expect the timeout to fire,
@@ -612,9 +580,8 @@ class Client(object):
             return {'msg': "Unexpected error from the server", "result": "http-error",
                     "status_code": res.status_code}
 
-    def call_endpoint(self, url=None, method="POST", request=None,
-                      longpolling=False, files=None, timeout=None):
-        # type: (Optional[str], str, Optional[Dict[str, Any]], bool, Optional[List[IO[Any]]], Optional[float]) -> Dict[str, Any]
+    def call_endpoint(self, url: Optional[str] = None, method: str = "POST", request: Optional[Dict[str, Any]] = None,
+                      longpolling: bool = False, files: Optional[List[IO[Any]]] = None, timeout: Optional[float] = None) -> Dict[str, Any]:
         if request is None:
             request = dict()
         marshalled_request = {}
@@ -625,13 +592,16 @@ class Client(object):
         return self.do_api_query(marshalled_request, versioned_url, method=method,
                                  longpolling=longpolling, files=files, timeout=timeout)
 
-    def call_on_each_event(self, callback, event_types=None, narrow=None):
-        # type: (Callable[[Dict[str, Any]], None], Optional[List[str]], Optional[List[List[str]]]) -> None
+    def call_on_each_event(
+        self,
+        callback: Callable[[Dict[str, Any]], None],
+        event_types: Optional[List[str]] = None,
+        narrow: Optional[List[List[str]]] = None,
+    ) -> None:
         if narrow is None:
             narrow = []
 
-        def do_register():
-            # type: () -> Tuple[str, int]
+        def do_register() -> Tuple[str, int]:
             while True:
                 if event_types is None:
                     res = self.register()
@@ -689,16 +659,13 @@ class Client(object):
                 last_event_id = max(last_event_id, int(event['id']))
                 callback(event)
 
-    def call_on_each_message(self, callback):
-        # type: (Callable[[Dict[str, Any]], None]) -> None
-        def event_callback(event):
-            # type: (Dict[str, Any]) -> None
+    def call_on_each_message(self, callback: Callable[[Dict[str, Any]], None]) -> None:
+        def event_callback(event: Dict[str, Any]) -> None:
             if event['type'] == 'message':
                 callback(event['message'])
         self.call_on_each_event(event_callback, ['message'])
 
-    def get_messages(self, message_filters):
-        # type: (Dict[str, Any]) -> Dict[str, Any]
+    def get_messages(self, message_filters: Dict[str, Any]) -> Dict[str, Any]:
         '''
             See examples/get-messages for example usage
         '''
@@ -708,8 +675,23 @@ class Client(object):
             request=message_filters
         )
 
-    def get_raw_message(self, message_id):
-        # type: (int) -> Dict[str, str]
+    def check_messages_match_narrow(self, **request: Dict[str, Any]) -> Dict[str, Any]:
+
+        '''
+            Example usage:
+
+            >>> client.check_messages_match_narrow(msg_ids=[11, 12],
+                narrow=[{'operator': 'has', 'operand': 'link'}]
+            )
+            {'result': 'success', 'msg': '', 'messages': [{...}, {...}]}
+        '''
+        return self.call_endpoint(
+            url='messages/matches_narrow',
+            method='GET',
+            request=request
+        )
+
+    def get_raw_message(self, message_id: int) -> Dict[str, str]:
         '''
             See examples/get-raw-message for example usage
         '''
@@ -718,8 +700,7 @@ class Client(object):
             method='GET'
         )
 
-    def send_message(self, message_data):
-        # type: (Dict[str, Any]) -> Dict[str, Any]
+    def send_message(self, message_data: Dict[str, Any]) -> Dict[str, Any]:
         '''
             See examples/send-message for example usage.
         '''
@@ -728,8 +709,7 @@ class Client(object):
             request=message_data,
         )
 
-    def upload_file(self, file):
-        # type: (IO[Any]) -> Dict[str, Any]
+    def upload_file(self, file: IO[Any]) -> Dict[str, Any]:
         '''
             See examples/upload-file for example usage.
         '''
@@ -738,8 +718,19 @@ class Client(object):
             files=[file]
         )
 
-    def update_message(self, message_data):
-        # type: (Dict[str, Any]) -> Dict[str, Any]
+    def get_attachments(self) -> Dict[str, Any]:
+        '''
+            Example usage:
+
+            >>> client.get_attachments()
+            {'result': 'success', 'msg': '', 'attachments': [{...}, {...}]}
+        '''
+        return self.call_endpoint(
+            url='attachments',
+            method='GET'
+        )
+
+    def update_message(self, message_data: Dict[str, Any]) -> Dict[str, Any]:
         '''
             See examples/edit-message for example usage.
         '''
@@ -749,8 +740,7 @@ class Client(object):
             request=message_data,
         )
 
-    def delete_message(self, message_id):
-        # type: (int) -> Dict[str, Any]
+    def delete_message(self, message_id: int) -> Dict[str, Any]:
         '''
             See examples/delete-message for example usage.
         '''
@@ -781,8 +771,7 @@ class Client(object):
             request=update_data
         )
 
-    def mark_all_as_read(self):
-        # type: () -> Dict[str, Any]
+    def mark_all_as_read(self) -> Dict[str, Any]:
         '''
             Example usage:
 
@@ -794,8 +783,7 @@ class Client(object):
             method='POST',
         )
 
-    def mark_stream_as_read(self, stream_id):
-        # type: (int) -> Dict[str, Any]
+    def mark_stream_as_read(self, stream_id: int) -> Dict[str, Any]:
         '''
             Example usage:
 
@@ -808,8 +796,7 @@ class Client(object):
             request={'stream_id': stream_id},
         )
 
-    def mark_topic_as_read(self, stream_id, topic_name):
-        # type: (int, str) -> Dict[str, Any]
+    def mark_topic_as_read(self, stream_id: int, topic_name: str) -> Dict[str, Any]:
         '''
             Example usage:
 
@@ -825,8 +812,7 @@ class Client(object):
             },
         )
 
-    def get_message_history(self, message_id):
-        # type: (int) -> Dict[str, Any]
+    def get_message_history(self, message_id: int) -> Dict[str, Any]:
         '''
             See examples/message-history for example usage.
         '''
@@ -835,8 +821,7 @@ class Client(object):
             method='GET'
         )
 
-    def add_reaction(self, reaction_data):
-        # type: (Dict[str, str]) -> Dict[str, Any]
+    def add_reaction(self, reaction_data: Dict[str, str]) -> Dict[str, Any]:
         '''
             Example usage:
 
@@ -854,8 +839,7 @@ class Client(object):
             request=reaction_data,
         )
 
-    def remove_reaction(self, reaction_data):
-        # type: (Dict[str, str]) -> Dict[str, Any]
+    def remove_reaction(self, reaction_data: Dict[str, str]) -> Dict[str, Any]:
         '''
             Example usage:
 
@@ -873,8 +857,7 @@ class Client(object):
             request=reaction_data,
         )
 
-    def get_realm_emoji(self):
-        # type: () -> Dict[str, Any]
+    def get_realm_emoji(self) -> Dict[str, Any]:
         '''
             See examples/realm-emoji for example usage.
         '''
@@ -883,8 +866,7 @@ class Client(object):
             method='GET'
         )
 
-    def upload_custom_emoji(self, emoji_name, file_obj):
-        # type: (str, IO[Any]) -> Dict[str, Any]
+    def upload_custom_emoji(self, emoji_name: str, file_obj: IO[Any]) -> Dict[str, Any]:
         '''
             Example usage:
 
@@ -897,8 +879,7 @@ class Client(object):
             files=[file_obj]
         )
 
-    def get_realm_filters(self):
-        # type: () -> Dict[str, Any]
+    def get_realm_filters(self) -> Dict[str, Any]:
         '''
             Example usage:
 
@@ -910,8 +891,7 @@ class Client(object):
             method='GET',
         )
 
-    def add_realm_filter(self, pattern, url_format_string):
-        # type: (str, str) -> Dict[str, Any]
+    def add_realm_filter(self, pattern: str, url_format_string: str) -> Dict[str, Any]:
         '''
             Example usage:
 
@@ -927,8 +907,7 @@ class Client(object):
             },
         )
 
-    def remove_realm_filter(self, filter_id):
-        # type: (int) -> Dict[str, Any]
+    def remove_realm_filter(self, filter_id: int) -> Dict[str, Any]:
         '''
             Example usage:
 
@@ -940,8 +919,7 @@ class Client(object):
             method='DELETE',
         )
 
-    def get_server_settings(self):
-        # type: () -> Dict[str, Any]
+    def get_server_settings(self) -> Dict[str, Any]:
         '''
             Example usage:
 
@@ -953,8 +931,7 @@ class Client(object):
             method='GET',
         )
 
-    def get_events(self, **request):
-        # type: (**Any) -> Dict[str, Any]
+    def get_events(self, **request: Any) -> Dict[str, Any]:
         '''
             See the register() method for example usage.
         '''
@@ -965,8 +942,12 @@ class Client(object):
             request=request,
         )
 
-    def register(self, event_types=None, narrow=None, **kwargs):
-        # type: (Optional[Iterable[str]], Optional[List[List[str]]], **Any) -> Dict[str, Any]
+    def register(
+        self,
+        event_types: Optional[Iterable[str]] = None,
+        narrow: Optional[List[List[str]]] = None,
+        **kwargs: Any
+    ) -> Dict[str, Any]:
         '''
             Example usage:
 
@@ -990,8 +971,7 @@ class Client(object):
             request=request,
         )
 
-    def deregister(self, queue_id, timeout=None):
-        # type: (str, Optional[float]) -> Dict[str, Any]
+    def deregister(self, queue_id: str, timeout: Optional[float] = None) -> Dict[str, Any]:
         '''
             Example usage:
 
@@ -1009,8 +989,7 @@ class Client(object):
             timeout=timeout,
         )
 
-    def get_profile(self, request=None):
-        # type: (Optional[Dict[str, Any]]) -> Dict[str, Any]
+    def get_profile(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         '''
             Example usage:
 
@@ -1023,8 +1002,7 @@ class Client(object):
             request=request,
         )
 
-    def get_user_presence(self, email):
-        # type: (str) -> Dict[str, Any]
+    def get_user_presence(self, email: str) -> Dict[str, Any]:
         '''
             Example usage:
 
@@ -1036,8 +1014,19 @@ class Client(object):
             method='GET',
         )
 
-    def update_presence(self, request):
-        # type: (Dict[str, Any]) -> Dict[str, Any]
+    def get_realm_presence(self) -> Dict[str, Any]:
+        '''
+            Example usage:
+
+            >>> client.get_realm_presence()
+            {'presences': {...}, 'result': 'success', 'msg': ''}
+        '''
+        return self.call_endpoint(
+            url='realm/presence',
+            method='GET',
+        )
+
+    def update_presence(self, request: Dict[str, Any]) -> Dict[str, Any]:
         '''
             Example usage:
 
@@ -1054,8 +1043,7 @@ class Client(object):
             request=request,
         )
 
-    def get_streams(self, **request):
-        # type: (**Any) -> Dict[str, Any]
+    def get_streams(self, **request: Any) -> Dict[str, Any]:
         '''
             See examples/get-public-streams for example usage.
         '''
@@ -1065,8 +1053,7 @@ class Client(object):
             request=request,
         )
 
-    def update_stream(self, stream_data):
-        # type: (Dict[str, Any]) -> Dict[str, Any]
+    def update_stream(self, stream_data: Dict[str, Any]) -> Dict[str, Any]:
         '''
             See examples/edit-stream for example usage.
         '''
@@ -1077,8 +1064,7 @@ class Client(object):
             request=stream_data,
         )
 
-    def delete_stream(self, stream_id):
-        # type: (int) -> Dict[str, Any]
+    def delete_stream(self, stream_id: int) -> Dict[str, Any]:
         '''
             See examples/delete-stream for example usage.
         '''
@@ -1087,8 +1073,79 @@ class Client(object):
             method='DELETE',
         )
 
-    def get_members(self, request=None):
-        # type: (Optional[Dict[str, Any]]) -> Dict[str, Any]
+    def add_default_stream(self, stream_id: int) -> Dict[str, Any]:
+
+        '''
+            Example usage:
+
+            >>> client.add_default_stream(5)
+            {'result': 'success', 'msg': ''}
+        '''
+        return self.call_endpoint(
+            url='default_streams',
+            method='POST',
+            request={'stream_id': stream_id},
+        )
+
+    def get_user_by_id(self, user_id: int, **request: Any) -> Dict[str, Any]:
+
+        '''
+            Example usage:
+
+            >>> client.get_user_by_id(8, include_custom_profile_fields=True)
+            {'result': 'success', 'msg': '', 'user': [{...}, {...}]}
+        '''
+        return self.call_endpoint(
+            url='users/{}'.format(user_id),
+            method='GET',
+            request=request,
+        )
+
+    def deactivate_user_by_id(self, user_id: int) -> Dict[str, Any]:
+
+        '''
+            Example usage:
+
+            >>> client.deactivate_user_by_id(8)
+            {'result': 'success', 'msg': ''}
+        '''
+        return self.call_endpoint(
+            url='users/{}'.format(user_id),
+            method='DELETE',
+        )
+
+    def reactivate_user_by_id(self, user_id: int) -> Dict[str, Any]:
+
+        '''
+            Example usage:
+
+            >>> client.reactivate_user_by_id(8)
+            {'result': 'success', 'msg': ''}
+        '''
+        return self.call_endpoint(
+            url='users/{}/reactivate'.format(user_id),
+            method='POST',
+        )
+
+    def update_user_by_id(self, user_id: int, **request: Any) -> Dict[str, Any]:
+
+        '''
+            Example usage:
+
+            >>> client.update_user_by_id(8, full_name="New Name")
+            {'result': 'success', 'msg': ''}
+        '''
+
+        for key, value in request.items():
+            request[key] = json.dumps(value)
+
+        return self.call_endpoint(
+            url='users/{}'.format(user_id),
+            method='PATCH',
+            request=request
+        )
+
+    def get_members(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         '''
             See examples/list-members for example usage.
         '''
@@ -1098,8 +1155,7 @@ class Client(object):
             request=request,
         )
 
-    def get_alert_words(self):
-        # type: () -> Dict[str, Any]
+    def get_alert_words(self) -> Dict[str, Any]:
         '''
             See examples/alert-words for example usage.
         '''
@@ -1108,8 +1164,7 @@ class Client(object):
             method='GET'
         )
 
-    def add_alert_words(self, alert_words):
-        # type: (List[str]) -> Dict[str, Any]
+    def add_alert_words(self, alert_words: List[str]) -> Dict[str, Any]:
         '''
             See examples/alert-words for example usage.
         '''
@@ -1121,8 +1176,7 @@ class Client(object):
             }
         )
 
-    def remove_alert_words(self, alert_words):
-        # type: (List[str]) -> Dict[str, Any]
+    def remove_alert_words(self, alert_words: List[str]) -> Dict[str, Any]:
         '''
             See examples/alert-words for example usage.
         '''
@@ -1134,8 +1188,7 @@ class Client(object):
             }
         )
 
-    def list_subscriptions(self, request=None):
-        # type: (Optional[Dict[str, Any]]) -> Dict[str, Any]
+    def list_subscriptions(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         '''
             See examples/list-subscriptions for example usage.
         '''
@@ -1145,8 +1198,7 @@ class Client(object):
             request=request,
         )
 
-    def add_subscriptions(self, streams, **kwargs):
-        # type: (Iterable[Dict[str, Any]], **Any) -> Dict[str, Any]
+    def add_subscriptions(self, streams: Iterable[Dict[str, Any]], **kwargs: Any) -> Dict[str, Any]:
         '''
             See examples/subscribe for example usage.
         '''
@@ -1160,8 +1212,7 @@ class Client(object):
             request=request,
         )
 
-    def remove_subscriptions(self, streams, principals=None):
-        # type: (Iterable[str], Optional[Iterable[str]]) -> Dict[str, Any]
+    def remove_subscriptions(self, streams: Iterable[str], principals: Optional[Iterable[str]] = None) -> Dict[str, Any]:
         '''
             See examples/unsubscribe for example usage.
         '''
@@ -1178,8 +1229,7 @@ class Client(object):
             request=request,
         )
 
-    def mute_topic(self, request):
-        # type: (Dict[str, Any]) -> Dict[str, Any]
+    def mute_topic(self, request: Dict[str, Any]) -> Dict[str, Any]:
         '''
             See examples/mute-topic for example usage.
         '''
@@ -1189,8 +1239,7 @@ class Client(object):
             request=request
         )
 
-    def update_subscription_settings(self, subscription_data):
-        # type: (List[Dict[str, Any]]) -> Dict[str, Any]
+    def update_subscription_settings(self, subscription_data: List[Dict[str, Any]]) -> Dict[str, Any]:
         '''
             Example usage:
 
@@ -1212,8 +1261,7 @@ class Client(object):
             request={'subscription_data': subscription_data}
         )
 
-    def update_notification_settings(self, notification_settings):
-        # type: (Dict[str, Any]) -> Dict[str, Any]
+    def update_notification_settings(self, notification_settings: Dict[str, Any]) -> Dict[str, Any]:
         '''
             Example usage:
 
@@ -1229,8 +1277,7 @@ class Client(object):
             request=notification_settings,
         )
 
-    def get_stream_id(self, stream):
-        # type: (str) -> Dict[str, Any]
+    def get_stream_id(self, stream: str) -> Dict[str, Any]:
         '''
             Example usage: client.get_stream_id('devel')
         '''
@@ -1242,8 +1289,7 @@ class Client(object):
             request=None,
         )
 
-    def get_stream_topics(self, stream_id):
-        # type: (int) -> Dict[str, Any]
+    def get_stream_topics(self, stream_id: int) -> Dict[str, Any]:
         '''
             See examples/get-stream-topics for example usage.
         '''
@@ -1252,8 +1298,7 @@ class Client(object):
             method='GET'
         )
 
-    def get_user_groups(self):
-        # type: () -> Dict[str, Any]
+    def get_user_groups(self) -> Dict[str, Any]:
         '''
             Example usage:
             >>> client.get_user_groups()
@@ -1264,8 +1309,7 @@ class Client(object):
             method='GET',
         )
 
-    def create_user_group(self, group_data):
-        # type: (Dict[str, Any]) -> Dict[str, Any]
+    def create_user_group(self, group_data: Dict[str, Any]) -> Dict[str, Any]:
         '''
             Example usage:
             >>> client.create_user_group({
@@ -1281,8 +1325,7 @@ class Client(object):
             request=group_data,
         )
 
-    def update_user_group(self, group_data):
-        # type: (Dict[str, Any]) -> Dict[str, Any]
+    def update_user_group(self, group_data: Dict[str, Any]) -> Dict[str, Any]:
         '''
             Example usage:
 
@@ -1299,8 +1342,7 @@ class Client(object):
             request=group_data,
         )
 
-    def remove_user_group(self, group_id):
-        # type: (int) -> Dict[str, Any]
+    def remove_user_group(self, group_id: int) -> Dict[str, Any]:
         '''
             Example usage:
 
@@ -1312,8 +1354,7 @@ class Client(object):
             method='DELETE',
         )
 
-    def update_user_group_members(self, group_data):
-        # type: (Dict[str, Any]) -> Dict[str, Any]
+    def update_user_group_members(self, group_data: Dict[str, Any]) -> Dict[str, Any]:
         '''
             Example usage:
 
@@ -1329,8 +1370,7 @@ class Client(object):
             request=group_data,
         )
 
-    def get_subscribers(self, **request):
-        # type: (**Any) -> Dict[str, Any]
+    def get_subscribers(self, **request: Any) -> Dict[str, Any]:
         '''
             Example usage: client.get_subscribers(stream='devel')
         '''
@@ -1346,8 +1386,7 @@ class Client(object):
             request=request,
         )
 
-    def render_message(self, request=None):
-        # type: (Optional[Dict[str, Any]]) -> Dict[str, Any]
+    def render_message(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         '''
             Example usage:
 
@@ -1360,8 +1399,7 @@ class Client(object):
             request=request,
         )
 
-    def create_user(self, request=None):
-        # type: (Optional[Dict[str, Any]]) -> Dict[str, Any]
+    def create_user(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         '''
             See examples/create-user for example usage.
         '''
@@ -1371,8 +1409,7 @@ class Client(object):
             request=request,
         )
 
-    def update_storage(self, request):
-        # type: (Dict[str, Any]) -> Dict[str, Any]
+    def update_storage(self, request: Dict[str, Any]) -> Dict[str, Any]:
         '''
             Example usage:
 
@@ -1386,8 +1423,7 @@ class Client(object):
             request=request,
         )
 
-    def get_storage(self, request=None):
-        # type: (Optional[Dict[str, Any]]) -> Dict[str, Any]
+    def get_storage(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         '''
             Example usage:
 
@@ -1403,8 +1439,7 @@ class Client(object):
             request=request,
         )
 
-    def set_typing_status(self, request):
-        # type: (Dict[str, Any]) -> Dict[str, Any]
+    def set_typing_status(self, request: Dict[str, Any]) -> Dict[str, Any]:
         '''
             Example usage:
             >>> client.set_typing_status({
@@ -1419,26 +1454,23 @@ class Client(object):
             request=request
         )
 
-class ZulipStream(object):
+class ZulipStream:
     """
     A Zulip stream-like object
     """
 
-    def __init__(self, type, to, subject, **kwargs):
-        # type: (str, str, str,  **Any) -> None
+    def __init__(self, type: str, to: str, subject: str, **kwargs: Any) -> None:
         self.client = Client(**kwargs)
         self.type = type
         self.to = to
         self.subject = subject
 
-    def write(self, content):
-        # type: (str) -> None
+    def write(self, content: str) -> None:
         message = {"type": self.type,
                    "to": self.to,
                    "subject": self.subject,
                    "content": content}
         self.client.send_message(message)
 
-    def flush(self):
-        # type: () -> None
+    def flush(self) -> None:
         pass

@@ -41,13 +41,13 @@ right now.\nPlease try again later")
         bot_response = "No user found. Make sure you typed it correctly."
         with self.mock_config_info(self.normal_config), \
                 self.mock_http_conversation('test_no_recipient_found'):
-                    self.verify_reply('david: hello', bot_response)
+            self.verify_reply('david: hello', bot_response)
 
     def test_found_invalid_recipient(self) -> None:
         bot_response = "Found user is invalid."
         with self.mock_config_info(self.normal_config), \
                 self.mock_http_conversation('test_found_invalid_recipient'):
-                    self.verify_reply('david: hello', bot_response)
+            self.verify_reply('david: hello', bot_response)
 
     @patch('zulip_bots.bots.flock.flock.get_recipient_id')
     def test_message_send_connection_error(self, get_recipient_id: str) -> None:
@@ -64,7 +64,7 @@ right now.\nPlease try again later")
         get_recipient_id.return_value = ["u:userid", None]
         with self.mock_config_info(self.normal_config), \
                 self.mock_http_conversation('test_message_send_success'):
-                    self.verify_reply('Rishabh: hi there', bot_response)
+            self.verify_reply('Rishabh: hi there', bot_response)
 
     @patch('zulip_bots.bots.flock.flock.get_recipient_id')
     def test_message_send_failed(self, get_recipient_id: str) -> None:
@@ -72,4 +72,4 @@ right now.\nPlease try again later")
         get_recipient_id.return_value = ["u:invalid", None]
         with self.mock_config_info(self.normal_config), \
                 self.mock_http_conversation('test_message_send_failed'):
-                    self.verify_reply('Rishabh: hi there', bot_response)
+            self.verify_reply('Rishabh: hi there', bot_response)

@@ -1,40 +1,19 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 #
 # RSS integration for Zulip
 #
-# Copyright © 2014 Zulip, Inc.
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
 
-from __future__ import print_function
 import calendar
 import errno
 import hashlib
-from six.moves.html_parser import HTMLParser
+from html.parser import HTMLParser
 import logging
 import argparse
 import os
 import re
 import sys
 import time
-from six.moves import urllib
+import urllib.parse
 from typing import Dict, List, Tuple, Any
 
 import feedparser
@@ -96,8 +75,7 @@ parser.add_argument('--math',
 
 opts = parser.parse_args()  # type: Any
 
-def mkdir_p(path):
-    # type: (str) -> None
+def mkdir_p(path: str) -> None:
     # Python doesn't have an analog to `mkdir -p` < Python 3.2.
     try:
         os.makedirs(path)
@@ -126,53 +104,44 @@ logger = logging.getLogger(__name__)  # type: logging.Logger
 logger.setLevel(logging.DEBUG)
 logger.addHandler(file_handler)
 
-def log_error_and_exit(error):
-    # type: (str) -> None
+def log_error_and_exit(error: str) -> None:
     logger.error(error)
     logger.error(usage)
     exit(1)
 
 class MLStripper(HTMLParser):
-    def __init__(self):
-        # type: () -> None
+    def __init__(self) -> None:
         self.reset()
         self.fed = []  # type: List[str]
 
-    def handle_data(self, data):
-        # type: (str) -> None
+    def handle_data(self, data: str) -> None:
         self.fed.append(data)
 
-    def get_data(self):
-        # type: () -> str
+    def get_data(self) -> str:
         return ''.join(self.fed)
 
-def strip_tags(html):
-    # type: (str) -> str
+def strip_tags(html: str) -> str:
     stripper = MLStripper()
     stripper.feed(html)
     return stripper.get_data()
 
-def compute_entry_hash(entry):
-    # type: (Dict[str, Any]) -> str
+def compute_entry_hash(entry: Dict[str, Any]) -> str:
     entry_time = entry.get("published", entry.get("updated"))
     entry_id = entry.get("id", entry.get("link"))
     return hashlib.md5(entry_id + str(entry_time)).hexdigest()
 
-def unwrap_text(body):
-    # type: (str) -> str
+def unwrap_text(body: str) -> str:
     # Replace \n by space if it is preceded and followed by a non-\n.
     # Example: '\na\nb\nc\n\nd\n' -> '\na b c\n\nd\n'
     return re.sub('(?<=[^\n])\n(?=[^\n])', ' ', body)
 
-def elide_subject(subject):
-    # type: (str) -> str
+def elide_subject(subject: str) -> str:
     MAX_TOPIC_LENGTH = 60
     if len(subject) > MAX_TOPIC_LENGTH:
         subject = subject[:MAX_TOPIC_LENGTH - 3].rstrip() + '...'
     return subject
 
-def send_zulip(entry, feed_name):
-    # type: (Any, str) -> Dict[str, Any]
+def send_zulip(entry: Any, feed_name: str) -> Dict[str, Any]:
     body = entry.summary  # type: str
     if opts.unwrap:
         body = unwrap_text(body)
@@ -194,9 +163,9 @@ def send_zulip(entry, feed_name):
     return client.send_message(message)
 
 try:
-    with open(opts.feed_file, "r") as f:
+    with open(opts.feed_file) as f:
         feed_urls = [feed.strip() for feed in f.readlines()]  # type: List[str]
-except IOError:
+except OSError:
     log_error_and_exit("Unable to read feed file at %s." % (opts.feed_file,))
 
 client = zulip.Client(email=opts.zulip_email, api_key=opts.zulip_api_key,
@@ -209,9 +178,9 @@ for feed_url in feed_urls:
     feed_file = os.path.join(opts.data_dir, urllib.parse.urlparse(feed_url).netloc)  # Type: str
 
     try:
-        with open(feed_file, "r") as f:
-            old_feed_hashes = dict((line.strip(), True) for line in f.readlines())  # type: Dict[str, bool]
-    except IOError:
+        with open(feed_file) as f:
+            old_feed_hashes = {line.strip(): True for line in f.readlines()}  # type: Dict[str, bool]
+    except OSError:
         old_feed_hashes = {}
 
     new_hashes = []  # type: List[str]

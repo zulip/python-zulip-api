@@ -2,9 +2,8 @@
 
 import requests
 from typing import Any, List, Dict
-import logging
 
-class MentionHandler(object):
+class MentionHandler:
     def initialize(self, bot_handler: Any) -> None:
         self.config_info = bot_handler.get_config_info('mention')
         self.access_token = self.config_info['access_token']
@@ -76,8 +75,11 @@ class MentionHandler(object):
             'sources': ['web']
         }  # type: Any
 
-        response = requests.post('https://api.mention.net/api/accounts/' + self.account_id +
-                                 '/alerts', data=create_alert_data, headers=create_alert_header)
+        response = requests.post(
+            'https://api.mention.net/api/accounts/' + self.account_id
+            + '/alerts',
+            data=create_alert_data, headers=create_alert_header,
+        )
         data_json = response.json()
         alert_id = data_json['alert']['id']
         return alert_id
@@ -87,8 +89,11 @@ class MentionHandler(object):
             'Authorization': 'Bearer ' + self.access_token,
             'Accept-Version': '1.15',
         }
-        response = requests.get('https://api.mention.net/api/accounts/' + self.account_id +
-                                '/alerts/' + alert_id + '/mentions', headers=get_mentions_header)
+        response = requests.get(
+            'https://api.mention.net/api/accounts/' + self.account_id
+            + '/alerts/' + alert_id + '/mentions',
+            headers=get_mentions_header,
+        )
         data_json = response.json()
         mentions = data_json['mentions']
         return mentions

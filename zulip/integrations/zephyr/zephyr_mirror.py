@@ -1,28 +1,5 @@
-#!/usr/bin/env python
-# Copyright (C) 2012 Zulip, Inc.
-#
-# Permission is hereby granted, free of charge, to any person
-# obtaining a copy of this software and associated documentation files
-# (the "Software"), to deal in the Software without restriction,
-# including without limitation the rights to use, copy, modify, merge,
-# publish, distribute, sublicense, and/or sell copies of the Software,
-# and to permit persons to whom the Software is furnished to do so,
-# subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be
-# included in all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
-# BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
-# ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
+#!/usr/bin/env python3
 
-from __future__ import absolute_import
-from __future__ import print_function
 import sys
 import subprocess
 import os
@@ -35,10 +12,8 @@ from zephyr_mirror_backend import parse_args
 (options, args) = parse_args()
 
 from types import FrameType
-from typing import Any
 
-def die(signal, frame):
-    # type: (int, FrameType) -> None
+def die(signal: int, frame: FrameType) -> None:
 
     # We actually want to exit, so run os._exit (so as not to be caught and restarted)
     os._exit(1)
@@ -63,13 +38,11 @@ if options.forward_class_messages and not options.noshard:
     print("Starting parallel zephyr class mirroring bot")
     jobs = list("0123456789abcdef")
 
-    def run_job(shard):
-        # type: (str) -> int
+    def run_job(shard: str) -> int:
         subprocess.call(args + ["--shard=%s" % (shard,)])
         return 0
     for (status, job) in run_parallel(run_job, jobs, threads=16):
         print("A mirroring shard died!")
-        pass
     sys.exit(0)
 
 backoff = RandomExponentialBackoff(timeout_success_equivalent=300)

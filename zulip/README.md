@@ -1,11 +1,15 @@
 #### Dependencies
 
 The [Zulip API](https://zulipchat.com/api) Python bindings require the
-following Python libraries:
+following dependencies:
 
+* **Python (version >= 3.5)**
 * requests (version >= 0.12.1)
 * six
 * typing (version >= 3.5.2.2)
+
+**Note**: If you'd like to use the Zulip bindings with Python 2, we
+recommend installing version 0.6.4.
 
 #### Installing
 

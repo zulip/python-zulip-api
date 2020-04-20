@@ -1,13 +1,12 @@
 # See readme.md for instructions on running this code.
 import logging
-import json
 import requests
 import html2text
 import string
 
 from typing import Any, Dict
 
-class DefineHandler(object):
+class DefineHandler:
     '''
     This plugin define a word that the user inputs. It
     looks for messages starting with '@mention-bot'.
@@ -66,7 +65,7 @@ class DefineHandler(object):
                         example = d['example'] if d['example'] else '*No example available.*'
                         response += '\n' + '* (**{}**) {}\n&nbsp;&nbsp;{}'.format(d['type'], d['definition'], html2text.html2text(example))
 
-            except Exception as e:
+            except Exception:
                 response += self.REQUEST_ERROR_MESSAGE
                 logging.exception("")
 

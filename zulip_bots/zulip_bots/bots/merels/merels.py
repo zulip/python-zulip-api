@@ -5,9 +5,9 @@ from zulip_bots.bots.merels.libraries import (
     database,
     game_data
 )
-from zulip_bots.game_handler import GameAdapter, SamePlayerMove, GameInstance
+from zulip_bots.game_handler import GameAdapter, SamePlayerMove
 
-class Storage(object):
+class Storage:
     data = {}
 
     def __init__(self, topic_name):
@@ -19,9 +19,9 @@ class Storage(object):
     def get(self, topic_name):
         return self.data[topic_name]
 
-class MerelsModel(object):
+class MerelsModel:
 
-    def __init__(self, board: Any=None) -> None:
+    def __init__(self, board: Any = None) -> None:
         self.topic = "merels"
         self.storage = Storage(self.topic)
         self.current_board = mechanics.display_game(self.topic, self.storage)
@@ -32,7 +32,7 @@ class MerelsModel(object):
             return 'current turn'
         return ''
 
-    def contains_winning_move(self, board: Any) ->bool:
+    def contains_winning_move(self, board: Any) -> bool:
         merels = database.MerelsStorage(self.topic, self.storage)
         data = game_data.GameData(merels.get_game_data(self.topic))
 
@@ -42,7 +42,7 @@ class MerelsModel(object):
                 return True
         return False
 
-    def make_move(self, move: str, player_number: int, computer_move: bool=False) -> Any:
+    def make_move(self, move: str, player_number: int, computer_move: bool = False) -> Any:
         if self.storage.get(self.topic) == '["X", 0, 0, "NNNNNNNNNNNNNNNNNNNNNNNN", "", 0]':
             self.storage.put(
                 self.topic,
@@ -54,7 +54,7 @@ class MerelsModel(object):
             raise SamePlayerMove(same_player_move)
         return self.current_board
 
-class MerelsMessageHandler(object):
+class MerelsMessageHandler:
     tokens = [':o_button:', ':cross_mark_button:']
 
     def parse_board(self, board: Any) -> str:
@@ -90,7 +90,7 @@ class MerelsHandler(GameAdapter):
         model = MerelsModel
         rules = game.getInfo()
         gameMessageHandler = MerelsMessageHandler
-        super(MerelsHandler, self).__init__(
+        super().__init__(
             game_name,
             bot_name,
             move_help_message,

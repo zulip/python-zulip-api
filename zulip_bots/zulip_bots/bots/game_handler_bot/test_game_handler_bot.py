@@ -12,11 +12,11 @@ class TestGameHandlerBot(BotTestCase, DefaultTests):
     def make_request_message(
         self,
         content: str,
-        user: str='foo@example.com',
-        user_name: str='foo',
-        type: str='private',
-        stream: str='',
-        subject: str=''
+        user: str = 'foo@example.com',
+        user_name: str = 'foo',
+        type: str = 'private',
+        stream: str = '',
+        subject: str = ''
     ) -> Dict[str, str]:
         message = dict(
             sender_email=user,
@@ -34,11 +34,11 @@ class TestGameHandlerBot(BotTestCase, DefaultTests):
         request: str,
         expected_response: str,
         response_number: int,
-        bot: Any=None,
-        user_name: str='foo',
-        stream: str='',
-        subject: str='',
-        max_messages: int=20
+        bot: Any = None,
+        user_name: str = 'foo',
+        stream: str = '',
+        subject: str = '',
+        max_messages: int = 20
     ) -> None:
         '''
         This function serves a similar purpose
@@ -65,7 +65,7 @@ class TestGameHandlerBot(BotTestCase, DefaultTests):
         self.assertEqual(expected_response, first_response['content'])
         self.assertLessEqual(len(responses), max_messages)
 
-    def add_user_to_cache(self, name: str, bot: Any=None) -> Any:
+    def add_user_to_cache(self, name: str, bot: Any = None) -> Any:
         if bot is None:
             bot, bot_handler = self._get_handlers()
         message = {
@@ -75,7 +75,7 @@ class TestGameHandlerBot(BotTestCase, DefaultTests):
         bot.add_user_to_cache(message)
         return bot
 
-    def setup_game(self, id: str='', bot: Any=None, players: List[str]=['foo', 'baz'], subject: str='test game', stream: str='test') -> Any:
+    def setup_game(self, id: str = '', bot: Any = None, players: List[str] = ['foo', 'baz'], subject: str = 'test game', stream: str = 'test') -> Any:
         if bot is None:
             bot, bot_handler = self._get_handlers()
         for p in players:

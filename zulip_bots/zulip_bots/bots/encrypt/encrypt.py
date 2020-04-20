@@ -17,7 +17,7 @@ def encrypt(text: str) -> str:
 
     return newtext
 
-class EncryptHandler(object):
+class EncryptHandler:
     '''
     This bot allows users to quickly encrypt messages using ROT13 encryption.
     It encrypts/decrypts messages starting with @mention-bot.

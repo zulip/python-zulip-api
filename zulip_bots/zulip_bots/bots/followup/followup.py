@@ -1,7 +1,7 @@
 # See readme.md for instructions on running this code.
 from typing import Dict, Any
 
-class FollowupHandler(object):
+class FollowupHandler:
     '''
     This plugin facilitates creating follow-up tasks when
     you are using Zulip to conduct a virtual meeting.  It

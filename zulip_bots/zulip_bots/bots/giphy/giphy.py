@@ -9,7 +9,7 @@ GIPHY_TRANSLATE_API = 'http://api.giphy.com/v1/gifs/translate'
 GIPHY_RANDOM_API = 'http://api.giphy.com/v1/gifs/random'
 
 
-class GiphyHandler(object):
+class GiphyHandler:
     """
     This plugin posts a GIF in response to the keywords provided by the user.
     Images are provided by Giphy, through the public API.
@@ -69,7 +69,7 @@ def get_url_gif_giphy(keyword: str, api_key: str) -> Union[int, str]:
 
     try:
         data = requests.get(url, params=query)
-    except requests.exceptions.ConnectionError as e:  # Usually triggered by bad connection.
+    except requests.exceptions.ConnectionError:  # Usually triggered by bad connection.
         logging.exception('Bad connection')
         raise
     data.raise_for_status()

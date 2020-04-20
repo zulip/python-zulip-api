@@ -1,12 +1,11 @@
 # See readme.md for instructions on running this code.
 import logging
-from urllib import parse
 
 import requests
 
 from bs4 import BeautifulSoup
 
-from typing import Dict, Any, Union, List
+from typing import Any, Dict, List
 
 def google_search(keywords: str) -> List[Dict[str, str]]:
     query = {'q': keywords}
@@ -63,7 +62,7 @@ def get_google_result(search_keywords: str) -> str:
             logging.exception(str(e))
             return 'Error: Search failed. {}.'.format(e)
 
-class GoogleSearchHandler(object):
+class GoogleSearchHandler:
     '''
     This plugin allows users to enter a search
     term in Zulip and get the top URL sent back

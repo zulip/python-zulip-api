@@ -1,8 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # This script depends on python-dateutil and python-pytz for properly handling
 # times and time zones of calendar events.
-from __future__ import print_function
 import datetime
 import dateutil.parser
 import httplib2
@@ -11,13 +10,11 @@ import logging
 import argparse
 import os
 import pytz
-from six.moves import urllib
 import sys
 import time
-import traceback
-from typing import List, Set, Tuple, Iterable, Optional
+from typing import List, Optional, Set, Tuple
 
-from oauth2client import client, tools
+from oauth2client import client
 from oauth2client.file import Storage
 try:
     from googleapiclient import discovery
@@ -80,8 +77,7 @@ if not (options.zulip_email):
 
 zulip_client = zulip.init_from_options(options)
 
-def get_credentials():
-    # type: () -> client.Credentials
+def get_credentials() -> client.Credentials:
     """Gets valid user credentials from storage.
 
     If nothing has been stored, or if the stored credentials are invalid,
@@ -101,12 +97,11 @@ def get_credentials():
         return credentials
     except client.Error:
         logging.exception('Error while trying to open the `google-credentials.json` file.')
-    except IOError:
+    except OSError:
         logging.error("Run the get-google-credentials script from this directory first.")
 
 
-def populate_events():
-    # type: () -> Optional[None]
+def populate_events() -> Optional[None]:
     global events
 
     credentials = get_credentials()
@@ -146,8 +141,7 @@ def populate_events():
             events.append((event["id"], start, "(No Title)"))
 
 
-def send_reminders():
-    # type: () -> Optional[None]
+def send_reminders() -> Optional[None]:
     global sent
 
     messages = []

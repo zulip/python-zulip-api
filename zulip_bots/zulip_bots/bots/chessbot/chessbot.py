@@ -11,7 +11,7 @@ START_COMPUTER_REGEX = re.compile(
 MOVE_REGEX = re.compile('do (?P<move_san>.+)$')
 RESIGN_REGEX = re.compile('resign$')
 
-class ChessHandler(object):
+class ChessHandler:
     def usage(self) -> str:
         return (
             'Chess Bot is a bot that allows you to play chess against either '
@@ -742,4 +742,4 @@ def trim_whitespace_before_newline(str_to_trim: str) -> str:
 
     Returns: The trimmed string.
     """
-    return re.sub('\s+$', '', str_to_trim, flags=re.M)
+    return re.sub(r'\s+$', '', str_to_trim, flags=re.M)

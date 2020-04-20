@@ -8,7 +8,6 @@ from zulip_bots.test_file_utils import (
     read_bot_fixture_data,
 )
 from unittest.mock import patch
-import tweepy
 
 class TestTwitpostBot(BotTestCase, DefaultTests):
     bot_name = "twitpost"

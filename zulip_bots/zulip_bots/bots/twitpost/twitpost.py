@@ -1,9 +1,8 @@
-import zulip
 import tweepy
-from typing import Dict, Any, Union, List, Tuple, Optional
+from typing import Any, Dict
 
 
-class TwitpostBot(object):
+class TwitpostBot:
 
     def usage(self) -> str:
         return ''' This bot posts on twitter from zulip chat itself.

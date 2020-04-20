@@ -12,11 +12,11 @@ from zulip_botserver.input_parameters import parse_args
 
 
 class BotServerTests(BotServerTestCase):
-    class MockMessageHandler(object):
+    class MockMessageHandler:
         def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
             assert message == {'key': "test message"}
 
-    class MockLibModule(object):
+    class MockLibModule:
         def handler_class(self) -> Any:
             return BotServerTests.MockMessageHandler()
 

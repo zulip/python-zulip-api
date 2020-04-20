@@ -1,8 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import argparse
 import zulip
 
-from typing import List, Text, Dict, Any
+from typing import Any, Dict, Text
 
 VERSION = "0.9"
 # Nagios passes the notification details as command line options.

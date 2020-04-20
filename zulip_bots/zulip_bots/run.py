@@ -4,7 +4,6 @@ import logging
 import argparse
 import sys
 import os
-from os.path import basename, splitext
 
 from zulip_bots.lib import (
     zulip_env_vars_are_present,
@@ -112,7 +111,7 @@ def main() -> None:
 
         try:
             lib_module = finder.import_module_from_source(bot_path, bot_name)
-        except ImportError as e:
+        except ImportError:
             req_path = os.path.join(os.path.dirname(bot_path), "requirements.txt")
             with open(req_path) as fp:
                 deps_list = fp.read()

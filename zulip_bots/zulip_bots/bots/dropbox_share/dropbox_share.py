@@ -4,7 +4,7 @@ import re
 
 URL = "[{name}](https://www.dropbox.com/home{path})"
 
-class DropboxHandler(object):
+class DropboxHandler:
     '''
     This bot allows you to easily share, search and upload files
     between zulip and your dropbox account.
@@ -60,11 +60,11 @@ def get_usage_examples() -> str:
 
 REGEXES = dict(
     command='(ls|mkdir|read|rm|write|search|usage|help)',
-    path='(\S+)',
-    optional_path='(\S*)',
+    path=r'(\S+)',
+    optional_path=r'(\S*)',
     some_text='(.+?)',
-    folder='?(?:--fd (\S+))?',
-    max_results='?(?:--mr (\d+))?'
+    folder=r'?(?:--fd (\S+))?',
+    max_results=r'?(?:--mr (\d+))?'
 )
 
 def get_commands() -> Dict[str, Tuple[Any, List[str]]]:
@@ -137,7 +137,7 @@ def dbx_ls(client: Any, fn: str) -> str:
             files_list += [" - " + URL.format(name=meta.name, path=meta.path_lower)]
 
         msg = '\n'.join(files_list)
-        if msg is '':
+        if msg == '':
             msg = '`No files available`'
 
     except Exception:
@@ -183,33 +183,33 @@ def dbx_read(client: Any, fn: str) -> str:
     return msg
 
 def dbx_search(client: Any, query: str, folder: str, max_results: str) -> str:
-        if folder is None:
-            folder = ''
-        else:
-            folder = '/' + folder
-        if max_results is None:
-            max_results = '20'
-        try:
-            result = client.files_search(folder, query, max_results=int(max_results))
-            msg_list = []
-            count = 0
-            for entry in result.matches:
-                file_info = entry.metadata
-                count += 1
-                msg_list += [" - " + URL.format(name=file_info.name, path=file_info.path_lower)]
-            msg = '\n'.join(msg_list)
+    if folder is None:
+        folder = ''
+    else:
+        folder = '/' + folder
+    if max_results is None:
+        max_results = '20'
+    try:
+        result = client.files_search(folder, query, max_results=int(max_results))
+        msg_list = []
+        count = 0
+        for entry in result.matches:
+            file_info = entry.metadata
+            count += 1
+            msg_list += [" - " + URL.format(name=file_info.name, path=file_info.path_lower)]
+        msg = '\n'.join(msg_list)
 
-        except Exception:
-            msg = "Usage: `search <foldername> query --mr 10 --fd <folderName>`\n"\
-                  "Note:`--mr <int>` is optional and is used to specify maximun results.\n"\
-                  "     `--fd <folderName>` to search in specific folder."
+    except Exception:
+        msg = "Usage: `search <foldername> query --mr 10 --fd <folderName>`\n"\
+              "Note:`--mr <int>` is optional and is used to specify maximun results.\n"\
+              "     `--fd <folderName>` to search in specific folder."
 
-        if msg == '':
-            msg = "No files/folders found matching your query.\n"\
-                  "For file name searching, the last token is used for prefix matching"\
-                  " (i.e. “bat c” matches “bat cave” but not “batman car”)."
+    if msg == '':
+        msg = "No files/folders found matching your query.\n"\
+              "For file name searching, the last token is used for prefix matching"\
+              " (i.e. “bat c” matches “bat cave” but not “batman car”)."
 
-        return msg
+    return msg
 
 def dbx_share(client: Any, fn: str):
     fn = '/' + fn

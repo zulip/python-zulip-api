@@ -1,7 +1,7 @@
 import base64
 import re
 import requests
-from typing import Any, Dict, Iterable, Optional
+from typing import Any, Dict, Optional
 
 GET_REGEX = re.compile('get "(?P<issue_key>.+)"$')
 CREATE_REGEX = re.compile(
@@ -106,7 +106,7 @@ Jira Bot:
  > Issue *BOTS-16* was edited! https://example.atlassian.net/browse/BOTS-16
 '''
 
-class JiraHandler(object):
+class JiraHandler:
     def usage(self) -> str:
         return '''
         Jira Bot uses the Jira REST API to interact with Jira. In order to use
@@ -164,14 +164,14 @@ class JiraHandler(object):
                 response = 'Oh no! Jira raised an error:\n > ' + ', '.join(errors)
             else:
                 response = (
-                    '**Issue *[{0}]({1})*: {2}**\n\n'
-                    ' - Type: *{3}*\n'
+                    '**Issue *[{}]({})*: {}**\n\n'
+                    ' - Type: *{}*\n'
                     ' - Description:\n'
-                    ' > {4}\n'
-                    ' - Creator: *{5}*\n'
-                    ' - Project: *{6}*\n'
-                    ' - Priority: *{7}*\n'
-                    ' - Status: *{8}*\n'
+                    ' > {}\n'
+                    ' - Creator: *{}*\n'
+                    ' - Project: *{}*\n'
+                    ' - Priority: *{}*\n'
+                    ' - Status: *{}*\n'
                 ).format(key, url, summary, type_name, description, creator_name, project_name,
                          priority_name, status_name)
         elif create_match:
@@ -332,14 +332,14 @@ def check_is_editing_something(match: Any) -> bool:
      - match: The regex match object.
     '''
     return bool(
-        match.group('summary') or
-        match.group('project_key') or
-        match.group('type_name') or
-        match.group('description') or
-        match.group('assignee') or
-        match.group('priority_name') or
-        match.group('labels') or
-        match.group('due_date')
+        match.group('summary')
+        or match.group('project_key')
+        or match.group('type_name')
+        or match.group('description')
+        or match.group('assignee')
+        or match.group('priority_name')
+        or match.group('labels')
+        or match.group('due_date')
     )
 
 handler_class = JiraHandler

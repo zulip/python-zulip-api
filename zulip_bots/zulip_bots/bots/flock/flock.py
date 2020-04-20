@@ -86,7 +86,7 @@ def get_flock_bot_response(content: str, config: Dict[str, str]) -> None:
         result = get_flock_response(content, config)
         return result
 
-class FlockHandler(object):
+class FlockHandler:
     '''
     This is flock bot. Now you can send messages to any of your
     flock user without having to leave Zulip.

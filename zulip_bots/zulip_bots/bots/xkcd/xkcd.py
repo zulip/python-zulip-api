@@ -8,7 +8,7 @@ from typing import Any, Dict, Optional
 XKCD_TEMPLATE_URL = 'https://xkcd.com/%s/info.0.json'
 LATEST_XKCD_URL = 'https://xkcd.com/info.0.json'
 
-class XkcdHandler(object):
+class XkcdHandler:
     '''
     This plugin provides several commands that can be used for fetch a comic
     strip from https://xkcd.com. The bot looks for messages starting with
@@ -39,7 +39,7 @@ class XkcdHandler(object):
         xkcd_bot_response = get_xkcd_bot_response(message, quoted_name)
         bot_handler.send_reply(message, xkcd_bot_response)
 
-class XkcdBotCommand(object):
+class XkcdBotCommand:
     LATEST = 0
     RANDOM = 1
     COMIC_ID = 2
@@ -85,7 +85,7 @@ def get_xkcd_bot_response(message: Dict[str, str], quoted_name: str) -> str:
                                            fetched['alt'],
                                            fetched['img']))
 
-def fetch_xkcd_query(mode: int, comic_id: Optional[str]=None) -> Dict[str, str]:
+def fetch_xkcd_query(mode: int, comic_id: Optional[str] = None) -> Dict[str, str]:
     try:
         if mode == XkcdBotCommand.LATEST:  # Fetch the latest comic strip.
             url = LATEST_XKCD_URL
@@ -113,7 +113,7 @@ def fetch_xkcd_query(mode: int, comic_id: Optional[str]=None) -> Dict[str, str]:
             raise XkcdServerError()
 
         xkcd_json = fetched.json()
-    except requests.exceptions.ConnectionError as e:
+    except requests.exceptions.ConnectionError:
         logging.exception("Connection Error")
         raise
 

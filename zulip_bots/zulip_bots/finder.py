@@ -19,7 +19,7 @@ def import_module_from_source(path: Text, name: Text) -> Any:
         loader = spec.loader
         if loader is None:
             return None
-        loader.exec_module(module)
+        loader.exec_module(module)  # type: ignore  # FIXME: typeshed issue?
 
     return module
 
@@ -28,8 +28,6 @@ def import_module_by_name(name: Text) -> Any:
     try:
         return importlib.import_module(name)
     except ImportError:
-        return None
-    except ModuleNotFoundError:  # Specific exception supported >=Python3.6
         return None
 
 def resolve_bot_path(name: Text) -> Optional[Tuple[Text, Text]]:

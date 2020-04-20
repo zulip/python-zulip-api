@@ -3,7 +3,7 @@ from typing import Any, Dict
 import os
 from pathlib import Path
 
-class FileUploaderHandler(object):
+class FileUploaderHandler:
     def usage(self) -> str:
         return (
             'This interactive bot is used to upload files (such as images) to the Zulip server:'

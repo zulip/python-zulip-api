@@ -10,7 +10,7 @@ import importlib.util
 from configparser import MissingSectionHeaderError, NoOptionError
 from flask import Flask, request
 from importlib import import_module
-from typing import Any, Dict, Union, List, Optional
+from typing import Any, Dict, List, Optional
 from types import ModuleType
 from werkzeug.exceptions import BadRequest, Unauthorized
 
@@ -29,7 +29,7 @@ def read_config_section(parser: configparser.ConfigParser, section: str) -> Dict
     return section_info
 
 
-def read_config_file(config_file_path: str, bot_name: Optional[str]=None) -> Dict[str, Dict[str, str]]:
+def read_config_file(config_file_path: str, bot_name: Optional[str] = None) -> Dict[str, Dict[str, str]]:
     parser = parse_config_file(config_file_path)
 
     bots_config = {}  # type: Dict[str, Dict[str, str]]
@@ -65,18 +65,19 @@ def read_config_file(config_file_path: str, bot_name: Optional[str]=None) -> Dic
 def parse_config_file(config_file_path: str) -> configparser.ConfigParser:
     config_file_path = os.path.abspath(os.path.expanduser(config_file_path))
     if not os.path.isfile(config_file_path):
-        raise IOError("Could not read config file {}: File not found.".format(config_file_path))
+        raise OSError("Could not read config file {}: File not found.".format(config_file_path))
     parser = configparser.ConfigParser()
     parser.read(config_file_path)
     return parser
 
+# TODO: Could we use the function from the bots library for this instead?
 def load_module_from_file(file_path: str) -> ModuleType:
     # Wrapper around importutil; see https://stackoverflow.com/a/67692/3909240.
     spec = importlib.util.spec_from_file_location("custom_bot_module", file_path)
     lib_module = importlib.util.module_from_spec(spec)
     assert spec is not None
     assert spec.loader is not None
-    spec.loader.exec_module(lib_module)
+    spec.loader.exec_module(lib_module)  # type: ignore  # FIXME: typeshed issue?
     return lib_module
 
 def load_lib_modules(available_bots: List[str]) -> Dict[str, Any]:
@@ -101,7 +102,7 @@ def load_lib_modules(available_bots: List[str]) -> Dict[str, Any]:
 def load_bot_handlers(
     available_bots: List[str],
     bots_config: Dict[str, Dict[str, str]],
-    third_party_bot_conf: Optional[configparser.ConfigParser]=None,
+    third_party_bot_conf: Optional[configparser.ConfigParser] = None,
 ) -> Dict[str, lib.ExternalBotHandler]:
     bot_handlers = {}
     for bot in available_bots:
@@ -139,7 +140,7 @@ bots_config = {}  # type: Dict[str, Dict[str, str]]
 
 
 @app.route('/', methods=['POST'])
-def handle_bot() -> Union[str, BadRequest, Unauthorized]:
+def handle_bot() -> str:
     event = request.get_json(force=True)
     for bot_name, config in bots_config.items():
         if config['email'] == event['bot_email']:
@@ -147,14 +148,14 @@ def handle_bot() -> Union[str, BadRequest, Unauthorized]:
             bot_config = config
             break
     else:
-        return BadRequest("Cannot find a bot with email {} in the Botserver "
-                          "configuration file. Do the emails in your botserverrc "
-                          "match the bot emails on the server?".format(event['bot_email']))
+        raise BadRequest("Cannot find a bot with email {} in the Botserver "
+                         "configuration file. Do the emails in your botserverrc "
+                         "match the bot emails on the server?".format(event['bot_email']))
     if bot_config['token'] != event['token']:
-        return Unauthorized("Request token does not match token found for bot {} in the "
-                            "Botserver configuration file. Do the outgoing webhooks in "
-                            "Zulip point to the right Botserver?".format(event['bot_email']))
-    lib_module = app.config.get("BOTS_LIB_MODULES", {})[bot]
+        raise Unauthorized("Request token does not match token found for bot {} in the "
+                           "Botserver configuration file. Do the outgoing webhooks in "
+                           "Zulip point to the right Botserver?".format(event['bot_email']))
+    app.config.get("BOTS_LIB_MODULES", {})[bot]
     bot_handler = app.config.get("BOT_HANDLERS", {})[bot]
     message_handler = app.config.get("MESSAGE_HANDLERS", {})[bot]
     is_mentioned = event['trigger'] == "mention"

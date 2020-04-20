@@ -1,8 +1,7 @@
 import requests
 import logging
-import json
-from typing import Dict, Any, List
-from requests.exceptions import HTTPError, ConnectionError
+from typing import Any, Dict
+from requests.exceptions import ConnectionError
 
 help_message = '''
 You can add datapoints towards your beeminder goals \
@@ -74,7 +73,7 @@ at syntax by: @mention-botname help"
 right now.\nPlease try again later"
 
 
-class BeeminderHandler(object):
+class BeeminderHandler:
     '''
     This plugin allows users to easily add datapoints
     towards their beeminder goals via zulip

@@ -1,31 +1,33 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-from __future__ import print_function
+#!/usr/bin/env python3
 
 import sys
-if False:
-    from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional
 
-ZULIP_BOTSERVER_VERSION = "0.6.3"
+ZULIP_BOTSERVER_VERSION = "0.6.4"
+
+with open("README.md") as fh:
+    long_description = fh.read()
 
 # We should be installable with either setuptools or distutils.
 package_info = dict(
     name='zulip_botserver',
     version=ZULIP_BOTSERVER_VERSION,
     description='Zulip\'s Flask server for running bots',
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     author='Zulip Open Source Project',
     author_email='zulip-devel@googlegroups.com',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
+        'License :: OSI Approved :: Apache Software License',
         'Topic :: Communications :: Chat',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
     ],
     python_requires='>=3.5',
     url='https://www.zulip.org/',
@@ -57,8 +59,7 @@ except ImportError:
     from importlib import import_module
 
     # Manual dependency check
-    def check_dependency_manually(module_name, version=None):
-        # type: (str, Optional[str]) -> None
+    def check_dependency_manually(module_name: str, version: Optional[str] = None) -> None:
         try:
             module = import_module(module_name)  # type: Any
             if version is not None:

@@ -14,7 +14,7 @@ supported_commands = [
 INVALID_ARGUMENTS_ERROR_MESSAGE = 'Invalid Arguments.'
 RESPONSE_ERROR_MESSAGE = 'Invalid Response. Please check configuration and parameters.'
 
-class TrelloHandler(object):
+class TrelloHandler:
     def initialize(self, bot_handler: Any) -> None:
         self.config_info = bot_handler.get_config_info('trello')
         self.api_key = self.config_info['api_key']

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # git-p4.py -- A tool for bidirectional operation between a Perforce depot and git.
 #
@@ -7,14 +7,7 @@
 #            2007 Trolltech ASA
 # License: MIT <http://www.opensource.org/licenses/mit-license.php>
 #
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import division
 import sys
-import six
-from six.moves import input
-from six.moves import range
-from six.moves import zip
 if sys.hexversion < 0x02040000:
     # The limiter is the subprocess module
     sys.stderr.write("git-p4: requires Python 2.4 or later.\n")
@@ -61,7 +54,7 @@ def p4_build_cmd(cmd):
     """
     real_cmd = ["p4"]
 
-    if isinstance(cmd, six.string_types):
+    if isinstance(cmd, str):
         real_cmd = ' '.join(real_cmd) + ' ' + cmd
     else:
         real_cmd += cmd
@@ -100,7 +93,7 @@ def write_pipe(c, stdin):
     if verbose:
         sys.stderr.write('Writing pipe: %s\n' % str(c))
 
-    expand = isinstance(c, six.string_types)
+    expand = isinstance(c, str)
     p = subprocess.Popen(c, stdin=subprocess.PIPE, shell=expand)
     pipe = p.stdin
     val = pipe.write(stdin)
@@ -118,7 +111,7 @@ def read_pipe(c, ignore_error=False):
     if verbose:
         sys.stderr.write('Reading pipe: %s\n' % str(c))
 
-    expand = isinstance(c, six.string_types)
+    expand = isinstance(c, str)
     p = subprocess.Popen(c, stdout=subprocess.PIPE, shell=expand)
     pipe = p.stdout
     val = pipe.read()
@@ -135,7 +128,7 @@ def read_pipe_lines(c):
     if verbose:
         sys.stderr.write('Reading pipe: %s\n' % str(c))
 
-    expand = isinstance(c, six.string_types)
+    expand = isinstance(c, str)
     p = subprocess.Popen(c, stdout=subprocess.PIPE, shell=expand)
     pipe = p.stdout
     val = pipe.readlines()
@@ -178,7 +171,7 @@ def p4_has_move_command():
     return True
 
 def system(cmd):
-    expand = isinstance(cmd, six.string_types)
+    expand = isinstance(cmd, str)
     if verbose:
         sys.stderr.write("executing %s\n" % str(cmd))
     retcode = subprocess.call(cmd, shell=expand)
@@ -188,7 +181,7 @@ def system(cmd):
 def p4_system(cmd):
     """Specifically invoke p4 as the system command. """
     real_cmd = p4_build_cmd(cmd)
-    expand = isinstance(real_cmd, six.string_types)
+    expand = isinstance(real_cmd, str)
     retcode = subprocess.call(real_cmd, shell=expand)
     if retcode:
         raise CalledProcessError(retcode, real_cmd)
@@ -345,8 +338,8 @@ def setP4ExecBit(file, mode):
 
     if not isModeExec(mode):
         p4Type = getP4OpenedType(file)
-        p4Type = re.sub('^([cku]?)x(.*)', '\\1\\2', p4Type)
-        p4Type = re.sub('(.*?\+.*?)x(.*?)', '\\1\\2', p4Type)
+        p4Type = re.sub(r'^([cku]?)x(.*)', '\\1\\2', p4Type)
+        p4Type = re.sub(r'(.*?\+.*?)x(.*?)', '\\1\\2', p4Type)
         if p4Type[-1] == "+":
             p4Type = p4Type[0:-1]
 
@@ -356,7 +349,7 @@ def getP4OpenedType(file):
     # Returns the perforce file type for the given file.
 
     result = p4_read_pipe(["opened", wildcard_encode(file)])
-    match = re.match(".*\((.+)\)\r?$", result)
+    match = re.match(".*\\((.+)\\)\r?$", result)
     if match:
         return match.group(1)
     else:
@@ -365,7 +358,7 @@ def getP4OpenedType(file):
 # Return the set of all p4 labels
 def getP4Labels(depotPaths):
     labels = set()
-    if isinstance(depotPaths, six.string_types):
+    if isinstance(depotPaths, str):
         depotPaths = [depotPaths]
 
     for l in p4CmdList(["labels"] + ["%s..." % p for p in depotPaths]):
@@ -385,7 +378,7 @@ def getGitTags():
 def diffTreePattern():
     # This is a simple generator for the diff tree regex pattern. This could be
     # a class variable if this and parseDiffTreeEntry were a part of a class.
-    pattern = re.compile(':(\d+) (\d+) (\w+) (\w+) ([A-Z])(\d+)?\t(.*?)((\t(.*))|$)')
+    pattern = re.compile(':(\\d+) (\\d+) (\\w+) (\\w+) ([A-Z])(\\d+)?\t(.*?)((\t(.*))|$)')
     while True:
         yield pattern
 
@@ -432,7 +425,7 @@ def isModeExecChanged(src_mode, dst_mode):
 
 def p4CmdList(cmd, stdin=None, stdin_mode='w+b', cb=None):
 
-    if isinstance(cmd, six.string_types):
+    if isinstance(cmd, str):
         cmd = "-G " + cmd
         expand = True
     else:
@@ -449,7 +442,7 @@ def p4CmdList(cmd, stdin=None, stdin_mode='w+b', cb=None):
     stdin_file = None
     if stdin is not None:
         stdin_file = tempfile.TemporaryFile(prefix='p4-stdin', mode=stdin_mode)
-        if isinstance(stdin, six.string_types):
+        if isinstance(stdin, str):
             stdin_file.write(stdin)
         else:
             for i in stdin:
@@ -824,16 +817,16 @@ def wildcard_encode(path):
     return path
 
 def wildcard_present(path):
-    m = re.search("[*#@%]", path)
+    m = re.search(r"[*#@%]", path)
     return m is not None
 
-class Command(object):
+class Command:
     def __init__(self):
         self.usage = "usage: %prog [options]"
         self.needsGit = True
         self.verbose = False
 
-class P4UserMap(object):
+class P4UserMap:
     def __init__(self):
         self.userMapFromPerforceServer = False
         self.myP4UserId = None
@@ -890,7 +883,7 @@ class P4UserMap(object):
             for line in lines:
                 entry = line.strip().split("\t")
                 self.users[entry[0]] = entry[1]
-        except IOError:
+        except OSError:
             self.getUserMapFromPerforceServer()
 
 class P4Debug(Command):
@@ -1063,7 +1056,7 @@ class P4Submit(Command, P4UserMap):
         (handle, outFileName) = tempfile.mkstemp(dir='.')
         try:
             outFile = os.fdopen(handle, "w+")
-            inFile = open(file, "r")
+            inFile = open(file)
             regexp = re.compile(pattern, re.VERBOSE)
             for line in inFile.readlines():
                 line = regexp.sub(r'$\1$', line)
@@ -1398,7 +1391,7 @@ class P4Submit(Command, P4UserMap):
             newdiff += "==== new file ====\n"
             newdiff += "--- /dev/null\n"
             newdiff += "+++ %s\n" % newFile
-            f = open(newFile, "r")
+            f = open(newFile)
             for line in f.readlines():
                 newdiff += "+" + line
             f.close()
@@ -1780,7 +1773,7 @@ class P4Submit(Command, P4UserMap):
 
         return True
 
-class View(object):
+class View:
     """Represent a p4 view ("p4 help views"), and map files in a
        repo according to the view."""
 
@@ -1986,7 +1979,7 @@ class P4Sync(Command, P4UserMap):
             # Preserve everything in relative path name except leading
             # //depot/; just look at first prefix as they all should
             # be in the same depot.
-            depot = re.sub("^(//[^/]+/).*", r'\1', prefixes[0])
+            depot = re.sub(r"^(//[^/]+/).*", r'\1', prefixes[0])
             if p4PathStartsWith(path, depot):
                 path = path[len(depot):]
 
@@ -2384,7 +2377,7 @@ class P4Sync(Command, P4UserMap):
                 # find the corresponding git commit; take the oldest commit
                 changelist = int(change['change'])
                 gitCommit = read_pipe(["git", "rev-list", "--max-count=1",
-                     "--reverse", ":/\[git-p4:.*change = %d\]" % changelist])
+                     "--reverse", r":/\[git-p4:.*change = %d\]" % changelist])
                 if len(gitCommit) == 0:
                     print("could not find git commit for changelist %d" % changelist)
                 else:
@@ -2664,7 +2657,7 @@ class P4Sync(Command, P4UserMap):
                                 self.initialParent)
                     # only needed once, to connect to the previous commit
                     self.initialParent = ""
-            except IOError:
+            except OSError:
                 print(self.gitError.read())
                 sys.exit(1)
 
@@ -2719,7 +2712,7 @@ class P4Sync(Command, P4UserMap):
         self.updateOptionDict(details)
         try:
             self.commit(details, self.extractFilesFromCommit(details), self.branch)
-        except IOError:
+        except OSError:
             print("IO error with git fast-import. Is your git version recent enough?")
             print(self.gitError.read())
 
@@ -2885,7 +2878,7 @@ class P4Sync(Command, P4UserMap):
                 if len(self.changesFile) == 0:
                     revision = "#head"
 
-            p = re.sub ("\.\.\.$", "", p)
+            p = re.sub (r"\.\.\.$", "", p)
             if not p.endswith("/"):
                 p += "/"
 
@@ -3056,7 +3049,7 @@ class P4Rebase(Command):
             die("Cannot find upstream branchpoint for rebase")
 
         # the branchpoint may be p4/foo~3, so strip off the parent
-        upstream = re.sub("~[0-9]+$", "", upstream)
+        upstream = re.sub(r"~[0-9]+$", "", upstream)
 
         print("Rebasing the current branch onto %s" % upstream)
         oldHead = read_pipe("git rev-parse HEAD").strip()
@@ -3092,8 +3085,8 @@ class P4Clone(P4Sync):
     def defaultDestination(self, args):
         ## TODO: use common prefix of args?
         depotPath = args[0]
-        depotDir = re.sub("(@[^@]*)$", "", depotPath)
-        depotDir = re.sub("(#[^#]*)$", "", depotDir)
+        depotDir = re.sub(r"(@[^@]*)$", "", depotPath)
+        depotDir = re.sub(r"(#[^#]*)$", "", depotDir)
         depotDir = re.sub(r"\.\.\.$", "", depotDir)
         depotDir = re.sub(r"/$", "", depotDir)
         return os.path.split(depotDir)[1]

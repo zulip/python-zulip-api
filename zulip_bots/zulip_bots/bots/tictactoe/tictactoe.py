@@ -9,7 +9,7 @@ from zulip_bots.game_handler import GameAdapter, BadMoveException
 State = List[List[str]]
 
 
-class TicTacToeModel(object):
+class TicTacToeModel:
     smarter = True
     # If smarter is True, the computer will do some extra thinking - it'll be harder for the user.
 
@@ -27,7 +27,7 @@ class TicTacToeModel(object):
                      [0, 0, 0],
                      [0, 0, 0]]
 
-    def __init__(self, board: Any=None) -> None:
+    def __init__(self, board: Any = None) -> None:
         if board is not None:
             self.current_board = board
         else:
@@ -56,8 +56,12 @@ class TicTacToeModel(object):
         ''' Returns true if all coordinates in a triplet have the same value in them (x or o) and no coordinates
         in the triplet are blank. '''
         for triplet in self.triplets:
-            if (self.get_value(board, triplet[0]) == self.get_value(board, triplet[1]) ==
-                    self.get_value(board, triplet[2]) != 0):
+            if (
+                self.get_value(board, triplet[0])
+                == self.get_value(board, triplet[1])
+                == self.get_value(board, triplet[2])
+                != 0
+            ):
                 return True
         return False
 
@@ -144,8 +148,12 @@ class TicTacToeModel(object):
 
         # Assuming nobody will win in their next move, now I'll find the best place for the computer to win.
         for row, col in blank_locations:
-            if (1 not in my_board[row] and my_board[0][col] != 1 and my_board[1][col] !=
-                    1 and my_board[2][col] != 1):
+            if (
+                1 not in my_board[row]
+                and my_board[0][col] != 1
+                and my_board[1][col] != 1
+                and my_board[2][col] != 1
+            ):
                 board[row][col] = 2
                 return board
 
@@ -190,7 +198,7 @@ class TicTacToeModel(object):
             valid = False
         return valid
 
-    def make_move(self, move: str, player_number: int, computer_move: bool=False) -> Any:
+    def make_move(self, move: str, player_number: int, computer_move: bool = False) -> Any:
         if computer_move:
             return self.computer_move(self.current_board, player_number + 1)
         move_coords_str = coords_from_command(move)
@@ -208,8 +216,8 @@ class TicTacToeModel(object):
         return board
 
 
-class TicTacToeMessageHandler(object):
-    tokens = [':cross_mark_button:', ':o_button:']
+class TicTacToeMessageHandler:
+    tokens = [':x:', ':o:']
 
     def parse_row(self, row: Tuple[int, int], row_num: int) -> str:
         ''' Takes the row passed in as a list and returns it as a string. '''
@@ -259,11 +267,11 @@ class ticTacToeHandler(GameAdapter):
         game_name = 'Tic Tac Toe'
         bot_name = 'tictactoe'
         move_help_message = '* To move during a game, type\n`move <number>` or `<number>`'
-        move_regex = '(move (\d)$)|((\d)$)'
+        move_regex = r'(move (\d)$)|((\d)$)'
         model = TicTacToeModel
         gameMessageHandler = TicTacToeMessageHandler
         rules = '''Try to get three in horizontal or vertical or diagonal row to win the game.'''
-        super(ticTacToeHandler, self).__init__(
+        super().__init__(
             game_name,
             bot_name,
             move_help_message,

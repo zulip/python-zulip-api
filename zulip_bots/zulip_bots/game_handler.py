@@ -4,9 +4,6 @@ import random
 import logging
 from copy import deepcopy
 from typing import Any, Dict, Tuple, List
-from zulip_bots.test_lib import BotTestCase
-import operator
-import random
 
 
 class BadMoveException(Exception):
@@ -23,7 +20,7 @@ class SamePlayerMove(Exception):
     def __str__(self) -> str:
         return self.message
 
-class GameAdapter(object):
+class GameAdapter:
     '''
     Class that serves as a template to easily
     create multiplayer games.
@@ -40,9 +37,9 @@ class GameAdapter(object):
         model: Any,
         gameMessageHandler: Any,
         rules: str,
-        max_players: int=2,
-        min_players: int=2,
-        supports_computer: bool=False
+        max_players: int = 2,
+        min_players: int = 2,
+        supports_computer: bool = False
     ) -> None:
         self.game_name = game_name
         self.bot_name = bot_name
@@ -155,7 +152,7 @@ class GameAdapter(object):
         host = self.invites[game_id]['host']
         return 'Declined invitation to play **{}** from @**{}**.'.format(self.game_name, self.get_username_by_email(host))
 
-    def send_message(self, to: str, content: str, is_private: bool, subject: str='') -> None:
+    def send_message(self, to: str, content: str, is_private: bool, subject: str = '') -> None:
         self.bot_handler.send_message(dict(
             type='private' if is_private else 'stream',
             to=to,
@@ -248,7 +245,7 @@ class GameAdapter(object):
             elif content.lower() == 'join':
                 self.command_join(message, sender, content)
 
-            elif self.is_user_in_game(sender) is not '':
+            elif self.is_user_in_game(sender) != '':
                 self.parse_message(message)
 
             elif self.move_regex.match(content) is not None or content.lower() == 'draw' or content.lower() == 'forfeit':
@@ -299,7 +296,7 @@ class GameAdapter(object):
                 message, self.already_in_game_message())
             return
         game_id = self.set_invite_by_user(sender, True, message)
-        if game_id is '':
+        if game_id == '':
             self.send_reply(
                 message, 'No active invites. Type `help` for commands.')
             return
@@ -309,7 +306,7 @@ class GameAdapter(object):
             game_id, '@**{}** has accepted the invitation.'.format(self.get_username_by_email(sender)))
         self.start_game_if_ready(game_id)
 
-    def create_game_lobby(self, message: Dict[str, Any], users: List[str]=[]) -> None:
+    def create_game_lobby(self, message: Dict[str, Any], users: List[str] = []) -> None:
         if self.is_game_in_subject(message['subject'], message['display_recipient']):
             self.send_reply(message, 'There is already a game in this stream.')
             return
@@ -366,7 +363,7 @@ class GameAdapter(object):
                 message, self.already_in_game_message())
             return
         game_id = self.set_invite_by_user(sender, False, message)
-        if game_id is '':
+        if game_id == '':
             self.send_reply(
                 message, 'No active invites. Type `help` for commands.')
             return
@@ -381,7 +378,7 @@ class GameAdapter(object):
         if message['type'] == 'private' and self.is_single_player:
             self.send_reply(message, 'You are not allowed to play games in private messages.')
             return
-        if game_id is '':
+        if game_id == '':
             self.send_reply(
                 message, 'You are not in a game. Type `help` for all commands.')
         sender_avatar = "!avatar({})".format(sender)
@@ -399,7 +396,7 @@ class GameAdapter(object):
             return
         game_id = self.get_invite_in_subject(
             message['subject'], message['display_recipient'])
-        if game_id is '':
+        if game_id == '':
             self.send_reply(
                 message, 'There is not a game in this subject. Type `help` for all commands.')
             return
@@ -408,7 +405,7 @@ class GameAdapter(object):
     def command_play(self, message: Dict[str, Any], sender: str, content: str) -> None:
         game_id = self.get_invite_in_subject(
             message['subject'], message['display_recipient'])
-        if game_id is '':
+        if game_id == '':
             self.send_reply(
                 message, 'There is not a game in this subject. Type `help` for all commands.')
             return
@@ -451,13 +448,13 @@ class GameAdapter(object):
             reverse=True
         )
 
-    def send_invite(self, game_id: str, user_email: str, message: Dict[str, Any]={}) -> None:
+    def send_invite(self, game_id: str, user_email: str, message: Dict[str, Any] = {}) -> None:
         self.invites[game_id].update({user_email.lower(): 'p'})
         self.send_message(user_email, self.alert_new_invitation(game_id), True)
         if message != {}:
             self.send_reply(message, self.confirm_new_invitation(user_email))
 
-    def cancel_game(self, game_id: str, reason: str='') -> None:
+    def cancel_game(self, game_id: str, reason: str = '') -> None:
         if game_id in self.invites.keys():
             self.broadcast(game_id, 'Game cancelled.\n' + reason)
             del self.invites[game_id]
@@ -497,7 +494,7 @@ class GameAdapter(object):
                     instance.stream, instance.subject)
         return object
 
-    def join_game(self, game_id: str, user_email: str, message: Dict[str, Any]={}) -> None:
+    def join_game(self, game_id: str, user_email: str, message: Dict[str, Any] = {}) -> None:
         if len(self.get_players(game_id)) >= self.max_players:
             if message != {}:
                 self.send_reply(message, 'This game is full.')
@@ -507,7 +504,7 @@ class GameAdapter(object):
             game_id, '@**{}** has joined the game'.format(self.get_username_by_email(user_email)))
         self.start_game_if_ready(game_id)
 
-    def get_players(self, game_id: str, parameter: str='a') -> List[str]:
+    def get_players(self, game_id: str, parameter: str = 'a') -> List[str]:
         if game_id in self.invites.keys():
             players = []  # type: List[str]
             if (self.invites[game_id]['subject'] == '###private###' and 'p' in parameter) or 'p' not in parameter:
@@ -590,7 +587,7 @@ To move subjects, send your message again, otherwise join the game using the lin
         game_id: str,
         stream_name: str,
         subject_name: str,
-        message: Dict[str, Any]={}
+        message: Dict[str, Any] = {}
     ) -> None:
         if self.get_game_instance_by_subject(stream_name, subject_name) is not None:
             if message != {}:
@@ -640,17 +637,17 @@ To move subjects, send your message again, otherwise join the game using the lin
     def get_user_cache(self) -> Dict[str, Any]:
         try:
             user_cache_str = self.bot_handler.storage.get('users')
-        except KeyError as e:
+        except KeyError:
             return {}
         self.user_cache = json.loads(user_cache_str)
         return self.user_cache
 
-    def verify_users(self, users: List[str], message: Dict[str, Any]={}) -> List[str]:
+    def verify_users(self, users: List[str], message: Dict[str, Any] = {}) -> List[str]:
         verified_users = []
         failed = False
         for u in users:
             user = u.strip().lstrip('@**').rstrip('**')
-            if user == self.get_bot_username() or user == self.email:
+            if (user == self.get_bot_username() or user == self.email) and not self.supports_computer:
                 self.send_reply(
                     message, 'You cannot play against the computer in this game.')
             if '@' not in user:
@@ -683,11 +680,11 @@ To move subjects, send your message again, otherwise join the game using the lin
         return ''
 
     def is_game_in_subject(self, subject_name: str, stream_name: str) -> bool:
-        return self.get_invite_in_subject(subject_name, stream_name) is not '' or \
+        return self.get_invite_in_subject(subject_name, stream_name) != '' or \
             self.get_game_instance_by_subject(
                 subject_name, stream_name) is not None
 
-    def is_user_not_player(self, user_email: str, message: Dict[str, Any]={}) -> bool:
+    def is_user_not_player(self, user_email: str, message: Dict[str, Any] = {}) -> bool:
         user = self.get_user_by_email(user_email)
         if user == {}:
             if message != {}:
@@ -713,7 +710,7 @@ To move subjects, send your message again, otherwise join the game using the lin
             id += valid_characters[random.randrange(0, len(valid_characters))]
         return id
 
-    def broadcast(self, game_id: str, content: str, include_private: bool=True) -> bool:
+    def broadcast(self, game_id: str, content: str, include_private: bool = True) -> bool:
         if include_private:
             private_recipients = self.get_players(game_id, parameter='p')
             if private_recipients is not None:
@@ -752,7 +749,7 @@ To move subjects, send your message again, otherwise join the game using the lin
         return self.bot_handler.full_name
 
 
-class GameInstance(object):
+class GameInstance:
     '''
     The GameInstance class handles the game logic for a certain game,
     and is associated with a certain stream.
@@ -853,7 +850,7 @@ class GameInstance(object):
 
     def make_move(self, content: str, is_computer: bool) -> None:
         try:
-            board = self.model.make_move(content, self.turn, is_computer)
+            self.model.make_move(content, self.turn, is_computer)
         # Keep the turn of the same player
         except SamePlayerMove as smp:
             self.same_player_turn(content, smp.message, is_computer)

@@ -42,7 +42,7 @@ class StubBotHandler:
         return self.message_server.send(message)
 
     def send_reply(self, message: Dict[str, Any], response: str,
-                   widget_content: Optional[str]=None) -> Dict[str, Any]:
+                   widget_content: Optional[str] = None) -> Dict[str, Any]:
         response_message = dict(
             content=response,
             widget_content=widget_content
@@ -53,22 +53,20 @@ class StubBotHandler:
     def update_message(self, message: Dict[str, Any]) -> None:
         self.message_server.update(message)
 
-    def upload_file_from_path(self, file_path):
-        # type: (str) -> Dict[str, Any]
+    def upload_file_from_path(self, file_path: str) -> Dict[str, Any]:
         with open(file_path, 'rb') as file:
             return self.message_server.upload_file(file)
 
-    def upload_file(self, file):
-        # type: (IO[Any]) -> Dict[str, Any]
+    def upload_file(self, file: IO[Any]) -> Dict[str, Any]:
         return self.message_server.upload_file(file)
 
     class BotQuitException(Exception):
         pass
 
-    def quit(self, message: str="") -> None:
+    def quit(self, message: str = "") -> None:
         raise self.BotQuitException()
 
-    def get_config_info(self, bot_name: str, optional: bool=False) -> Dict[str, Any]:
+    def get_config_info(self, bot_name: str, optional: bool = False) -> Dict[str, Any]:
         return {}
 
     def unique_reply(self) -> Dict[str, Any]:
@@ -132,8 +130,7 @@ class BotTestCase(unittest.TestCase):
 
         return bot, bot_handler
 
-    def get_response(self, message):
-        # type: (Dict[str, Any]) -> Dict[str, Any]
+    def get_response(self, message: Dict[str, Any]) -> Dict[str, Any]:
         bot, bot_handler = self._get_handlers()
         bot_handler.reset_transcript()
         bot.handle_message(message, bot_handler)

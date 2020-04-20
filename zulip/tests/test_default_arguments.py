@@ -1,25 +1,21 @@
-from __future__ import absolute_import
+#!/usr/bin/env python3
 
 import argparse
 import os
-import six
+import io
 import unittest
 import zulip
 
 from unittest import TestCase
 from zulip import ZulipError
-if six.PY2:
-    from mock import patch
-else:
-    from unittest.mock import patch
+from unittest.mock import patch
 
 class TestDefaultArguments(TestCase):
 
-    def test_invalid_arguments(self):
-        # type: () -> None
+    def test_invalid_arguments(self) -> None:
         parser = zulip.add_default_arguments(argparse.ArgumentParser(usage="lorem ipsum"))
         with self.assertRaises(SystemExit) as cm:  # type: ignore # error: "assertRaises" doesn't match argument types
-            with patch('sys.stderr', new=six.StringIO()) as mock_stderr:
+            with patch('sys.stderr', new=io.StringIO()) as mock_stderr:
                 parser.parse_args(['invalid argument'])
         self.assertEqual(cm.exception.code, 2)
         # Assert that invalid arguments exit with printing the full usage (non-standard behavior)
@@ -33,8 +29,7 @@ Zulip API configuration:
 """))
 
     @patch('os.path.exists', return_value=False)
-    def test_config_path_with_tilde(self, mock_os_path_exists):
-        # type: (bool) -> None
+    def test_config_path_with_tilde(self, mock_os_path_exists: bool) -> None:
         parser = zulip.add_default_arguments(argparse.ArgumentParser(usage="lorem ipsum"))
         test_path = '~/zuliprc'
         args = parser.parse_args(['--config-file', test_path])

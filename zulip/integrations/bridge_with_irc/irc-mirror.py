@@ -1,17 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # EXPERIMENTAL
 # IRC <=> Zulip mirroring bot
 #
 
-from __future__ import print_function
 import argparse
 import zulip
 import sys
 import traceback
-
-if False:
-    from typing import Any, Dict
 
 usage = """./irc-mirror.py --irc-server=IRC_SERVER --channel=<CHANNEL> --nick-prefix=<NICK> --stream=<STREAM> [optional args]
 

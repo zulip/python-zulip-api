@@ -1,25 +1,3 @@
-# -*- coding: utf-8 -*-
-#
-# Copyright © 2014 Zulip, Inc.
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-
 from typing import Dict, Optional, Text
 
 # Change these values to configure authentication for the plugin
@@ -40,12 +18,11 @@ ZULIP_API_KEY = "0123456789abcdef0123456789abcdef"
 # and "my-super-secret-repository" repos to
 # * stream "commits"
 # * topic "branch_name"
-def commit_notice_destination(path, commit):
-    # type: (Text, Text) -> Optional[Dict[Text, Text]]
+def commit_notice_destination(path: Text, commit: Text) -> Optional[Dict[Text, Text]]:
     repo = path.split('/')[-1]
     if repo not in ["evil-master-plan", "my-super-secret-repository"]:
         return dict(stream  = "commits",
-                    subject = u"%s" % (repo,))
+                    subject = "%s" % (repo,))
 
     # Return None for cases where you don't want a notice sent
     return None

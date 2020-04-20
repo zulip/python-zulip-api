@@ -2,10 +2,9 @@
 
 from typing import Dict, Any, Optional, Callable
 import wit
-import sys
 import importlib.util
 
-class WitaiHandler(object):
+class WitaiHandler:
     def usage(self) -> str:
         return '''
         Wit.ai bot uses pywit API to interact with Wit.ai. In order to use
@@ -78,7 +77,7 @@ def get_handle(location: str) -> Optional[Callable[[Dict[str, Any]], Optional[st
         loader = spec.loader
         if loader is None:
             return None
-        loader.exec_module(handler)
+        loader.exec_module(handler)  # type: ignore  # FIXME: typeshed issue?
         return handler.handle  # type: ignore
     except Exception as e:
         print(e)

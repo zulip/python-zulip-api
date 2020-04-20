@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import sys
 import os
 import logging
@@ -13,8 +13,7 @@ import zulip
 
 from typing import Set, Optional
 
-def fetch_public_streams():
-    # type: () -> Optional[Set[bytes]]
+def fetch_public_streams() -> Optional[Set[bytes]]:
     public_streams = set()
 
     try:

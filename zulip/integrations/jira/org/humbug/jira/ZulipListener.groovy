@@ -1,7 +1,3 @@
-/*
-* Copyright (c) 2014 Zulip, Inc
-*/
-
 package org.zulip.jira
 
 import static com.atlassian.jira.event.type.EventType.*

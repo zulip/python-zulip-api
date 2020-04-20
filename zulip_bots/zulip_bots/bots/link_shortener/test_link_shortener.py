@@ -44,7 +44,7 @@ class TestLinkShortenerBot(BotTestCase, DefaultTests):
                        ('Mention the link shortener bot in a conversation and then '
                         'enter any URLs you want to shorten in the body of the message.'))
 
-    def test_exception_when_api_key_is_invalid(self)-> None:
+    def test_exception_when_api_key_is_invalid(self) -> None:
         bot_test_instance = LinkShortenerHandler()
         with self.mock_config_info({'key': 'qwertyuiopx'}):
             with self.mock_http_conversation('test_invalid_access_token'):

@@ -1,25 +1,3 @@
-# -*- coding: utf-8 -*-
-#
-# Copyright © 2017 Zulip, Inc.
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-
 # https://github.com/python/mypy/issues/1141
 from typing import Dict, Text, Optional
 
@@ -41,11 +19,10 @@ ZULIP_API_KEY = '0123456789abcdef0123456789abcdef'
 # * stream "deployments"
 # * topic "master"
 # And similarly for branch "test-post-receive" (for use when testing).
-def deployment_notice_destination(branch):
-    # type: (str) -> Optional[Dict[str, Text]]
+def deployment_notice_destination(branch: str) -> Optional[Dict[str, Text]]:
     if branch in ['master', 'test-post-receive']:
         return dict(stream  = 'deployments',
-                    subject = u'%s' % (branch,))
+                    subject = '%s' % (branch,))
 
     # Return None for cases where you don't want a notice sent
     return None
@@ -62,8 +39,7 @@ def deployment_notice_destination(branch):
 # * dep_id    = deployment id
 # * dep_time  = deployment timestamp
 def format_deployment_message(
-        app_name='', url='', branch='', commit_id='', dep_id='', dep_time=''):
-    # type: (str, str, str, str, str, str) -> str
+        app_name: str = '', url: str = '', branch: str = '', commit_id: str = '', dep_id: str = '', dep_time: str = '') -> str:
     return 'Deployed commit `%s` (%s) in [%s](%s)' % (
         commit_id, branch, app_name, url)
 

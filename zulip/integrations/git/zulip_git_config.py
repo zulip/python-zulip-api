@@ -1,25 +1,4 @@
-# -*- coding: utf-8 -*-
 #
-# Copyright © 2014 Zulip, Inc.
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-
 from typing import Dict, Text, Optional
 
 # Name of the stream to send notifications to, default is "commits"
@@ -44,11 +23,10 @@ ZULIP_API_KEY = "0123456789abcdef0123456789abcdef"
 # * stream "commits"
 # * topic "master"
 # And similarly for branch "test-post-receive" (for use when testing).
-def commit_notice_destination(repo, branch, commit):
-    # type: (Text, Text, Text) -> Optional[Dict[Text, Text]]
+def commit_notice_destination(repo: Text, branch: Text, commit: Text) -> Optional[Dict[Text, Text]]:
     if branch in ["master", "test-post-receive"]:
         return dict(stream  = STREAM_NAME,
-                    subject = u"%s" % (branch,))
+                    subject = "%s" % (branch,))
 
     # Return None for cases where you don't want a notice sent
     return None
@@ -58,8 +36,7 @@ def commit_notice_destination(repo, branch, commit):
 # graphical repository viewer, e.g.
 #
 # return '!avatar(%s) [%s](https://example.com/commits/%s)\n' % (author, subject, commit_id)
-def format_commit_message(author, subject, commit_id):
-    # type: (Text, Text, Text) -> Text
+def format_commit_message(author: Text, subject: Text, commit_id: Text) -> Text:
     return '!avatar(%s) %s\n' % (author, subject)
 
 ## If properly installed, the Zulip API should be in your import

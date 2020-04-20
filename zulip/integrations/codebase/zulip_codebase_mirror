@@ -1,27 +1,6 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-#
+#!/usr/bin/env python3
+
 # Zulip mirror of Codebase HQ activity
-# Copyright © 2014 Zulip, Inc.
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-#
 # The "zulip_codebase_mirror" script is run continuously, possibly on a work
 # computer or preferably on a server.
 #
@@ -29,8 +8,6 @@
 #
 # python-dateutil is a dependency for this script.
 
-from __future__ import print_function
-from __future__ import absolute_import
 import requests
 import logging
 import pytz
@@ -53,7 +30,6 @@ VERSION = "0.9"
 
 if config.ZULIP_API_PATH is not None:
     sys.path.append(config.ZULIP_API_PATH)
-import six
 import zulip
 from typing import Any, List, Dict, Optional
 
@@ -74,8 +50,7 @@ while len(json_implementations):
     except ImportError:
         continue
 
-def make_api_call(path):
-    # type: (str) -> Optional[List[Dict[str, Any]]]
+def make_api_call(path: str) -> Optional[List[Dict[str, Any]]]:
     response = requests.get("https://api3.codebasehq.com/%s" % (path,),
                             auth=(config.CODEBASE_API_USERNAME, config.CODEBASE_API_KEY),
                             params={'raw': 'True'},
@@ -83,7 +58,7 @@ def make_api_call(path):
                                        "Content-Type": "application/json",
                                        "Accept": "application/json"})
     if response.status_code == 200:
-        return json.loads(response.text)
+        return json.loads(response.text)  # type: ignore  # dynamic import
 
     if response.status_code >= 500:
         logging.error(str(response.status_code))
@@ -95,12 +70,10 @@ def make_api_call(path):
         logging.warn("Found non-success response status code: %s %s" % (response.status_code, response.text))
         return None
 
-def make_url(path):
-    # type: (str) -> str
+def make_url(path: str) -> str:
     return "%s/%s" % (config.CODEBASE_ROOT_URL, path)
 
-def handle_event(event):
-    # type: (Dict[str, Any]) -> None
+def handle_event(event: Dict[str, Any]) -> None:
     event = event['event']
     event_type = event['type']
     actor_name = event['actor_name']
@@ -264,12 +237,10 @@ def handle_event(event):
 
 
 # the main run loop for this mirror script
-def run_mirror():
-    # type: () -> None
+def run_mirror() -> None:
     # we should have the right (write) permissions on the resume file, as seen
     # in check_permissions, but it may still be empty or corrupted
-    def default_since():
-        # type: () -> datetime
+    def default_since() -> datetime:
         return datetime.now(tz=pytz.utc) - timedelta(hours=config.CODEBASE_INITIAL_HISTORY_HOURS)
 
     try:
@@ -279,7 +250,7 @@ def run_mirror():
             since = default_since()
         else:
             since = datetime.fromtimestamp(float(timestamp), tz=pytz.utc)
-    except (ValueError, IOError) as e:
+    except (ValueError, OSError) as e:
         logging.warn("Could not open resume file: %s" % (str(e)))
         since = default_since()
 
@@ -306,24 +277,23 @@ def run_mirror():
         logging.info("Shutting down Codebase mirror")
 
 # void function that checks the permissions of the files this script needs.
-def check_permissions():
-    # type: () -> None
+def check_permissions() -> None:
     # check that the log file can be written
     if config.LOG_FILE:
         try:
             open(config.LOG_FILE, "w")
-        except IOError as e:
+        except OSError as e:
             sys.stderr.write("Could not open up log for writing:")
             sys.stderr.write(str(e))
     # check that the resume file can be written (this creates if it doesn't exist)
     try:
         open(config.RESUME_FILE, "a+")
-    except IOError as e:
+    except OSError as e:
         sys.stderr.write("Could not open up the file %s for reading and writing" % (config.RESUME_FILE,))
         sys.stderr.write(str(e))
 
 if __name__ == "__main__":
-    if not isinstance(config.RESUME_FILE, six.string_types):
+    if not isinstance(config.RESUME_FILE, str):
         sys.stderr.write("RESUME_FILE path not given; refusing to continue")
     check_permissions()
     if config.LOG_FILE:

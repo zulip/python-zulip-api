@@ -1,4 +1,4 @@
-from unittest.mock import patch, Mock
+from unittest.mock import patch
 from zulip_bots.test_lib import StubBotHandler, BotTestCase, DefaultTests, get_bot_message_handler
 from requests.exceptions import ConnectionError
 
@@ -23,12 +23,12 @@ following the syntax shown below :smile:.\n \
     def test_bot_responds_to_empty_message(self) -> None:
         with self.mock_config_info(self.normal_config), \
                 self.mock_http_conversation('test_valid_auth_token'):
-                    self.verify_reply('', self.help_message)
+            self.verify_reply('', self.help_message)
 
     def test_help_message(self) -> None:
         with self.mock_config_info(self.normal_config), \
                 self.mock_http_conversation('test_valid_auth_token'):
-                    self.verify_reply('help', self.help_message)
+            self.verify_reply('help', self.help_message)
 
     def test_message_with_daystamp_and_value(self) -> None:
         bot_response = '[Datapoint](https://www.beeminder.com/aaron/goal) created.'
@@ -54,9 +54,9 @@ following the syntax shown below :smile:.\n \
     def test_syntax_error(self) -> None:
         with self.mock_config_info(self.normal_config), \
                 self.mock_http_conversation('test_valid_auth_token'):
-                    bot_response = "Make sure you follow the syntax.\n You can take a look \
+            bot_response = "Make sure you follow the syntax.\n You can take a look \
 at syntax by: @mention-botname help"
-                    self.verify_reply("20180303, 50, comment, redundant comment", bot_response)
+            self.verify_reply("20180303, 50, comment, redundant comment", bot_response)
 
     def test_connection_error_when_handle_message(self) -> None:
         with self.mock_config_info(self.normal_config), \
@@ -67,8 +67,8 @@ at syntax by: @mention-botname help"
 right now.\nPlease try again later')
 
     def test_invalid_when_handle_message(self) -> None:
-        bot = get_bot_message_handler(self.bot_name)
-        bot_handler = StubBotHandler()
+        get_bot_message_handler(self.bot_name)
+        StubBotHandler()
 
         with self.mock_config_info({'auth_token': 'someInvalidKey',
                                     'username': 'aaron',
@@ -84,7 +84,7 @@ right now.\nPlease try again later')
         with self.mock_config_info(self.normal_config), \
                 self.mock_http_conversation('test_valid_auth_token'), \
                 self.mock_http_conversation('test_error'):
-                    self.verify_reply(bot_request, bot_response)
+            self.verify_reply(bot_request, bot_response)
 
     def test_invalid_when_initialize(self) -> None:
         bot = get_bot_message_handler(self.bot_name)
@@ -95,7 +95,7 @@ right now.\nPlease try again later')
                                     'goalname': 'goal'}), \
                 self.mock_http_conversation('test_invalid_when_initialize'), \
                 self.assertRaises(bot_handler.BotQuitException):
-                    bot.initialize(bot_handler)
+            bot.initialize(bot_handler)
 
     def test_connection_error_during_initialize(self) -> None:
         bot = get_bot_message_handler(self.bot_name)

@@ -1,10 +1,8 @@
 # See readme.md for instructions on running this code.
 
 import copy
-import importlib
 from math import log10, floor
 
-import re
 from zulip_bots.bots.converter import utils
 
 from typing import Any, Dict, List
@@ -25,7 +23,7 @@ def is_float(value: Any) -> bool:
 def round_to(x: float, digits: int) -> float:
     return round(x, digits-int(floor(log10(abs(x)))))
 
-class ConverterHandler(object):
+class ConverterHandler:
     '''
     This plugin allows users to make conversions between various units,
     e.g. Celsius to Fahrenheit, or kilobytes to gigabytes.
@@ -97,8 +95,10 @@ def get_bot_converter_response(message: Dict[str, str], bot_handler: Any) -> str
             base_unit = uf_to_std[2]
             if uf_to_std[2] != ut_to_std[2]:
                 unit_from = unit_from.capitalize() if uf_to_std[2] == 'kelvin' else unit_from
-                results.append('`' + unit_to.capitalize() + '` and `' + unit_from + '`' +
-                               ' are not from the same category. ' + utils.QUICK_HELP)
+                results.append(
+                    '`' + unit_to.capitalize() + '` and `' + unit_from + '`'
+                    + ' are not from the same category. ' + utils.QUICK_HELP
+                )
                 continue
 
             # perform the conversion between the units

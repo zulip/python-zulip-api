@@ -54,7 +54,7 @@ def beat(message, topic_name, merels_storage):
              we want to keep the turn of the same played,
              an empty string otherwise.
     """
-    merels = database.MerelsStorage(topic_name, merels_storage)
+    database.MerelsStorage(topic_name, merels_storage)
     match = COMMAND_PATTERN.match(message)
     same_player_move = ""  # message indicating move of the same player
 
@@ -91,7 +91,7 @@ def beat(message, topic_name, merels_storage):
             return unknown_command()
 
         if mechanics.get_take_status(topic_name, merels_storage) == 1:
-                same_player_move = "Take is required to proceed.\n"
+            same_player_move = "Take is required to proceed.\n"
         return responses, same_player_move
 
     elif match.group(4) is not None and match.group(5) is not None:
@@ -199,5 +199,5 @@ def check_win(topic_name, merels_storage):
     win = mechanics.who_won(topic_name, merels_storage)
     if win != "None":
         merels.remove_game(topic_name)
-        return "{0} wins the game!".format(win)
+        return "{} wins the game!".format(win)
     return ""

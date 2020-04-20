@@ -1,17 +1,16 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 
-from __future__ import print_function
-if False:
-    from typing import Any, Dict, Generator, List, Tuple
+from typing import Any, Dict, Generator, List, Tuple
 
 import os
 import sys
 
 import itertools
 
-def version():
-    # type: () -> str
+with open("README.md") as fh:
+    long_description = fh.read()
+
+def version() -> str:
     version_py = os.path.join(os.path.dirname(__file__), "zulip", "__init__.py")
     with open(version_py) as in_handle:
         version_line = next(itertools.dropwhile(lambda x: not x.startswith("__version__"),
@@ -19,8 +18,7 @@ def version():
     version = version_line.split('=')[-1].strip().replace('"', '')
     return version
 
-def recur_expand(target_root, dir):
-    # type: (Any, Any) -> Generator[Tuple[str, List[str]], None, None]
+def recur_expand(target_root: Any, dir: Any) -> Generator[Tuple[str, List[str]], None, None]:
     for root, _, files in os.walk(dir):
         paths = [os.path.join(root, f) for f in files]
         if len(paths):
@@ -31,22 +29,23 @@ package_info = dict(
     name='zulip',
     version=version(),
     description='Bindings for the Zulip message API',
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     author='Zulip Open Source Project',
     author_email='zulip-devel@googlegroups.com',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
+        'License :: OSI Approved :: Apache Software License',
         'Topic :: Communications :: Chat',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
     ],
-    python_requires='>=2.7,!=3.0.x,!=3.1.x,!=3.2.x,!=3.3.x,!=3.4.x',
+    python_requires='>=3.5',
     url='https://www.zulip.org/',
     data_files=list(recur_expand('share/zulip', 'integrations')),
     include_package_data=True,

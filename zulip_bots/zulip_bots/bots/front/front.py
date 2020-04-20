@@ -1,8 +1,8 @@
 import requests
 import re
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
-class FrontHandler(object):
+class FrontHandler:
     FRONT_API = "https://api2.frontapp.com/conversations/{}"
     COMMANDS = [
         ('archive', "Archive a conversation."),

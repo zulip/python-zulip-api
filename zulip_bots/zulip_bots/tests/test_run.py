@@ -56,8 +56,7 @@ class TestDefaultArguments(TestCase):
         expected_bot_dir_path = '/path/to'
         self._test_adding_bot_parent_dir_to_sys_path(bot_qualifier=bot_path, bot_dir_path=expected_bot_dir_path)
 
-    def _test_adding_bot_parent_dir_to_sys_path(self, bot_qualifier, bot_dir_path):
-        # type: (str, str) -> None
+    def _test_adding_bot_parent_dir_to_sys_path(self, bot_qualifier: str, bot_dir_path: str) -> None:
         with patch('sys.argv', ['zulip-run-bot', bot_qualifier, '--config-file', '/path/to/config']):
             with patch('zulip_bots.finder.import_module_from_source', return_value=mock.Mock()):
                 with patch('zulip_bots.run.run_message_handler_for_bot'):
@@ -74,9 +73,9 @@ class TestDefaultArguments(TestCase):
         with patch('sys.argv', ['zulip-run-bot', 'bot.module.name', '--config-file', '/path/to/config']):
             with patch('importlib.import_module', return_value=mock_bot_module) as mock_import_module:
                 with patch('zulip_bots.run.run_message_handler_for_bot'):
-                        with patch('zulip_bots.run.exit_gracefully_if_zulip_config_is_missing'):
-                            zulip_bots.run.main()
-                            mock_import_module.assert_called_once_with(bot_module_name)
+                    with patch('zulip_bots.run.exit_gracefully_if_zulip_config_is_missing'):
+                        zulip_bots.run.main()
+                        mock_import_module.assert_called_once_with(bot_module_name)
 
 
 class TestBotLib(TestCase):
@@ -95,7 +94,7 @@ class TestBotLib(TestCase):
         test_message("brokenmention", "@**brokenmention* foo", None)
         test_message("nomention", "foo", None)
         test_message("Max Mustermann", "@**Max Mustermann** foo", "foo")
-        test_message("Max (Mustermann)#(*$&12]\]", "@**Max (Mustermann)#(*$&12]\]** foo", "foo")
+        test_message(r"Max (Mustermann)#(*$&12]\]", r"@**Max (Mustermann)#(*$&12]\]** foo", "foo")
 
 if __name__ == '__main__':
     unittest.main()

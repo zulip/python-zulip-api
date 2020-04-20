@@ -1,7 +1,4 @@
-#!/usr/bin/env python
-
-from __future__ import absolute_import
-from __future__ import print_function
+#!/usr/bin/env python3
 
 import os
 import sys
@@ -101,6 +98,7 @@ force_include = [
     "zulip_bots/zulip_bots/bots/susi/test_susi.py",
     "zulip_bots/zulip_bots/bots/front/front.py",
     "zulip_bots/zulip_bots/bots/front/test_front.py",
+    "tools/custom_check.py",
     "tools/deploy"
 ]
 

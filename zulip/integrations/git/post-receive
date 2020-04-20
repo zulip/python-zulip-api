@@ -1,26 +1,6 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-#
+#!/usr/bin/env python3
+
 # Zulip notification post-receive hook.
-# Copyright © 2012-2014 Zulip, Inc.
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
 #
 # The "post-receive" script is run after receive-pack has accepted a pack
 # and the repository has been updated.  It is passed arguments in through
@@ -29,7 +9,6 @@
 # For example:
 #  aa453216d1b3e49e7f6f98441fa56946ddcd6a20 68f7abf4e6f922807889f52bc043ecd31b79f814 refs/heads/master
 
-from __future__ import absolute_import
 from typing import Text
 import os
 import sys
@@ -50,20 +29,18 @@ client = zulip.Client(
     api_key=config.ZULIP_API_KEY,
     client="ZulipGit/" + VERSION)
 
-def git_repository_name():
-    # type: () -> Text
+def git_repository_name() -> Text:
     output = subprocess.check_output(["git", "rev-parse", "--is-bare-repository"])
     if output.strip() == "true":
         return os.path.basename(os.getcwd())[:-len(".git")]
     else:
         return os.path.basename(os.path.dirname(os.getcwd()))
 
-def git_commit_range(oldrev, newrev):
-    # type: (str, str) -> str
+def git_commit_range(oldrev: str, newrev: str) -> str:
     log_cmd = ["git", "log", "--reverse",
                "--pretty=%aE %H %s", "%s..%s" % (oldrev, newrev)]
     commits = ''
-    for ln in subprocess.check_output(log_cmd).splitlines():
+    for ln in subprocess.check_output(log_cmd, universal_newlines=True).splitlines():
         author_email, commit_id, subject  = ln.split(None, 2)
         if hasattr(config, "format_commit_message"):
             commits += config.format_commit_message(author_email, subject, commit_id)
@@ -71,8 +48,7 @@ def git_commit_range(oldrev, newrev):
             commits += '!avatar(%s) %s\n' % (author_email, subject)
     return commits
 
-def send_bot_message(oldrev, newrev, refname):
-    # type: (str, str, str) -> None
+def send_bot_message(oldrev: str, newrev: str, refname: str) -> None:
     repo_name   = git_repository_name()
     branch      = refname.replace('refs/heads/', '')
     destination = config.commit_notice_destination(repo_name, branch, newrev)
@@ -83,8 +59,10 @@ def send_bot_message(oldrev, newrev, refname):
     new_head = newrev[:12]
     old_head = oldrev[:12]
 
-    if (oldrev == '0000000000000000000000000000000000000000' or
-            newrev == '0000000000000000000000000000000000000000'):
+    if (
+        oldrev == '0000000000000000000000000000000000000000'
+        or newrev == '0000000000000000000000000000000000000000'
+    ):
         # New branch pushed or old branch removed
         added = ''
         removed = ''

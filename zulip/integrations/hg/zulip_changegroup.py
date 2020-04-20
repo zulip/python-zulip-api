@@ -1,42 +1,18 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-#
+#!/usr/bin/env python3
+
 # Zulip hook for Mercurial changeset pushes.
-# Copyright Â© 2012-2014 Zulip, Inc.
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-#
 #
 # This hook is called when changesets are pushed to the master repository (ie
 # `hg push`). See https://zulipchat.com/integrations for installation instructions.
-from __future__ import absolute_import
 
 import zulip
 import sys
-from six.moves import range
-from typing import Any, Optional, Text
+from typing import Text
 from mercurial import ui, repository as repo
 
 VERSION = "0.9"
 
-def format_summary_line(web_url, user, base, tip, branch, node):
-    # type: (str, str, int, int, str, Text) -> Text
+def format_summary_line(web_url: str, user: str, base: int, tip: int, branch: str, node: Text) -> Text:
     """
     Format the first line of the message, which contains summary
     information about the changeset and links to the changelog if a
@@ -57,12 +33,11 @@ def format_summary_line(web_url, user, base, tip, branch, node):
         formatted_commit_count = "{revcount} commit{s}".format(
             revcount=revcount, s=plural)
 
-    return u"**{user}** pushed {commits} to **{branch}** (`{tip}:{node}`):\n\n".format(
+    return "**{user}** pushed {commits} to **{branch}** (`{tip}:{node}`):\n\n".format(
         user=user, commits=formatted_commit_count, branch=branch, tip=tip,
         node=node[:12])
 
-def format_commit_lines(web_url, repo, base, tip):
-    # type: (str, repo, int, int) -> str
+def format_commit_lines(web_url: str, repo: repo, base: int, tip: int) -> str:
     """
     Format the per-commit information for the message, including the one-line
     commit summary and a link to the diff if a web URL has been configured:
@@ -87,8 +62,7 @@ def format_commit_lines(web_url, repo, base, tip):
 
     return "\n".join(summary for summary in commit_summaries)
 
-def send_zulip(email, api_key, site, stream, subject, content):
-    # type: (str, str, str, str, str, Text) -> None
+def send_zulip(email: str, api_key: str, site: str, stream: str, subject: str, content: Text) -> None:
     """
     Send a message to Zulip using the provided credentials, which should be for
     a bot in most cases.
@@ -106,8 +80,7 @@ def send_zulip(email, api_key, site, stream, subject, content):
 
     client.send_message(message_data)
 
-def get_config(ui, item):
-    # type: (ui, str) -> str
+def get_config(ui: ui, item: str) -> str:
     try:
         # config returns configuration value.
         return ui.config('zulip', item)
@@ -115,8 +88,7 @@ def get_config(ui, item):
         ui.warn("Zulip: Could not find required item {} in hg config.".format(item))
         sys.exit(1)
 
-def hook(ui, repo, **kwargs):
-    # type: (ui, repo, **Text) -> None
+def hook(ui: ui, repo: repo, **kwargs: Text) -> None:
     """
     Invoked by configuring a [hook] entry in .hg/hgrc.
     """

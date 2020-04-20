@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import os
 import sys
 import subprocess
@@ -26,7 +26,7 @@ session_path = "/home/zulip/zephyr_sessions/%s" % (program_name,)
 # Preserve mail zephyrs forwarding setting across rewriting the config file
 
 try:
-    if "--forward-mail-zephyrs" in open(supervisor_path, "r").read():
+    if "--forward-mail-zephyrs" in open(supervisor_path).read():
         template_data = template_data.replace("--use-sessions", "--use-sessions --forward-mail-zephyrs")
 except Exception:
     pass

@@ -1,26 +1,3 @@
-# -*- coding: utf-8 -*-
-
-# Copyright © 2012 Zulip, Inc.
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-
-
 # Zulip trac plugin -- sends zulips when tickets change.
 #
 # Install by copying this file and zulip_trac_config.py to the trac
@@ -42,8 +19,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 import zulip_trac_config as config
 VERSION = "0.9"
 
-if False:
-    from typing import Any, Dict
+from typing import Any, Dict
 
 if config.ZULIP_API_PATH is not None:
     sys.path.append(config.ZULIP_API_PATH)
@@ -55,26 +31,21 @@ client = zulip.Client(
     api_key=config.ZULIP_API_KEY,
     client="ZulipTrac/" + VERSION)
 
-def markdown_ticket_url(ticket, heading="ticket"):
-    # type: (Any, str) -> str
+def markdown_ticket_url(ticket: Any, heading: str = "ticket") -> str:
     return "[%s #%s](%s/%s)" % (heading, ticket.id, config.TRAC_BASE_TICKET_URL, ticket.id)
 
-def markdown_block(desc):
-    # type: (str) -> str
+def markdown_block(desc: str) -> str:
     return "\n\n>" + "\n> ".join(desc.split("\n")) + "\n"
 
-def truncate(string, length):
-    # type: (str, int) -> str
+def truncate(string: str, length: int) -> str:
     if len(string) <= length:
         return string
     return string[:length - 3] + "..."
 
-def trac_subject(ticket):
-    # type: (Any) -> str
+def trac_subject(ticket: Any) -> str:
     return truncate("#%s: %s" % (ticket.id, ticket.values.get("summary")), 60)
 
-def send_update(ticket, content):
-    # type: (Any, str) -> None
+def send_update(ticket: Any, content: str) -> None:
     client.send_message({
         "type": "stream",
         "to": config.STREAM_FOR_NOTIFICATIONS,
@@ -85,8 +56,7 @@ def send_update(ticket, content):
 class ZulipPlugin(Component):
     implements(ITicketChangeListener)
 
-    def ticket_created(self, ticket):
-        # type: (Any) -> None
+    def ticket_created(self, ticket: Any) -> None:
         """Called when a ticket is created."""
         content = "%s created %s in component **%s**, priority **%s**:\n" % \
             (ticket.values.get("reporter"), markdown_ticket_url(ticket),
@@ -98,15 +68,16 @@ class ZulipPlugin(Component):
             content += "%s" % (markdown_block(ticket.values.get("description")),)
         send_update(ticket, content)
 
-    def ticket_changed(self, ticket, comment, author, old_values):
-        # type: (Any, str, str, Dict[str, Any]) -> None
+    def ticket_changed(self, ticket: Any, comment: str, author: str, old_values: Dict[str, Any]) -> None:
         """Called when a ticket is modified.
 
         `old_values` is a dictionary containing the previous values of the
         fields that have changed.
         """
-        if not (set(old_values.keys()).intersection(set(config.TRAC_NOTIFY_FIELDS)) or
-                (comment and "comment" in set(config.TRAC_NOTIFY_FIELDS))):
+        if not (
+            set(old_values.keys()).intersection(set(config.TRAC_NOTIFY_FIELDS))
+            or (comment and "comment" in set(config.TRAC_NOTIFY_FIELDS))
+        ):
             return
 
         content = "%s updated %s" % (author, markdown_ticket_url(ticket))
@@ -130,8 +101,7 @@ class ZulipPlugin(Component):
 
         send_update(ticket, content)
 
-    def ticket_deleted(self, ticket):
-        # type: (Any) -> None
+    def ticket_deleted(self, ticket: Any) -> None:
         """Called when a ticket is deleted."""
         content = "%s was deleted." % markdown_ticket_url(ticket, heading="Ticket")
         send_update(ticket, content)

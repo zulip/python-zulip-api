@@ -1,6 +1,6 @@
 from zulip_bots.test_lib import BotTestCase, DefaultTests
 
-from zulip_bots.bots.connect_four.connect_four import *
+from zulip_bots.bots.connect_four.connect_four import ConnectFourModel
 from zulip_bots.game_handler import BadMoveException
 from typing import Dict, List
 
@@ -11,8 +11,8 @@ class TestConnectFourBot(BotTestCase, DefaultTests):
     def make_request_message(
         self,
         content: str,
-        user: str='foo@example.com',
-        user_name: str='foo'
+        user: str = 'foo@example.com',
+        user_name: str = 'foo'
     ) -> Dict[str, str]:
         message = dict(
             sender_email=user,
@@ -22,7 +22,7 @@ class TestConnectFourBot(BotTestCase, DefaultTests):
         return message
 
     # Function that serves similar purpose to BotTestCase.verify_dialog, but allows for multiple responses to be handled
-    def verify_response(self, request: str, expected_response: str, response_number: int, user: str='foo@example.com') -> None:
+    def verify_response(self, request: str, expected_response: str, response_number: int, user: str = 'foo@example.com') -> None:
         '''
         This function serves a similar purpose
         to BotTestCase.verify_dialog, but allows
@@ -74,18 +74,18 @@ class TestConnectFourBot(BotTestCase, DefaultTests):
 
     def test_game_message_handler_responses(self) -> None:
         board = ':one: :two: :three: :four: :five: :six: :seven:\n\n' + '\
-:heavy_large_circle: :heavy_large_circle: :heavy_large_circle: :heavy_large_circle: \
-:heavy_large_circle: :heavy_large_circle: :heavy_large_circle: \n\n\
-:heavy_large_circle: :heavy_large_circle: :heavy_large_circle: :heavy_large_circle: \
-:heavy_large_circle: :heavy_large_circle: :heavy_large_circle: \n\n\
-:heavy_large_circle: :heavy_large_circle: :heavy_large_circle: :heavy_large_circle: \
-:heavy_large_circle: :heavy_large_circle: :heavy_large_circle: \n\n\
-:blue_circle: :red_circle: :heavy_large_circle: :heavy_large_circle: :heavy_large_circle: \
-:heavy_large_circle: :heavy_large_circle: \n\n\
-:blue_circle: :red_circle: :heavy_large_circle: :heavy_large_circle: :heavy_large_circle: \
-:heavy_large_circle: :heavy_large_circle: \n\n\
-:blue_circle: :red_circle: :heavy_large_circle: :heavy_large_circle: :heavy_large_circle: \
-:heavy_large_circle: :heavy_large_circle: '
+:white_circle: :white_circle: :white_circle: :white_circle: \
+:white_circle: :white_circle: :white_circle: \n\n\
+:white_circle: :white_circle: :white_circle: :white_circle: \
+:white_circle: :white_circle: :white_circle: \n\n\
+:white_circle: :white_circle: :white_circle: :white_circle: \
+:white_circle: :white_circle: :white_circle: \n\n\
+:blue_circle: :red_circle: :white_circle: :white_circle: :white_circle: \
+:white_circle: :white_circle: \n\n\
+:blue_circle: :red_circle: :white_circle: :white_circle: :white_circle: \
+:white_circle: :white_circle: \n\n\
+:blue_circle: :red_circle: :white_circle: :white_circle: :white_circle: \
+:white_circle: :white_circle: '
         bot, bot_handler = self._get_handlers()
         self.assertEqual(bot.gameMessageHandler.parse_board(
             self.almost_win_board), board)

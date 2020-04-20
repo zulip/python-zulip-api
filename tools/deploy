@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from typing import Any, List, Dict, Callable
 
@@ -8,9 +8,7 @@ import argparse
 import zipfile
 import textwrap
 import requests
-import urllib
-import json
-from urllib import parse
+import urllib.parse
 from requests import Response
 
 red = '\033[91m'  # type: str
@@ -201,7 +199,7 @@ def print_bots(bots: List[Any], pretty_print: bool) -> None:
         print_bots_pretty(bots)
     else:
         for bot in bots:
-            print('{0}\t{1}\t{2}\t{3}'.format(bot['name'], bot['status'], bot['email'], bot['site']))
+            print('{}\t{}\t{}\t{}'.format(bot['name'], bot['status'], bot['email'], bot['site']))
 
 def print_bots_pretty(bots: List[Any]) -> None:
     if len(bots) == 0:

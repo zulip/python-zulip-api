@@ -1,13 +1,11 @@
 # See readme.md for instructions on running this code.
 import requests
-import json
-import logging
 
 from typing import Any, Dict
 
 api_url = 'http://api.openweathermap.org/data/2.5/weather'
 
-class WeatherHandler(object):
+class WeatherHandler:
     def initialize(self, bot_handler: Any) -> None:
         self.api_key = bot_handler.get_config_info('weather')['key']
         self.response_pattern = 'Weather in {}, {}:\n{:.2f} F / {:.2f} C\n{}'

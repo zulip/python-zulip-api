@@ -3,8 +3,6 @@ import json
 import requests
 import random
 import re
-from zulip_bots.lib import Any
-
 from typing import Optional, Any, Dict, Tuple
 
 class NotAvailableException(Exception):
@@ -65,7 +63,7 @@ def start_new_quiz(message: Dict[str, Any], bot_handler: Any) -> None:
     bot_handler.send_reply(message, bot_response, widget_content)
 
 def parse_answer(query: str) -> Tuple[str, str]:
-    m = re.match('answer\s+(Q...)\s+(.)', query)
+    m = re.match(r'answer\s+(Q...)\s+(.)', query)
     if not m:
         raise InvalidAnswerException()
 
@@ -129,7 +127,7 @@ def get_quiz_from_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
         answered_options=[],
         pending=True,
         correct_letter=correct_letter,
-    )
+    )  # type: Dict[str, Any]
     return quiz
 
 def generate_quiz_id(storage: Any) -> str:

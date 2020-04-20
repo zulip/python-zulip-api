@@ -3,7 +3,7 @@
 from typing import Any, List, Dict
 import requests
 
-class BaremetricsHandler(object):
+class BaremetricsHandler:
     def initialize(self, bot_handler: Any) -> None:
         self.config_info = bot_handler.get_config_info('baremetrics')
         self.api_key = self.config_info['api_key']
@@ -147,10 +147,14 @@ class BaremetricsHandler(object):
                               'Amounts:'])
         response = ['**Listing plans:**']
         for index, plan in enumerate(plans_data):
-            response += ([template.format(_count=index + 1, **plan)] +
-                         [' - {amount} {currency}'.format(**amount)
-                          for amount in plan['amounts']] +
-                         [''])
+            response += (
+                [template.format(_count=index + 1, **plan)]
+                + [
+                    ' - {amount} {currency}'.format(**amount)
+                    for amount in plan['amounts']
+                ]
+                + ['']
+            )
 
         return '\n'.join(response)
 
@@ -171,10 +175,11 @@ class BaremetricsHandler(object):
                               'Current Plans:'])
         response = ['**Listing customers:**']
         for index, customer in enumerate(customers_data):
-            response += ([template.format(_count=index + 1, **customer)] +
-                         [' - {name}'.format(**plan)
-                          for plan in customer['current_plans']] +
-                         [''])
+            response += (
+                [template.format(_count=index + 1, **customer)]
+                + [' - {name}'.format(**plan) for plan in customer['current_plans']]
+                + ['']
+            )
 
         return '\n'.join(response)
 
@@ -194,13 +199,21 @@ class BaremetricsHandler(object):
                               'Plan Amounts:'])
         response = ['**Listing subscriptions:**']
         for index, subscription in enumerate(subscriptions_data):
-            response += ([template.format(_count=index + 1,
-                                          _active=subscription['active'],
-                                          _plan_name=subscription['plan']['name'],
-                                          **subscription['customer'])] +
-                         [' - {amount} {symbol}'.format(**amount)
-                          for amount in subscription['plan']['amounts']] +
-                         [''])
+            response += (
+                [
+                    template.format(
+                        _count=index + 1,
+                        _active=subscription['active'],
+                        _plan_name=subscription['plan']['name'],
+                        **subscription['customer']
+                    )
+                ]
+                + [
+                    ' - {amount} {symbol}'.format(**amount)
+                    for amount in subscription['plan']['amounts']
+                ]
+                + ['']
+            )
 
         return '\n'.join(response)
 
