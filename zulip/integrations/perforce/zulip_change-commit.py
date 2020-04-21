@@ -17,10 +17,13 @@ For example:
 import os
 import sys
 import os.path
-
+import logging
 import git_p4
 
 __version__ = "0.1"
+
+logging.basicConfig()
+log = logging.getLogger("zulip-change-commit")
 
 sys.path.insert(0, os.path.dirname(__file__))
 from typing import Any, Dict, Optional
@@ -47,6 +50,11 @@ except ValueError:
     print("First argument must be an integer.\n\n", end=' ', file=sys.stderr)
     print(__doc__, file=sys.stderr)
     sys.exit(-1)
+
+
+if client.get_profile()["result"] == "error":
+    log.error(zulip.InvalidCredentialsError("Invalid API credentials"))
+    sys.exit()
 
 metadata = git_p4.p4_describe(changelist)  # type: Dict[str, str]
 

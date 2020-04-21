@@ -7,10 +7,15 @@
 
 import zulip
 import sys
+import logging
 from typing import Text
 from mercurial import ui, repository as repo
 
 VERSION = "0.9"
+
+logging.basicConfig()
+
+log = logging.getLogger("zulip-change-group")
 
 def format_summary_line(web_url: str, user: str, base: int, tip: int, branch: str, node: Text) -> Text:
     """
@@ -78,7 +83,10 @@ def send_zulip(email: str, api_key: str, site: str, stream: str, subject: str, c
         "content": content,
     }
 
-    client.send_message(message_data)
+    if client.get_profile()["result"] == "error":
+        raise zulip.InvalidCredentialsError("Invalid API credentials")
+    else:
+        client.send_message(message_data)
 
 def get_config(ui: ui, item: str) -> str:
     try:
@@ -119,7 +127,7 @@ def hook(ui: ui, repo: repo, **kwargs: Text) -> None:
         # Don't send notifications for branches we've ignored.
         ignored_branches = [b.lower().strip() for b in branch_blacklist.split(",")]
         if branch.lower() in ignored_branches:
-            ui.debug("Zulip: ignoring event for {branch}\n".format(branch=branch))
+            ui.debug("Zulip: ignoring event e {branch}\n".format(branch=branch))
             sys.exit(0)
 
     # The first and final commits in the changeset.
@@ -150,4 +158,7 @@ def hook(ui: ui, repo: repo, **kwargs: Text) -> None:
     ui.debug("Sending to Zulip:\n")
     ui.debug(content + "\n")
 
-    send_zulip(email, api_key, site, stream, subject, content)
+    try:
+        send_zulip(email, api_key, site, stream, subject, content)
+    except Exception as error:
+        log.error(error)

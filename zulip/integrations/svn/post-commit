@@ -13,11 +13,15 @@ import os
 import sys
 import os.path
 import pysvn
+import logging
 from typing import Any, Dict, Optional, Text, Tuple
 
 sys.path.insert(0, os.path.dirname(__file__))
 import zulip_svn_config as config
 VERSION = "0.9"
+
+logging.basicConfig()
+log = logging.getLogger("svn-post-commit")
 
 if config.ZULIP_API_PATH is not None:
     sys.path.append(config.ZULIP_API_PATH)
@@ -51,4 +55,7 @@ if destination is not None:
         "subject": destination["subject"],
         "content": message,
     }  # type: Dict[str, Any]
-    client.send_message(message_data)
+    if client.get_profile()["result"] == "error":
+        log.error(zulip.InvalidCredentialsError("Invalid API credentials"))
+    else:
+        client.send_message(message_data)

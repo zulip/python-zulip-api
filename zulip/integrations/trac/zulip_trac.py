@@ -15,11 +15,15 @@ from trac.core import Component, implements
 from trac.ticket import ITicketChangeListener
 import sys
 import os.path
+import logging
 sys.path.insert(0, os.path.dirname(__file__))
 import zulip_trac_config as config
 VERSION = "0.9"
 
 from typing import Any, Dict
+
+logging.basicConfig()
+log = logging.getLogger("zulip-trac-post")
 
 if config.ZULIP_API_PATH is not None:
     sys.path.append(config.ZULIP_API_PATH)
@@ -46,12 +50,15 @@ def trac_subject(ticket: Any) -> str:
     return truncate("#%s: %s" % (ticket.id, ticket.values.get("summary")), 60)
 
 def send_update(ticket: Any, content: str) -> None:
-    client.send_message({
-        "type": "stream",
-        "to": config.STREAM_FOR_NOTIFICATIONS,
-        "content": content,
-        "subject": trac_subject(ticket)
-    })
+    if client.get_profile()["result"] == "error":
+        log.error(zulip.InvalidCredentialsError("Invalid API credentials"))
+    else:
+        client.send_message({
+            "type": "stream",
+            "to": config.STREAM_FOR_NOTIFICATIONS,
+            "content": content,
+            "subject": trac_subject(ticket)
+        })
 
 class ZulipPlugin(Component):
     implements(ITicketChangeListener)

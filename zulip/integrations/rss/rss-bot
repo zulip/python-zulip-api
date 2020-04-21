@@ -172,6 +172,10 @@ client = zulip.Client(email=opts.zulip_email, api_key=opts.zulip_api_key,
                       config_file=opts.zulip_config_file,
                       site=opts.zulip_site, client="ZulipRSS/" + VERSION)  # type: zulip.Client
 
+if client.get_profile()["result"] == "error":
+    logger.error(zulip.InvalidCredentialsError("Invalid API credentials"))
+    sys.exit()
+
 first_message = True  # type: bool
 
 for feed_url in feed_urls:
