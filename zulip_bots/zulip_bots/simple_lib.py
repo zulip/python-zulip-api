@@ -30,6 +30,9 @@ class SimpleMessageServer:
         self.messages[self.message_id] = message
         return message
 
+    def add_reaction(self, reaction_data):
+        return dict(result='success', msg='', uri='https://server/messages/{}/reactions'.format(uuid4()))
+
     def update(self, message):
         self.messages[message['message_id']] = message
 

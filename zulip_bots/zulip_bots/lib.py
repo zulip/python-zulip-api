@@ -153,6 +153,11 @@ class ExternalBotHandler:
     def identity(self) -> BotIdentity:
         return BotIdentity(self.full_name, self.email)
 
+    def react(self, message: Dict[str, Any], emoji_name: str) -> Dict[str, Any]:
+        return self._client.add_reaction(dict(message_id=message['id'],
+                                              emoji_name=emoji_name,
+                                              reaction_type='unicode_emoji'))
+
     def send_message(self, message: (Dict[str, Any])) -> Dict[str, Any]:
         if not self._rate_limit.is_legal():
             self._rate_limit.show_error_and_exit()

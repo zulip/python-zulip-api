@@ -109,6 +109,21 @@ class LibTest(TestCase):
         client.get_storage.assert_not_called()
         self.assertEqual(val, [5])
 
+    def test_react(self):
+        client = FakeClient()
+        handler = ExternalBotHandler(
+            client = client,
+            root_dir=None,
+            bot_details=None,
+            bot_config_file=None
+        )
+        emoji_name = 'wave'
+        message = {'id': 10}
+        expected = {'message_id': message['id'], 'emoji_name': 'wave', 'reaction_type': 'unicode_emoji'}
+        client.add_reaction = MagicMock()
+        handler.react(message, emoji_name)
+        client.add_reaction.assert_called_once_with(dict(expected))
+
     def test_send_reply(self):
         client = FakeClient()
         profile = client.get_profile()
