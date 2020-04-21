@@ -4,7 +4,7 @@ import os
 import sys
 from typing import Any, Dict, Optional
 
-ZULIP_BOTS_VERSION = "0.6.4"
+ZULIP_BOTS_VERSION = "0.7.0"
 IS_PYPA_PACKAGE = False
 
 
