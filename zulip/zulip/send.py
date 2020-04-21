@@ -71,9 +71,7 @@ def main() -> int:
     if len(options.recipients) == 0 and not (options.stream and options.subject):
         parser.error('You must specify a stream/subject or at least one recipient.')
 
-    validation_result = zulip.validate_credentials(options)
-
-    if validation_result["result"] != "error":
+    try:
         client = zulip.init_from_options(options)
 
         if not options.message:
@@ -96,8 +94,8 @@ def main() -> int:
         if not do_send_message(client, message_data):
             return 1
         return 0
-    else:
-        logging.error(validation_result["msg"])
+    except zulip.InvalidCredentialsError as error:
+        logging.error(error)
         return 0
 
 if __name__ == '__main__':
