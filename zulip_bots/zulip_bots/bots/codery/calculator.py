@@ -1,8 +1,6 @@
 import sys
 import os
 sys.path.insert(0, os.getcwd())
-import re
-
 
 from typing import Any
 from typing import Dict

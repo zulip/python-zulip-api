@@ -1,5 +1,6 @@
 from PyDictionary import PyDictionary
-from typing import Any, Dict, List
+from typing import Any
+from typing import Dict
 '''
 class dictionary(object):
 
