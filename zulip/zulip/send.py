@@ -71,25 +71,25 @@ def main() -> int:
     if len(options.recipients) == 0 and not (options.stream and options.subject):
         parser.error('You must specify a stream/subject or at least one recipient.')
 
+    if not options.message:
+        options.message = sys.stdin.read()
+
+    if options.stream:
+        message_data = {
+            'type': 'stream',
+            'content': options.message,
+            'subject': options.subject,
+            'to': options.stream,
+        }
+    else:
+        message_data = {
+            'type': 'private',
+            'content': options.message,
+            'to': options.recipients,
+        }
+
     try:
         client = zulip.init_from_options(options)
-
-        if not options.message:
-            options.message = sys.stdin.read()
-
-        if options.stream:
-            message_data = {
-                'type': 'stream',
-                'content': options.message,
-                'subject': options.subject,
-                'to': options.stream,
-            }
-        else:
-            message_data = {
-                'type': 'private',
-                'content': options.message,
-                'to': options.recipients,
-            }
 
         if not do_send_message(client, message_data):
             return 1
