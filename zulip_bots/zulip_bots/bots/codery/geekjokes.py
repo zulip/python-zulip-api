@@ -4,7 +4,8 @@ sys.path.insert(0, os.getcwd())
 
 import requests
 import json
-from typing import Any, Dict, List
+from typing import Any
+from typing import Dict
 '''
 class news(object):
 
