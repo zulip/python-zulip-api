@@ -1,15 +1,11 @@
 import sys
 import os
 sys.path.insert(0, os.getcwd())
-
-
-import random
-from math import log10, floor
-
 import re
 
 
-from typing import Any, Dict, List
+from typing import Any
+from typing import Dict
 
 '''
 class calculator(object):

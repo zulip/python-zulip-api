@@ -1,15 +1,10 @@
 import sys
 import os
 sys.path.insert(0, os.getcwd())
-
-import copy
-import importlib
-import random
-from math import log10, floor
-
 import re
-from converter import utils
-from typing import Any, Dict, List
+from typing import Any
+from typing import Dict
+from typing import List
 
 '''
 class todo(object):
