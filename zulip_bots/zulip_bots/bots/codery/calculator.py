@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.insert(0, os.getcwd())
 
-import copy
+
 import importlib
 import random
 from math import log10, floor
