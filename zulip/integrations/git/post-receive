@@ -14,6 +14,10 @@ import os
 import sys
 import subprocess
 import os.path
+import logging
+
+logging.basicConfig()
+log = logging.getLogger("zulip-git-post-recieve")
 
 sys.path.insert(0, os.path.dirname(__file__))
 import zulip_git_config as config
@@ -28,6 +32,13 @@ client = zulip.Client(
     site=config.ZULIP_SITE,
     api_key=config.ZULIP_API_KEY,
     client="ZulipGit/" + VERSION)
+
+try:
+    if client.get_profile()["result"] == "error":
+        raise zulip.InvalidCredentialsError("Invalid API credentials")
+except Exception as error:
+    log.error(error)
+    sys.exit()
 
 def git_repository_name() -> Text:
     output = subprocess.check_output(["git", "rev-parse", "--is-bare-repository"])
