@@ -1,9 +1,9 @@
-import sys, os
+import sys
+import os
 import config
 sys.path.insert(0,os.getcwd())
 
 import requests
-import json
 from typing import Any,Dict,List
 
 import logging
