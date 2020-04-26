@@ -601,8 +601,8 @@ class Client:
         if narrow is None:
             narrow = []
 
-        def do_register() -> Tuple[str, int]:
-            while True:
+        def do_register(backoff: RandomExponentialBackoff) -> Tuple[str, int]:
+            while backoff.keep_going():
                 if event_types is None:
                     res = self.register()
                 else:
@@ -611,8 +611,9 @@ class Client:
                 if 'error' in res['result']:
                     if self.verbose:
                         print("Server returned error:\n%s" % res['msg'])
-                    time.sleep(1)
+                    backoff.fail()
                 else:
+                    backoff.succeed()
                     return (res['queue_id'], res['last_event_id'])
 
         queue_id = None
@@ -627,7 +628,7 @@ class Client:
                                            delay_cap=90)
         while backoff.keep_going():
             if queue_id is None:
-                (queue_id, last_event_id) = do_register()
+                (queue_id, last_event_id) = do_register(backoff)
 
             res = self.get_events(queue_id=queue_id, last_event_id=last_event_id)
             if 'error' in res['result']:
