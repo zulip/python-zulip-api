@@ -41,7 +41,7 @@
 
 -   **Calculator** calculates any kind of mathematical operations to do directly on zulip
 
--   **Latest Jobs** gives job titles and application links on zulip using the Github Jobs API
+-   **Latest Jobs** gives job titles and applications on zulip using the GitHub Jobs API
 
 -   **Udemy courses** gives the latest popular Udemy courses using the Udemy Affiliate API
 
