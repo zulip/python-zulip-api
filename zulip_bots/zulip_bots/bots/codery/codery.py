@@ -92,7 +92,6 @@ def get_codery_result(codery_keywords: str) -> str:
         soup = BeautifulSoup(content.text, 'html.parser')
         contentTable  = soup.find('table', {"class": "centered bordered"})  # Use dictionary to pass key : value pair
 
-
         rows  = contentTable.find_all('tr')
         l = []
         i = 0

@@ -26,7 +26,7 @@ handler_class = todo
 
 
 def get_todo_response(content, bot_handler: Any) -> str:
-    
+
     words = content.split()
     print(words)
     if words[1] == "start":

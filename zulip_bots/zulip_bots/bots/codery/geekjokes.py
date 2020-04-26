@@ -25,4 +25,3 @@ def get_joke(content, bot_handler: Any) -> str:
     res = ""
     res = joke["joke"]
     return res
-

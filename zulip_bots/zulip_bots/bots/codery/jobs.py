@@ -30,4 +30,3 @@ def get_jobs(content, bot_handler: Any) -> str:
         if i == 5:
             break
     return res
-
