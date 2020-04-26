@@ -601,8 +601,16 @@ class Client:
         if narrow is None:
             narrow = []
 
-        def do_register(backoff: RandomExponentialBackoff) -> Tuple[str, int]:
-            while backoff.keep_going():
+        queue_id = None
+        # NOTE: Back off exponentially to cover against potential bugs in this
+        #       library causing a DoS attack against a server when getting errors
+        #       (explicit values listed for clarity)
+        backoff = RandomExponentialBackoff(maximum_retries=10,
+                                           timeout_success_equivalent=300,
+                                           delay_cap=90)
+        while backoff.keep_going():
+            # Ensure event queue exists (or continues to do so)
+            if queue_id is None:
                 if event_types is None:
                     res = self.register()
                 else:
@@ -612,24 +620,14 @@ class Client:
                     if self.verbose:
                         print("Server returned error:\n%s" % res['msg'])
                     backoff.fail()
+                    continue
                 else:
                     backoff.succeed()
-                    return (res['queue_id'], res['last_event_id'])
+                    queue_id, last_event_id = res['queue_id'], res['last_event_id']
 
-        queue_id = None
-        # Make long-polling requests with `get_events`. Once a request
-        # has received an answer, pass it to the callback and before
-        # making a new long-polling request.
-        # NOTE: Back off exponentially to cover against potential bugs in this
-        #       library causing a DoS attack against a server when getting errors
-        #       (explicit values listed for clarity)
-        backoff = RandomExponentialBackoff(maximum_retries=10,
-                                           timeout_success_equivalent=300,
-                                           delay_cap=90)
-        while backoff.keep_going():
-            if queue_id is None:
-                (queue_id, last_event_id) = do_register(backoff)
-
+            # Make long-polling requests with `get_events`. Once a request
+            # has received an answer, pass it to the callback and before
+            # making a new long-polling request.
             res = self.get_events(queue_id=queue_id, last_event_id=last_event_id)
             if 'error' in res['result']:
                 if res["result"] == "http-error":
