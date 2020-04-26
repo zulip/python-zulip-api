@@ -1,17 +1,10 @@
-import requests
-from bs4 import BeautifulSoup
-
-
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from typing import Any
 from webdriver_manager.chrome import ChromeDriverManager
 chrome_options = Options()
 chrome_options.add_argument("--headless")
 path = ChromeDriverManager().install()
-
 driver = webdriver.Chrome(chrome_options=chrome_options, executable_path=path)
-
 import sys
 import os
 sys.path.insert(0, os.getcwd())

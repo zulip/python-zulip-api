@@ -2,18 +2,12 @@ import sys
 import os
 import config
 sys.path.insert(0, os.getcwd())
-
 import requests
-from typing import Any, Dict, List
-
-import logging
-from urllib import parse
+from typing import Any
+from typing import Dict
+from typing import List
 from pyudemy import Udemy
-import requests
 
-from bs4 import BeautifulSoup
-
-from typing import Dict, Any, Union, List
 
 udemy = Udemy(config.CLIENT_ID, config.CLIENT_SECRET)
 
