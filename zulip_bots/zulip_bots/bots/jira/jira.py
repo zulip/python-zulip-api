@@ -28,6 +28,7 @@ EDIT_REGEX = re.compile(
     '$'
 )
 SEARCH_REGEX = re.compile('search "(?P<search_term>.+)"$')
+JQL_REGEX = re.compile('jql "(?P<jql_query>.+)"$')
 HELP_REGEX = re.compile('help$')
 
 HELP_RESPONSE = '''
@@ -67,6 +68,23 @@ Jira Bot:
  >
  > - ***BOTS-5:*** Stored XSS **[Published]**
  > - ***BOTS-6:*** Reflected XSS **[Draft]**
+
+---
+
+**jql**
+
+`jql` takes in a jql search string and returns matching issues. For example,
+
+you:
+
+ > @**Jira Bot** jql "issuetype = Engagement ORDER BY created DESC"
+
+Jira Bot:
+
+ > **Search results for *"issuetype = Engagement ORDER BY created DESC"*:**
+ >
+ > - ***BOTS-1:*** External Website Test **[In Progress]**
+ > - ***BOTS-3:*** Network Vulnerability Scan **[Draft]**
 
 ---
 
@@ -188,6 +206,7 @@ class JiraHandler:
         create_match = CREATE_REGEX.match(content)
         edit_match = EDIT_REGEX.match(content)
         search_match = SEARCH_REGEX.match(content)
+        jql_match = JQL_REGEX.match(content)
         help_match = HELP_REGEX.match(content)
 
         if get_match:
@@ -277,6 +296,10 @@ class JiraHandler:
             search_term = search_match.group('search_term')
             search_results = self.jql_search("summary ~ {}".format(search_term))
             response = '**Search results for "{}"**\n\n{}'.format(search_term, search_results)
+        elif jql_match:
+            jql_query = jql_match.group('jql_query')
+            search_results = self.jql_search(jql_query)
+            response = '**Search results for "{}"**\n\n{}'.format(jql_query, search_results)
         elif help_match:
             response = HELP_RESPONSE
         else:

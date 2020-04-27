@@ -49,6 +49,25 @@ Jira Bot:
 
 ---
 
+### jql
+
+`jql` takes in a jql search string and returns matching issues. For example,
+
+you:
+
+ > @**Jira Bot** jql "issuetype = Engagement ORDER BY created DESC"
+
+Jira Bot:
+
+ > **Search results for "issuetype = vulnerability ORDER BY created DESC"**
+ >
+ > *Found 53 results*
+ >
+ > - ***BOTS-1:*** External Website Test **[In Progress]**
+ > - ***BOTS-3:*** Network Vulnerability Scan **[Draft]**
+
+---
+
 ### create
 
 `create` creates an issue using its
