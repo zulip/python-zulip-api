@@ -134,6 +134,11 @@ class JiraHandler:
         else:
             self.domain_with_protocol = 'https://' + domain
 
+        # Use the front facing URL in output
+        self.display_url = config.get('display_url')
+        if not self.display_url:
+            self.display_url = self.domain_with_protocol
+
     def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
         content = message.get('content')
         response = ''
@@ -153,7 +158,7 @@ class JiraHandler:
                 headers={'Authorization': self.auth},
             ).json()
 
-            url = self.domain_with_protocol + '/browse/' + key
+            url = self.display_url + '/browse/' + key
             errors = jira_response.get('errorMessages', [])
             fields = jira_response.get('fields', {})
 
@@ -196,7 +201,7 @@ class JiraHandler:
             jira_response_json = jira_response.json() if jira_response.text else {}
 
             key = jira_response_json.get('key', '')
-            url = self.domain_with_protocol + '/browse/' + key
+            url = self.display_url + '/browse/' + key
             errors = list(jira_response_json.get('errors', {}).values())
             if errors:
                 response = 'Oh no! Jira raised an error:\n > ' + ', '.join(errors)
@@ -220,7 +225,7 @@ class JiraHandler:
 
             jira_response_json = jira_response.json() if jira_response.text else {}
 
-            url = self.domain_with_protocol + '/browse/' + key
+            url = self.display_url + '/browse/' + key
             errors = list(jira_response_json.get('errors', {}).values())
             if errors:
                 response = 'Oh no! Jira raised an error:\n > ' + ', '.join(errors)
