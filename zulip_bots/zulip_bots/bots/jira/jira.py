@@ -127,7 +127,12 @@ class JiraHandler:
             raise KeyError('No `domain` was specified')
 
         self.auth = make_jira_auth(username, password)
-        self.domain_with_protocol = 'https://' + domain
+
+        # Allow users to override the HTTP scheme
+        if re.match(r'^https?://', domain, re.IGNORECASE):
+            self.domain_with_protocol = domain
+        else:
+            self.domain_with_protocol = 'https://' + domain
 
     def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
         content = message.get('content')
