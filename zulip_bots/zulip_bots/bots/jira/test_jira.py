@@ -106,7 +106,7 @@ Jira Bot:
 
     def _test_invalid_config(self, invalid_config, error_message) -> None:
         with self.mock_config_info(invalid_config), \
-                self.assertRaisesRegexp(KeyError, error_message):
+                self.assertRaisesRegex(KeyError, error_message):
             bot, bot_handler = self._get_handlers()
 
     def test_config_without_username(self) -> None:
