@@ -37,8 +37,6 @@
 
 -   **Jokes** funny programming jokes to lighten up your mood but still keep you focused
 
--   **Linux Man Page** gets the information about in linux command to zulip
-
 -   **Calculator** calculates any kind of mathematical operations to do directly on zulip
 
 -   **Latest Jobs** gives job titles and applications on zulip using the GitHub Jobs API

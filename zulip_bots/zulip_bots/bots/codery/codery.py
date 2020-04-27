@@ -72,12 +72,6 @@ def get_codery_result(codery_keywords: str) -> str:
     elif codery_keywords_list[0] == "calculator":
         return "The answer is"+calculator.get_calculator_response(codery_keywords, CoderyHandler)
 
-    elif codery_keywords_list[0] == "man":
-
-        os.system("man " + codery_keywords_list[1] + " > man.txt")
-        file = open("man.txt", "r")
-        return file.read()
-
     elif codery_keywords_list[0] == "news":
         return news.get_news_response(codery_keywords, CoderyHandler)
 
@@ -157,22 +151,22 @@ def get_codery_result(codery_keywords: str) -> str:
         contentTable  = soup.find('table', {"class": "centered bordered"})  # Use dictionary to pass key : value pair
 
         rows  = contentTable.find_all('tr')
-        l = []
+        lo = []
         i = 0
 
         for row in rows[1:]:
-            l.append("##")
+            lo.append("##")
             columns = row.find_all('td')
             for column in columns:
                 if column.get_text() != "":
-                    l.append((column.get_text()).strip() + "@@")
+                    lo.append((column.get_text()).strip() + "@@")
 
-            l.append((columns[4].find('a')['href']).strip())
+            lo.append((columns[4].find('a')['href']).strip())
             i += 1
             if i == n:
                 break
         l1 = ""
-        for r in l:
+        for r in lo:
             allContest = r.split("##")
             for eachContest in allContest:
                 attrList = eachContest.split("@@")
