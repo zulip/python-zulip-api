@@ -13,7 +13,8 @@
 ## Instructions to run locally:
 
 1. [Create a Zulip Realm](https://zulip.com/create_realm/)
-2. Goto to settings and create a new generic bot named 'codery'. (Settings can be found in dropdown of gear icon present in top right corner of zulip realm)
+2. Goto to settings and create a new generic bot named 'codery'.
+   (Settings can be found in dropdown of gear icon present in top right corner of zulip realm)
 3. Download the zuliprc file for your bot and place it in your Downloads directory as '.zuliprc'.
    ![](./images/instructions.png)
 4. Get into the directory cd python-zulip-api/zulip_bots/zulip_bots/bots/codery
@@ -27,7 +28,9 @@
 
 ## Features
 
--   **Latest Coding Contests and Hackathons** Gives you the latest contests and Hackathons from CodeChef, Hackereath, Hackerrank and Codeforces.
+-   **Latest Coding Contests and Hackathons** Gives you the latest contests and Hackathons
+
+from CodeChef, Hackereath, Hackerrank and Codeforces.
 
 -   **Filters the top contests** Provides the name, time remaining to register and link to the contest or hackathon site.
 
