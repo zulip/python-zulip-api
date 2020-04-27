@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.insert(0, os.getcwd())
 import requests
-import json
+# import json
 from typing import Any
 def get_news_response(content, bot_handler: Any) -> str:
     words = content.lower().split()

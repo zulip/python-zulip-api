@@ -83,21 +83,21 @@ def get_codery_result(codery_keywords: str) -> str:
         contentTable  = soup.find('table', {"class": "centered bordered"})  # Use dictionary to pass key : value pair
 
         rows  = contentTable.find_all('tr')
-        l = []
+        lo = []
         i = 0
 
         for row in rows[1:]:
-            l.append("##")
+            lo.append("##")
             columns = row.find_all('td')
             for column in columns:
                 if column.get_text() != "":
-                    l.append((column.get_text()).strip() + "@@")
+                    lo.append((column.get_text()).strip() + "@@")
 
-            l.append((columns[4].find('a')['href']).strip())
+            lo.append((columns[4].find('a')['href']).strip())
             i += 1
 
         l1 = "The top contests and hackathons of  today are \n"
-        for r in l:
+        for r in lo:
             allContest = r.split("##")
             for eachContest in allContest:
                 attrList = eachContest.split("@@")
