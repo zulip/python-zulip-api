@@ -1,0 +1,47 @@
+{
+  "request": {
+    "api_url": "http://example.atlassian.net/rest/api/2/search?jql=summary ~ TEST&fields=key,summary,status",
+    "method": "GET",
+    "headers": {
+      "Authorization": "Basic ZXhhbXBsZUBleGFtcGxlLmNvbTpxd2VydHkhMTIz"
+    }
+  },
+  "response": {
+    "expand": "schema,names",
+    "startAt": 0,
+    "maxResults": 50,
+    "total": 2,
+    "issues": [
+      {
+        "id": "1",
+        "key": "TEST-1",
+        "fields": {
+          "creator": {"name": "admin"},
+          "description": "description",
+          "priority": {"name": "Medium"},
+          "project": {"name": "Tests"},
+          "issuetype": {"name": "Task"},
+          "status": {"name": "To Do"},
+          "summary": "summary test 1"
+        }
+      },
+      {
+        "id": "2",
+        "key": "TEST-2",
+        "fields": {
+          "creator": {"name": "admin"},
+          "description": "description",
+          "priority": {"name": "Medium"},
+          "project": {"name": "Tests"},
+          "issuetype": {"name": "Task"},
+          "status": {"name": "To Do"},
+          "summary": "summary test 2"
+        }
+      }
+    ]
+  },
+  "response-headers": {
+    "status": 200,
+    "content-type": "application/json; charset=utf-8"
+  }
+}

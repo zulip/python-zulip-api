@@ -27,6 +27,7 @@ EDIT_REGEX = re.compile(
     '( by making due "(?P<due_date>.+?)")?'
     '$'
 )
+SEARCH_REGEX = re.compile('search "(?P<search_term>.+)"$')
 HELP_REGEX = re.compile('help$')
 
 HELP_RESPONSE = '''
@@ -49,6 +50,23 @@ Jira Bot:
  > - Project: *Bots*
  > - Priority: *Medium*
  > - Status: *To Do*
+
+---
+
+**search**
+
+`search` takes in a search term and returns issues with matching summaries. For example,
+
+you:
+
+ > @**Jira Bot** search "XSS"
+
+Jira Bot:
+
+ > **Search results for *"XSS"*:**
+ >
+ > - ***BOTS-5:*** Stored XSS **[Published]**
+ > - ***BOTS-6:*** Reflected XSS **[Draft]**
 
 ---
 
@@ -139,6 +157,29 @@ class JiraHandler:
         if not self.display_url:
             self.display_url = self.domain_with_protocol
 
+    def jql_search(self, jql_query: str) -> str:
+        UNKNOWN_VAL = '*unknown*'
+        jira_response = requests.get(
+            self.domain_with_protocol + '/rest/api/2/search?jql={}&fields=key,summary,status'.format(jql_query),
+            headers={'Authorization': self.auth},
+        ).json()
+
+        url = self.display_url + '/browse/'
+        errors = jira_response.get('errorMessages', [])
+        results = jira_response.get('total', 0)
+
+        if errors:
+            response = 'Oh no! Jira raised an error:\n > ' + ', '.join(errors)
+        else:
+            response = '*Found {} results*\n\n'.format(results)
+            for issue in jira_response.get('issues', []):
+                fields = issue.get('fields', {})
+                summary = fields.get('summary', UNKNOWN_VAL)
+                status_name = fields.get('status', {}).get('name', UNKNOWN_VAL)
+                response += "\n - {}: [{}]({}) **[{}]**".format(issue['key'], summary, url + issue['key'], status_name)
+
+        return response
+
     def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
         content = message.get('content')
         response = ''
@@ -146,6 +187,7 @@ class JiraHandler:
         get_match = GET_REGEX.match(content)
         create_match = CREATE_REGEX.match(content)
         edit_match = EDIT_REGEX.match(content)
+        search_match = SEARCH_REGEX.match(content)
         help_match = HELP_REGEX.match(content)
 
         if get_match:
@@ -231,6 +273,10 @@ class JiraHandler:
                 response = 'Oh no! Jira raised an error:\n > ' + ', '.join(errors)
             else:
                 response = 'Issue *' + key + '* was edited! ' + url
+        elif search_match:
+            search_term = search_match.group('search_term')
+            search_results = self.jql_search("summary ~ {}".format(search_term))
+            response = '**Search results for "{}"**\n\n{}'.format(search_term, search_results)
         elif help_match:
             response = HELP_RESPONSE
         else:

@@ -9,6 +9,19 @@ class TestJiraBot(BotTestCase, DefaultTests):
         'domain': 'example.atlassian.net'
     }
 
+    MOCK_SCHEME_CONFIG_INFO = {
+        'username': 'example@example.com',
+        'password': 'qwerty!123',
+        'domain': 'http://example.atlassian.net'
+    }
+
+    MOCK_DISPLAY_CONFIG_INFO = {
+        'username': 'example@example.com',
+        'password': 'qwerty!123',
+        'domain': 'example.atlassian.net',
+        'display_url': 'http://test.com'
+    }
+
     MOCK_GET_RESPONSE = '''\
 **Issue *[TEST-13](https://example.atlassian.net/browse/TEST-13)*: summary**
 
@@ -47,6 +60,23 @@ Jira Bot:
  > - Project: *Bots*
  > - Priority: *Medium*
  > - Status: *To Do*
+
+---
+
+**search**
+
+`search` takes in a search term and returns issues with matching summaries. For example,
+
+you:
+
+ > @**Jira Bot** search "XSS"
+
+Jira Bot:
+
+ > **Search results for *"XSS"*:**
+ >
+ > - ***BOTS-5:*** Stored XSS **[Published]**
+ > - ***BOTS-6:*** Reflected XSS **[Draft]**
 
 ---
 
@@ -103,6 +133,10 @@ Jira Bot:
 
  > Issue *BOTS-16* was edited! https://example.atlassian.net/browse/BOTS-16
 '''
+
+    MOCK_SEARCH_RESPONSE = '**Search results for "TEST"**\n\n*Found 2 results*\n\n\n - TEST-1: [summary test 1](https://example.atlassian.net/browse/TEST-1) **[To Do]**\n - TEST-2: [summary test 2](https://example.atlassian.net/browse/TEST-2) **[To Do]**'
+    MOCK_SEARCH_RESPONSE_URL = '**Search results for "TEST"**\n\n*Found 2 results*\n\n\n - TEST-1: [summary test 1](http://test.com/browse/TEST-1) **[To Do]**\n - TEST-2: [summary test 2](http://test.com/browse/TEST-2) **[To Do]**'
+    MOCK_SEARCH_RESPONSE_SCHEME = '**Search results for "TEST"**\n\n*Found 2 results*\n\n\n - TEST-1: [summary test 1](http://example.atlassian.net/browse/TEST-1) **[To Do]**\n - TEST-2: [summary test 2](http://example.atlassian.net/browse/TEST-2) **[To Do]**'
 
     def _test_invalid_config(self, invalid_config, error_message) -> None:
         with self.mock_config_info(invalid_config), \
@@ -172,6 +206,21 @@ Jira Bot:
                               'by assigning to "testuser" to use priority "Low" by labeling "issues, testing" '
                               'by making due "2018-06-11"',
                               'Oh no! Jira raised an error:\n > error1')
+
+    def test_search(self) -> None:
+        with self.mock_config_info(self.MOCK_CONFIG_INFO), \
+                self.mock_http_conversation('test_search'):
+            self.verify_reply('search "TEST"', self.MOCK_SEARCH_RESPONSE)
+
+    def test_search_url(self) -> None:
+        with self.mock_config_info(self.MOCK_DISPLAY_CONFIG_INFO), \
+                self.mock_http_conversation('test_search'):
+            self.verify_reply('search "TEST"', self.MOCK_SEARCH_RESPONSE_URL)
+
+    def test_search_scheme(self) -> None:
+        with self.mock_config_info(self.MOCK_SCHEME_CONFIG_INFO), \
+                self.mock_http_conversation('test_search_scheme'):
+            self.verify_reply('search "TEST"', self.MOCK_SEARCH_RESPONSE_SCHEME)
 
     def test_help(self) -> None:
         with self.mock_config_info(self.MOCK_CONFIG_INFO):
