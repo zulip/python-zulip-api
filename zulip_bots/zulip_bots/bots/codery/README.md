@@ -32,7 +32,7 @@
 
 from CodeChef, Hackereath, Hackerrank and Codeforces.
 
--   **Filters the top contests** Provides the name, time remaining to register and link 
+-   **Filters the top contests** Provides the name, time remaining to register and link
 to the contest or hackathon site.
 
 -   **Competitive programming news** get all news related to coding by specifying the keyword after news
