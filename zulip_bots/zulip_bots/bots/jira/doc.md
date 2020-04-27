@@ -7,6 +7,7 @@ To use Jira Bot, first set up `jira.conf`. `jira.conf` takes 3 options:
  - username (an email or username that can access your Jira),
  - password (the password for that username), and
  - domain (a domain like `example.atlassian.net`)
+ - display_url ([optional] your front facing jira URL if different from domain. E.g. `https://example-lb.atlassian.net`)
 
 ## Usage
 
@@ -29,6 +30,23 @@ Jira Bot:
  > - Project: *Bots*
  > - Priority: *Medium*
  > - Status: *To Do*
+
+### search
+
+`search` takes in a search term and returns issues with matching summaries. For example,
+
+you:
+
+ > @**Jira Bot** search "XSS"
+
+Jira Bot:
+
+ > **Search results for *"XSS"*:**
+ >
+ > - ***BOTS-5:*** Stored XSS **[Published]**
+ > - ***BOTS-6:*** Reflected XSS **[Draft]**
+
+---
 
 ### create
 
