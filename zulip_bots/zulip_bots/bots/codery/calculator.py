@@ -1,21 +1,8 @@
 import sys
 import os
 sys.path.insert(0, os.getcwd())
-
 from typing import Any
-from typing import Dict
 
-'''
-class calculator(object):
-
-	def usage(self) -> str:
-		return 'This plugin is a Calculator.'
-	def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
-		bot_response = self.get_calculator_response(message, bot_handler)
-		bot_handler.send_reply(message, bot_response)
-
-handler_class = calculator
-'''
 
 def get_calculator_response(content, bot_handler: Any) -> str:
     words = content.lower().split()

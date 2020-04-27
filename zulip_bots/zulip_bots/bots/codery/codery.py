@@ -1,9 +1,5 @@
-# See readme.md for instructions on running this code.
-import logging
-from urllib import parse
 import sys
 import os
-import zulip
 sys.path.insert(0, os.getcwd())
 
 import requests
@@ -18,8 +14,8 @@ import leaderboard
 import trendingproblems
 from bs4 import BeautifulSoup
 
-from typing import Dict, Any, Union, List
-
+from typing import Dict
+from typing import Any 
 
 def get_codery_result(codery_keywords: str) -> str:
     help_message = "*Help for Codery*  : \n\n" \
@@ -189,26 +185,7 @@ def get_codery_result(codery_keywords: str) -> str:
         return help_message
 
 class CoderyHandler(object):
-    '''
-    This plugin allows users to get the competitive
-    coding contests in Zulip. It gets the name, the 
-    date, the time left to participate and the links
-    to those challenges in zulip and returns it
-    to the context (stream or private) in which
-    it was called. It gives contests happening on 
-    HackerEarth, CodeChef, Codeforces and many other
-    competitive programming sites. It looks for 
-    messages starting with @codery-bot.
-    '''
-
-    def usage(self) -> str:
-        return '''
-            This plugin will allow users to get the 
-            information about competitive coding contests
-            and hackathons in Zulip.Use '@codery-bot help' 
-            to get more information on the bot usage. Users
-            should preface messages with @codery-bot.
-            '''
+    
 
     def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
         original_content = message['content']
