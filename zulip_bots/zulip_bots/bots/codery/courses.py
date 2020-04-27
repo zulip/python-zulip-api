@@ -2,10 +2,7 @@ import sys
 import os
 import config
 sys.path.insert(0, os.getcwd())
-import requests
 from typing import Any
-from typing import Dict
-from typing import List
 from pyudemy import Udemy
 
 

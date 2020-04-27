@@ -15,7 +15,7 @@ import trendingproblems
 from bs4 import BeautifulSoup
 
 from typing import Dict
-from typing import Any 
+from typing import Any
 
 def get_codery_result(codery_keywords: str) -> str:
     help_message = "*Help for Codery*  : \n\n" \
@@ -112,7 +112,7 @@ def get_codery_result(codery_keywords: str) -> str:
 
         return l1
 
-    #return a list of top contests
+    # return a list of top contests
     elif codery_keywords == 'top contest':
         URL = 'https://www.stopstalk.com/contests'
         content = requests.get(URL)
@@ -144,7 +144,7 @@ def get_codery_result(codery_keywords: str) -> str:
 
         return l1
 
-    #to return a list of n top contests
+    # to return a list of n top contests
     elif len(codery_keywords_list) == 3:
 
         if codery_keywords_list[0] == "top" and codery_keywords_list[2] == "contests":
@@ -185,11 +185,8 @@ def get_codery_result(codery_keywords: str) -> str:
         return help_message
 
 class CoderyHandler(object):
-    
-
     def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
         original_content = message['content']
         result = get_codery_result(original_content)
         bot_handler.send_reply(message, result)
-
 handler_class = CoderyHandler

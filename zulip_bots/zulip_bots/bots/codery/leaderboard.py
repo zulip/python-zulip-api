@@ -12,18 +12,18 @@ sys.path.insert(0, os.getcwd())
 def get_leaderboard() -> str:
 
     driver.get("https://www.stopstalk.com/leaderboard")
-    l = []
+    lo = []
     i = 0
 
     for tr in driver.find_elements_by_tag_name("tr"):
-        l.append("##")
+        lo.append("##")
         for td in tr.find_elements_by_tag_name("td"):
             if i > 8:
-                l.append(td.get_attribute("innerText") + "@@")
+                lo.append(td.get_attribute("innerText") + "@@")
         i += 1
 
     l1 = ""
-    for r in l:
+    for r in lo:
         allC = r.split("##")
         for eachC in allC:
             attrList = eachC.split("@@")

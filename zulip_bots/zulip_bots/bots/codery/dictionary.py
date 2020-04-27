@@ -1,14 +1,11 @@
 from PyDictionary import PyDictionary
 from typing import Any
-from typing import Dict
-
-
 def get_dictionary_response(content, bot_handler: Any) -> str:
 
     words = content.lower().split()
     dictionary = PyDictionary()
     res = dictionary.meaning(words[1])
-    if res != None:
+    if res is not None:
         res = res['Noun']
         ans = ""
         for i in res:
