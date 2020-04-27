@@ -80,6 +80,23 @@ Jira Bot:
 
 ---
 
+**jql**
+
+`jql` takes in a jql search string and returns matching issues. For example,
+
+you:
+
+ > @**Jira Bot** jql "issuetype = Engagement ORDER BY created DESC"
+
+Jira Bot:
+
+ > **Search results for *"issuetype = Engagement ORDER BY created DESC"*:**
+ >
+ > - ***BOTS-1:*** External Website Test **[In Progress]**
+ > - ***BOTS-3:*** Network Vulnerability Scan **[Draft]**
+
+---
+
 **create**
 
 `create` creates an issue using its
@@ -137,6 +154,7 @@ Jira Bot:
     MOCK_SEARCH_RESPONSE = '**Search results for "TEST"**\n\n*Found 2 results*\n\n\n - TEST-1: [summary test 1](https://example.atlassian.net/browse/TEST-1) **[To Do]**\n - TEST-2: [summary test 2](https://example.atlassian.net/browse/TEST-2) **[To Do]**'
     MOCK_SEARCH_RESPONSE_URL = '**Search results for "TEST"**\n\n*Found 2 results*\n\n\n - TEST-1: [summary test 1](http://test.com/browse/TEST-1) **[To Do]**\n - TEST-2: [summary test 2](http://test.com/browse/TEST-2) **[To Do]**'
     MOCK_SEARCH_RESPONSE_SCHEME = '**Search results for "TEST"**\n\n*Found 2 results*\n\n\n - TEST-1: [summary test 1](http://example.atlassian.net/browse/TEST-1) **[To Do]**\n - TEST-2: [summary test 2](http://example.atlassian.net/browse/TEST-2) **[To Do]**'
+    MOCK_JQL_RESPONSE = '**Search results for "summary ~ TEST"**\n\n*Found 2 results*\n\n\n - TEST-1: [summary test 1](https://example.atlassian.net/browse/TEST-1) **[To Do]**\n - TEST-2: [summary test 2](https://example.atlassian.net/browse/TEST-2) **[To Do]**'
 
     def _test_invalid_config(self, invalid_config, error_message) -> None:
         with self.mock_config_info(invalid_config), \
@@ -211,6 +229,11 @@ Jira Bot:
         with self.mock_config_info(self.MOCK_CONFIG_INFO), \
                 self.mock_http_conversation('test_search'):
             self.verify_reply('search "TEST"', self.MOCK_SEARCH_RESPONSE)
+
+    def test_jql(self) -> None:
+        with self.mock_config_info(self.MOCK_CONFIG_INFO), \
+                self.mock_http_conversation('test_search'):
+            self.verify_reply('jql "summary ~ TEST"', self.MOCK_JQL_RESPONSE)
 
     def test_search_url(self) -> None:
         with self.mock_config_info(self.MOCK_DISPLAY_CONFIG_INFO), \
