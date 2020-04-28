@@ -19,6 +19,7 @@ class FakeClient:
             user_id='alice',
             full_name='Alice',
             email='alice@example.com',
+            id=42,
         )
 
     def update_storage(self, payload):
@@ -117,11 +118,11 @@ class LibTest(TestCase):
             bot_details=None,
             bot_config_file=None
         )
-        to = {'email': 'Some@User'}
+        to = {'id': 43}
         expected = [({'type': 'private', 'display_recipient': [to]},
-                     {'type': 'private', 'to': [to['email']]}, None),
+                     {'type': 'private', 'to': [to['id']]}, None),
                     ({'type': 'private', 'display_recipient': [to, profile]},
-                     {'type': 'private', 'to': [to['email'], profile['email']]}, 'widget_content'),
+                     {'type': 'private', 'to': [to['id'], profile['id']]}, 'widget_content'),
                     ({'type': 'stream', 'display_recipient': 'Stream name', 'subject': 'Topic'},
                      {'type': 'stream', 'to': 'Stream name', 'subject': 'Topic'}, 'test widget')]
         response_text = "Response"
