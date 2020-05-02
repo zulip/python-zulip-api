@@ -47,6 +47,10 @@ package_info = dict(
     ],
     python_requires='>=3.5',
     url='https://www.zulip.org/',
+    project_urls={
+        "Source": "https://github.com/zulip/python-zulip-api/",
+        "Documentation": "https://zulipchat.com/api",
+    },
     data_files=list(recur_expand('share/zulip', 'integrations')),
     include_package_data=True,
     entry_points={

@@ -45,6 +45,10 @@ package_info = dict(
     ],
     python_requires='>=3.5',
     url='https://www.zulip.org/',
+    project_urls={
+        "Source": "https://github.com/zulip/python-zulip-api/",
+        "Documentation": "https://zulipchat.com/api",
+    },
     entry_points={
         'console_scripts': [
             'zulip-run-bot=zulip_bots.run:main',
