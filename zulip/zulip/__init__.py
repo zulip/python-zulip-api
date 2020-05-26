@@ -907,6 +907,18 @@ class Client:
             method='DELETE',
         )
 
+    def get_realm_profile_fields(self) -> Dict[str, Any]:
+        '''
+            Example usage:
+
+            >>> client.get_realm_profile_fields()
+            {'result': 'success', 'msg': '', 'custom_fields': [{...}, {...}, {...}, {...}]}
+        '''
+        return self.call_endpoint(
+            url='realm/profile_fields',
+            method='GET',
+        )
+
     def get_server_settings(self) -> Dict[str, Any]:
         '''
             Example usage:
