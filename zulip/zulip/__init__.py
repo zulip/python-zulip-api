@@ -944,6 +944,19 @@ class Client:
             method='DELETE',
         )
 
+    def reorder_realm_profile_fields(self, **request: Any) -> Dict[str, Any]:
+        '''
+            Example usage:
+
+            >>> client.reorder_realm_profile_fields(order=[8, 7, 6, 5, 4, 3, 2, 1])
+            {'result': 'success', 'msg': ''}
+        '''
+        return self.call_endpoint(
+            url='realm/profile_fields',
+            method='PATCH',
+            request=request,
+        )
+
     def get_server_settings(self) -> Dict[str, Any]:
         '''
             Example usage:
