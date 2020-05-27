@@ -932,6 +932,18 @@ class Client:
             request=request,
         )
 
+    def remove_realm_profile_field(self, field_id: int) -> Dict[str, Any]:
+        '''
+            Example usage:
+
+            >>> client.remove_realm_profile_field(field_id=9)
+            {'result': 'success', 'msg': ''}
+        '''
+        return self.call_endpoint(
+            url='realm/profile_fields/{}'.format(field_id),
+            method='DELETE',
+        )
+
     def get_server_settings(self) -> Dict[str, Any]:
         '''
             Example usage:
