@@ -919,6 +919,19 @@ class Client:
             method='GET',
         )
 
+    def create_realm_profile_field(self, **request: Any) -> Dict[str, Any]:
+        '''
+            Example usage:
+
+            >>> client.create_realm_profile_field(name='Phone', hint='Contact No.', field_type=1)
+            {'result': 'success', 'msg': '', 'id': 9}
+        '''
+        return self.call_endpoint(
+            url='realm/profile_fields',
+            method='POST',
+            request=request,
+        )
+
     def get_server_settings(self) -> Dict[str, Any]:
         '''
             Example usage:
