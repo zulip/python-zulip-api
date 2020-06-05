@@ -15,7 +15,7 @@ import distro
 from configparser import SafeConfigParser
 import urllib.parse
 import logging
-from typing import Any, Callable, Dict, Iterable, IO, List, Mapping, Optional, Text, Tuple, Union
+from typing import Any, Callable, Dict, Iterable, IO, List, Mapping, Optional, Text, Tuple, Union, Sequence
 
 __version__ = "0.7.0"
 
@@ -1302,13 +1302,11 @@ class Client:
             request=request,
         )
 
-    def remove_subscriptions(self, streams: Iterable[str], principals: Optional[Iterable[str]] = None) -> Dict[str, Any]:
+    def remove_subscriptions(self, streams: Iterable[str],
+                             principals: Union[Sequence[str], Sequence[int]] = []) -> Dict[str, Any]:
         '''
             See examples/unsubscribe for example usage.
         '''
-        if principals is None:
-            principals = []
-
         request = dict(
             subscriptions=streams,
             principals=principals
