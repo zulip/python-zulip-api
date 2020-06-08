@@ -10,7 +10,7 @@ class TestGoogleSearchBot(BotTestCase, DefaultTests):
         with self.mock_http_conversation('test_normal'):
             self.verify_reply(
                 'zulip',
-                'Found Result: [Zulip](https://www.google.com/url?url=https%3A%2F%2Fzulipchat.com%2F)'
+                'Found Result: [Zulip](https://www.google.com/url?url=https%3A%2F%2Fzulip.com%2F)'
             )
 
     def test_bot_help(self) -> None:
@@ -42,5 +42,5 @@ class TestGoogleSearchBot(BotTestCase, DefaultTests):
             # See test_ignore_links.json
             self.verify_reply(
                 'zulip',
-                'Found Result: [Zulip](https://www.google.com/url?url=https%3A%2F%2Fzulipchat.com%2F)'
+                'Found Result: [Zulip](https://www.google.com/url?url=https%3A%2F%2Fzulip.com%2F)'
             )

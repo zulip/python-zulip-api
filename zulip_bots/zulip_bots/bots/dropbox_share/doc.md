@@ -11,7 +11,7 @@ This bot links your [dropbox](https://www.dropbox.com) account to [zulip](https:
     [dropbox_share]
     ACCESS_TOKEN=<your_access_token>
     ```
- - Follow the instructions as described in [here](https://zulipchat.com/api/running-bots#running-a-bot).
+ - Follow the instructions as described in [here](https://zulip.com/api/running-bots#running-a-bot).
  - Run the bot: `zulip-run-bot dropbox_share -b <Path/to/dropbox_share.conf> -c <Path/to/zuliprc>`
 
 Use this bot with any of the following commands:

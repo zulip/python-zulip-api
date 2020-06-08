@@ -6,7 +6,7 @@ for a given stream or private chat.
 ## Usage
 
 Run this bot as described in
-[here](https://zulipchat.com/api/running-bots#running-a-bot).
+[here](https://zulip.com/api/running-bots#running-a-bot).
 
 Use this bot with any of the following commands:
 

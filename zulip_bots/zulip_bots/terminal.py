@@ -70,7 +70,7 @@ def main():
             )
     except KeyboardInterrupt:
         print("\n\nOk, if you're happy with your terminal-based testing, try it out with a Zulip server.",
-              "\nYou can refer to https://zulipchat.com/api/running-bots#running-a-bot.")
+              "\nYou can refer to https://zulip.com/api/running-bots#running-a-bot.")
         sys.exit(1)
 
 if __name__ == '__main__':

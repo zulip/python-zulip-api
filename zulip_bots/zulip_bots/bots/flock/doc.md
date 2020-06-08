@@ -18,7 +18,7 @@ where `recipient_name` is name of recipient and `hello` is the sample message.
 ## Usage
 
 Run this bot as described in
- [here](https://zulipchat.com/api/running-bots#running-a-bot).
+ [here](https://zulip.com/api/running-bots#running-a-bot).
 
 You can use this bot in one easy step:
 

@@ -9,7 +9,7 @@ It can also show details about any Salesforce links that you post.
 Make sure it has the appropriate permissions to access records.
 2. In `salesforce.conf` paste the Salesforce `username`, `password` and
 `security_token`.
-3. Run the bot as explained [here](https://zulipchat.com/api/running-bots#running-a-bot)
+3. Run the bot as explained [here](https://zulip.com/api/running-bots#running-a-bot)
 
 ## Examples
 

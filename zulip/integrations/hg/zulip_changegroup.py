@@ -3,7 +3,7 @@
 # Zulip hook for Mercurial changeset pushes.
 #
 # This hook is called when changesets are pushed to the master repository (ie
-# `hg push`). See https://zulipchat.com/integrations for installation instructions.
+# `hg push`). See https://zulip.com/integrations for installation instructions.
 
 import zulip
 import sys
