@@ -116,7 +116,7 @@ quickly set up a Trello webhook.
 
 Note: The Trello webhook instructions available on your Zulip server
 may be outdated. Please make sure you follow the updated instructions
-at <https://zulipchat.com/integrations/doc/trello>.
+at <https://zulip.com/integrations/doc/trello>.
 """
 
     parser = argparse.ArgumentParser(description=description)

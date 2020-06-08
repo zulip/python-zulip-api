@@ -30,7 +30,7 @@ To obtain these 4 keys, follow the following steps :
 
 Enter the 4 keys in the respective field in `twitter.ini` file.
 
-Run this bot as described in [here](https://zulipchat.com/api/running-bots#running-a-bot).
+Run this bot as described in [here](https://zulip.com/api/running-bots#running-a-bot).
 
 ## Usage
 

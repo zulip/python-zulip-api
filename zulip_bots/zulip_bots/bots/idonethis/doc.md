@@ -17,7 +17,7 @@ and copy your API token.
  3. Optionally, change the `default_team` value to your default team for creating new messages.
 If this is not specified, a team will be required to be manually specified every time an entry is created.
 
-Run this bot as described [here](https://zulipchat.com/api/running-bots#running-a-bot).
+Run this bot as described [here](https://zulip.com/api/running-bots#running-a-bot).
 
 ## Usage
 

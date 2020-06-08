@@ -33,7 +33,7 @@ package_info = dict(
     url='https://www.zulip.org/',
     project_urls={
         "Source": "https://github.com/zulip/python-zulip-api/",
-        "Documentation": "https://zulipchat.com/api",
+        "Documentation": "https://zulip.com/api",
     },
     entry_points={
         'console_scripts': [

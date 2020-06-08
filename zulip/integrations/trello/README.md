@@ -20,4 +20,4 @@ Usage :
                              --zulip-webhook-url <zulip_webhook_url>
 
 For more information, please see Zulip's documentation on how to set up
-a Trello integration [here](https://zulipchat.com/integrations/doc/trello).
+a Trello integration [here](https://zulip.com/integrations/doc/trello).

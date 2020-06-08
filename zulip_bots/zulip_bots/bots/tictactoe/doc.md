@@ -8,7 +8,7 @@ The bot only responds to messages starting with @mention of the bot(botname).
 
 ## Setup
 This bot does not require any special setup. Just run it according to the
-instructions in [this guide](https://zulipchat.com/api/running-bots#running-a-bot).
+instructions in [this guide](https://zulip.com/api/running-bots#running-a-bot).
 
 ## Commands
 * `@mention-botname new` - start a new game (but not if you are already
