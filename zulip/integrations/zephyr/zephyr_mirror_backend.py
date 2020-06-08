@@ -598,7 +598,7 @@ def forward_to_zephyr(message: Dict[str, Any]) -> None:
     # 'Any' can be of any type of text
     support_heading = "Hi there! This is an automated message from Zulip."
     support_closing = """If you have any questions, please be in touch through the \
-Feedback button or at support@zulipchat.com."""
+Feedback button or at support@zulip.com."""
 
     wrapper = textwrap.TextWrapper(break_long_words=False, break_on_hyphens=False)
     wrapped_content = "\n".join("\n".join(wrapper.wrap(line))
