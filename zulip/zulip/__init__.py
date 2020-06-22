@@ -867,6 +867,19 @@ class Client:
             files=[file_obj]
         )
 
+    def update_realm(self, **request: Any) -> Dict[str, Any]:
+        '''
+            Example usage:
+
+            >>> client.update_realm({'digest_weekday': 0', 'signup_notifications_stream_id': -1})
+            {'result': 'success', 'msg': '', 'digest_weekday': 0', 'signup_notifications_stream_id': -1}
+        '''
+        return self.call_endpoint(
+            url='realm',
+            method='PATCH',
+            request=request,
+        )
+
     def get_realm_filters(self) -> Dict[str, Any]:
         '''
             Example usage:
