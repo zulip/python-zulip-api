@@ -867,6 +867,18 @@ class Client:
             files=[file_obj]
         )
 
+    def delete_custom_emoji(self, emoji_name: str) -> Dict[str, Any]:
+        '''
+            Example usage:
+
+            >>> client.delete_custom_emoji("green_tick")
+            {'result': 'success', 'msg': ''}
+        '''
+        return self.call_endpoint(
+            url='realm/emoji/{}'.format(emoji_name),
+            method='DELETE',
+        )
+
     def get_realm_filters(self) -> Dict[str, Any]:
         '''
             Example usage:
