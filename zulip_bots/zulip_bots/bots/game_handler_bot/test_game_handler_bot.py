@@ -75,7 +75,9 @@ class TestGameHandlerBot(BotTestCase, DefaultTests):
         bot.add_user_to_cache(message)
         return bot
 
-    def setup_game(self, id: str = '', bot: Any = None, players: List[str] = ['foo', 'baz'], subject: str = 'test game', stream: str = 'test') -> Any:
+    def setup_game(self, id: str = '', bot: Any = None, players: List[str] = None, subject: str = 'test game', stream: str = 'test') -> Any:
+        if players is None:
+            players = ['foo', 'baz']
         if bot is None:
             bot, bot_handler = self._get_handlers()
         for p in players:
