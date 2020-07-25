@@ -75,7 +75,7 @@ class SlackBridge:
     def run_slack_listener(self) -> None:
         # spawn a non-websocket client for getting the users list
         _wc = slack.WebClient(token=self.slack_config["token"])
-        members = _wc.users_list()
+        members = _wc.users_list()['members']
         # See also https://api.slack.com/changelog/2017-09-the-one-about-usernames
         self.slack_id_to_name = {u["id"]: u["profile"].get("display_name", u["profile"]["real_name"]) for u in members}
         self.slack_name_to_id = {v: k for k, v in self.slack_id_to_name.items()}
