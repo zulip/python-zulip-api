@@ -17,6 +17,8 @@ import hashlib
 import tempfile
 import select
 
+from zulip import RandomExponentialBackoff
+
 DEFAULT_SITE = "https://api.zulip.com"
 
 class States:
@@ -218,32 +220,41 @@ def maybe_restart_mirroring_script() -> None:
         except OSError:
             # We don't care whether we failed to cancel subs properly, but we should log it
             logger.exception("")
-        while True:
+        backoff = RandomExponentialBackoff(
+            maximum_retries=3,
+        )
+        while backoff.keep_going():
             try:
                 os.execvp(os.path.abspath(__file__), sys.argv)
+                # No need for backoff.succeed, since this can't be reached
             except Exception:
                 logger.exception("Error restarting mirroring script; trying again... Traceback:")
-                time.sleep(1)
+                backoff.fail()
+        raise Exception("Failed to reload too many times, aborting!")
 
 def process_loop(log: Optional[IO[Any]]) -> None:
     restart_check_count = 0
     last_check_time = time.time()
+    recieve_backoff = RandomExponentialBackoff()
     while True:
         select.select([zephyr._z.getFD()], [], [], 15)
         try:
+            process_backoff = RandomExponentialBackoff()
             # Fetch notices from the queue until its empty
             while True:
                 notice = zephyr.receive(block=False)
+                recieve_backoff.succeed()
                 if notice is None:
                     break
                 try:
                     process_notice(notice, log)
+                    process_backoff.succeed()
                 except Exception:
                     logger.exception("Error relaying zephyr:")
-                    time.sleep(2)
+                    process_backoff.fail()
         except Exception:
             logger.exception("Error checking for new zephyrs:")
-            time.sleep(1)
+            recieve_backoff.fail()
             continue
 
         if time.time() - last_check_time > 15:
@@ -759,12 +770,13 @@ def maybe_forward_to_zephyr(message: Dict[str, Any]) -> None:
 def zulip_to_zephyr(options: int) -> None:
     # Sync messages from zulip to zephyr
     logger.info("Starting syncing messages.")
+    backoff = RandomExponentialBackoff(timeout_success_equivalent=120)
     while True:
         try:
             zulip_client.call_on_each_message(maybe_forward_to_zephyr)
         except Exception:
             logger.exception("Error syncing messages:")
-            time.sleep(1)
+            backoff.fail()
 
 def subscribed_to_mail_messages() -> bool:
     # In case we have lost our AFS tokens and those won't be able to
