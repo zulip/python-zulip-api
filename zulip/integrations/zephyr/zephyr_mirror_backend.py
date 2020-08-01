@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from typing import Any, Dict, IO, List, Optional, Set, Text, Tuple, cast
+from typing import Any, Dict, IO, List, NoReturn, Optional, Set, Text, Tuple, cast
 from types import FrameType
 
 import sys
@@ -232,7 +232,7 @@ def maybe_restart_mirroring_script() -> None:
                 backoff.fail()
         raise Exception("Failed to reload too many times, aborting!")
 
-def process_loop(log: Optional[IO[Any]]) -> None:
+def process_loop(log: Optional[IO[Any]]) -> NoReturn:
     restart_check_count = 0
     last_check_time = time.time()
     recieve_backoff = RandomExponentialBackoff()
@@ -767,7 +767,7 @@ def maybe_forward_to_zephyr(message: Dict[str, Any]) -> None:
             # whole process
             logger.exception("Error forwarding message:")
 
-def zulip_to_zephyr(options: int) -> None:
+def zulip_to_zephyr(options: int) -> NoReturn:
     # Sync messages from zulip to zephyr
     logger.info("Starting syncing messages.")
     backoff = RandomExponentialBackoff(timeout_success_equivalent=120)
@@ -1146,7 +1146,6 @@ or specify the --api-key-file option.""" % (options.api_key_file,))))
             # Run the zulip => zephyr mirror in the child
             configure_logger(logger, "zulip=>zephyr")
             zulip_to_zephyr(options)
-            sys.exit(0)
     else:
         child_pid = None
     CURRENT_STATE = States.ZephyrToZulip
