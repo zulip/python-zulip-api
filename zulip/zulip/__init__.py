@@ -33,7 +33,27 @@ requests_json_is_function = callable(requests.Response.json)
 API_VERSTRING = "v1/"
 
 class CountingBackoff:
-    def __init__(self, maximum_retries: int = 10, timeout_success_equivalent: Optional[float] = None, delay_cap: float = 90.0) -> None:
+    def __init__(
+        self,
+        maximum_retries: int = 10,
+        timeout_success_equivalent: Optional[float] = None,
+        delay_cap: float = 90.0,
+    ) -> None:
+        """Sets up a retry-backoff object.  Example usage:
+        backoff = zulip.CountingBackoff()
+        while backoff.keep_going():
+            try:
+                something()
+                backoff.succeed()
+            except Exception:
+                backoff.fail()
+
+        timeout_success_equivalent is used in cases where 'success' is
+        never possible to determine automatically; it sets the
+        threshold in seconds before the next keep_going/fail, above
+        which the last run is treated like it was a success.
+
+        """
         self.number_of_retries = 0
         self.maximum_retries = maximum_retries
         self.timeout_success_equivalent = timeout_success_equivalent
