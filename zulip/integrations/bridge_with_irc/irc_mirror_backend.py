@@ -30,7 +30,7 @@ class IRCBot(irc.bot.SingleServerIRCBot):
         # Taken from
         # https://github.com/jaraco/irc/blob/master/irc/client_aio.py,
         # in particular the method of AioSimpleIRCClient
-        self.reactor.loop.run_until_complete(
+        self.c = self.reactor.loop.run_until_complete(
             self.connection.connect(*args, **kwargs)
         )
         print("Listening now. Please send an IRC message to verify operation")
@@ -65,16 +65,16 @@ class IRCBot(irc.bot.SingleServerIRCBot):
                 at_the_specified_subject = msg["subject"].casefold() == self.topic.casefold()
                 if in_the_specified_stream and at_the_specified_subject:
                     msg["content"] = ("@**%s**: " % msg["sender_full_name"]) + msg["content"]
-                    send = lambda x: c.privmsg(self.channel, x)
+                    send = lambda x: self.c.privmsg(self.channel, x)
                 else:
                     return
             else:
                 recipients = [u["short_name"] for u in msg["display_recipient"] if
                               u["email"] != msg["sender_email"]]
                 if len(recipients) == 1:
-                    send = lambda x: c.privmsg(recipients[0], x)
+                    send = lambda x: self.c.privmsg(recipients[0], x)
                 else:
-                    send = lambda x: c.privmsg_many(recipients, x)
+                    send = lambda x: self.c.privmsg_many(recipients, x)
             for line in msg["content"].split("\n"):
                 send(line)
 
