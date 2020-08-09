@@ -6,14 +6,15 @@
 ./irc-mirror.py --irc-server=IRC_SERVER --channel=<CHANNEL> --nick-prefix=<NICK> --stream=<STREAM> [optional args]
 ```
 
-`--stream` is a Zulip stream.
-`--topic` is a Zulip topic, is optionally specified, defaults to "IRC".
+`--stream` is a Zulip stream.  
+`--topic` is a Zulip topic, is optionally specified, defaults to "IRC".  
+`--nickserv-pw` is the IRC nick password.
 
 IMPORTANT: Make sure the bot is subscribed to the relevant Zulip stream!!
 
 Specify your Zulip API credentials and server in a ~/.zuliprc file or using the options.
 
-Note that "_zulip" will be automatically appended to the IRC nick provided
+IMPORTANT: Note that "_zulip" will be automatically appended to the IRC nick provided, so make sure that your actual registered nick ends with "_zulip".
 
 ## Example
 
