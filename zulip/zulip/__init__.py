@@ -1544,3 +1544,15 @@ class ZulipStream:
 
     def flush(self) -> None:
         pass
+
+def hash_util_decode(string: str) -> str:
+    """
+    Returns a decoded string given a hash_util_encode() [present in zulip/zulip's zerver/lib/url_encoding.py] encoded string.
+
+    Example usage:
+    >>> zulip.hash_util_decode('test.20here')
+    'test here'
+    """
+    # Acknowledge custom string replacements in zulip/zulip's zerver/lib/url_encoding.py before unquoting.
+    # NOTE: urllib.parse.unquote already does .replace('%2E', '.').
+    return urllib.parse.unquote(string.replace('.', '%'))
