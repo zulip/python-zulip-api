@@ -1317,6 +1317,18 @@ class Client:
             request=request,
         )
 
+    def get_subscription_status(self, user_id: int, stream_id: int) -> Dict[str, Any]:
+        '''
+            Example usage:
+
+            >>> client.get_subscription_status(user_id=7, stream_id=1)
+            {'result': 'success', 'msg': '', 'is_subscribed': False}
+        '''
+        return self.call_endpoint(
+            url='users/{}/subscriptions/{}'.format(user_id, stream_id),
+            method='GET',
+        )
+
     def mute_topic(self, request: Dict[str, Any]) -> Dict[str, Any]:
         '''
             See examples/mute-topic for example usage.
