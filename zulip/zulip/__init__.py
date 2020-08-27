@@ -1454,18 +1454,18 @@ class Client:
             method='DELETE',
         )
 
-    def update_user_group_members(self, group_data: Dict[str, Any]) -> Dict[str, Any]:
+    def update_user_group_members(self, user_group_id: int, group_data: Dict[str, Any]) -> Dict[str, Any]:
         '''
             Example usage:
 
-            >>> client.update_user_group_members({
-                'delete': [4, 8, 15],
-                'add': [16, 23, 42],
+            >>> client.update_user_group_members(user_group_id=1, {
+                'delete': [8, 10],
+                'add': [11],
             })
             {'msg': '', 'result': 'success'}
         '''
         return self.call_endpoint(
-            url='user_groups/{}/members'.format(group_data['group_id']),
+            url='user_groups/{}/members'.format(user_group_id),
             method='POST',
             request=group_data,
         )
