@@ -8,6 +8,13 @@ To use Bugzilla Bot, first set up `bugzilla.conf`. `bugzilla.conf` takes 2 optio
  - site (the site like `https://bugs.xxx.net` that includes both the protocol and the domain)
  - api_key (a Bugzilla API key)
 
+ Example:
+ ```
+ [bugzilla]
+site = https://bugs.site.net
+api_key = xxxx
+ ```
+
 
 ## Usage
 
