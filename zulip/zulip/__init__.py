@@ -1554,6 +1554,83 @@ class Client:
             request=request
         )
 
+    def move_topic(
+        self,
+        stream: str,
+        new_stream: str,
+        topic: str,
+        new_topic: Optional[str] = None,
+        message_id: Optional[int] = None,
+        propagate_mode: str = 'change_all',
+        notify_old_topic: bool = True,
+        notify_new_topic: bool = True
+    ) -> Dict[str, Any]:
+        '''
+            Move a topic from ``stream`` to ``new_stream``
+
+            The topic will be renamed if ``new_topic`` is provided.
+            message_id and propagation_mode let you control which messages
+            should be moved. The default behavior moves all messages in topic.
+
+            propagation_mode must be one of: `change_one`, `change_later`,
+            `change_all`. Defaults to `change_all`.
+
+            Example usage:
+
+            >>> client.move_topic('stream_a', 'stream_b', 'my_topic')
+            {'result': 'success', 'msg': ''}
+        '''
+        # get IDs for source and target streams
+        result = self.get_stream_id(stream)
+        if result['result'] != 'success':
+            return result
+        stream = result['stream_id']
+
+        result = self.get_stream_id(new_stream)
+        if result['result'] != 'success':
+            return result
+        new_stream = result['stream_id']
+
+        if message_id is None:
+            if propagate_mode != 'change_all':
+                raise AttributeError('A message_id must be provided if '
+                                     'propagate_mode isn\'t "change_all"')
+
+            # ask the server for the latest message ID in the topic.
+            result = self.get_messages({
+                'anchor': 'newest',
+                'narrow': [{'operator': 'stream', 'operand': stream},
+                           {'operator': 'topic', 'operand': topic}],
+                'num_before': 1,
+                'num_after': 0,
+            })
+
+            if result['result'] != 'success':
+                return result
+
+            if len(result['messages']) <= 0:
+                return {
+                    'result': 'error',
+                    'msg': 'No messages found in topic: "{}"'.format(topic)
+                }
+
+            message_id = result['messages'][0]['id']
+
+        # move topic containing message to new stream
+        request = {
+            'stream_id': new_stream,
+            'propagate_mode': propagate_mode,
+            'topic': new_topic,
+            'send_notification_to_old_thread': notify_old_topic,
+            'send_notification_to_new_thread': notify_new_topic
+        }
+        return self.call_endpoint(
+            url='messages/{}'.format(message_id),
+            method='PATCH',
+            request=request,
+        )
+
+
 class ZulipStream:
     """
     A Zulip stream-like object
