@@ -25,7 +25,7 @@ and [commit guidelines](https://zulip.readthedocs.io/en/latest/contributing/vers
    `git clone https://github.com/<your_username>/python-zulip-api.git`
 
 2. Make sure you have [pip](https://pip.pypa.io/en/stable/installing/)
-   and [virtualenv](https://virtualenv.pypa.io/en/stable/installation/)
+   and [virtualenv](https://virtualenv.pypa.io/en/stable/installation.html)
    installed.
 
 3. `cd` into the repository cloned earlier:
