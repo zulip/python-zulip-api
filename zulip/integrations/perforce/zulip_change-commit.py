@@ -26,6 +26,10 @@ sys.path.insert(0, os.path.dirname(__file__))
 from typing import Any, Dict, Optional
 import zulip_perforce_config as config
 
+import logging
+logging.basicConfig()
+log = logging.getLogger("perforce-change-commit")
+
 if config.ZULIP_API_PATH is not None:
     sys.path.append(config.ZULIP_API_PATH)
 
@@ -35,6 +39,9 @@ client = zulip.Client(
     site=config.ZULIP_SITE,
     api_key=config.ZULIP_API_KEY,
     client="ZulipPerforce/" + __version__)  # type: zulip.Client
+if client.get_profile()["result"] == "error":
+    log.error(zulip.InvalidCredentialsError("Invalid API credentials"))
+    sys.exit()
 
 try:
     changelist = int(sys.argv[1])  # type: int
