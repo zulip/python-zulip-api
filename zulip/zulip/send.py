@@ -71,7 +71,11 @@ def main() -> int:
     if len(options.recipients) == 0 and not (options.stream and options.subject):
         parser.error('You must specify a stream/subject or at least one recipient.')
 
-    client = zulip.init_from_options(options)
+    try:
+        client = zulip.init_from_options(options)
+    except zulip.InvalidCredentialsError as error:
+        logging.error(error)
+        return 0
 
     if not options.message:
         options.message = sys.stdin.read()
