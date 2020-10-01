@@ -226,15 +226,18 @@ def handle_event(event: Dict[str, Any]) -> None:
         if len(subject) > 60:
             subject = subject[:57].rstrip() + '...'
 
-        res = client.send_message({"type": "stream",
-                                   "to": stream,
-                                   "subject": subject,
-                                   "content": content})
-        if res['result'] == 'success':
-            logging.info("Successfully sent Zulip with id: %s" % (res['id']))
+        if client.get_profile()["result"] == "error":
+            logging.error(zulip.InvalidCredentialsError("Invalid API credentials"))
+            sys.exit()
         else:
-            logging.warn("Failed to send Zulip: %s %s" % (res['result'], res['msg']))
-
+            res = client.send_message({"type": "stream",
+                                       "to": stream,
+                                       "subject": subject,
+                                       "content": content})
+            if res['result'] == 'success':
+                logging.info("Successfully sent Zulip with id: %s" % (res['id']))
+            else:
+                logging.warn("Failed to send Zulip: %s %s" % (res['result'], res['msg']))
 
 # the main run loop for this mirror script
 def run_mirror() -> None:
