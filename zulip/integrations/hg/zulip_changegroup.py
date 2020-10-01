@@ -12,6 +12,10 @@ from mercurial import ui, repository as repo
 
 VERSION = "0.9"
 
+import logging
+logging.basicConfig()
+log = logging.getLogger("hg-changegroup")
+
 def format_summary_line(web_url: str, user: str, base: int, tip: int, branch: str, node: Text) -> Text:
     """
     Format the first line of the message, which contains summary
@@ -78,7 +82,10 @@ def send_zulip(email: str, api_key: str, site: str, stream: str, subject: str, c
         "content": content,
     }
 
-    client.send_message(message_data)
+    if client.get_profile()["result"] == "error":
+        raise zulip.InvalidCredentialsError("Invalid API credentials")
+    else:
+        client.send_message(message_data)
 
 def get_config(ui: ui, item: str) -> str:
     try:
@@ -150,4 +157,7 @@ def hook(ui: ui, repo: repo, **kwargs: Text) -> None:
     ui.debug("Sending to Zulip:\n")
     ui.debug(content + "\n")
 
-    send_zulip(email, api_key, site, stream, subject, content)
+    try:
+        send_zulip(email, api_key, site, stream, subject, content)
+    except Exception as error:
+        log.error(error)
