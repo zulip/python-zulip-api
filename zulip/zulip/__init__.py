@@ -246,12 +246,18 @@ def init_from_options(options: Any, client: Optional[str] = None) -> 'Client':
         client = options.zulip_client
     elif client is None:
         client = _default_client()
-    return Client(email=options.zulip_email, api_key=options.zulip_api_key,
-                  config_file=options.zulip_config_file, verbose=options.verbose,
-                  site=options.zulip_site, client=client,
-                  cert_bundle=options.cert_bundle, insecure=options.insecure,
-                  client_cert=options.client_cert,
-                  client_cert_key=options.client_cert_key)
+
+    new_client = Client(email=options.zulip_email, api_key=options.zulip_api_key,
+                        config_file=options.zulip_config_file, verbose=options.verbose,
+                        site=options.zulip_site, client=client,
+                        cert_bundle=options.cert_bundle, insecure=options.insecure,
+                        client_cert=options.client_cert,
+                        client_cert_key=options.client_cert_key)
+
+    if new_client.get_profile()["result"] == "error":
+        raise InvalidCredentialsError("Invalid API credentials")
+    else:
+        return new_client
 
 def get_default_config_filename() -> Optional[str]:
     if os.environ.get("HOME") is None:
@@ -283,6 +289,9 @@ class ZulipError(Exception):
     pass
 
 class ConfigNotFoundError(ZulipError):
+    pass
+
+class InvalidCredentialsError(ZulipError):
     pass
 
 class MissingURLError(ZulipError):
