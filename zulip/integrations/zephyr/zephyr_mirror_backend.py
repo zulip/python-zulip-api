@@ -1095,6 +1095,10 @@ or specify the --api-key-file option.""" % (options.api_key_file,))))
         client="zephyr_mirror",
         site=options.site)
 
+    if zulip_client.get_profile()["result"] == "error":
+        logger.error(zulip.InvalidCredentialsError("Invalid API credentials"))
+        sys.exit()
+
     start_time = time.time()
 
     if options.sync_subscriptions:
