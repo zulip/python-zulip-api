@@ -5,10 +5,13 @@ import os
 import argparse
 import multiprocessing as mp
 import zulip
+import logging
 import interrealm_bridge_config
 
 from typing import Any, Callable, Dict
 
+logging.basicConfig()
+log = logging.getLogger("zulip-interrealm-bridge")
 
 def create_pipe_event(to_client: zulip.Client, from_bot: Dict[str, Any],
                       to_bot: Dict[str, Any], stream_wide: bool
@@ -84,13 +87,24 @@ if __name__ == "__main__":
                            site=bot1["site"])
     client2 = zulip.Client(email=bot2["email"], api_key=bot2["api_key"],
                            site=bot2["site"])
-    # A bidirectional tunnel
-    pipe_event1 = create_pipe_event(client2, bot1, bot2, args.stream)
-    p1 = mp.Process(target=client1.call_on_each_event, args=(pipe_event1, ["message"]))
-    pipe_event2 = create_pipe_event(client1, bot2, bot1, args.stream)
-    p2 = mp.Process(target=client2.call_on_each_event, args=(pipe_event2, ["message"]))
-    p1.start()
-    p2.start()
-    print("Listening...")
-    p1.join()
-    p2.join()
+
+    try:
+        if client1.get_profile()["result"] == "error":
+            raise zulip.InvalidCredentialsError("Bot 1 has invalid credentials")
+        if client2.get_profile()["result"] == "error":
+            raise zulip.InvalidCredentialsError("Bot 2 has invalid credentials")
+        else:
+            # A bidirectional tunnel
+            pipe_event1 = create_pipe_event(client2, bot1, bot2, args.stream)
+            p1 = mp.Process(target=client1.call_on_each_event, args=(pipe_event1, ["message"]))
+            pipe_event2 = create_pipe_event(client1, bot2, bot1, args.stream)
+            p2 = mp.Process(target=client2.call_on_each_event, args=(pipe_event2, ["message"]))
+            p1.start()
+            p2.start()
+            print("Listening...")
+            p1.join()
+            p2.join()
+    except zulip.InvalidCredentialsError as error:
+        log.error(error)
+    except Exception as info:
+        log.info(info)
