@@ -11,6 +11,10 @@ sys.path.insert(0, os.path.dirname(__file__))
 import zulip_openshift_config as config
 VERSION = '0.1'
 
+import logging
+logging.basicConfig()
+log = logging.getLogger("openshift-post-deploy")
+
 if config.ZULIP_API_PATH is not None:
     sys.path.append(config.ZULIP_API_PATH)
 
@@ -40,14 +44,20 @@ def send_bot_message(deployment: Dict[str, str]) -> None:
         return
     message = config.format_deployment_message(**deployment)
 
-    client.send_message({
-        'type': 'stream',
-        'to': destination['stream'],
-        'subject': destination['subject'],
-        'content': message,
-    })
+    if client.get_profile()["result"] == "error":
+        raise zulip.InvalidCredentialsError("Invalid API credentials")
+    else:
+        client.send_message({
+            'type': 'stream',
+            'to': destination['stream'],
+            'subject': destination['subject'],
+            'content': message,
+        })
 
     return
 
 deployment = get_deployment_details()
-send_bot_message(deployment)
+try:
+    send_bot_message(deployment)
+except Exception as error:
+    log.error(error)
