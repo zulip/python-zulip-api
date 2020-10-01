@@ -19,6 +19,10 @@ sys.path.insert(0, os.path.dirname(__file__))
 import zulip_git_config as config
 VERSION = "0.9"
 
+import logging
+logging.basicConfig()
+log = logging.getLogger("zulip-git-post-receive")
+
 if config.ZULIP_API_PATH is not None:
     sys.path.append(config.ZULIP_API_PATH)
 
@@ -28,6 +32,10 @@ client = zulip.Client(
     site=config.ZULIP_SITE,
     api_key=config.ZULIP_API_KEY,
     client="ZulipGit/" + VERSION)
+
+if client.get_profile()["result"] == "error":
+    log.error(zulip.InvalidCredentialsError("Invalid API credentials"))
+    sys.exit()
 
 def git_repository_name() -> Text:
     output = subprocess.check_output(["git", "rev-parse", "--is-bare-repository"])
@@ -91,6 +99,7 @@ def send_bot_message(oldrev: str, newrev: str, refname: str) -> None:
         "subject": destination["subject"],
         "content": message,
     }
+
     client.send_message(message_data)
 
 for ln in sys.stdin:
