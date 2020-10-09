@@ -17,7 +17,7 @@ import urllib.parse
 import logging
 from typing import Any, Callable, Dict, Iterable, IO, List, Mapping, Optional, Text, Tuple, Union, Sequence
 
-__version__ = "0.7.0"
+__version__ = "0.7.1"
 
 # Ensure the Python version is supported
 assert sys.version_info >= (3, 5)
