@@ -219,8 +219,6 @@ class ZulipToJabberBot:
                 logging.exception("Exception forwarding Zulip => Jabber")
         elif event['type'] == 'subscription':
             self.process_subscription(event)
-        elif event['type'] == 'stream':
-            self.process_stream(event)
 
     def stream_message(self, msg: Dict[str, str]) -> None:
         assert(self.jabber is not None)
@@ -262,19 +260,6 @@ class ZulipToJabberBot:
                 self.jabber.join_muc(stream_to_room(stream))
         if event['op'] == 'remove':
             streams = [s['name'].lower() for s in event['subscriptions']]
-            streams = [s for s in streams if s.endswith("/xmpp")]
-            for stream in streams:
-                self.jabber.leave_muc(stream_to_room(stream))
-
-    def process_stream(self, event: Dict[str, Any]) -> None:
-        assert(self.jabber is not None)
-        if event['op'] == 'occupy':
-            streams = [s['name'].lower() for s in event['streams']]
-            streams = [s for s in streams if s.endswith("/xmpp")]
-            for stream in streams:
-                self.jabber.join_muc(stream_to_room(stream))
-        if event['op'] == 'vacate':
-            streams = [s['name'].lower() for s in event['streams']]
             streams = [s for s in streams if s.endswith("/xmpp")]
             for stream in streams:
                 self.jabber.leave_muc(stream_to_room(stream))
