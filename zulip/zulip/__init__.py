@@ -291,6 +291,10 @@ class MissingURLError(ZulipError):
 class UnrecoverableNetworkError(ZulipError):
     pass
 
+class InvalidCredentialsError(ZulipError):
+    pass
+
+
 class Client:
     def __init__(self, email: Optional[str] = None, api_key: Optional[str] = None, config_file: Optional[str] = None,
                  verbose: bool = False, retry_on_errors: bool = True,
@@ -419,6 +423,9 @@ class Client:
         self.session = None  # type: Optional[requests.Session]
 
         self.has_connected = False
+        
+        if self.get_profile()["result"] == "error":
+            raise InvalidCredentialsError("Invalid API Credentials")
 
     def ensure_session(self) -> None:
 
