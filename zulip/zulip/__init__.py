@@ -1539,8 +1539,9 @@ class Client:
             request=request,
         )
 
-        def remove_storage(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def remove_storage(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
             '''
+
                 Example usage:
 
                 >>> client.update_storage({'storage': {"entry 1": "value 1", "entry 2": "value 2", "entry 3": "value 3"}})
@@ -1554,7 +1555,7 @@ class Client:
             '''
             return self.call_endpoint(
                 url='bot_storage',
-                method='GET',
+                method='DELETE',
                 request=request,
             )
 
