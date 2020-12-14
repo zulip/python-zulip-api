@@ -127,9 +127,14 @@ def main() -> None:
         lib_module = finder.import_module_by_name(args.bot)
         if lib_module:
             bot_name = lib_module.__name__
-            if args.provision:
-                print("ERROR: Could not load bot's module for '{}'. Exiting now.")
-                sys.exit(1)
+
+            # Removed: Not needed as lib_module would have
+            # been imported during runtime if control
+            # flow reaches here. Adding any other provision
+            # check after this would be unnecessary as
+            # provision_bots require bot_path which
+            # could not be found, hence result is None
+            # and control is here.
 
     if lib_module is None:
         print("ERROR: Could not load bot module. Exiting now.")
