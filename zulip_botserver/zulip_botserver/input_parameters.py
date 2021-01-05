@@ -7,12 +7,18 @@ def parse_args() -> argparse.Namespace:
     '''
 
     parser = argparse.ArgumentParser(usage=usage)
-    parser.add_argument(
+    mutually_exclusive_args = parser.add_mutually_exclusive_group(required=True)
+    # config-file or use-env-vars made mutually exclusive to prevent conflicts
+    mutually_exclusive_args.add_argument(
         '--config-file', '-c',
         action='store',
-        required=True,
         help='Config file for the Botserver. Use your `botserverrc` for multiple bots or'
              '`zuliprc` for a single bot.'
+    )
+    mutually_exclusive_args.add_argument(
+        '--use-env-vars', '-e',
+        action='store_true',
+        help='Load configuration from JSON in ZULIP_BOTSERVER_CONFIG environment variable.'
     )
     parser.add_argument(
         '--bot-config-file',
