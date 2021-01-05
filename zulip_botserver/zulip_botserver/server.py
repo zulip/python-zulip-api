@@ -7,6 +7,7 @@ import os
 import sys
 import importlib.util
 
+from collections import OrderedDict
 from configparser import MissingSectionHeaderError, NoOptionError
 from flask import Flask, request
 from importlib import import_module
@@ -28,6 +29,32 @@ def read_config_section(parser: configparser.ConfigParser, section: str) -> Dict
     }
     return section_info
 
+def read_config_from_env_vars(bot_name: Optional[str] = None) -> Dict[str, Dict[str, str]]:
+    bots_config = {}  # type: Dict[str, Dict[str, str]]
+    json_config = os.environ.get('ZULIP_BOTSERVER_CONFIG')
+
+    if json_config is None:
+        raise OSError("Could not read environment variable 'ZULIP_BOTSERVER_CONFIG': Variable not set.")
+
+    # Load JSON-formatted environment variable; use OrderedDict to
+    # preserve ordering on Python 3.6 and below.
+    env_config = json.loads(json_config, object_pairs_hook=OrderedDict)
+    if bot_name is not None:
+        if bot_name in env_config:
+            bots_config[bot_name] = env_config[bot_name]
+        else:
+            # If the bot name provided via the command line does not
+            # exist in the configuration provided via the environment
+            # variable, use the first bot in the environment variable,
+            # with name updated to match, along with a warning.
+            first_bot_name = list(env_config.keys())[0]
+            bots_config[bot_name] = env_config[first_bot_name]
+            logging.warning(
+                "First bot name in the config list was changed from '{}' to '{}'".format(first_bot_name, bot_name)
+            )
+    else:
+        bots_config = dict(env_config)
+    return bots_config
 
 def read_config_file(config_file_path: str, bot_name: Optional[str] = None) -> Dict[str, Dict[str, str]]:
     parser = parse_config_file(config_file_path)
@@ -178,16 +205,20 @@ def handle_bot() -> str:
 def main() -> None:
     options = parse_args()
     global bots_config
-    try:
-        bots_config = read_config_file(options.config_file, options.bot_name)
-    except MissingSectionHeaderError:
-        sys.exit("Error: Your Botserver config file `{0}` contains an empty section header!\n"
-                 "You need to write the names of the bots you want to run in the "
-                 "section headers of `{0}`.".format(options.config_file))
-    except NoOptionError as e:
-        sys.exit("Error: Your Botserver config file `{0}` has a missing option `{1}` in section `{2}`!\n"
-                 "You need to add option `{1}` with appropriate value in section `{2}` of `{0}`"
-                 .format(options.config_file, e.option, e.section))
+
+    if options.use_env_vars:
+        bots_config = read_config_from_env_vars(options.bot_name)
+    elif options.config_file:
+        try:
+            bots_config = read_config_file(options.config_file, options.bot_name)
+        except MissingSectionHeaderError:
+            sys.exit("Error: Your Botserver config file `{0}` contains an empty section header!\n"
+                     "You need to write the names of the bots you want to run in the "
+                     "section headers of `{0}`.".format(options.config_file))
+        except NoOptionError as e:
+            sys.exit("Error: Your Botserver config file `{0}` has a missing option `{1}` in section `{2}`!\n"
+                     "You need to add option `{1}` with appropriate value in section `{2}` of `{0}`"
+                     .format(options.config_file, e.option, e.section))
 
     available_bots = list(bots_config.keys())
     bots_lib_modules = load_lib_modules(available_bots)

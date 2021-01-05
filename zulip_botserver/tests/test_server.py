@@ -4,6 +4,7 @@ from typing import Any, Dict
 import unittest
 from .server_test_lib import BotServerTestCase
 import json
+from collections import OrderedDict
 from importlib import import_module
 from types import ModuleType
 
@@ -131,6 +132,34 @@ class BotServerTests(BotServerTestCase):
         assert opts.bot_config_file is None
         assert opts.hostname == '127.0.0.1'
         assert opts.port == 5002
+
+    def test_read_config_from_env_vars(self) -> None:
+        # We use an OrderedDict so that the order of the entries in
+        # the stringified environment variable is standard even on
+        # Python 3.7 and earlier.
+        bots_config = OrderedDict()
+        bots_config['hello_world'] = {
+            'email': 'helloworld-bot@zulip.com',
+            'key': 'value',
+            'site': 'http://localhost',
+            'token': 'abcd1234',
+        }
+        bots_config['giphy'] = {
+            'email': 'giphy-bot@zulip.com',
+            'key': 'value2',
+            'site': 'http://localhost',
+            'token': 'abcd1234',
+        }
+        os.environ['ZULIP_BOTSERVER_CONFIG'] = json.dumps(bots_config)
+
+        # No bot specified; should read all bot configs
+        assert server.read_config_from_env_vars() == bots_config
+
+        # Specified bot exists; should read only that section.
+        assert server.read_config_from_env_vars("giphy") == {'giphy': bots_config['giphy']}
+
+        # Specified bot doesn't exist; should read the first section of the config.
+        assert server.read_config_from_env_vars("redefined_bot") == {'redefined_bot': bots_config['hello_world']}
 
     def test_read_config_file(self) -> None:
         with self.assertRaises(IOError):
