@@ -11,7 +11,7 @@ class GameHandlerBotMessageHandler:
     def get_player_color(self, turn: int) -> str:
         return self.tokens[turn]
 
-    def alert_move_message(self, original_player: str, move_info: str) -> str:
+    def alert_move_message(self, original_player: str, move_info: str, move_data: Any = None) -> str:
         column_number = move_info.replace('move ', '')
         return original_player + ' moved in column ' + column_number
 
