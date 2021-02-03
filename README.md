@@ -1,6 +1,7 @@
 # Zulip API
 
-[![Build status](https://travis-ci.com/zulip/python-zulip-api.svg?branch=master)](https://travis-ci.com/github/zulip/python-zulip-api)
+[![Build status](https://github.com/zulip/python-zulip-api/workflows/build/badge.svg?branch=master)]
+(https://github.com/zulip/python-zulip-api/actions?query=branch%3Amaster+workflow%3Abuild)
 [![Coverage status](https://img.shields.io/codecov/c/github/zulip/python-zulip-api/master.svg)](
 https://codecov.io/gh/zulip/python-zulip-api)
 
