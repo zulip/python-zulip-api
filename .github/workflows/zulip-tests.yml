@@ -1,0 +1,62 @@
+name: build
+
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+
+jobs:
+
+  static-analysis:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup Python 3.6
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.6
+
+    - name: Install dependencies
+      run: |
+        sudo rm -vf /etc/apt/sources.list.d/*
+        sudo apt-get update
+        sudo apt-get install virtualenv
+        tools/provision --force
+
+    - name: Running Test-Suite
+      run: |
+        source zulip-api-py3-venv/bin/activate
+        tools/test-static-analysis
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9]
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Setup Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+  
+    - name: Install dependencies
+      run: |
+        sudo rm -vf /etc/apt/sources.list.d/*
+        sudo apt-get update
+        sudo apt-get install virtualenv
+        tools/provision --force
+
+    - name: Running Test-Suite
+      run: |
+        source zulip-api-py3-venv/bin/activate
+        tools/test-main
+
+    - name: Codecov
+      uses: codecov/codecov-action@v1.2.1
