@@ -139,7 +139,9 @@ class GameAdapter:
 
     def alert_new_invitation(self, game_id: str) -> str:
         # Since the first player invites, the challenger is always the first player
-        return '**' + self.get_host(game_id) + ' has invited you to play a game of ' + self.game_name + '.**\n' +\
+        player_email = self.get_players(game_id)[0]
+        sender_name = self.get_username_by_email(player_email)
+        return '**' + sender_name + ' has invited you to play a game of ' + self.game_name + '.**\n' +\
             self.get_formatted_game_object(game_id) + '\n\n' +\
             'Type ```accept``` to accept the game invitation\n' +\
             'Type ```decline``` to decline the game invitation.'
@@ -381,9 +383,8 @@ class GameAdapter:
         if game_id == '':
             self.send_reply(
                 message, 'You are not in a game. Type `help` for all commands.')
-        sender_avatar = "!avatar({})".format(sender)
         sender_name = self.get_username_by_email(sender)
-        self.cancel_game(game_id, reason='{} **{}** quit.'.format(sender_avatar, sender_name))
+        self.cancel_game(game_id, reason='**{}** quit.'.format(sender_name))
 
     def command_join(self, message: Dict[str, Any], sender: str, content: str) -> None:
         if not self.is_user_not_player(sender, message):
@@ -485,8 +486,7 @@ class GameAdapter:
     def get_formatted_game_object(self, game_id: str) -> str:
         object = '''> **Game `{}`**
 > {}
-> {}
-> {}/{} players'''.format(game_id, self.get_host(game_id), self.game_name, self.get_number_of_players(game_id), self.max_players)
+> {}/{} players'''.format(game_id, self.game_name, self.get_number_of_players(game_id), self.max_players)
         if game_id in self.instances.keys():
             instance = self.instances[game_id]
             if not self.is_single_player:
@@ -553,11 +553,6 @@ class GameAdapter:
     def get_number_of_players(self, game_id: str) -> int:
         num = len(self.get_players(game_id))
         return num
-
-    def get_host(self, game_id: str) -> str:
-        player_email = self.get_players(game_id)[0]
-        player_avatar = "!avatar({})".format(player_email)
-        return player_avatar
 
     def parse_message(self, message: Dict[str, Any]) -> None:
         game_id = self.is_user_in_game(message['sender_email'])
@@ -825,9 +820,7 @@ class GameInstance:
             if self.gameAdapter.is_single_player:
                 self.broadcast('It\'s your turn')
             else:
-                user_turn_avatar = "!avatar({})".format(self.players[self.turn])
-                self.broadcast('{} It\'s **{}**\'s ({}) turn.'.format(
-                    user_turn_avatar,
+                self.broadcast('It\'s **{}**\'s ({}) turn.'.format(
                     self.gameAdapter.get_username_by_email(
                         self.players[self.turn]),
                     self.gameAdapter.gameMessageHandler.get_player_color(self.turn)))
@@ -889,9 +882,7 @@ class GameInstance:
                 game_over = self.players[self.turn]
             self.end_game(game_over)
             return
-        user_turn_avatar = "!avatar({})".format(self.players[self.turn])
-        self.current_messages.append('{} It\'s **{}**\'s ({}) turn.'.format(
-            user_turn_avatar,
+        self.current_messages.append('It\'s **{}**\'s ({}) turn.'.format(
             self.gameAdapter.get_username_by_email(self.players[self.turn]),
             self.gameAdapter.gameMessageHandler.get_player_color(self.turn)
         ))
@@ -906,9 +897,7 @@ class GameInstance:
         if self.gameAdapter.is_single_player:
             self.current_messages.append('It\'s your turn.')
         else:
-            user_turn_avatar = "!avatar({})".format(self.players[self.turn])
-            self.current_messages.append('{} It\'s **{}**\'s ({}) turn.'.format(
-                user_turn_avatar,
+            self.current_messages.append('It\'s **{}**\'s ({}) turn.'.format(
                 self.gameAdapter.get_username_by_email(self.players[self.turn]),
                 self.gameAdapter.gameMessageHandler.get_player_color(self.turn)
             ))
@@ -931,9 +920,8 @@ class GameInstance:
         elif winner.startswith('except:'):
             loser = winner.lstrip('except:')
         else:
-            winner_avatar = "!avatar({})".format(winner)
             winner_name = self.gameAdapter.get_username_by_email(winner)
-            self.broadcast('{} **{}** won! :tada:'.format(winner_avatar, winner_name))
+            self.broadcast('**{}** won! :tada:'.format(winner_name))
         for u in self.players:
             values = {'total_games': 1, 'games_won': 0,
                       'games_lost': 0, 'games_drawn': 0}
