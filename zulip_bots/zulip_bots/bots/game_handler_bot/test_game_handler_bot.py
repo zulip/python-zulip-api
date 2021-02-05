@@ -229,7 +229,7 @@ class TestGameHandlerBot(BotTestCase, DefaultTests):
             }
         }
         self.verify_response(
-            'quit', 'Game cancelled.\n!avatar(foo@example.com) **foo** quit.', 0, bot, 'foo')
+            'quit', 'Game cancelled.\n**foo** quit.', 0, bot, 'foo')
 
     def test_user_already_in_game_errors(self) -> None:
         bot = self.setup_game()
@@ -313,14 +313,14 @@ class TestGameHandlerBot(BotTestCase, DefaultTests):
 
     def test_normal_turns(self) -> None:
         bot = self.setup_game()
-        self.verify_response('move 3', '**foo** moved in column 3\n\nfoo\n\n!avatar(baz@example.com) It\'s **baz**\'s (:red_circle:) turn.',
+        self.verify_response('move 3', '**foo** moved in column 3\n\nfoo\n\nIt\'s **baz**\'s (:red_circle:) turn.',
                              0, bot=bot, stream='test', subject='test game')
-        self.verify_response('move 3', '**baz** moved in column 3\n\nfoo\n\n!avatar(foo@example.com) It\'s **foo**\'s (:blue_circle:) turn.',
+        self.verify_response('move 3', '**baz** moved in column 3\n\nfoo\n\nIt\'s **foo**\'s (:blue_circle:) turn.',
                              0, bot=bot, stream='test', subject='test game', user_name='baz')
 
     def test_wrong_turn(self) -> None:
         bot = self.setup_game()
-        self.verify_response('move 5', '!avatar(foo@example.com) It\'s **foo**\'s (:blue_circle:) turn.', 0,
+        self.verify_response('move 5', 'It\'s **foo**\'s (:blue_circle:) turn.', 0,
                              bot=bot, stream='test', subject='test game', user_name='baz')
 
     def test_private_message_error(self) -> None:
@@ -390,7 +390,7 @@ class TestGameHandlerBot(BotTestCase, DefaultTests):
         bot = self.setup_game()
         bot.put_user_cache()
         with patch('zulip_bots.bots.game_handler_bot.game_handler_bot.MockModel.determine_game_over', return_value='foo@example.com'):
-            self.verify_response('move 3', '!avatar(foo@example.com) **foo** won! :tada:',
+            self.verify_response('move 3', '**foo** won! :tada:',
                                  1, bot=bot, stream='test', subject='test game')
         leaderboard = '**Most wins**\n\n\
 Player | Games Won | Games Drawn | Games Lost | Total Games\n\
@@ -403,12 +403,12 @@ Player | Games Won | Games Drawn | Games Lost | Total Games\n\
     def test_current_turn_winner(self) -> None:
         bot = self.setup_game()
         with patch('zulip_bots.bots.game_handler_bot.game_handler_bot.MockModel.determine_game_over', return_value='current turn'):
-            self.verify_response('move 3', '!avatar(foo@example.com) **foo** won! :tada:',
+            self.verify_response('move 3', '**foo** won! :tada:',
                                  1, bot=bot, stream='test', subject='test game')
 
     def test_computer_turn(self) -> None:
         bot = self.setup_computer_game()
-        self.verify_response('move 3', '**foo** moved in column 3\n\nfoo\n\n!avatar(test-bot@example.com) It\'s **test-bot**\'s (:red_circle:) turn.',
+        self.verify_response('move 3', '**foo** moved in column 3\n\nfoo\n\nIt\'s **test-bot**\'s (:red_circle:) turn.',
                              0, bot=bot, stream='test', subject='test game')
         with patch('zulip_bots.bots.game_handler_bot.game_handler_bot.MockModel.determine_game_over', return_value='test-bot@example.com'):
             self.verify_response('move 5', 'I won! Well Played!',
@@ -462,7 +462,6 @@ Player | Games Won | Games Drawn | Games Lost | Total Games\n\
     def test_parse_message(self) -> None:
         bot = self.setup_game()
         self.verify_response('move 3', 'Join your game using the link below!\n\n> **Game `abc123`**\n\
-> !avatar(foo@example.com)\n\
 > foo test game\n\
 > 2/2 players\n\
 > **[Join Game](/#narrow/stream/test/topic/test game)**', 0, bot=bot)
@@ -471,7 +470,6 @@ Player | Games Won | Games Drawn | Games Lost | Total Games\n\
 To move subjects, send your message again, otherwise join the game using the link below.
 
 > **Game `abc123`**
-> !avatar(foo@example.com)
 > foo test game
 > 2/2 players
 > **[Join Game](/#narrow/stream/test/topic/test game)**''', 0, bot=bot, stream='test 2', subject='game 2')
@@ -485,7 +483,6 @@ To move subjects, send your message again, otherwise join the game using the lin
 To move subjects, send your message again, otherwise join the game using the link below.
 
 > **Game `abcdefg`**
-> !avatar(bar@example.com)
 > foo test game
 > 2/2 players
 > **[Join Game](/#narrow/stream/test2/topic/test game 2)**''', 0, bot=bot, user_name='bar', stream='test game', subject='test2')
