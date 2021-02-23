@@ -829,12 +829,12 @@ class Client:
             method='GET'
         )
 
-    def add_reaction(self, reaction_data: Dict[str, str]) -> Dict[str, Any]:
+    def add_reaction(self, reaction_data: Dict[str, Any]) -> Dict[str, Any]:
         '''
             Example usage:
 
             >>> client.add_reaction({
-                'message_id': '100',
+                'message_id': 100,
                 'emoji_name': 'joy',
                 'emoji_code': '1f602',
                 'reaction_type': 'unicode_emoji'
@@ -847,12 +847,12 @@ class Client:
             request=reaction_data,
         )
 
-    def remove_reaction(self, reaction_data: Dict[str, str]) -> Dict[str, Any]:
+    def remove_reaction(self, reaction_data: Dict[str, Any]) -> Dict[str, Any]:
         '''
             Example usage:
 
             >>> client.remove_reaction({
-                'message_id': '100',
+                'message_id': 100,
                 'emoji_name': 'joy',
                 'emoji_code': '1f602',
                 'reaction_type': 'unicode_emoji'
