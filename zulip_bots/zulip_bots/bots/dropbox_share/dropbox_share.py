@@ -1,4 +1,4 @@
-from dropbox.dropbox import Dropbox
+from dropbox import Dropbox
 from typing import Any, Dict, List, Tuple
 import re
 
