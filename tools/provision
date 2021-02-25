@@ -6,8 +6,6 @@ import argparse
 import subprocess
 import glob
 
-from importlib import import_module
-
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 ZULIP_BOTS_DIR = os.path.join(CURRENT_DIR, '..', 'zulip_bots')
 sys.path.append(ZULIP_BOTS_DIR)
@@ -48,16 +46,19 @@ the Python version this command is executed with."""
     venv_dir = os.path.join(base_dir, venv_name)
     if not os.path.isdir(venv_dir):
         try:
-            return_code = subprocess.call(['virtualenv', '-p', options.python_interpreter, venv_dir])
+            return_code = subprocess.call([options.python_interpreter, '-m', 'venv', venv_dir])
         except OSError:
-            if subprocess.call(['which', 'virtualenv']):
-                print("{red}Please install the virtualenv package and try again.{end_format}"
-                      .format(red='\033[91m', end_format='\033[0m'))
-                sys.exit(1)
+            print("{red}Installation with venv failed. Probable errors are: "
+                  "You are on Ubuntu and you haven't installed python3-venv,"
+                  "or you are running an unsupported python version"
+                  "or python is not installed properly{end_format}"
+                  .format(red=red, end_format=end_format))
+            sys.exit(1)
             raise
         else:
+            # subprocess.call returns 0 if a script executed successfully
             if return_code:
-                raise OSError("The command `virtualenv -p {} {}` failed. Virtualenv not created!"
+                raise OSError("The command `{} -m venv {}` failed. Virtualenv not created!"
                               .format(options.python_interpreter, venv_dir))
             print("New virtualenv created.")
     else:
@@ -65,19 +66,11 @@ the Python version this command is executed with."""
 
     if os.path.isdir(os.path.join(venv_dir, 'Scripts')):
         # POSIX compatibility layer and Linux environment emulation for Windows
-        # Virtual uses /Scripts instead of /bin on Windows.
-        # Read https://virtualenv.pypa.io/en/stable/userguide/
+        # venv uses /Scripts instead of /bin on Windows cmd and Power Shell.
+        # Read https://docs.python.org/3/library/venv.html
         venv_exec_dir = 'Scripts'
     else:
         venv_exec_dir = 'bin'
-
-    # In order to install all required packages for the venv, we need to activate it. Since
-    # the activation script sets environmental variables, it needs to be executed inline with
-    # `import_module`.
-    activate_module_dir = os.path.abspath(os.path.join(venv_dir, venv_exec_dir))
-    sys.path.append(activate_module_dir)
-
-    import_module('activate_this')
 
     # On OS X, ensure we use the virtualenv version of the python binary for
     # future subprocesses instead of the version that this script was launched with. See
