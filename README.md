@@ -22,17 +22,17 @@ This is part of the Zulip open source project; see the
 [contributing guide](https://zulip.readthedocs.io/en/latest/overview/contributing.html)
 and [commit guidelines](https://zulip.readthedocs.io/en/latest/contributing/version-control.html).
 
-1. Fork and clone the Git repo:
-   `git clone https://github.com/<your_username>/python-zulip-api.git`
+1. Fork and clone the Git repo, and set upstream to zulip/python-zulip-api:
+   ```
+   git clone https://github.com/<your_username>/python-zulip-api.git
+   cd python-zulip-api
+   git remote add upstream https://github.com/zulip/python-zulip-api.git
+   git fetch upstream
+   ```
 
-2. Make sure you have [pip](https://pip.pypa.io/en/stable/installing/)
-   and [virtualenv](https://virtualenv.pypa.io/en/stable/installation.html)
-   installed.
+2. Make sure you have [pip](https://pip.pypa.io/en/stable/installing/).
 
-3. `cd` into the repository cloned earlier:
-   `cd python-zulip-api`
-
-4. Run:
+3. Run:
    ```
    python3 ./tools/provision
    ```
@@ -43,14 +43,14 @@ and [commit guidelines](https://zulip.readthedocs.io/en/latest/contributing/vers
    python3 ./tools/provision -p <path_to_your_python_version>
    ```
 
-5. If that succeeds, it will end with printing the following command:
+4. If that succeeds, it will end with printing the following command:
    ```
    source /.../python-zulip-api/.../activate
    ```
    You can run this command to enter the virtual environment.
    You'll want to run this in each new shell before running commands from `python-zulip-api`.
 
-6. Once you've entered the virtualenv, you should see something like this on the terminal:
+5. Once you've entered the virtualenv, you should see something like this on the terminal:
    ```
    (zulip-api-py3-venv) user@pc ~/python-zulip-api $
    ```
