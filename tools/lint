@@ -15,6 +15,7 @@ EXCLUDED_FILES = [
 def run() -> None:
     parser = argparse.ArgumentParser()
     add_default_linter_arguments(parser)
+    parser.add_argument('--no-gitlint', action='store_true', help='Disable gitlint')
     args = parser.parse_args()
 
     linter_config = LinterConfig(args)
@@ -26,6 +27,10 @@ def run() -> None:
                                   description="Static type checker for Python (config: mypy.ini)")
     linter_config.external_linter('flake8', ['flake8'], ['py'],
                                   description="Standard Python linter (config: .flake8)")
+
+    if not args.no_gitlint:
+        linter_config.external_linter('gitlint', ['tools/lint-commits'],
+                                      description="Git Lint for commit messages")
 
     @linter_config.lint
     def custom_py() -> int:

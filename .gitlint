@@ -1,0 +1,15 @@
+# This file is copied from the original .gitlint at zulip/zulip.
+# Please don't edit here; instead update the zulip/zulip copy and then resync this file.
+
+[general]
+ignore=title-trailing-punctuation, body-min-length, body-is-missing
+extra-path=tools/gitlint-rules.py
+
+[title-match-regex]
+regex=^(.+:\ )?[A-Z].+\.$
+
+[title-max-length]
+line-length=76
+
+[body-max-line-length]
+line-length=76
