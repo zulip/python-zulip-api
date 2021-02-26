@@ -20,7 +20,7 @@ from typing import Any, Callable, Dict, Iterable, IO, List, Mapping, Optional, T
 __version__ = "0.7.1"
 
 # Ensure the Python version is supported
-assert sys.version_info >= (3, 5)
+assert sys.version_info >= (3, 6)
 
 logger = logging.getLogger(__name__)
 
