@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from pathlib import Path
 import os
 import sys
 import zulip_bots.run
@@ -43,17 +44,17 @@ class TestDefaultArguments(TestCase):
 
     def test_adding_bot_parent_dir_to_sys_path_when_bot_name_specified(self) -> None:
         bot_name = 'helloworld'  # existing bot's name
-        expected_bot_dir_path = os.path.join(
+        expected_bot_dir_path = Path(
             os.path.dirname(zulip_bots.run.__file__),
             'bots',
             bot_name
-        )
+        ).as_posix()
         self._test_adding_bot_parent_dir_to_sys_path(bot_qualifier=bot_name, bot_dir_path=expected_bot_dir_path)
 
     @patch('os.path.isfile', return_value=True)
     def test_adding_bot_parent_dir_to_sys_path_when_bot_path_specified(self, mock_os_path_isfile: mock.Mock) -> None:
         bot_path = '/path/to/bot'
-        expected_bot_dir_path = '/path/to'
+        expected_bot_dir_path = Path('/path/to').as_posix()
         self._test_adding_bot_parent_dir_to_sys_path(bot_qualifier=bot_path, bot_dir_path=expected_bot_dir_path)
 
     def _test_adding_bot_parent_dir_to_sys_path(self, bot_qualifier: str, bot_dir_path: str) -> None:
@@ -63,7 +64,8 @@ class TestDefaultArguments(TestCase):
                     with patch('zulip_bots.run.exit_gracefully_if_zulip_config_is_missing'):
                         zulip_bots.run.main()
 
-        self.assertIn(bot_dir_path, sys.path)
+        sys_path = [Path(path).as_posix() for path in sys.path]
+        self.assertIn(bot_dir_path, sys_path)
 
     @patch('os.path.isfile', return_value=False)
     def test_run_bot_by_module_name(self, mock_os_path_isfile: mock.Mock) -> None:

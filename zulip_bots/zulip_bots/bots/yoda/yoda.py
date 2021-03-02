@@ -98,7 +98,7 @@ class YodaSpeakHandler:
                 if len(reply_message) == 0:
                     reply_message = 'Invalid input, please check the sentence you have entered.'
 
-            except ssl.SSLError or TypeError:
+            except (ssl.SSLError, TypeError):
                 reply_message = 'The service is temporarily unavailable, please try again.'
                 logging.error(reply_message)
 

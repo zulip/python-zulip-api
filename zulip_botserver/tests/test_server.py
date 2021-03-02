@@ -8,6 +8,7 @@ import json
 from collections import OrderedDict
 from importlib import import_module
 from types import ModuleType
+from pathlib import Path
 
 from zulip_botserver import server
 from zulip_botserver.input_parameters import parse_args
@@ -214,13 +215,13 @@ class BotServerTests(BotServerTestCase):
         # restructure zulip_bots, this test would fail and we would also update Botserver
         # at the same time.
         helloworld = import_module('zulip_bots.bots.{bot}.{bot}'.format(bot='helloworld'))
-        root_dir = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../'))
+        root_dir = Path(__file__).parents[2].as_posix()
         # load valid module name
         module = server.load_lib_modules(['helloworld'])['helloworld']
         assert module == helloworld
 
         # load valid file path
-        path = os.path.join(root_dir, 'zulip_bots/zulip_bots/bots/{bot}/{bot}.py'.format(bot='helloworld'))
+        path = Path(root_dir, 'zulip_bots/zulip_bots/bots/{bot}/{bot}.py'.format(bot='helloworld')).as_posix()
         module = server.load_lib_modules([path])[path]
         assert module.__name__ == 'custom_bot_module'
         assert module.__file__ == path
@@ -236,7 +237,7 @@ class BotServerTests(BotServerTestCase):
         with self.assertRaisesRegexp(SystemExit,  # type: ignore
                                      'Error: Bot "{}/zulip_bots/zulip_bots/bots/helloworld.py" doesn\'t exist. '
                                      'Please make sure you have set up the botserverrc file correctly.'.format(root_dir)):
-            path = os.path.join(root_dir, 'zulip_bots/zulip_bots/bots/{bot}.py'.format(bot='helloworld'))
+            path = Path(root_dir, 'zulip_bots/zulip_bots/bots/{bot}.py'.format(bot='helloworld')).as_posix()
             module = server.load_lib_modules([path])[path]
 
 if __name__ == '__main__':
