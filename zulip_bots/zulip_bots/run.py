@@ -110,7 +110,7 @@ def main() -> None:
             provision_bot(os.path.dirname(bot_path), args.force)
 
         try:
-            lib_module = finder.import_module_from_source(bot_path, bot_name)
+            lib_module = finder.import_module_from_source(bot_path.as_posix(), bot_name)
         except ImportError:
             req_path = os.path.join(os.path.dirname(bot_path), "requirements.txt")
             with open(req_path) as fp:
