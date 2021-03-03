@@ -112,6 +112,37 @@ class BotStorage(Protocol):
     def contains(self, key: Text) -> bool:
         ...
 
+class BotHandler(Protocol):
+
+    user_id: int
+    email: str
+    full_name: str
+
+    @property
+    def storage(self) -> BotStorage:
+        ...
+
+    def identity(self) -> BotIdentity:
+        ...
+
+    def react(self, message: Dict[str, Any], emoji_name: str) -> Dict[str, Any]:
+        ...
+
+    def send_message(self, message: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        ...
+
+    def send_reply(self, message: Dict[str, Any], response: str, widget_content: Optional[str] = None) -> Optional[Dict[str, Any]]:
+        ...
+
+    def update_message(self, message: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        ...
+
+    def get_config_info(self, bot_name: str, optional: bool = False) -> Dict[str, str]:
+        ...
+
+    def quit(self, message: str = "") -> None:
+        ...
+
 class ExternalBotHandler:
     def __init__(
         self,
@@ -168,7 +199,7 @@ class ExternalBotHandler:
                                               emoji_name=emoji_name,
                                               reaction_type='unicode_emoji'))
 
-    def send_message(self, message: (Dict[str, Any])) -> Dict[str, Any]:
+    def send_message(self, message: Dict[str, Any]) -> Dict[str, Any]:
         if not self._rate_limit.is_legal():
             self._rate_limit.show_error_and_exit()
         resp = self._client.send_message(message)
@@ -198,7 +229,7 @@ class ExternalBotHandler:
             self._rate_limit.show_error_and_exit()
         return self._client.update_message(message)
 
-    def get_config_info(self, bot_name: str, optional: Optional[bool] = False) -> Dict[str, Any]:
+    def get_config_info(self, bot_name: str, optional: bool = False) -> Dict[str, str]:
         if self._bot_config_parser is not None:
             config_parser = self._bot_config_parser
         else:

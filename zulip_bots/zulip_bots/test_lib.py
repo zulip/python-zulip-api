@@ -28,6 +28,7 @@ class StubBotHandler:
         self.storage = SimpleStorage()
         self.full_name = 'test-bot'
         self.email = 'test-bot@example.com'
+        self.user_id = 0
         self.message_server = SimpleMessageServer()
         self.reset_transcript()
 
@@ -69,7 +70,7 @@ class StubBotHandler:
     def quit(self, message: str = "") -> None:
         raise self.BotQuitException()
 
-    def get_config_info(self, bot_name: str, optional: bool = False) -> Dict[str, Any]:
+    def get_config_info(self, bot_name: str, optional: bool = False) -> Dict[str, str]:
         return {}
 
     def unique_reply(self) -> Dict[str, Any]:
