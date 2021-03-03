@@ -9,7 +9,7 @@ import re
 
 
 from typing import Any, Optional, List, Dict, IO, Text
-
+from typing_extensions import Protocol
 from zulip import Client, ZulipError
 
 
@@ -101,6 +101,16 @@ class BotIdentity:
         self.name = name
         self.email = email
         self.mention = '@**' + name + '**'
+
+class BotStorage(Protocol):
+    def put(self, key: Text, value: Any) -> None:
+        ...
+
+    def get(self, key: Text) -> Any:
+        ...
+
+    def contains(self, key: Text) -> bool:
+        ...
 
 class ExternalBotHandler:
     def __init__(
