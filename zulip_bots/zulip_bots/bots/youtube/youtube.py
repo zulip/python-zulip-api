@@ -2,7 +2,8 @@ import requests
 import logging
 
 from requests.exceptions import HTTPError, ConnectionError
-from typing import Dict, Any, Union, List, Tuple, Optional
+from typing import Dict, Union, List, Tuple, Optional
+from zulip_bots.lib import BotHandler
 
 commands_list = ('list', 'top', 'help')
 
@@ -23,7 +24,7 @@ class YoutubeHandler:
                    " * @mention-bot funny cats\n" \
                    " * @mention-bot list funny dogs"
 
-    def initialize(self, bot_handler: Any) -> None:
+    def initialize(self, bot_handler: BotHandler) -> None:
         self.config_info = bot_handler.get_config_info('youtube')
         # Check if API key is valid. If it is not valid, don't run the bot.
         try:
@@ -37,7 +38,7 @@ class YoutubeHandler:
         except ConnectionError:
             logging.warning('Bad connection')
 
-    def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
 
         if message['content'] == '' or message['content'] == 'help':
             bot_handler.send_reply(message, self.help_content)

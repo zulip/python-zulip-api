@@ -53,7 +53,7 @@ class TestTrelloBot(BotTestCase, DefaultTests):
 
             with self.mock_http_conversation('get_board_descs'):
                 bot_instance = TrelloHandler()
-                bot_instance.initialize(StubBotHandler)
+                bot_instance.initialize(StubBotHandler())
 
                 self.assertEqual(bot_instance.get_board_descs(['TEST']), '1.[TEST](TEST) (`TEST`)')
 

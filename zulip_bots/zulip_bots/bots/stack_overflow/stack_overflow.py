@@ -1,7 +1,8 @@
 import requests
 import logging
 
-from typing import Optional, Any, Dict
+from typing import Optional, Dict
+from zulip_bots.lib import BotHandler
 
 # See readme.md for instructions on running this code.
 
@@ -28,11 +29,11 @@ class StackOverflowHandler:
             should preface query with "@mention-bot".
             @mention-bot <search query>'''
 
-    def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
         bot_response = self.get_bot_stackoverflow_response(message, bot_handler)
         bot_handler.send_reply(message, bot_response)
 
-    def get_bot_stackoverflow_response(self, message: Dict[str, str], bot_handler: Any) -> Optional[str]:
+    def get_bot_stackoverflow_response(self, message: Dict[str, str], bot_handler: BotHandler) -> Optional[str]:
         '''This function returns the URLs of the requested topic.'''
 
         help_text = 'Please enter your query after @mention-bot to search StackOverflow'

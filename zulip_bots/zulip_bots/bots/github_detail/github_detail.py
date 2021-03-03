@@ -4,6 +4,7 @@ import logging
 import requests
 
 from typing import Dict, Any, Tuple, Union
+from zulip_bots.lib import BotHandler
 
 class GithubHandler:
     '''
@@ -14,7 +15,7 @@ class GithubHandler:
     GITHUB_ISSUE_URL_TEMPLATE = 'https://api.github.com/repos/{owner}/{repo}/issues/{id}'
     HANDLE_MESSAGE_REGEX = re.compile(r"(?:([\w-]+)\/)?([\w-]+)?#(\d+)")
 
-    def initialize(self, bot_handler: Any) -> None:
+    def initialize(self, bot_handler: BotHandler) -> None:
         self.config_info = bot_handler.get_config_info('github_detail', optional=True)
         self.owner = self.config_info.get("owner", False)
         self.repo = self.config_info.get("repo", False)
@@ -64,7 +65,7 @@ class GithubHandler:
                 repo = self.repo
         return (owner, repo)
 
-    def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
         # Send help message
         if message['content'] == 'help':
             bot_handler.send_reply(message, self.usage())

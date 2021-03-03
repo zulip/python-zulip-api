@@ -335,7 +335,7 @@ def display_config_file_errors(error_msg: str, config_file: str) -> None:
     print('\nMore details here:\n\n{}\n'.format(error_msg))
 
 
-def prepare_message_handler(bot: str, bot_handler: ExternalBotHandler, bot_lib_module: Any) -> Any:
+def prepare_message_handler(bot: str, bot_handler: BotHandler, bot_lib_module: Any) -> Any:
     message_handler = bot_lib_module.handler_class()
     if hasattr(message_handler, 'validate_config'):
         config_data = bot_handler.get_config_info(bot)

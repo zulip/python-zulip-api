@@ -5,7 +5,8 @@ import requests
 
 from bs4 import BeautifulSoup
 
-from typing import Any, Dict, List
+from typing import Dict, List
+from zulip_bots.lib import BotHandler
 
 def google_search(keywords: str) -> List[Dict[str, str]]:
     query = {'q': keywords}
@@ -81,7 +82,7 @@ class GoogleSearchHandler:
             @mentioned-bot.
             '''
 
-    def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
         original_content = message['content']
         result = get_google_result(original_content)
         bot_handler.send_reply(message, result)

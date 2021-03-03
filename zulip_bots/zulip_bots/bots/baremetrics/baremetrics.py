@@ -1,10 +1,11 @@
 # See readme.md for instructions on running this code.
 
 from typing import Any, List, Dict
+from zulip_bots.lib import BotHandler
 import requests
 
 class BaremetricsHandler:
-    def initialize(self, bot_handler: Any) -> None:
+    def initialize(self, bot_handler: BotHandler) -> None:
         self.config_info = bot_handler.get_config_info('baremetrics')
         self.api_key = self.config_info['api_key']
 
@@ -27,7 +28,7 @@ class BaremetricsHandler:
 
         self.check_api_key(bot_handler)
 
-    def check_api_key(self, bot_handler: Any) -> None:
+    def check_api_key(self, bot_handler: BotHandler) -> None:
         url = "https://api.baremetrics.com/v1/account"
         test_query_response = requests.get(url, headers=self.auth_header)
         test_query_data = test_query_response.json()
@@ -46,7 +47,7 @@ class BaremetricsHandler:
         Version 1.0
         '''
 
-    def handle_message(self, message: Dict[str, Any], bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, Any], bot_handler: BotHandler) -> None:
         content = message['content'].strip().split()
 
         if content == []:

@@ -2,16 +2,17 @@
 import requests
 
 from typing import Any, Dict
+from zulip_bots.lib import BotHandler
 
 api_url = 'http://api.openweathermap.org/data/2.5/weather'
 
 class WeatherHandler:
-    def initialize(self, bot_handler: Any) -> None:
+    def initialize(self, bot_handler: BotHandler) -> None:
         self.api_key = bot_handler.get_config_info('weather')['key']
         self.response_pattern = 'Weather in {}, {}:\n{:.2f} F / {:.2f} C\n{}'
         self.check_api_key(bot_handler)
 
-    def check_api_key(self, bot_handler: Any) -> None:
+    def check_api_key(self, bot_handler: BotHandler) -> None:
         api_params = dict(q='nyc', APPID=self.api_key)
         test_response = requests.get(api_url, params=api_params)
         try:
@@ -26,7 +27,7 @@ class WeatherHandler:
             This plugin will give info about weather in a specified city
             '''
 
-    def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
         help_content = '''
             This bot returns weather info for specified city.
             You specify city in the following format:

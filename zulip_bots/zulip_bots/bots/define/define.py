@@ -4,7 +4,8 @@ import requests
 import html2text
 import string
 
-from typing import Any, Dict
+from typing import Dict
+from zulip_bots.lib import BotHandler
 
 class DefineHandler:
     '''
@@ -24,7 +25,7 @@ class DefineHandler:
             messages with @mention-bot.
             '''
 
-    def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
         original_content = message['content'].strip()
         bot_response = self.get_bot_define_response(original_content)
 

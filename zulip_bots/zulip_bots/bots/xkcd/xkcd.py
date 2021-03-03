@@ -3,7 +3,8 @@ import random
 import logging
 import requests
 
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
+from zulip_bots.lib import BotHandler
 
 XKCD_TEMPLATE_URL = 'https://xkcd.com/%s/info.0.json'
 LATEST_XKCD_URL = 'https://xkcd.com/info.0.json'
@@ -34,7 +35,7 @@ class XkcdHandler:
             `<comic_id>`, e.g `@mention-bot 1234`.
             '''
 
-    def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
         quoted_name = bot_handler.identity().mention
         xkcd_bot_response = get_xkcd_bot_response(message, quoted_name)
         bot_handler.send_reply(message, xkcd_bot_response)

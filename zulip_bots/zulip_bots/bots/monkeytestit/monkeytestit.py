@@ -1,6 +1,6 @@
 import logging
-from typing import Dict, Any
-
+from typing import Dict
+from zulip_bots.lib import BotHandler
 from zulip_bots.bots.monkeytestit.lib import parse
 from zulip_bots.lib import NoBotConfigException
 
@@ -15,7 +15,7 @@ class MonkeyTestitBot:
                "that, to perform a check, mention me and add the website.\n\n" \
                "Check doc.md for more options and setup instructions."
 
-    def initialize(self, bot_handler: Any) -> None:
+    def initialize(self, bot_handler: BotHandler) -> None:
         try:
             self.config = bot_handler.get_config_info('monkeytestit')
         except NoBotConfigException:
@@ -41,7 +41,7 @@ class MonkeyTestitBot:
                              " your api_key value and try again.")
 
     def handle_message(self, message: Dict[str, str],
-                       bot_handler: Any) -> None:
+                       bot_handler: BotHandler) -> None:
         content = message['content']
 
         response = parse.execute(content, self.api_key)

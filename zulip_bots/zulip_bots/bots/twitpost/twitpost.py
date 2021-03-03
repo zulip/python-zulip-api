@@ -1,6 +1,6 @@
 import tweepy
-from typing import Any, Dict
-
+from typing import Dict
+from zulip_bots.lib import BotHandler
 
 class TwitpostBot:
 
@@ -16,7 +16,7 @@ class TwitpostBot:
                    "Example:\n" \
                    " * @twitpost tweet hey batman\n"
 
-    def initialize(self, bot_handler: Any) -> None:
+    def initialize(self, bot_handler: BotHandler) -> None:
         self.config_info = bot_handler.get_config_info('twitter')
         auth = tweepy.OAuthHandler(self.config_info['consumer_key'],
                                    self.config_info['consumer_secret'])
@@ -24,7 +24,7 @@ class TwitpostBot:
                               self.config_info['access_token_secret'])
         self.api = tweepy.API(auth, parser=tweepy.parsers.JSONParser())
 
-    def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
         content = message["content"]
 
         if content.strip() == '':

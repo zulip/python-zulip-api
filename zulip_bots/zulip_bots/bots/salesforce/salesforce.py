@@ -2,6 +2,7 @@
 
 import simple_salesforce
 from typing import Dict, Any, List
+from zulip_bots.lib import BotHandler
 import re
 import logging
 from zulip_bots.bots.salesforce.utils import commands, object_types, link_query, default_query
@@ -151,7 +152,7 @@ class SalesforceHandler:
                         return 'Usage: {} [arguments]'.format(command['template'])
         return get_help_text()
 
-    def initialize(self, bot_handler: Any) -> None:
+    def initialize(self, bot_handler: BotHandler) -> None:
         self.config_info = bot_handler.get_config_info('salesforce')
         try:
             self.sf = simple_salesforce.Salesforce(
@@ -162,12 +163,12 @@ class SalesforceHandler:
         except simple_salesforce.exceptions.SalesforceAuthenticationFailed as err:
             bot_handler.quit('Failed to log in to Salesforce. {} {}'.format(err.code, err.message))
 
-    def handle_message(self, message: Dict[str, Any], bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, Any], bot_handler: BotHandler) -> None:
         try:
             bot_response = self.get_salesforce_response(message['content'])
             bot_handler.send_reply(message, bot_response)
         except Exception as e:
-            bot_handler.send_reply('Error. {}.'.format(e), bot_response)
+            bot_handler.send_reply(message, 'Error. {}.'.format(e), bot_response)
 
 
 handler_class = SalesforceHandler

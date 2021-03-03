@@ -2,6 +2,7 @@ import json
 import re
 import random
 import logging
+from zulip_bots.lib import BotHandler
 from copy import deepcopy
 from typing import Any, Dict, Tuple, List
 
@@ -174,13 +175,13 @@ class GameAdapter:
         @bot-name help
         '''
 
-    def initialize(self, bot_handler: Any) -> None:
+    def initialize(self, bot_handler: BotHandler) -> None:
         self.bot_handler = bot_handler
         self.get_user_cache()
         self.email = self.bot_handler.email
         self.full_name = self.bot_handler.full_name
 
-    def handle_message(self, message: Dict[str, Any], bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, Any], bot_handler: BotHandler) -> None:
         try:
             self.bot_handler = bot_handler
             content = message['content'].strip()

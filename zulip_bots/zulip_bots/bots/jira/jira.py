@@ -2,6 +2,7 @@ import base64
 import re
 import requests
 from typing import Any, Dict, Optional
+from zulip_bots.lib import BotHandler
 
 GET_REGEX = re.compile('get "(?P<issue_key>.+)"$')
 CREATE_REGEX = re.compile(
@@ -149,7 +150,7 @@ class JiraHandler:
         Jira Bot, `jira.conf` must be set up. See `doc.md` for more details.
         '''
 
-    def initialize(self, bot_handler: Any) -> None:
+    def initialize(self, bot_handler: BotHandler) -> None:
         config = bot_handler.get_config_info('jira')
 
         username = config.get('username')
@@ -198,7 +199,7 @@ class JiraHandler:
 
         return response
 
-    def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
         content = message.get('content')
         response = ''
 

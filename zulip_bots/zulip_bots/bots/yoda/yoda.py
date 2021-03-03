@@ -3,7 +3,8 @@ import logging
 import ssl
 import requests
 
-from typing import Any, Dict
+from typing import Dict
+from zulip_bots.lib import BotHandler
 
 HELP_MESSAGE = '''
             This bot allows users to translate a sentence into
@@ -32,7 +33,7 @@ class YodaSpeakHandler:
     This bot will allow users to translate a sentence into 'Yoda speak'.
     It looks for messages starting with '@mention-bot'.
     '''
-    def initialize(self, bot_handler: Any) -> None:
+    def initialize(self, bot_handler: BotHandler) -> None:
         self.api_key = bot_handler.get_config_info('yoda')['api_key']
 
     def usage(self) -> str:
@@ -49,7 +50,7 @@ class YodaSpeakHandler:
             @mention-bot You will learn how to speak like me someday.
             '''
 
-    def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
         self.handle_input(message, bot_handler)
 
     def send_to_yoda_api(self, sentence: str) -> str:
@@ -83,7 +84,7 @@ class YodaSpeakHandler:
         sentence = message_content.replace(' ', '+')
         return sentence
 
-    def handle_input(self, message: Dict[str, str], bot_handler: Any) -> None:
+    def handle_input(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
         original_content = message['content']
 
         if self.is_help(original_content) or (original_content == ""):
@@ -108,7 +109,7 @@ class YodaSpeakHandler:
 
             bot_handler.send_reply(message, reply_message)
 
-    def send_message(self, bot_handler: Any, message: str, stream: str, subject: str) -> None:
+    def send_message(self, bot_handler: BotHandler, message: str, stream: str, subject: str) -> None:
         # function for sending a message
         bot_handler.send_message(dict(
             type='stream',

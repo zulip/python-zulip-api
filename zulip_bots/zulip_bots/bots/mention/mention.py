@@ -2,16 +2,17 @@
 
 import requests
 from typing import Any, List, Dict
+from zulip_bots.lib import BotHandler
 
 class MentionHandler:
-    def initialize(self, bot_handler: Any) -> None:
+    def initialize(self, bot_handler: BotHandler) -> None:
         self.config_info = bot_handler.get_config_info('mention')
         self.access_token = self.config_info['access_token']
         self.account_id = ''
 
         self.check_access_token(bot_handler)
 
-    def check_access_token(self, bot_handler: Any) -> None:
+    def check_access_token(self, bot_handler: BotHandler) -> None:
         test_query_header = {
             'Authorization': 'Bearer ' + self.access_token,
             'Accept-Version': '1.15',
@@ -33,7 +34,7 @@ class MentionHandler:
         Version 1.00
         '''
 
-    def handle_message(self, message: Dict[str, Any], bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, Any], bot_handler: BotHandler) -> None:
         message['content'] = message['content'].strip()
 
         if message['content'].lower() == 'help':

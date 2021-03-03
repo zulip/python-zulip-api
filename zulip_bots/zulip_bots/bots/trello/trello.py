@@ -1,5 +1,5 @@
 from typing import Any, List, Dict
-
+from zulip_bots.lib import BotHandler
 import requests
 
 supported_commands = [
@@ -15,7 +15,7 @@ INVALID_ARGUMENTS_ERROR_MESSAGE = 'Invalid Arguments.'
 RESPONSE_ERROR_MESSAGE = 'Invalid Response. Please check configuration and parameters.'
 
 class TrelloHandler:
-    def initialize(self, bot_handler: Any) -> None:
+    def initialize(self, bot_handler: BotHandler) -> None:
         self.config_info = bot_handler.get_config_info('trello')
         self.api_key = self.config_info['api_key']
         self.access_token = self.config_info['access_token']
@@ -28,7 +28,7 @@ class TrelloHandler:
 
         self.check_access_token(bot_handler)
 
-    def check_access_token(self, bot_handler: Any) -> None:
+    def check_access_token(self, bot_handler: BotHandler) -> None:
         test_query_response = requests.get('https://api.trello.com/1/members/{}/'.format(self.user_name),
                                            params=self.auth_params)
 
@@ -42,7 +42,7 @@ class TrelloHandler:
         Use `list-commands` to get information about the supported commands.
         '''
 
-    def handle_message(self, message: Dict[str, Any], bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, Any], bot_handler: BotHandler) -> None:
         content = message['content'].strip().split()
 
         if content == []:

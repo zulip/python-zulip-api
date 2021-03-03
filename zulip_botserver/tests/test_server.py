@@ -1,6 +1,7 @@
 import mock
 import os
 from typing import Any, Dict
+from zulip_bots.lib import BotHandler
 import unittest
 from .server_test_lib import BotServerTestCase
 import json
@@ -14,7 +15,7 @@ from zulip_botserver.input_parameters import parse_args
 
 class BotServerTests(BotServerTestCase):
     class MockMessageHandler:
-        def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
+        def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
             assert message == {'key': "test message"}
 
     class MockLibModule:

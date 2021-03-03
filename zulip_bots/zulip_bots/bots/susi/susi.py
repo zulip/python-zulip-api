@@ -1,5 +1,6 @@
 import requests
-from typing import Any, Dict
+from typing import Dict
+from zulip_bots.lib import BotHandler
 
 class SusiHandler:
     '''
@@ -34,7 +35,7 @@ class SusiHandler:
     ```
         '''
 
-    def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
         msg = message['content']
         if msg == 'help' or msg == '':
             bot_handler.send_reply(message, self.usage())

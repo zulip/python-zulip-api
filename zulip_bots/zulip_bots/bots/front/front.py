@@ -1,6 +1,7 @@
 import requests
 import re
 from typing import Any, Dict
+from zulip_bots.lib import BotHandler
 
 class FrontHandler:
     FRONT_API = "https://api2.frontapp.com/conversations/{}"
@@ -20,7 +21,7 @@ class FrontHandler:
             Front Bot, `front.conf` must be set up. See `doc.md` for more details.
             '''
 
-    def initialize(self, bot_handler: Any) -> None:
+    def initialize(self, bot_handler: BotHandler) -> None:
         config = bot_handler.get_config_info('front')
         api_key = config.get('api_key')
         if not api_key:
@@ -28,14 +29,14 @@ class FrontHandler:
 
         self.auth = "Bearer " + api_key
 
-    def help(self, bot_handler: Any) -> str:
+    def help(self, bot_handler: BotHandler) -> str:
         response = ""
         for command, description in self.COMMANDS:
             response += "`{}` {}\n".format(command, description)
 
         return response
 
-    def archive(self, bot_handler: Any) -> str:
+    def archive(self, bot_handler: BotHandler) -> str:
         response = requests.patch(self.FRONT_API.format(self.conversation_id),
                                   headers={"Authorization": self.auth},
                                   json={"status": "archived"})
@@ -45,7 +46,7 @@ class FrontHandler:
 
         return "Conversation was archived."
 
-    def delete(self, bot_handler: Any) -> str:
+    def delete(self, bot_handler: BotHandler) -> str:
         response = requests.patch(self.FRONT_API.format(self.conversation_id),
                                   headers={"Authorization": self.auth},
                                   json={"status": "deleted"})
@@ -55,7 +56,7 @@ class FrontHandler:
 
         return "Conversation was deleted."
 
-    def spam(self, bot_handler: Any) -> str:
+    def spam(self, bot_handler: BotHandler) -> str:
         response = requests.patch(self.FRONT_API.format(self.conversation_id),
                                   headers={"Authorization": self.auth},
                                   json={"status": "spam"})
@@ -65,7 +66,7 @@ class FrontHandler:
 
         return "Conversation was marked as spam."
 
-    def restore(self, bot_handler: Any) -> str:
+    def restore(self, bot_handler: BotHandler) -> str:
         response = requests.patch(self.FRONT_API.format(self.conversation_id),
                                   headers={"Authorization": self.auth},
                                   json={"status": "open"})
@@ -75,7 +76,7 @@ class FrontHandler:
 
         return "Conversation was restored."
 
-    def comment(self, bot_handler: Any, **kwargs: Any) -> str:
+    def comment(self, bot_handler: BotHandler, **kwargs: Any) -> str:
         response = requests.post(self.FRONT_API.format(self.conversation_id) + "/comments",
                                  headers={"Authorization": self.auth}, json=kwargs)
 
@@ -84,7 +85,7 @@ class FrontHandler:
 
         return "Comment was sent."
 
-    def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
         command = message['content']
 
         result = re.search(self.CNV_ID_REGEXP, message['subject'])

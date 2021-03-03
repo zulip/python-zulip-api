@@ -3,6 +3,7 @@ import logging
 import re
 
 from typing import Any, Dict, Optional, List
+from zulip_bots.lib import BotHandler
 
 API_BASE_URL = "https://beta.idonethis.com/api/v2"
 
@@ -128,7 +129,7 @@ More information in my help""")
     return "Great work :thumbs_up:. New entry `{}` created!".format(data['body_formatted'])
 
 class IDoneThisHandler:
-    def initialize(self, bot_handler: Any) -> None:
+    def initialize(self, bot_handler: BotHandler) -> None:
         global api_key, default_team
         self.config_info = bot_handler.get_config_info('idonethis')
         if 'api_key' in self.config_info:
@@ -179,7 +180,7 @@ Below are some of the commands you can use, and what they do.
     new entry `something` for the product team.
         ''' + default_team_message
 
-    def handle_message(self, message: Dict[str, Any], bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, Any], bot_handler: BotHandler) -> None:
         bot_handler.send_reply(message, self.get_response(message))
 
     def get_response(self, message: Dict[str, Any]) -> str:

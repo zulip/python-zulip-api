@@ -1,6 +1,7 @@
 import logging
 import requests
 from typing import Any, Dict, List, Tuple, Optional
+from zulip_bots.lib import BotHandler
 from requests.exceptions import ConnectionError
 
 USERS_LIST_URL = 'https://api.flock.co/v1/roster.listContacts'
@@ -92,14 +93,14 @@ class FlockHandler:
     flock user without having to leave Zulip.
     '''
 
-    def initialize(self, bot_handler: Any) -> None:
+    def initialize(self, bot_handler: BotHandler) -> None:
         self.config_info = bot_handler.get_config_info('flock')
 
     def usage(self) -> str:
         return '''Hello from Flock Bot. You can send messages to any Flock user
 right from Zulip.'''
 
-    def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
         response = get_flock_bot_response(message['content'], self.config_info)
         bot_handler.send_reply(message, response)
 

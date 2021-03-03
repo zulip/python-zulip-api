@@ -1,6 +1,7 @@
 import requests
 import logging
-from typing import Optional, Any, Dict
+from typing import Dict
+from zulip_bots.lib import BotHandler
 
 # See readme.md for instructions on running this code.
 
@@ -29,11 +30,11 @@ class WikipediaHandler:
             should preface searches with "@mention-bot".
             @mention-bot <name of article>'''
 
-    def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
         bot_response = self.get_bot_wiki_response(message, bot_handler)
         bot_handler.send_reply(message, bot_response)
 
-    def get_bot_wiki_response(self, message: Dict[str, str], bot_handler: Any) -> Optional[str]:
+    def get_bot_wiki_response(self, message: Dict[str, str], bot_handler: BotHandler) -> str:
         '''This function returns the URLs of the requested topic.'''
 
         help_text = 'Please enter your search term after {}'

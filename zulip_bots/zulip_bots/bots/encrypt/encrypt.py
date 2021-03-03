@@ -1,4 +1,5 @@
-from typing import Any, Dict
+from typing import Dict
+from zulip_bots.lib import BotHandler
 
 def encrypt(text: str) -> str:
     # This is where the actual ROT13 is applied
@@ -30,7 +31,7 @@ class EncryptHandler:
             Feeding encrypted messages into the bot decrypts them.
             '''
 
-    def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
         bot_response = self.get_bot_encrypt_response(message)
         bot_handler.send_reply(message, bot_response)
 

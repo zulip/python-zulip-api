@@ -1,4 +1,5 @@
-from typing import Dict, Any, Union
+from typing import Dict, Union
+from zulip_bots.lib import BotHandler
 import requests
 import logging
 from requests.exceptions import HTTPError, ConnectionError
@@ -40,10 +41,10 @@ class GiphyHandler:
                                   'Follow the instructions in doc.md for setting an API key.')
             raise ConfigValidationError(error_message)
 
-    def initialize(self, bot_handler: Any) -> None:
+    def initialize(self, bot_handler: BotHandler) -> None:
         self.config_info = bot_handler.get_config_info('giphy')
 
-    def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
         bot_response = get_bot_giphy_response(
             message,
             bot_handler,
@@ -81,7 +82,7 @@ def get_url_gif_giphy(keyword: str, api_key: str) -> Union[int, str]:
     return gif_url
 
 
-def get_bot_giphy_response(message: Dict[str, str], bot_handler: Any, config_info: Dict[str, str]) -> str:
+def get_bot_giphy_response(message: Dict[str, str], bot_handler: BotHandler, config_info: Dict[str, str]) -> str:
     # Each exception has a specific reply should "gif_url" return a number.
     # The bot will post the appropriate message for the error.
     keyword = message['content']

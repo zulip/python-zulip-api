@@ -1,6 +1,7 @@
 # See readme.md for instructions on running this code.
 
-from typing import Dict, Any
+from typing import Dict
+from zulip_bots.lib import BotHandler
 
 class IncrementorHandler:
     META = {
@@ -16,13 +17,13 @@ class IncrementorHandler:
         is @-mentioned, this number will be incremented in the same message.
         '''
 
-    def initialize(self, bot_handler: Any) -> None:
+    def initialize(self, bot_handler: BotHandler) -> None:
         storage = bot_handler.storage
         if not storage.contains('number') or not storage.contains('message_id'):
             storage.put('number', 0)
             storage.put('message_id', None)
 
-    def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
         storage = bot_handler.storage
         num = storage.get('number')
 
@@ -33,7 +34,8 @@ class IncrementorHandler:
         storage.put('number', num)
         if storage.get('message_id') is None:
             result = bot_handler.send_reply(message, str(num))
-            storage.put('message_id', result['id'])
+            if result is not None:
+                storage.put('message_id', result['id'])
         else:
             bot_handler.update_message(dict(
                 message_id=storage.get('message_id'),

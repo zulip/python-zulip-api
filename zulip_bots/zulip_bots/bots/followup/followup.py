@@ -1,5 +1,6 @@
 # See readme.md for instructions on running this code.
-from typing import Dict, Any
+from typing import Dict
+from zulip_bots.lib import BotHandler
 
 class FollowupHandler:
     '''
@@ -23,11 +24,11 @@ class FollowupHandler:
             called "followup" that your API user can send to.
             '''
 
-    def initialize(self, bot_handler: Any) -> None:
+    def initialize(self, bot_handler: BotHandler) -> None:
         self.config_info = bot_handler.get_config_info('followup', optional=False)
         self.stream = self.config_info.get("stream", 'followup')
 
-    def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
         if message['content'] == '':
             bot_response = "Please specify the message you want to send to followup stream after @mention-bot"
             bot_handler.send_reply(message, bot_response)
