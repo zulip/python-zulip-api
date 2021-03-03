@@ -295,7 +295,7 @@ class ExternalBotHandler:
         sys.exit(message)
 
 
-def extract_query_without_mention(message: Dict[str, Any], client: ExternalBotHandler) -> Optional[str]:
+def extract_query_without_mention(message: Dict[str, Any], client: BotHandler) -> Optional[str]:
     """
     If the bot is the first @mention in the message, then this function returns
     the stripped message with the bot's @mention removed.  Otherwise, it returns None.
@@ -314,7 +314,7 @@ def extract_query_without_mention(message: Dict[str, Any], client: ExternalBotHa
     return None
 
 
-def is_private_message_but_not_group_pm(message_dict: Dict[str, Any], current_user: ExternalBotHandler) -> bool:
+def is_private_message_but_not_group_pm(message_dict: Dict[str, Any], current_user: BotHandler) -> bool:
     """
     Checks whether a message dict represents a PM from another user.
 
