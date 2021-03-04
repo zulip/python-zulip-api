@@ -621,8 +621,16 @@ class Client:
         if narrow is None:
             narrow = []
 
-        def do_register() -> Tuple[str, int]:
-            while True:
+        queue_id = None
+        # NOTE: Back off exponentially to cover against potential bugs in this
+        #       library causing a DoS attack against a server when getting errors
+        #       (explicit values listed for clarity)
+        backoff = RandomExponentialBackoff(maximum_retries=10,
+                                           timeout_success_equivalent=300,
+                                           delay_cap=90)
+        while backoff.keep_going():
+            # Ensure event queue exists (or continues to do so)
+            if queue_id is None:
                 if event_types is None:
                     res = self.register()
                 else:
@@ -631,18 +639,15 @@ class Client:
                 if 'error' in res['result']:
                     if self.verbose:
                         print("Server returned error:\n%s" % res['msg'])
-                    time.sleep(1)
+                    backoff.fail()
+                    continue
                 else:
-                    return (res['queue_id'], res['last_event_id'])
+                    backoff.succeed()
+                    queue_id, last_event_id = res['queue_id'], res['last_event_id']
 
-        queue_id = None
-        # Make long-polling requests with `get_events`. Once a request
-        # has received an answer, pass it to the callback and before
-        # making a new long-polling request.
-        while True:
-            if queue_id is None:
-                (queue_id, last_event_id) = do_register()
-
+            # Make long-polling requests with `get_events`. Once a request
+            # has received an answer, pass it to the callback and before
+            # making a new long-polling request.
             res = self.get_events(queue_id=queue_id, last_event_id=last_event_id)
             if 'error' in res['result']:
                 if res["result"] == "http-error":
@@ -669,12 +674,11 @@ class Client:
                         #
                         # Reset queue_id to register a new event queue.
                         queue_id = None
-                # Add a pause here to cover against potential bugs in this library
-                # causing a DoS attack against a server when getting errors.
-                # TODO: Make this back off exponentially.
-                time.sleep(1)
+
+                backoff.fail()
                 continue
 
+            backoff.succeed()
             for event in res['events']:
                 last_event_id = max(last_event_id, int(event['id']))
                 callback(event)
