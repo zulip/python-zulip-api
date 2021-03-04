@@ -64,7 +64,7 @@ def get_xkcd_bot_response(message: Dict[str, str], quoted_name: str) -> str:
 
     try:
         if command == 'help':
-            return commands_help % ('xkcd bot supports these commands:')
+            return commands_help % ('xkcd bot supports these commands:',)
         elif command == 'latest':
             fetched = fetch_xkcd_query(XkcdBotCommand.LATEST)
         elif command == 'random':
@@ -72,13 +72,13 @@ def get_xkcd_bot_response(message: Dict[str, str], quoted_name: str) -> str:
         elif command.isdigit():
             fetched = fetch_xkcd_query(XkcdBotCommand.COMIC_ID, command)
         else:
-            return commands_help % ("xkcd bot only supports these commands, not `%s`:" % (command,))
+            return commands_help % ("xkcd bot only supports these commands, not `%s`:" % (command,),)
     except (requests.exceptions.ConnectionError, XkcdServerError):
         logging.exception('Connection error occurred when trying to connect to xkcd server')
         return 'Sorry, I cannot process your request right now, please try again later!'
     except XkcdNotFoundError:
         logging.exception('XKCD server responded 404 when trying to fetch comic with id %s'
-                          % (command))
+                          % (command,))
         return 'Sorry, there is likely no xkcd comic strip with id: #%s' % (command,)
     else:
         return ("#%s: **%s**\n[%s](%s)" % (fetched['num'],
@@ -99,12 +99,12 @@ def fetch_xkcd_query(mode: int, comic_id: Optional[str] = None) -> Dict[str, str
 
             latest_id = latest.json()['num']
             random_id = random.randint(1, latest_id)
-            url = XKCD_TEMPLATE_URL % (str(random_id))
+            url = XKCD_TEMPLATE_URL % (str(random_id),)
 
         elif mode == XkcdBotCommand.COMIC_ID:  # Fetch specific comic strip by id number.
             if comic_id is None:
                 raise Exception('Missing comic_id argument')
-            url = XKCD_TEMPLATE_URL % (comic_id)
+            url = XKCD_TEMPLATE_URL % (comic_id,)
 
         fetched = requests.get(url)
 

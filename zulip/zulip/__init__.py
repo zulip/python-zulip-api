@@ -565,7 +565,7 @@ class Client:
                     continue
                 else:
                     end_error_retry(False)
-                    return {'msg': "Connection error:\n%s" % traceback.format_exc(),
+                    return {'msg': "Connection error:\n%s" % (traceback.format_exc(),),
                             "result": "connection-error"}
             except requests.exceptions.ConnectionError:
                 if not self.has_connected:
@@ -578,11 +578,11 @@ class Client:
                 if error_retry(""):
                     continue
                 end_error_retry(False)
-                return {'msg': "Connection error:\n%s" % traceback.format_exc(),
+                return {'msg': "Connection error:\n%s" % (traceback.format_exc(),),
                         "result": "connection-error"}
             except Exception:
                 # We'll split this out into more cases as we encounter new bugs.
-                return {'msg': "Unexpected error:\n%s" % traceback.format_exc(),
+                return {'msg': "Unexpected error:\n%s" % (traceback.format_exc(),),
                         "result": "unexpected-error"}
 
             try:
@@ -630,7 +630,7 @@ class Client:
 
                 if 'error' in res['result']:
                     if self.verbose:
-                        print("Server returned error:\n%s" % res['msg'])
+                        print("Server returned error:\n%s" % (res['msg'],))
                     time.sleep(1)
                 else:
                     return (res['queue_id'], res['last_event_id'])
@@ -653,7 +653,7 @@ class Client:
                         print("Connection error fetching events -- probably server is temporarily down?")
                 else:
                     if self.verbose:
-                        print("Server returned error:\n%s" % res["msg"])
+                        print("Server returned error:\n%s" % (res["msg"],))
                     # Eventually, we'll only want the
                     # BAD_EVENT_QUEUE_ID check, but we check for the
                     # old string to support legacy Zulip servers.  We

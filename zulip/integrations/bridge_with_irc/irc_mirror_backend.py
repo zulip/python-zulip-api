@@ -64,7 +64,7 @@ class IRCBot(irc.bot.SingleServerIRCBot):
                 in_the_specified_stream = msg["display_recipient"] == self.stream
                 at_the_specified_subject = msg["subject"].casefold() == self.topic.casefold()
                 if in_the_specified_stream and at_the_specified_subject:
-                    msg["content"] = ("@**%s**: " % msg["sender_full_name"]) + msg["content"]
+                    msg["content"] = ("@**%s**: " % (msg["sender_full_name"],)) + msg["content"]
                     send = lambda x: self.c.privmsg(self.channel, x)
                 else:
                     return

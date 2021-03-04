@@ -231,7 +231,7 @@ def handle_event(event: Dict[str, Any]) -> None:
                                    "subject": subject,
                                    "content": content})
         if res['result'] == 'success':
-            logging.info("Successfully sent Zulip with id: %s" % (res['id']))
+            logging.info("Successfully sent Zulip with id: %s" % (res['id'],))
         else:
             logging.warn("Failed to send Zulip: %s %s" % (res['result'], res['msg']))
 
@@ -251,7 +251,7 @@ def run_mirror() -> None:
         else:
             since = datetime.fromtimestamp(float(timestamp), tz=pytz.utc)
     except (ValueError, OSError) as e:
-        logging.warn("Could not open resume file: %s" % (str(e)))
+        logging.warn("Could not open resume file: %s" % (str(e),))
         since = default_since()
 
     try:

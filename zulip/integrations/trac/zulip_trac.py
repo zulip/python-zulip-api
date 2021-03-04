@@ -103,5 +103,5 @@ class ZulipPlugin(Component):
 
     def ticket_deleted(self, ticket: Any) -> None:
         """Called when a ticket is deleted."""
-        content = "%s was deleted." % markdown_ticket_url(ticket, heading="Ticket")
+        content = "%s was deleted." % (markdown_ticket_url(ticket, heading="Ticket"),)
         send_update(ticket, content)

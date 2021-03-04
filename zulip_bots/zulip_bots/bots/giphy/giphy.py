@@ -94,9 +94,9 @@ def get_bot_giphy_response(message: Dict[str, str], bot_handler: BotHandler, con
                 'let\'s try again later! :grin:')
     except GiphyNoResultException:
         return ('Sorry, I don\'t have a GIF for "%s"! '
-                ':astonished:' % (keyword))
+                ':astonished:' % (keyword,))
     return ('[Click to enlarge](%s)'
             '[](/static/images/interactive-bot/giphy/powered-by-giphy.png)'
-            % (gif_url))
+            % (gif_url,))
 
 handler_class = GiphyHandler
