@@ -2,5 +2,5 @@
 
 set -ev
 
-tools/lint --no-gitlint
+tools/lint --skip=gitlint
 tools/run-mypy
