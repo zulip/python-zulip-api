@@ -92,6 +92,6 @@ class TerminalBotHandler:
 
         config = configparser.ConfigParser()
         with open(self.bot_config_file) as conf:
-            config.readfp(conf)  # type: ignore # readfp->read_file in python 3, so not in stubs
+            config.read_file(conf)
 
         return dict(config.items(bot_name))
