@@ -1,12 +1,8 @@
 from unittest.mock import patch
-from unittest import skipIf
-
-from sys import version_info
 
 from importlib import import_module
 from zulip_bots.test_lib import BotTestCase, DefaultTests
 
-@skipIf(version_info[:2] < (3, 5), "monkeytestit requires python3.5+")
 class TestMonkeyTestitBot(BotTestCase, DefaultTests):
     bot_name = "monkeytestit"
 
