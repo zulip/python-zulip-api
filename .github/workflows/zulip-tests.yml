@@ -28,7 +28,7 @@ jobs:
       - name: Running Test-Suite
         run: |
           source zulip-api-py3-venv/bin/activate
-          tools/test-static-analysis
+          tools/lint --skip=gitlint
 
   test:
     runs-on: ubuntu-latest
