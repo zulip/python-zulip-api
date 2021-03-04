@@ -113,7 +113,7 @@ if __name__ == "__main__":
         zulip_client = zulip.init_from_options(args)
         try:
             log_files = json.loads(open(args.control_path).read())
-        except (json.JSONDecodeError, OSError):  # type: ignore # error: Cannot determine type of 'IOError'
+        except (json.JSONDecodeError, OSError):
             print("Could not load control data from %s" % (args.control_path,))
             traceback.print_exc()
             sys.exit(1)

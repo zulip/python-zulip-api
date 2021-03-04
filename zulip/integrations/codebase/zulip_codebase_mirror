@@ -58,7 +58,7 @@ def make_api_call(path: str) -> Optional[List[Dict[str, Any]]]:
                                        "Content-Type": "application/json",
                                        "Accept": "application/json"})
     if response.status_code == 200:
-        return json.loads(response.text)  # type: ignore  # dynamic import
+        return json.loads(response.text)
 
     if response.status_code >= 500:
         logging.error(str(response.status_code))

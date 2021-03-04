@@ -115,7 +115,7 @@ class BotServerTests(BotServerTestCase):
         # This works, but mypy still complains:
         # error: No overload variant of "assertRaisesRegexp" of "TestCase" matches argument types
         # [def (*args: builtins.object, **kwargs: builtins.object) -> builtins.SystemExit, builtins.str]
-        with self.assertRaisesRegexp(SystemExit,  # type: ignore
+        with self.assertRaisesRegexp(SystemExit,
                                      'Error: Bot "nonexistent-bot" doesn\'t exist. Please make '
                                      'sure you have set up the botserverrc file correctly.'):
             self.assert_bot_server_response(
@@ -228,13 +228,13 @@ class BotServerTests(BotServerTestCase):
         assert isinstance(module, ModuleType)
 
         # load invalid module name
-        with self.assertRaisesRegexp(SystemExit,  # type: ignore
+        with self.assertRaisesRegexp(SystemExit,
                                      'Error: Bot "botserver-test-case-random-bot" doesn\'t exist. '
                                      'Please make sure you have set up the botserverrc file correctly.'):
             module = server.load_lib_modules(['botserver-test-case-random-bot'])['botserver-test-case-random-bot']
 
         # load invalid file path
-        with self.assertRaisesRegexp(SystemExit,  # type: ignore
+        with self.assertRaisesRegexp(SystemExit,
                                      'Error: Bot "{}/zulip_bots/zulip_bots/bots/helloworld.py" doesn\'t exist. '
                                      'Please make sure you have set up the botserverrc file correctly.'.format(root_dir)):
             path = Path(root_dir, 'zulip_bots/zulip_bots/bots/{bot}.py'.format(bot='helloworld')).as_posix()

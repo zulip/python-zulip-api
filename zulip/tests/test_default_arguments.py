@@ -14,7 +14,7 @@ class TestDefaultArguments(TestCase):
 
     def test_invalid_arguments(self) -> None:
         parser = zulip.add_default_arguments(argparse.ArgumentParser(usage="lorem ipsum"))
-        with self.assertRaises(SystemExit) as cm:  # type: ignore # error: "assertRaises" doesn't match argument types
+        with self.assertRaises(SystemExit) as cm:
             with patch('sys.stderr', new=io.StringIO()) as mock_stderr:
                 parser.parse_args(['invalid argument'])
         self.assertEqual(cm.exception.code, 2)

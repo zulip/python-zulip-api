@@ -437,7 +437,7 @@ class Client:
         # Actually construct the session
         session = requests.Session()
         session.auth = requests.auth.HTTPBasicAuth(self.email, self.api_key)
-        session.verify = self.tls_verification  # type: ignore # https://github.com/python/typeshed/pull/1504
+        session.verify = self.tls_verification
         session.cert = client_cert
         session.headers.update({"User-agent": self.get_user_agent()})
         self.session = session
