@@ -83,7 +83,7 @@ def exit_gracefully_if_zulip_config_is_missing(config_file: Optional[str]) -> No
 
         sys.exit(1)
 
-def exit_gracefully_if_bot_config_file_does_not_exist(bot_config_file: str) -> None:
+def exit_gracefully_if_bot_config_file_does_not_exist(bot_config_file: Optional[str]) -> None:
     if bot_config_file is None:
         # This is a common case, just so succeed quietly. (Some
         # bots don't have third party configuration.)

@@ -293,8 +293,7 @@ def check_permissions() -> None:
         sys.stderr.write(str(e))
 
 if __name__ == "__main__":
-    if not isinstance(config.RESUME_FILE, str):
-        sys.stderr.write("RESUME_FILE path not given; refusing to continue")
+    assert isinstance(config.RESUME_FILE, str), "RESUME_FILE path not given; refusing to continue"
     check_permissions()
     if config.LOG_FILE:
         logging.basicConfig(filename=config.LOG_FILE, level=logging.WARNING)

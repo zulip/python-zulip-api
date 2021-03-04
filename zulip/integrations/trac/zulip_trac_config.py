@@ -1,5 +1,7 @@
 # See zulip_trac.py for installation and configuration instructions
 
+from typing import Optional
+
 # Change these constants to configure the plugin:
 ZULIP_USER = "trac-bot@example.com"
 ZULIP_API_KEY = "0123456789abcdef0123456789abcdef"
@@ -23,7 +25,7 @@ TRAC_NOTIFY_FIELDS = ["description", "summary", "resolution", "comment", "owner"
 
 ## If properly installed, the Zulip API should be in your import
 ## path, but if not, set a custom path below
-ZULIP_API_PATH = None
+ZULIP_API_PATH: Optional[str] = None
 
 # Set this to your Zulip API server URI
 ZULIP_SITE = "https://zulip.example.com"

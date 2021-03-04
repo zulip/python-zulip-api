@@ -12,7 +12,7 @@ ZULIP_IGNORE_MISSING_STREAM = False
 
 # Set this to point at a p4web installation to get changelist IDs as links
 # P4_WEB = "https://p4web.example.com"
-P4_WEB = None
+P4_WEB: Optional[str] = None
 
 # commit_notice_destination() lets you customize where commit notices
 # are sent to with the full power of a Python function.
@@ -45,4 +45,4 @@ def commit_notice_destination(path: Text, changelist: int) -> Optional[Dict[Text
 
 ## If properly installed, the Zulip API should be in your import
 ## path, but if not, set a custom path below
-ZULIP_API_PATH = None
+ZULIP_API_PATH: Optional[str] = None
