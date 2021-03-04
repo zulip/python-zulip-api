@@ -5,6 +5,7 @@ import logging
 import json
 import os
 import sys
+import importlib.abc
 import importlib.util
 
 from collections import OrderedDict
@@ -102,9 +103,8 @@ def load_module_from_file(file_path: str) -> ModuleType:
     # Wrapper around importutil; see https://stackoverflow.com/a/67692/3909240.
     spec = importlib.util.spec_from_file_location("custom_bot_module", file_path)
     lib_module = importlib.util.module_from_spec(spec)
-    assert spec is not None
-    assert spec.loader is not None
-    spec.loader.exec_module(lib_module)  # type: ignore  # FIXME: typeshed issue?
+    assert isinstance(spec.loader, importlib.abc.Loader)
+    spec.loader.exec_module(lib_module)
     return lib_module
 
 def load_lib_modules(available_bots: List[str]) -> Dict[str, Any]:

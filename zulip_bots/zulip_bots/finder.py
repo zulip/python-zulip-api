@@ -1,4 +1,5 @@
 import importlib
+import importlib.abc
 import importlib.util
 import os
 from typing import Any, Optional, Text, Tuple
@@ -10,9 +11,9 @@ def import_module_from_source(path: Text, name: Text) -> Any:
     spec = importlib.util.spec_from_file_location(name, path)
     module = importlib.util.module_from_spec(spec)
     loader = spec.loader
-    if loader is None:
+    if not isinstance(loader, importlib.abc.Loader):
         return None
-    loader.exec_module(module)  # type: ignore  # FIXME: typeshed issue?
+    loader.exec_module(module)
     return module
 
 def import_module_by_name(name: Text) -> Any:

@@ -3,6 +3,7 @@
 from typing import Dict, Any, Optional, Callable
 from zulip_bots.lib import BotHandler
 import wit
+import importlib.abc
 import importlib.util
 
 class WitaiHandler:
@@ -76,10 +77,10 @@ def get_handle(location: str) -> Optional[Callable[[Dict[str, Any]], Optional[st
         spec = importlib.util.spec_from_file_location('module.name', location)
         handler = importlib.util.module_from_spec(spec)
         loader = spec.loader
-        if loader is None:
+        if not isinstance(loader, importlib.abc.Loader):
             return None
-        loader.exec_module(handler)  # type: ignore  # FIXME: typeshed issue?
-        return handler.handle  # type: ignore
+        loader.exec_module(handler)
+        return getattr(handler, "handle")
     except Exception as e:
         print(e)
         return None
