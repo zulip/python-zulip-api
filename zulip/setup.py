@@ -58,6 +58,7 @@ package_info = dict(
             'zulip-send=zulip.send:main',
             'zulip-api-examples=zulip.api_examples:main',
             'zulip-matrix-bridge=integrations.bridge_with_matrix.matrix_bridge:main',
+            'zulip-api=zulip.cli:cli'
         ],
     },
     package_data={'zulip': ["py.typed"]},
