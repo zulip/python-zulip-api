@@ -19,11 +19,7 @@ jobs:
           python-version: 3.6
 
       - name: Install dependencies
-        run: |
-          sudo rm -vf /etc/apt/sources.list.d/*
-          sudo apt-get update
-          sudo apt-get install virtualenv
-          tools/provision --force
+        run: tools/provision --force
 
       - name: Running Test-Suite
         run: |
@@ -46,11 +42,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: |
-          sudo rm -vf /etc/apt/sources.list.d/*
-          sudo apt-get update
-          sudo apt-get install virtualenv
-          tools/provision --force
+        run: tools/provision --force
 
       - name: Running Test-Suite
         run: |
