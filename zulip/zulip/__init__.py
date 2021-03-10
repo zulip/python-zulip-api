@@ -1278,9 +1278,9 @@ class Client:
             }
         )
 
-    def list_subscriptions(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def get_subscriptions(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         '''
-            See examples/list-subscriptions for example usage.
+            See examples/get-subscriptions for example usage.
         '''
         return self.call_endpoint(
             url='users/me/subscriptions',

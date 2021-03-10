@@ -18,4 +18,4 @@ options = parser.parse_args()
 
 client = zulip.init_from_options(options)
 
-print(client.list_subscriptions())
+print(client.get_subscriptions())
