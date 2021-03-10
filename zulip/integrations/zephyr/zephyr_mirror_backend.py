@@ -481,7 +481,8 @@ def zephyr_load_session_autoretry(session_path: str) -> None:
     backoff = zulip.RandomExponentialBackoff()
     while backoff.keep_going():
         try:
-            session = open(session_path).read()
+            with open(session_path, "rb") as f:
+                session = f.read()
             zephyr._z.initialize()
             zephyr._z.load_session(session)
             zephyr.__inited = True
@@ -523,7 +524,8 @@ def zephyr_to_zulip(options: Any) -> None:
         if options.nagios_class:
             zephyr_subscribe_autoretry((options.nagios_class, "*", "*"))
         if options.use_sessions:
-            open(options.session_path, "w").write(zephyr._z.dump_session())
+            with open(options.session_path, "wb") as f:
+                f.write(zephyr._z.dump_session())
 
     if options.logs_to_resend is not None:
         with open(options.logs_to_resend) as log:
