@@ -275,7 +275,7 @@ def get_rooms(zulipToJabber: ZulipToJabberBot) -> List[str]:
     if options.mode == 'public':
         stream_infos = get_stream_infos("streams", zulipToJabber.client.get_streams)
     else:
-        stream_infos = get_stream_infos("subscriptions", zulipToJabber.client.list_subscriptions)
+        stream_infos = get_stream_infos("subscriptions", zulipToJabber.client.get_subscriptions)
 
     rooms = []  # type: List[str]
     for stream_info in stream_infos:

@@ -36,7 +36,7 @@ class IRCBot(irc.bot.SingleServerIRCBot):
         print("Listening now. Please send an IRC message to verify operation")
 
     def check_subscription_or_die(self) -> None:
-        resp = self.zulip_client.list_subscriptions()
+        resp = self.zulip_client.get_subscriptions()
         if resp["result"] != "success":
             print("ERROR: %s" % (resp["msg"],))
             exit(1)
