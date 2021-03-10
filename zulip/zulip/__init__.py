@@ -1288,6 +1288,11 @@ class Client:
             request=request,
         )
 
+    def list_subscriptions(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        logger.warning("list_subscriptions() is deprecated."
+                       " Please use get_subscriptions() instead.")
+        return self.get_subscriptions(request)
+
     def add_subscriptions(self, streams: Iterable[Dict[str, Any]], **kwargs: Any) -> Dict[str, Any]:
         '''
             See examples/subscribe for example usage.
