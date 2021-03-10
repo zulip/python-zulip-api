@@ -617,17 +617,17 @@ class Client:
         callback: Callable[[Dict[str, Any]], None],
         event_types: Optional[List[str]] = None,
         narrow: Optional[List[List[str]]] = None,
+        **kwargs: object,
     ) -> None:
         if narrow is None:
             narrow = []
 
         def do_register() -> Tuple[str, int]:
-            while True:
-                if event_types is None:
-                    res = self.register()
-                else:
-                    res = self.register(event_types=event_types, narrow=narrow)
+            if event_types is None:
+                narrow = None
 
+            while True:
+                res = self.register(event_types, narrow, **kwargs)
                 if 'error' in res['result']:
                     if self.verbose:
                         print("Server returned error:\n%s" % (res['msg'],))
@@ -679,11 +679,11 @@ class Client:
                 last_event_id = max(last_event_id, int(event['id']))
                 callback(event)
 
-    def call_on_each_message(self, callback: Callable[[Dict[str, Any]], None]) -> None:
+    def call_on_each_message(self, callback: Callable[[Dict[str, Any]], None], **kwargs: object) -> None:
         def event_callback(event: Dict[str, Any]) -> None:
             if event['type'] == 'message':
                 callback(event['message'])
-        self.call_on_each_event(event_callback, ['message'])
+        self.call_on_each_event(event_callback, ['message'], None, **kwargs)
 
     def get_messages(self, message_filters: Dict[str, Any]) -> Dict[str, Any]:
         '''
@@ -1029,7 +1029,7 @@ class Client:
         self,
         event_types: Optional[Iterable[str]] = None,
         narrow: Optional[List[List[str]]] = None,
-        **kwargs: Any
+        **kwargs: object
     ) -> Dict[str, Any]:
         '''
             Example usage:
