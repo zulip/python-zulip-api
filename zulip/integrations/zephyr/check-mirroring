@@ -9,7 +9,7 @@ import hashlib
 import zephyr
 import zulip
 
-from typing import Any, Dict, List, Set, Tuple
+from typing import Dict, List, Set, Tuple
 
 parser = optparse.OptionParser()
 parser.add_option('--verbose',
@@ -101,11 +101,11 @@ def send_zulip(message: Dict[str, str]) -> None:
 # Returns True if and only if we "Detected server failure" sending the zephyr.
 def send_zephyr(zwrite_args: List[str], content: str) -> bool:
     p = subprocess.Popen(zwrite_args, stdin=subprocess.PIPE,
-                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = p.communicate(input=content.encode("utf-8"))
+                         stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                         universal_newlines=True)
+    stdout, stderr = p.communicate(input=content)
     if p.returncode != 0:
-        # FIXME: This should really look for a byte form of the string in stdout
-        if "Detected server failure while receiving acknowledgement for" in stdout:  # type: ignore
+        if "Detected server failure while receiving acknowledgement for" in stdout:
             logger.warning("Got server failure error sending zephyr; retrying")
             logger.warning(stderr)
             return True
@@ -151,7 +151,7 @@ for tries in range(10):
             actually_subscribed = True
             break
     except OSError as e:
-        if "SERVNAK received" in e:  # type: ignore # https://github.com/python/mypy/issues/2118
+        if "SERVNAK received" in e.args:
             logger.error("SERVNAK repeatedly received, punting rest of test")
         else:
             logger.exception("Exception subscribing to zephyrs")
@@ -163,7 +163,7 @@ if not actually_subscribed:
 # Prepare keys
 zhkeys = {}  # type: Dict[str, Tuple[str, str]]
 hzkeys = {}  # type: Dict[str, Tuple[str, str]]
-def gen_key(key_dict: Dict[str, Any]) -> str:
+def gen_key(key_dict: Dict[str, Tuple[str, str]]) -> str:
     bits = str(random.getrandbits(32))
     while bits in key_dict:
         # Avoid the unlikely event that we get the same bits twice
