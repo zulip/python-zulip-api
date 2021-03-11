@@ -609,8 +609,8 @@ class Client:
             if v is not None:
                 marshalled_request[k] = v
         versioned_url = API_VERSTRING + (url if url is not None else "")
-        return self.do_api_query(marshalled_request, versioned_url, method=method,
-                                 longpolling=longpolling, files=files, timeout=timeout)
+        return json.dumps(self.do_api_query(marshalled_request, versioned_url, method=method,
+                                 longpolling=longpolling, files=files, timeout=timeout), sort_keys=True)
 
     def call_on_each_event(
         self,
