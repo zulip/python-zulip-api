@@ -23,8 +23,8 @@ OPERATIONS = {
     'unmute': 'remove'
 }
 
-print(client.mute_topic({
-    'op': OPERATIONS[options.op],
-    'stream': options.stream,
-    'topic': options.topic
-}))
+print(client.mute_topic(
+    op = OPERATIONS[options.op],
+    stream = options.stream,
+    topic = options.topic
+))

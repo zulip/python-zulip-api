@@ -266,6 +266,14 @@ def get_default_config_filename() -> Optional[str]:
                          "  mv ~/.humbugrc ~/.zuliprc\n")
     return config_file
 
+def deprecated_request(request: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+    if request is not None:
+        logger.warning(
+            "Passing parameters as a dictionary will be removed in future versions."
+        )
+        return request
+    return {}
+
 def validate_boolean_field(field: Optional[Text]) -> Union[bool, None]:
     if not isinstance(field, str):
         return None
@@ -1072,7 +1080,7 @@ class Client:
             timeout=timeout,
         )
 
-    def get_profile(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def get_profile(self, request: Optional[Dict[str, Any]] = None, **kwargs: Any) -> Dict[str, Any]:
         '''
             Example usage:
 
@@ -1082,7 +1090,7 @@ class Client:
         return self.call_endpoint(
             url='users/me',
             method='GET',
-            request=request,
+            request={**deprecated_request(request), **kwargs},
         )
 
     def get_user_presence(self, email: str) -> Dict[str, Any]:
@@ -1109,21 +1117,21 @@ class Client:
             method='GET',
         )
 
-    def update_presence(self, request: Dict[str, Any]) -> Dict[str, Any]:
+    def update_presence(self, request: Optional[Dict[str, Any]] = None, **kwargs: Any) -> Dict[str, Any]:
         '''
             Example usage:
 
-            >>> client.update_presence({
-                    status='active',
-                    ping_only=False,
-                    new_user_input=False,
-                })
+            >>> client.update_presence(
+                    status='active'
+                    ping_only=False
+                    new_user_input=False
+                )
                 {'result': 'success', 'server_timestamp': 1333649180.7073195, 'presences': {'iago@zulip.com': { ... }}, 'msg': ''}
         '''
         return self.call_endpoint(
             url='users/me/presence',
             method='POST',
-            request=request,
+            request={**deprecated_request(request), **kwargs},
         )
 
     def get_streams(self, **request: Any) -> Dict[str, Any]:
@@ -1228,22 +1236,22 @@ class Client:
             request=request
         )
 
-    def get_users(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def get_users(self, request: Optional[Dict[str, Any]] = None, **kwargs: Any) -> Dict[str, Any]:
         '''
             See examples/list-users for example usage.
         '''
         return self.call_endpoint(
             url='users',
             method='GET',
-            request=request,
+            request={**deprecated_request(request), **kwargs},
         )
 
-    def get_members(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def get_members(self, request: Optional[Dict[str, Any]] = None, **kwargs: Any) -> Dict[str, Any]:
         # This exists for backwards-compatibility; we renamed this
         # function get_users for consistency with the rest of the API.
         # Later, we may want to add a warning for clients using this
         # legacy name.
-        return self.get_users(request=request)
+        return self.get_users(request=request, **kwargs)
 
     def get_alert_words(self) -> Dict[str, Any]:
         '''
@@ -1278,20 +1286,20 @@ class Client:
             }
         )
 
-    def get_subscriptions(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def get_subscriptions(self, request: Optional[Dict[str, Any]] = None, **kwargs: Any) -> Dict[str, Any]:
         '''
             See examples/get-subscriptions for example usage.
         '''
         return self.call_endpoint(
             url='users/me/subscriptions',
             method='GET',
-            request=request,
+            request={**deprecated_request(request), **kwargs},
         )
 
-    def list_subscriptions(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def list_subscriptions(self, request: Optional[Dict[str, Any]] = None, **kwargs: Any) -> Dict[str, Any]:
         logger.warning("list_subscriptions() is deprecated."
                        " Please use get_subscriptions() instead.")
-        return self.get_subscriptions(request)
+        return self.get_subscriptions(request, **kwargs)
 
     def add_subscriptions(self, streams: Iterable[Dict[str, Any]], **kwargs: Any) -> Dict[str, Any]:
         '''
@@ -1334,14 +1342,14 @@ class Client:
             method='GET',
         )
 
-    def mute_topic(self, request: Dict[str, Any]) -> Dict[str, Any]:
+    def mute_topic(self, request: Optional[Dict[str, Any]] = None, **kwargs: Any) -> Dict[str, Any]:
         '''
             See examples/mute-topic for example usage.
         '''
         return self.call_endpoint(
             url='users/me/subscriptions/muted_topics',
             method='PATCH',
-            request=request
+            request={**deprecated_request(request), **kwargs},
         )
 
     def update_subscription_settings(self, subscription_data: List[Dict[str, Any]]) -> Dict[str, Any]:
@@ -1491,72 +1499,72 @@ class Client:
             request=request,
         )
 
-    def render_message(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def render_message(self, request: Optional[Dict[str, Any]] = None, **kwargs: Any) -> Dict[str, Any]:
         '''
             Example usage:
 
-            >>> client.render_message(request=dict(content='foo **bar**'))
+            >>> client.render_message(content='foo **bar**')
             {u'msg': u'', u'rendered': u'<p>foo <strong>bar</strong></p>', u'result': u'success'}
         '''
         return self.call_endpoint(
             url='messages/render',
             method='POST',
-            request=request,
+            request={**deprecated_request(request), **kwargs},
         )
 
-    def create_user(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def create_user(self, request: Optional[Dict[str, Any]] = None, **kwargs: Any) -> Dict[str, Any]:
         '''
             See examples/create-user for example usage.
         '''
         return self.call_endpoint(
             method='POST',
             url='users',
-            request=request,
+            request={**deprecated_request(request), **kwargs},
         )
 
-    def update_storage(self, request: Dict[str, Any]) -> Dict[str, Any]:
+    def update_storage(self, request: Optional[Dict[str, Any]] = None, **kwargs: Any) -> Dict[str, Any]:
         '''
             Example usage:
 
-            >>> client.update_storage({'storage': {"entry 1": "value 1", "entry 2": "value 2", "entry 3": "value 3"}})
-            >>> client.get_storage({'keys': ["entry 1", "entry 3"]})
+            >>> client.update_storage(storage = {"entry 1": "value 1", "entry 2": "value 2", "entry 3": "value 3"})
+            >>> client.get_storage(keys = ["entry 1", "entry 3"])
             {'result': 'success', 'storage': {'entry 1': 'value 1', 'entry 3': 'value 3'}, 'msg': ''}
         '''
         return self.call_endpoint(
             url='bot_storage',
             method='PUT',
-            request=request,
+            request={**deprecated_request(request), **kwargs},
         )
 
-    def get_storage(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def get_storage(self, request: Optional[Dict[str, Any]] = None, **kwargs: Any) -> Dict[str, Any]:
         '''
             Example usage:
 
-            >>> client.update_storage({'storage': {"entry 1": "value 1", "entry 2": "value 2", "entry 3": "value 3"}})
+            >>> client.update_storage(storage = {"entry 1": "value 1", "entry 2": "value 2", "entry 3": "value 3"})
             >>> client.get_storage()
             {'result': 'success', 'storage': {"entry 1": "value 1", "entry 2": "value 2", "entry 3": "value 3"}, 'msg': ''}
-            >>> client.get_storage({'keys': ["entry 1", "entry 3"]})
+            >>> client.get_storage(keys = ["entry 1", "entry 3"])
             {'result': 'success', 'storage': {'entry 1': 'value 1', 'entry 3': 'value 3'}, 'msg': ''}
         '''
         return self.call_endpoint(
             url='bot_storage',
             method='GET',
-            request=request,
+            request={**deprecated_request(request), **kwargs},
         )
 
-    def set_typing_status(self, request: Dict[str, Any]) -> Dict[str, Any]:
+    def set_typing_status(self, request: Optional[Dict[str, Any]] = None, **kwargs: Any) -> Dict[str, Any]:
         '''
             Example usage:
-            >>> client.set_typing_status({
-                'op': 'start',
-                'to': [9, 10],
-            })
+            >>> client.set_typing_status(
+                op = 'start'
+                to = [9, 10]
+            )
             {'result': 'success', 'msg': ''}
         '''
         return self.call_endpoint(
             url='typing',
             method='POST',
-            request=request
+            request={**deprecated_request(request), **kwargs}
         )
 
     def move_topic(
