@@ -62,3 +62,13 @@ jobs:
 
       - name: Codecov
         uses: codecov/codecov-action@v1.2.1
+
+      - name: Create coverage badge
+        uses: schneegans/dynamic-badges-action@v1.0.0
+        with:
+          auth: ${{ secrets.GIST_ZULIP_SECRET }}
+          gistID: 571ad3425f4395d6fed54854055ce654
+          filename: codecoverage.json
+          label: codecoverage
+          message: 14
+          color: orange
