@@ -53,7 +53,9 @@ jobs:
         run: |
           source zulip-api-py3-venv/bin/activate
           tools/test-main
-          coverage report
+          set -x	
+          TOTAL=`coverage report | grep TOTAL | grep -Eo '[0-9]+\.?[0-9]+%'`
+          echo $TOTAL
 
       - if: runner.os == 'Windows'
         name: Running Test-Suite on Windows
@@ -69,7 +71,7 @@ jobs:
         with:
           auth: ${{ secrets.GIST_ZULIP_SECRET }}
           gistID: 571ad3425f4395d6fed54854055ce654
-          filename: codecoverage.json
-          label: codecoverage
-          message: 14
-          color: orange
+          filename: test.json
+          label: code coverage
+          message: ${{ env.TOTAL }}
+          color: green
