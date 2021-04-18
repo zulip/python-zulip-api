@@ -465,7 +465,7 @@ class Client:
         )
 
     def do_api_query(self, orig_request: Mapping[str, Any], url: str, method: str = "POST",
-                     longpolling: bool = False, files: Optional[List[IO[Any]]] = None, timeout: Optional[float] = None, 
+                     longpolling: bool = False, files: Optional[List[IO[Any]]] = None, timeout: Optional[float] = None,
                      accesswithAPI: bool = True) -> Dict[str, Any]:
         if files is None:
             files = []
@@ -527,7 +527,7 @@ class Client:
         if accesswithAPI:
             if not api_url.endswith(API_STRING):
                 api_url += API_STRING
-            api_url += "/" 
+            api_url += "/"
         else:
             if api_url.endswith(API_STRING):
                 api_url = api_url[:-len(API_STRING)]
@@ -608,7 +608,7 @@ class Client:
                     "status_code": res.status_code}
 
     def call_endpoint(self, url: Optional[str] = None, method: str = "POST", request: Optional[Dict[str, Any]] = None,
-                      longpolling: bool = False, files: Optional[List[IO[Any]]] = None, timeout: Optional[float] = None, 
+                      longpolling: bool = False, files: Optional[List[IO[Any]]] = None, timeout: Optional[float] = None,
                       accessVersionedAPI: bool = True) -> Dict[str, Any]:
         if request is None:
             request = dict()
@@ -621,7 +621,7 @@ class Client:
         if accessVersionedAPI:
             effective_url = API_VERSTRING + effective_url
             accesswithAPI = True
-        return self.do_api_query(marshalled_request, versioned_url, method=method,
+        return self.do_api_query(marshalled_request, effective_url, method=method,
                                  longpolling=longpolling, files=files, timeout=timeout, accesswithAPI = accesswithAPI)
 
     def call_on_each_event(
@@ -754,10 +754,9 @@ class Client:
         '''
             See examples/upload-file for example usage.
         '''
-        
         return self.call_endpoint(
             url='user_uploads',
-            method = 'GET', 
+            method = 'GET',
             accessVersionedAPI = False
         )
 
