@@ -623,11 +623,12 @@ class Client:
             narrow = []
 
         def do_register() -> Tuple[str, int]:
-            if event_types is None:
-                narrow = None
 
             while True:
-                res = self.register(event_types, narrow, **kwargs)
+                if event_types is None:
+                    res = self.register(None, None, **kwargs)
+                else:
+                    res = self.register(event_types, narrow, **kwargs)
                 if 'error' in res['result']:
                     if self.verbose:
                         print("Server returned error:\n%s" % (res['msg'],))
