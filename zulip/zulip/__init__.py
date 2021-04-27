@@ -900,15 +900,25 @@ class Client:
             method='DELETE',
         )
 
-    def get_realm_filters(self) -> Dict[str, Any]:
+    def get_realm_linkifiers(self) -> Dict[str, Any]:
         '''
             Example usage:
 
-            >>> client.get_realm_filters()
-            {'result': 'success', 'msg': '', 'filters': [['#(?P<id>[0-9]+)', 'https://github.com/zulip/zulip/issues/%(id)s', 1]]}
+            >>> client.get_realm_linkifiers()
+            {
+                'result': 'success',
+                'msg': '',
+                'linkifiers': [
+                    {
+                        'id': 1,
+                        'pattern': #(?P<id>[0-9]+)',
+                        'url_format': 'https://github.com/zulip/zulip/issues/%(id)s',
+                    },
+                ]
+            }
         '''
         return self.call_endpoint(
-            url='realm/filters',
+            url='realm/linkifiers',
             method='GET',
         )
 
