@@ -9,10 +9,12 @@
 
 # The rules can be found in /.gitlint
 
+repository="zulip/python-zulip-api"
+
 if [[ "
 $(git remote -v)
 " =~ '
-'([^[:space:]]*)[[:space:]]*(https://github\.com/|ssh://git@github\.com/|git@github\.com:)zulip/python-zulip-api(\.git|/)?\ \(fetch\)'
+'([^[:space:]]*)[[:space:]]*(https://github\.com/|ssh://git@github\.com/|git@github\.com:)"$repository"(\.git|/)?\ \(fetch\)'
 ' ]]; then
     range="${BASH_REMATCH[1]}/master..HEAD"
 else
