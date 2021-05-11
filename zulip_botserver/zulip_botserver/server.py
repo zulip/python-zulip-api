@@ -195,11 +195,11 @@ def handle_bot() -> str:
         # In that case, the message shall not be handled.
         message['content'] = lib.extract_query_without_mention(message=message, client=bot_handler)
         if message['content'] is None:
-            return json.dumps("")
+            return json.dumps(dict(response_not_required=True))
 
     if is_private_message or is_mentioned:
         message_handler.handle_message(message=message, bot_handler=bot_handler)
-    return json.dumps("")
+    return json.dumps(dict(response_not_required=True))
 
 
 def main() -> None:
