@@ -169,6 +169,7 @@ bots_config = {}  # type: Dict[str, Dict[str, str]]
 @app.route('/', methods=['POST'])
 def handle_bot() -> str:
     event = request.get_json(force=True)
+    assert event is not None
     for bot_name, config in bots_config.items():
         if config['email'] == event['bot_email']:
             bot = bot_name
