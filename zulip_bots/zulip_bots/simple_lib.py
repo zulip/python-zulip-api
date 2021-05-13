@@ -42,11 +42,18 @@ class SimpleMessageServer:
 class TerminalBotHandler:
     def __init__(self, bot_config_file):
         self.bot_config_file = bot_config_file
-        self.storage = SimpleStorage()
+        self._storage = SimpleStorage()
         self.message_server = SimpleMessageServer()
+
+    @property
+    def storage(self):
+        return self._storage
 
     def identity(self):
         return BotIdentity("bot name", "bot-email@domain")
+
+    def react(self, message, emoji_name):
+        raise NotImplementedError
 
     def send_message(self, message):
         if message['type'] == 'stream':
