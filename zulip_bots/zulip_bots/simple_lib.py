@@ -40,10 +40,10 @@ class SimpleMessageServer:
         return dict(result='success', msg='', uri='https://server/user_uploads/{}'.format(uuid4()))
 
 class TerminalBotHandler:
-    def __init__(self, bot_config_file):
+    def __init__(self, bot_config_file, message_server):
         self.bot_config_file = bot_config_file
         self._storage = SimpleStorage()
-        self.message_server = SimpleMessageServer()
+        self.message_server = message_server
 
     @property
     def storage(self):

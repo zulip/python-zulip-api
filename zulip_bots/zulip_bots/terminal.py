@@ -4,7 +4,7 @@ import sys
 import argparse
 
 from zulip_bots.finder import import_module_from_source, resolve_bot_path
-from zulip_bots.simple_lib import TerminalBotHandler
+from zulip_bots.simple_lib import SimpleMessageServer, TerminalBotHandler
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -49,7 +49,8 @@ def main():
         print("This module does not appear to have a bot handler_class specified.")
         sys.exit(1)
 
-    bot_handler = TerminalBotHandler(args.bot_config_file)
+    message_server = SimpleMessageServer()
+    bot_handler = TerminalBotHandler(args.bot_config_file, message_server)
     if hasattr(message_handler, 'initialize') and callable(message_handler.initialize):
         message_handler.initialize(bot_handler)
 
@@ -59,11 +60,12 @@ def main():
         while True:
             content = input('Enter your message: ')
 
-            message = dict(
+            message = message_server.send(dict(
                 content=content,
                 sender_email=sender_email,
                 display_recipient=sender_email,
-            )
+            ))
+
             message_handler.handle_message(
                 message=message,
                 bot_handler=bot_handler,
