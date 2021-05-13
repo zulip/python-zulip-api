@@ -53,7 +53,10 @@ class TerminalBotHandler:
         return BotIdentity("bot name", "bot-email@domain")
 
     def react(self, message, emoji_name):
-        raise NotImplementedError
+        print("""The bot reacts to message #{}: {}""".format(message["id"], emoji_name))
+        return self.message_server.add_reaction(dict(message_id=message['id'],
+                                                     emoji_name=emoji_name,
+                                                     reaction_type='unicode_emoji'))
 
     def send_message(self, message):
         if message['type'] == 'stream':
