@@ -67,6 +67,21 @@ class RateLimit:
         logging.error(self.error_message)
         sys.exit(1)
 
+class BotIdentity:
+    def __init__(self, name: str, email: str) -> None:
+        self.name = name
+        self.email = email
+        self.mention = '@**' + name + '**'
+
+class BotStorage(Protocol):
+    def put(self, key: Text, value: Any) -> None:
+        ...
+
+    def get(self, key: Text) -> Any:
+        ...
+
+    def contains(self, key: Text) -> bool:
+        ...
 
 class StateHandler:
     def __init__(self, client: Client) -> None:
@@ -96,21 +111,6 @@ class StateHandler:
     def contains(self, key: Text) -> bool:
         return key in self.state_
 
-class BotIdentity:
-    def __init__(self, name: str, email: str) -> None:
-        self.name = name
-        self.email = email
-        self.mention = '@**' + name + '**'
-
-class BotStorage(Protocol):
-    def put(self, key: Text, value: Any) -> None:
-        ...
-
-    def get(self, key: Text) -> Any:
-        ...
-
-    def contains(self, key: Text) -> bool:
-        ...
 
 class BotHandler(Protocol):
 
