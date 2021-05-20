@@ -3,7 +3,7 @@
 import sys
 from typing import Any, Dict, Optional
 
-ZULIP_BOTSERVER_VERSION = "0.7.1"
+ZULIP_BOTSERVER_VERSION = "0.8.0"
 
 with open("README.md") as fh:
     long_description = fh.read()
