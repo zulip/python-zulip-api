@@ -5,7 +5,7 @@ import sys
 import os
 import argparse
 import traceback
-import multiprocessing as mp
+import threading
 import zulip
 import slack_sdk
 from slack_sdk.rtm import RTMClient
@@ -123,8 +123,8 @@ if __name__ == "__main__":
         try:
             sb = SlackBridge(config)
 
-            zp = mp.Process(target=sb.zulip_client.call_on_each_message, args=(sb.zulip_to_slack(),))
-            sp = mp.Process(target=sb.run_slack_listener, args=())
+            zp = threading.Thread(target=sb.zulip_client.call_on_each_message, args=(sb.zulip_to_slack(),))
+            sp = threading.Thread(target=sb.run_slack_listener, args=())
             print("Starting message handler on Zulip client")
             zp.start()
             print("Starting message handler on Slack client")
