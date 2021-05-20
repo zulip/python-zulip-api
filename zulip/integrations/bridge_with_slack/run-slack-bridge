@@ -7,7 +7,8 @@ import argparse
 import traceback
 import multiprocessing as mp
 import zulip
-import slack
+import slack_sdk
+from slack_sdk.rtm import RTMClient
 from typing import Any, Dict, Callable
 
 import bridge_with_slack_config
@@ -44,10 +45,10 @@ class SlackBridge:
 
         # slack-specific
         self.channel = self.slack_config["channel"]
-        self.slack_client = slack.RTMClient(token=self.slack_config["token"], auto_reconnect=True)
+        self.slack_client = RTMClient(token=self.slack_config["token"], auto_reconnect=True)
         # Spawn a non-websocket client for getting the users
         # list and for posting messages in Slack.
-        self.slack_webclient = slack.WebClient(token=self.slack_config["token"])
+        self.slack_webclient = slack_sdk.WebClient(token=self.slack_config["token"])
 
     def wrap_slack_mention_with_bracket(self, zulip_msg: Dict[str, Any]) -> None:
         words = zulip_msg["content"].split(' ')
@@ -81,7 +82,7 @@ class SlackBridge:
         self.slack_id_to_name = {u["id"]: u["profile"].get("display_name", u["profile"]["real_name"]) for u in members}
         self.slack_name_to_id = {v: k for k, v in self.slack_id_to_name.items()}
 
-        @slack.RTMClient.run_on(event='message')
+        @RTMClient.run_on(event='message')
         def slack_to_zulip(**payload: Any) -> None:
             msg = payload['data']
             if msg['channel'] != self.channel:
