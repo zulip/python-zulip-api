@@ -1,0 +1,4 @@
+[tool.isort]
+src_paths = ["tools", "zulip", "zulip_bots", "zulip_botserver"]
+profile = "black"
+line_length = 100
