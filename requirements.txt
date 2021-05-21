@@ -1,6 +1,7 @@
 crayons
 twine
 coverage>=4.4.1
+black
 isort
 flake8
 mock
