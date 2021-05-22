@@ -142,8 +142,7 @@ class TestDropboxBot(BotTestCase, DefaultTests):
             self.verify_reply('write foo boo', bot_response)
 
     def test_dbx_write_error(self):
-        bot_response = "Incorrect file path or file already exists.\n"\
-                       "Usage: `write <filename> CONTENT`"
+        bot_response = "Incorrect file path or file already exists.\nUsage: `write <filename> CONTENT`"
         with patch('dropbox.Dropbox.files_upload', side_effect=Exception()), \
                 self.mock_config_info(self.config_info):
             self.verify_reply('write foo boo', bot_response)
@@ -162,8 +161,7 @@ class TestDropboxBot(BotTestCase, DefaultTests):
             self.verify_reply('read foo', bot_response)
 
     def test_dbx_search(self):
-        bot_response = " - [foo](https://www.dropbox.com/home/foo)\n"\
-                       " - [fooboo](https://www.dropbox.com/home/fooboo)"
+        bot_response = " - [foo](https://www.dropbox.com/home/foo)\n - [fooboo](https://www.dropbox.com/home/fooboo)"
         with patch('dropbox.Dropbox.files_search', side_effect=search_files), \
                 self.mock_config_info(self.config_info):
             self.verify_reply('search foo', bot_response)
@@ -191,8 +189,7 @@ class TestDropboxBot(BotTestCase, DefaultTests):
             self.verify_reply('share boo', bot_response)
 
     def test_dbx_share_error(self):
-        bot_response = "Please provide a correct file name.\n"\
-                       "Usage: `share <filename>`"
+        bot_response = "Please provide a correct file name.\nUsage: `share <filename>`"
         with patch('dropbox.Dropbox.sharing_create_shared_link', side_effect=Exception()), \
                 self.mock_config_info(self.config_info):
             self.verify_reply('share boo', bot_response)

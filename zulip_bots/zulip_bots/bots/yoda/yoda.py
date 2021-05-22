@@ -103,8 +103,7 @@ class YodaSpeakHandler:
                 logging.error(reply_message)
 
             except ApiKeyError:
-                reply_message = 'Invalid Api Key. Did you follow the instructions in the ' \
-                                '`readme.md` file?'
+                reply_message = 'Invalid Api Key. Did you follow the instructions in the `readme.md` file?'
                 logging.error(reply_message)
 
             bot_handler.send_reply(message, reply_message)

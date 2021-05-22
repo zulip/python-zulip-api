@@ -124,8 +124,7 @@ class GameOfFifteenBotHandler(GameAdapter):
     def __init__(self) -> None:
         game_name = 'Game of Fifteen'
         bot_name = 'Game of Fifteen'
-        move_help_message = '* To make your move during a game, type\n' \
-                            '```move <tile1> <tile2> ...```'
+        move_help_message = '* To make your move during a game, type\n```move <tile1> <tile2> ...```'
         move_regex = r'move [\d{1}\s]+$'
         model = GameOfFifteenModel
         gameMessageHandler = GameOfFifteenMessageHandler

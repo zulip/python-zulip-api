@@ -41,8 +41,7 @@ def unknown_command():
 
     :return: A string containing info about available commands
     """
-    message = "Unknown command. Available commands: " \
-              "put (v,h), take (v,h), move (v,h) -> (v,h)"
+    message = "Unknown command. Available commands: put (v,h), take (v,h), move (v,h) -> (v,h)"
     raise BadMoveException(message)
 
 def beat(message, topic_name, merels_storage):

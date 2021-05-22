@@ -51,8 +51,7 @@ class GameHandlerBotHandler(GameAdapter):
     def __init__(self) -> None:
         game_name = 'foo test game'
         bot_name = 'game_handler_bot'
-        move_help_message = '* To make your move during a game, type\n' \
-                            '```move <column-number>```'
+        move_help_message = '* To make your move during a game, type\n```move <column-number>```'
         move_regex = r'move (\d)$'
         model = MockModel
         gameMessageHandler = GameHandlerBotMessageHandler

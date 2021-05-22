@@ -166,8 +166,7 @@ def dbx_write(client: Any, fn: str, content: str) -> str:
         result = client.files_upload(content.encode(), fn)
         msg = "Written to file: " + URL.format(name=result.name, path=result.path_lower)
     except Exception:
-        msg = "Incorrect file path or file already exists.\n"\
-              "Usage: `write <filename> CONTENT`"
+        msg = "Incorrect file path or file already exists.\nUsage: `write <filename> CONTENT`"
 
     return msg
 
@@ -178,8 +177,7 @@ def dbx_read(client: Any, fn: str) -> str:
         result = client.files_download(fn)
         msg = "**{}** :\n{}".format(result[0].name, result[1].text)
     except Exception:
-        msg = "Please provide a correct file path\n"\
-              "Usage: `read <filename>` to read content of a file"
+        msg = "Please provide a correct file path\nUsage: `read <filename>` to read content of a file"
 
     return msg
 
@@ -218,8 +216,7 @@ def dbx_share(client: Any, fn: str):
         result = client.sharing_create_shared_link(fn)
         msg = result.url
     except Exception:
-        msg = "Please provide a correct file name.\n"\
-              "Usage: `share <filename>`"
+        msg = "Please provide a correct file name.\nUsage: `share <filename>`"
 
     return msg
 

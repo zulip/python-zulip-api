@@ -42,7 +42,6 @@ class TestTwitpostBot(BotTestCase, DefaultTests):
     @patch('tweepy.API.update_status', return_value=api_response)
     def test_tweet(self, mockedarg):
         test_message = 'tweet Maybe he\'ll finally find his keys. #peterfalk'
-        bot_response = 'Tweet Posted\n'\
-                       'https://twitter.com/jasoncosta/status/243145735212777472'
+        bot_response = 'Tweet Posted\nhttps://twitter.com/jasoncosta/status/243145735212777472'
         with self.mock_config_info(self.mock_config):
             self.verify_reply(test_message, bot_response)
