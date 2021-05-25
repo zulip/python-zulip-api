@@ -53,12 +53,18 @@ class TerminalBotHandler:
         return BotIdentity("bot name", "bot-email@domain")
 
     def react(self, message, emoji_name):
+        """
+        Mock adding an emoji reaction and print it in the terminal.
+        """
         print("""The bot reacts to message #{}: {}""".format(message["id"], emoji_name))
         return self.message_server.add_reaction(dict(message_id=message['id'],
                                                      emoji_name=emoji_name,
                                                      reaction_type='unicode_emoji'))
 
     def send_message(self, message):
+        """
+        Print the message sent in the terminal and store it in a mock message server.
+        """
         if message['type'] == 'stream':
             print('''
                 stream: {} topic: {}
@@ -69,9 +75,14 @@ class TerminalBotHandler:
                 PM response:
                 {}
                 '''.format(message['content']))
+        # Note that message_server is only responsible for storing and assigning an
+        # id to the message instead of actually displaying it.
         return self.message_server.send(message)
 
     def send_reply(self, message, response):
+        """
+        Print the reply message in the terminal and store it in a mock message server.
+        """
         print("\nReply from the bot is printed between the dotted lines:\n-------\n{}\n-------".format(response))
         response_message = dict(
             content=response
@@ -79,6 +90,10 @@ class TerminalBotHandler:
         return self.message_server.send(response_message)
 
     def update_message(self, message):
+        """
+        Update a previously sent message and print the result in the terminal.
+        Throw an IndexError if the message id is invalid.
+        """
         self.message_server.update(message)
         print('''
             update to message #{}:
