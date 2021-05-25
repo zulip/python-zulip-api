@@ -13,7 +13,7 @@ from zulip_bots.request_test_lib import (
 
 from zulip_bots.simple_lib import (
     SimpleStorage,
-    SimpleMessageServer,
+    MockMessageServer,
 )
 
 from zulip_bots.test_file_utils import (
@@ -29,7 +29,7 @@ class StubBotHandler:
         self.full_name = 'test-bot'
         self.email = 'test-bot@example.com'
         self.user_id = 0
-        self.message_server = SimpleMessageServer()
+        self.message_server = MockMessageServer()
         self.reset_transcript()
 
     def reset_transcript(self) -> None:

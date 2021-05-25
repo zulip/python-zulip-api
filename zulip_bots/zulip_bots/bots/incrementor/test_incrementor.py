@@ -19,7 +19,7 @@ class TestIncrementorBot(BotTestCase, DefaultTests):
         bot.initialize(bot_handler)
         bot.handle_message(message, bot_handler)
 
-        with patch('zulip_bots.simple_lib.SimpleMessageServer.update') as m:
+        with patch('zulip_bots.simple_lib.MockMessageServer.update') as m:
             bot.handle_message(message, bot_handler)
             bot.handle_message(message, bot_handler)
             bot.handle_message(message, bot_handler)
@@ -41,7 +41,7 @@ class TestIncrementorBot(BotTestCase, DefaultTests):
 
         error_msg = dict(msg='The time limit for editing this message has passed', result='error')
         with patch('zulip_bots.test_lib.StubBotHandler.update_message', return_value=error_msg):
-            with patch('zulip_bots.simple_lib.SimpleMessageServer.send') as m:
+            with patch('zulip_bots.simple_lib.MockMessageServer.send') as m:
                 bot.handle_message(message, bot_handler)
                 bot.handle_message(message, bot_handler)
 

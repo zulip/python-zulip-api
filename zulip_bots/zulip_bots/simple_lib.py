@@ -17,7 +17,7 @@ class SimpleStorage:
     def get(self, key):
         return self.data[key]
 
-class SimpleMessageServer:
+class MockMessageServer:
     # This class is needed for the incrementor bot, which
     # actually updates messages!
     def __init__(self):
