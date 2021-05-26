@@ -164,7 +164,7 @@ def use_storage(storage: BotStorage, keys: List[Text]) -> Iterator[BotStorage]:
     # calling flush or getting some values that are not previously fetched.
     data = {key: storage.get(key) for key in keys}
     cache = CachedStorage(storage, data)
-    yield storage
+    yield cache
     cache.flush()
 
 class BotHandler(Protocol):
