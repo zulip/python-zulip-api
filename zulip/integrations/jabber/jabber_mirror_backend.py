@@ -65,7 +65,7 @@ def jid_to_zulip(jid: JID) -> str:
     suffix = ""
     if not jid.username.endswith("-bot"):
         suffix = options.zulip_email_suffix
-    return "%s%s@%s" % (jid.username, suffix, options.zulip_domain)
+    return f"{jid.username}{suffix}@{options.zulip_domain}"
 
 
 def zulip_to_jid(email: str, jabber_domain: str) -> JID:
@@ -274,7 +274,7 @@ def get_rooms(zulipToJabber: ZulipToJabberBot) -> List[str]:
         ret = method()
         if ret.get("result") != "success":
             logging.error(str(ret))
-            sys.exit("Could not get initial list of Zulip %s" % (key,))
+            sys.exit(f"Could not get initial list of Zulip {key}")
         return ret[key]
 
     if options.mode == "public":
@@ -291,7 +291,7 @@ def get_rooms(zulipToJabber: ZulipToJabberBot) -> List[str]:
 
 
 def config_error(msg: str) -> None:
-    sys.stderr.write("%s\n" % (msg,))
+    sys.stderr.write(f"{msg}\n")
     sys.exit(2)
 
 
@@ -442,10 +442,10 @@ option does not affect login credentials.""".replace(
     try:
         jid = JID(options.jid)
     except InvalidJID as e:
-        config_error("Bad JID: %s: %s" % (options.jid, e.message))
+        config_error(f"Bad JID: {options.jid}: {e.message}")
 
     if options.conference_domain is None:
-        options.conference_domain = "conference.%s" % (jid.domain,)
+        options.conference_domain = f"conference.{jid.domain}"
 
     xmpp = JabberToZulipBot(jid, options.jabber_password, get_rooms(zulipToJabber))
 

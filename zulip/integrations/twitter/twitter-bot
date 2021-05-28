@@ -202,8 +202,8 @@ for status in statuses[::-1][: opts.limit_tweets]:
         continue  # Continue with the loop for the next tweet
 
     # https://twitter.com/eatevilpenguins/status/309995853408530432
-    composed = "%s (%s)" % (status.user.name, status.user.screen_name)
-    url = "https://twitter.com/%s/status/%s" % (status.user.screen_name, status.id)
+    composed = f"{status.user.name} ({status.user.screen_name})"
+    url = f"https://twitter.com/{status.user.screen_name}/status/{status.id}"
     # This contains all strings that could have caused the tweet to match our query.
     text_to_check = [status.text, status.user.screen_name]
     text_to_check.extend(url.expanded_url for url in status.urls)

@@ -78,9 +78,9 @@ class TestFrontBot(BotTestCase, DefaultTests):
     def _test_command_error(self, command_name: str, command_arg: Optional[str] = None) -> None:
         bot_command = command_name
         if command_arg:
-            bot_command += " {}".format(command_arg)
+            bot_command += f" {command_arg}"
         with self.mock_config_info({"api_key": "TEST"}):
-            with self.mock_http_conversation("{}_error".format(command_name)):
+            with self.mock_http_conversation(f"{command_name}_error"):
                 self.verify_reply(bot_command, "Something went wrong.")
 
 

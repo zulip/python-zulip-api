@@ -35,7 +35,7 @@ class FrontHandler:
     def help(self, bot_handler: BotHandler) -> str:
         response = ""
         for command, description in self.COMMANDS:
-            response += "`{}` {}\n".format(command, description)
+            response += f"`{command}` {description}\n"
 
         return response
 

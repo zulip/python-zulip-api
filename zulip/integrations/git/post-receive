@@ -41,14 +41,14 @@ def git_repository_name() -> str:
 
 
 def git_commit_range(oldrev: str, newrev: str) -> str:
-    log_cmd = ["git", "log", "--reverse", "--pretty=%aE %H %s", "%s..%s" % (oldrev, newrev)]
+    log_cmd = ["git", "log", "--reverse", "--pretty=%aE %H %s", f"{oldrev}..{newrev}"]
     commits = ""
     for ln in subprocess.check_output(log_cmd, universal_newlines=True).splitlines():
         author_email, commit_id, subject = ln.split(None, 2)
         if hasattr(config, "format_commit_message"):
             commits += config.format_commit_message(author_email, subject, commit_id)
         else:
-            commits += "!avatar(%s) %s\n" % (author_email, subject)
+            commits += f"!avatar({author_email}) {subject}\n"
     return commits
 
 
@@ -75,19 +75,19 @@ def send_bot_message(oldrev: str, newrev: str, refname: str) -> None:
         removed = git_commit_range(newrev, oldrev)
 
     if oldrev == "0000000000000000000000000000000000000000":
-        message = "`%s` was pushed to new branch `%s`" % (new_head, branch)
+        message = f"`{new_head}` was pushed to new branch `{branch}`"
     elif newrev == "0000000000000000000000000000000000000000":
-        message = "branch `%s` was removed (was `%s`)" % (branch, old_head)
+        message = f"branch `{branch}` was removed (was `{old_head}`)"
     elif removed:
-        message = "`%s` was pushed to `%s`, **REMOVING**:\n\n%s" % (new_head, branch, removed)
+        message = f"`{new_head}` was pushed to `{branch}`, **REMOVING**:\n\n{removed}"
         if added:
             message += "\n**and adding**:\n\n" + added
         message += "\n**A HISTORY REWRITE HAS OCCURRED!**"
         message += "\n@everyone: Please check your local branches to deal with this."
     elif added:
-        message = "`%s` was deployed to `%s` with:\n\n%s" % (new_head, branch, added)
+        message = f"`{new_head}` was deployed to `{branch}` with:\n\n{added}"
     else:
-        message = "`%s` was pushed to `%s`... but nothing changed?" % (new_head, branch)
+        message = f"`{new_head}` was pushed to `{branch}`... but nothing changed?"
 
     message_data = {
         "type": "stream",

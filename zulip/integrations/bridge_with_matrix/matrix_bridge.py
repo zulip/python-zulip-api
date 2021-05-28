@@ -77,7 +77,7 @@ def matrix_to_zulip(
         """
         content = get_message_content_from_event(event, no_noise)
 
-        zulip_bot_user = "@%s:matrix.org" % (matrix_config["username"],)
+        zulip_bot_user = "@{}:matrix.org".format(matrix_config["username"])
         # We do this to identify the messages generated from Zulip -> Matrix
         # and we make sure we don't forward it again to the Zulip stream.
         not_from_zulip_bot = event["sender"] != zulip_bot_user
@@ -228,9 +228,7 @@ def read_configuration(config_file: str) -> Dict[str, Dict[str, str]]:
 
 def write_sample_config(target_path: str, zuliprc: Optional[str]) -> None:
     if os.path.exists(target_path):
-        raise Bridge_ConfigException(
-            "Path '{}' exists; not overwriting existing file.".format(target_path)
-        )
+        raise Bridge_ConfigException(f"Path '{target_path}' exists; not overwriting existing file.")
 
     sample_dict = OrderedDict(
         (
@@ -262,7 +260,7 @@ def write_sample_config(target_path: str, zuliprc: Optional[str]) -> None:
 
     if zuliprc is not None:
         if not os.path.exists(zuliprc):
-            raise Bridge_ConfigException("Zuliprc file '{}' does not exist.".format(zuliprc))
+            raise Bridge_ConfigException(f"Zuliprc file '{zuliprc}' does not exist.")
 
         zuliprc_config = configparser.ConfigParser()
         try:
@@ -293,10 +291,10 @@ def main() -> None:
         try:
             write_sample_config(options.sample_config, options.zuliprc)
         except Bridge_ConfigException as exception:
-            print("Could not write sample config: {}".format(exception))
+            print(f"Could not write sample config: {exception}")
             sys.exit(1)
         if options.zuliprc is None:
-            print("Wrote sample configuration to '{}'".format(options.sample_config))
+            print(f"Wrote sample configuration to '{options.sample_config}'")
         else:
             print(
                 "Wrote sample configuration to '{}' using zuliprc file '{}'".format(
@@ -312,7 +310,7 @@ def main() -> None:
     try:
         config = read_configuration(options.config)
     except Bridge_ConfigException as exception:
-        print("Could not parse config file: {}".format(exception))
+        print(f"Could not parse config file: {exception}")
         sys.exit(1)
 
     # Get config for each client
@@ -347,11 +345,11 @@ def main() -> None:
             zulip_client.call_on_each_message(zulip_to_matrix(zulip_config, room))
 
         except Bridge_FatalMatrixException as exception:
-            sys.exit("Matrix bridge error: {}".format(exception))
+            sys.exit(f"Matrix bridge error: {exception}")
         except Bridge_ZulipFatalException as exception:
-            sys.exit("Zulip bridge error: {}".format(exception))
+            sys.exit(f"Zulip bridge error: {exception}")
         except zulip.ZulipError as exception:
-            sys.exit("Zulip error: {}".format(exception))
+            sys.exit(f"Zulip error: {exception}")
         except Exception:
             traceback.print_exc()
         backoff.fail()

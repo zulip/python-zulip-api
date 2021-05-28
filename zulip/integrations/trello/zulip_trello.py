@@ -25,7 +25,7 @@ def get_model_id(options):
 
     """
 
-    trello_api_url = "https://api.trello.com/1/board/{}".format(options.trello_board_id)
+    trello_api_url = f"https://api.trello.com/1/board/{options.trello_board_id}"
 
     params = {
         "key": options.trello_api_key,
@@ -88,7 +88,7 @@ def create_webhook(options):
     """
 
     # first, we need to get the idModel
-    print("Getting Trello idModel for the {} board...".format(options.trello_board_name))
+    print(f"Getting Trello idModel for the {options.trello_board_name} board...")
 
     id_model = get_model_id(options)
 

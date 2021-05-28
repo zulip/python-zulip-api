@@ -25,15 +25,15 @@ def compose(results: Dict) -> str:
 
     response = ""
 
-    response += "{}\n".format(print_status(results))
+    response += f"{print_status(results)}\n"
 
     if "success" in response.lower():
-        response += "{}".format(print_test_id(results))
+        response += f"{print_test_id(results)}"
         return response
 
-    response += "{}\n".format(print_enabled_checkers(results))
-    response += "{}\n".format(print_failures_checkers(results))
-    response += "{}".format(print_more_info_url(results))
+    response += f"{print_enabled_checkers(results)}\n"
+    response += f"{print_failures_checkers(results)}\n"
+    response += f"{print_more_info_url(results)}"
 
     return response
 
@@ -81,11 +81,11 @@ def print_failures_checkers(results: Dict) -> str:
     ]  # [('seo', 3), ..]
 
     failures_checkers_messages = [
-        "{} ({})".format(fail_checker[0], fail_checker[1]) for fail_checker in failures_checkers
+        f"{fail_checker[0]} ({fail_checker[1]})" for fail_checker in failures_checkers
     ]
 
     failures_checkers_message = ", ".join(failures_checkers_messages)
-    return "Failures from checkers: {}".format(failures_checkers_message)
+    return f"Failures from checkers: {failures_checkers_message}"
 
 
 def get_enabled_checkers(results: Dict) -> List:

@@ -98,7 +98,7 @@ def read_config_file(
         ignored_sections = parser.sections()[1:]
 
     if len(ignored_sections) > 0:
-        logging.warning("Sections except the '{}' will be ignored".format(bot_section))
+        logging.warning(f"Sections except the '{bot_section}' will be ignored")
 
     return bots_config
 
@@ -106,7 +106,7 @@ def read_config_file(
 def parse_config_file(config_file_path: str) -> configparser.ConfigParser:
     config_file_path = os.path.abspath(os.path.expanduser(config_file_path))
     if not os.path.isfile(config_file_path):
-        raise OSError("Could not read config file {}: File not found.".format(config_file_path))
+        raise OSError(f"Could not read config file {config_file_path}: File not found.")
     parser = configparser.ConfigParser()
     parser.read(config_file_path)
     return parser

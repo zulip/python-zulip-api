@@ -70,7 +70,7 @@ at syntax by: @mention-botname help"
                     r.status_code
                 )  # Occures in case of unprocessable entity
         else:
-            datapoint_link = "https://www.beeminder.com/{}/{}".format(username, goalname)
+            datapoint_link = f"https://www.beeminder.com/{username}/{goalname}"
             return "[Datapoint]({}) created.".format(
                 datapoint_link
             )  # Handles the case of successful datapoint creation

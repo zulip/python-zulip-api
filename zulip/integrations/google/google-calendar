@@ -174,9 +174,9 @@ def send_reminders() -> Optional[None]:
             key = (id, start)
             if key not in sent:
                 if start.hour == 0 and start.minute == 0:
-                    line = "%s is today." % (summary,)
+                    line = f"{summary} is today."
                 else:
-                    line = "%s starts at %s" % (summary, start.strftime("%H:%M"))
+                    line = "{} starts at {}".format(summary, start.strftime("%H:%M"))
                 print("Sending reminder:", line)
                 messages.append(line)
                 keys.add(key)

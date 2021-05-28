@@ -73,7 +73,7 @@ class BaremetricsHandler:
         if content == ["list-commands"]:
             response = "**Available Commands:** \n"
             for command, description in zip(self.commands, self.descriptions):
-                response += " - {} : {}\n".format(command, description)
+                response += f" - {command} : {description}\n"
 
             bot_handler.send_reply(message, response)
             return
@@ -148,7 +148,7 @@ class BaremetricsHandler:
         return response
 
     def get_plans(self, source_id: str) -> str:
-        url = "https://api.baremetrics.com/v1/{}/plans".format(source_id)
+        url = f"https://api.baremetrics.com/v1/{source_id}/plans"
         plans_response = requests.get(url, headers=self.auth_header)
 
         plans_data = plans_response.json()
@@ -174,7 +174,7 @@ class BaremetricsHandler:
         return "\n".join(response)
 
     def get_customers(self, source_id: str) -> str:
-        url = "https://api.baremetrics.com/v1/{}/customers".format(source_id)
+        url = f"https://api.baremetrics.com/v1/{source_id}/customers"
         customers_response = requests.get(url, headers=self.auth_header)
 
         customers_data = customers_response.json()
@@ -203,7 +203,7 @@ class BaremetricsHandler:
         return "\n".join(response)
 
     def get_subscriptions(self, source_id: str) -> str:
-        url = "https://api.baremetrics.com/v1/{}/subscriptions".format(source_id)
+        url = f"https://api.baremetrics.com/v1/{source_id}/subscriptions"
         subscriptions_response = requests.get(url, headers=self.auth_header)
 
         subscriptions_data = subscriptions_response.json()
@@ -250,7 +250,7 @@ class BaremetricsHandler:
             "interval_count": int(parameters[6]),
         }  # type: Any
 
-        url = "https://api.baremetrics.com/v1/{}/plans".format(parameters[0])
+        url = f"https://api.baremetrics.com/v1/{parameters[0]}/plans"
         create_plan_response = requests.post(url, data=data_header, headers=self.auth_header)
         if "error" not in create_plan_response.json():
             return "Plan Created."

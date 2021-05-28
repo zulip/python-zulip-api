@@ -197,5 +197,5 @@ def check_win(topic_name, merels_storage):
     win = mechanics.who_won(topic_name, merels_storage)
     if win != "None":
         merels.remove_game(topic_name)
-        return "{} wins the game!".format(win)
+        return f"{win} wins the game!"
     return ""

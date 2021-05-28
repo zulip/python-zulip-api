@@ -38,7 +38,7 @@ client = zulip.Client(
 
 
 def markdown_ticket_url(ticket: Any, heading: str = "ticket") -> str:
-    return "[%s #%s](%s/%s)" % (heading, ticket.id, config.TRAC_BASE_TICKET_URL, ticket.id)
+    return f"[{heading} #{ticket.id}]({config.TRAC_BASE_TICKET_URL}/{ticket.id})"
 
 
 def markdown_block(desc: str) -> str:
@@ -52,7 +52,7 @@ def truncate(string: str, length: int) -> str:
 
 
 def trac_subject(ticket: Any) -> str:
-    return truncate("#%s: %s" % (ticket.id, ticket.values.get("summary")), 60)
+    return truncate("#{}: {}".format(ticket.id, ticket.values.get("summary")), 60)
 
 
 def send_update(ticket: Any, content: str) -> None:
@@ -71,7 +71,7 @@ class ZulipPlugin(Component):
 
     def ticket_created(self, ticket: Any) -> None:
         """Called when a ticket is created."""
-        content = "%s created %s in component **%s**, priority **%s**:\n" % (
+        content = "{} created {} in component **{}**, priority **{}**:\n".format(
             ticket.values.get("reporter"),
             markdown_ticket_url(ticket),
             ticket.values.get("component"),
@@ -79,9 +79,9 @@ class ZulipPlugin(Component):
         )
         # Include the full subject if it will be truncated
         if len(ticket.values.get("summary")) > 60:
-            content += "**%s**\n" % (ticket.values.get("summary"),)
+            content += "**{}**\n".format(ticket.values.get("summary"))
         if ticket.values.get("description") != "":
-            content += "%s" % (markdown_block(ticket.values.get("description")),)
+            content += "{}".format(markdown_block(ticket.values.get("description")))
         send_update(ticket, content)
 
     def ticket_changed(
@@ -98,26 +98,26 @@ class ZulipPlugin(Component):
         ):
             return
 
-        content = "%s updated %s" % (author, markdown_ticket_url(ticket))
+        content = f"{author} updated {markdown_ticket_url(ticket)}"
         if comment:
-            content += " with comment: %s\n\n" % (markdown_block(comment),)
+            content += f" with comment: {markdown_block(comment)}\n\n"
         else:
             content += ":\n\n"
         field_changes = []
         for key, value in old_values.items():
             if key == "description":
-                content += "- Changed %s from %s\n\nto %s" % (
+                content += "- Changed {} from {}\n\nto {}".format(
                     key,
                     markdown_block(value),
                     markdown_block(ticket.values.get(key)),
                 )
             elif old_values.get(key) == "":
-                field_changes.append("%s: => **%s**" % (key, ticket.values.get(key)))
+                field_changes.append(f"{key}: => **{ticket.values.get(key)}**")
             elif ticket.values.get(key) == "":
-                field_changes.append('%s: **%s** => ""' % (key, old_values.get(key)))
+                field_changes.append(f'{key}: **{old_values.get(key)}** => ""')
             else:
                 field_changes.append(
-                    "%s: **%s** => **%s**" % (key, old_values.get(key), ticket.values.get(key))
+                    f"{key}: **{old_values.get(key)}** => **{ticket.values.get(key)}**"
                 )
         content += ", ".join(field_changes)
 
@@ -125,5 +125,5 @@ class ZulipPlugin(Component):
 
     def ticket_deleted(self, ticket: Any) -> None:
         """Called when a ticket is deleted."""
-        content = "%s was deleted." % (markdown_ticket_url(ticket, heading="Ticket"),)
+        content = "{} was deleted.".format(markdown_ticket_url(ticket, heading="Ticket"))
         send_update(ticket, content)

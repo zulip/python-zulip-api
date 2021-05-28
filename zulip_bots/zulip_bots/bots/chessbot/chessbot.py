@@ -376,7 +376,7 @@ def make_draw_response(reason: str) -> str:
 
     Returns: The draw response string.
     """
-    return "It's a draw because of {}!".format(reason)
+    return f"It's a draw because of {reason}!"
 
 
 def make_loss_response(board: chess.Board, reason: str) -> str:
@@ -525,7 +525,7 @@ def make_str(board: chess.Board, is_white_on_bottom: bool) -> str:
         replaced_and_guided_str if is_white_on_bottom else replaced_and_guided_str[::-1]
     )
     trimmed_str = trim_whitespace_before_newline(properly_flipped_str)
-    monospaced_str = "```\n{}\n```".format(trimmed_str)
+    monospaced_str = f"```\n{trimmed_str}\n```"
 
     return monospaced_str
 

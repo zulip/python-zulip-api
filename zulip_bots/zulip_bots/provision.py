@@ -21,7 +21,7 @@ def provision_bot(path_to_bot: str, force: bool) -> None:
     req_path = os.path.join(path_to_bot, "requirements.txt")
     if os.path.isfile(req_path):
         bot_name = os.path.basename(path_to_bot)
-        logging.info("Installing dependencies for {}...".format(bot_name))
+        logging.info(f"Installing dependencies for {bot_name}...")
 
         # pip install -r $BASEDIR/requirements.txt -t $BASEDIR/bot_dependencies --quiet
         rcode = subprocess.call(["pip", "install", "-r", req_path])

@@ -37,7 +37,7 @@ def commit_notice_destination(path: str, changelist: int) -> Optional[Dict[str, 
         directory = dirs[2]
 
     if directory not in ["evil-master-plan", "my-super-secret-repository"]:
-        return dict(stream="%s-commits" % (directory,), subject=path)
+        return dict(stream=f"{directory}-commits", subject=path)
 
     # Return None for cases where you don't want a notice sent
     return None

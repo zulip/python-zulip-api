@@ -42,8 +42,8 @@ class GithubHandler:
         status = details["state"].title()
 
         message_string = (
-            "**[{owner}/{repo}#{id}]".format(owner=owner, repo=repo, id=number),
-            "({link}) - {title}**\n".format(title=title, link=link),
+            f"**[{owner}/{repo}#{number}]",
+            f"({link}) - {title}**\n",
             "Created by **[{author}](https://github.com/{author})**\n".format(author=author),
             "Status - **{status}**\n```quote\n{description}\n```".format(
                 status=status, description=description

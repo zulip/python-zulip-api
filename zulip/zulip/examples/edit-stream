@@ -15,7 +15,7 @@ Example: edit-stream --stream-id=3 --history-public-to-subscribers
 
 
 def quote(string: str) -> str:
-    return '"{}"'.format(string)
+    return f'"{string}"'
 
 
 parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage))

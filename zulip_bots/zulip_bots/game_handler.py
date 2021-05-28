@@ -229,7 +229,7 @@ class GameAdapter:
 
             if sender not in self.user_cache.keys():
                 self.add_user_to_cache(message)
-                logging.info("Added {} to user cache".format(sender))
+                logging.info(f"Added {sender} to user cache")
 
             if self.is_single_player:
                 if content.lower().startswith("start game with") or content.lower().startswith(
@@ -300,7 +300,7 @@ class GameAdapter:
                     self.send_reply(message, self.help_message())
         except Exception as e:
             logging.exception(str(e))
-            self.bot_handler.send_reply(message, "Error {}.".format(e))
+            self.bot_handler.send_reply(message, f"Error {e}.")
 
     def is_user_in_game(self, user_email: str) -> str:
         for instance in self.instances.values():
@@ -344,7 +344,7 @@ class GameAdapter:
             self.send_reply(message, self.confirm_invitation_accepted(game_id))
         self.broadcast(
             game_id,
-            "@**{}** has accepted the invitation.".format(self.get_username_by_email(sender)),
+            f"@**{self.get_username_by_email(sender)}** has accepted the invitation.",
         )
         self.start_game_if_ready(game_id)
 
@@ -365,7 +365,7 @@ class GameAdapter:
             if len(users) + 1 > self.max_players:
                 self.send_reply(
                     message,
-                    "The maximum number of players for this game is {}.".format(self.max_players),
+                    f"The maximum number of players for this game is {self.max_players}.",
                 )
                 return
         game_id = self.generate_game_id()
@@ -411,7 +411,7 @@ class GameAdapter:
             self.broadcast(game_id, "Wait... That's me!", include_private=True)
             if message["type"] == "stream":
                 self.broadcast(
-                    game_id, "@**{}** accept".format(self.get_bot_username()), include_private=False
+                    game_id, f"@**{self.get_bot_username()}** accept", include_private=False
                 )
             game_id = self.set_invite_by_user(self.email, True, {"type": "stream"})
             self.start_game_if_ready(game_id)
@@ -427,7 +427,7 @@ class GameAdapter:
         self.send_reply(message, self.confirm_invitation_declined(game_id))
         self.broadcast(
             game_id,
-            "@**{}** has declined the invitation.".format(self.get_username_by_email(sender)),
+            f"@**{self.get_username_by_email(sender)}** has declined the invitation.",
         )
         if len(self.get_players(game_id, parameter="")) < self.min_players:
             self.cancel_game(game_id)
@@ -440,7 +440,7 @@ class GameAdapter:
         if game_id == "":
             self.send_reply(message, "You are not in a game. Type `help` for all commands.")
         sender_name = self.get_username_by_email(sender)
-        self.cancel_game(game_id, reason="**{}** quit.".format(sender_name))
+        self.cancel_game(game_id, reason=f"**{sender_name}** quit.")
 
     def command_join(self, message: Dict[str, Any], sender: str, content: str) -> None:
         if not self.is_user_not_player(sender, message):
@@ -472,7 +472,7 @@ class GameAdapter:
         else:
             self.send_reply(
                 message,
-                "Join {} more players to start the game".format(self.max_players - num_players),
+                f"Join {self.max_players - num_players} more players to start the game",
             )
 
     def command_leaderboard(self, message: Dict[str, Any], sender: str, content: str) -> None:
@@ -483,9 +483,9 @@ class GameAdapter:
         raw_headers = ["games_won", "games_drawn", "games_lost", "total_games"]
         headers = ["Player"] + [key.replace("_", " ").title() for key in raw_headers]
         response += " | ".join(headers)
-        response += "\n" + " | ".join([" --- " for header in headers])
+        response += "\n" + " | ".join(" --- " for header in headers)
         for player, stat in top_stats:
-            response += "\n **{}** | ".format(self.get_username_by_email(player))
+            response += f"\n **{self.get_username_by_email(player)}** | "
             values = [str(stat[key]) for key in raw_headers]
             response += " | ".join(values)
         self.send_reply(message, response)
@@ -536,7 +536,7 @@ class GameAdapter:
         self.instances[game_id] = GameInstance(self, False, subject, game_id, players, stream)
         self.broadcast(
             game_id,
-            "The game has started in #{} {}".format(stream, self.instances[game_id].subject)
+            f"The game has started in #{stream} {self.instances[game_id].subject}"
             + "\n"
             + self.get_formatted_game_object(game_id),
         )
@@ -564,7 +564,7 @@ class GameAdapter:
             return
         self.invites[game_id].update({user_email: "a"})
         self.broadcast(
-            game_id, "@**{}** has joined the game".format(self.get_username_by_email(user_email))
+            game_id, f"@**{self.get_username_by_email(user_email)}** has joined the game"
         )
         self.start_game_if_ready(game_id)
 
@@ -873,7 +873,7 @@ class GameInstance:
     def get_player_text(self) -> str:
         player_text = ""
         for player in self.players:
-            player_text += " @**{}**".format(self.gameAdapter.get_username_by_email(player))
+            player_text += f" @**{self.gameAdapter.get_username_by_email(player)}**"
         return player_text
 
     def get_start_message(self) -> str:
@@ -890,7 +890,7 @@ class GameInstance:
     def handle_message(self, content: str, player_email: str) -> None:
         if content == "forfeit":
             player_name = self.gameAdapter.get_username_by_email(player_email)
-            self.broadcast("**{}** forfeited!".format(player_name))
+            self.broadcast(f"**{player_name}** forfeited!")
             self.end_game("except:" + player_email)
             return
         if content == "draw":
@@ -1032,7 +1032,7 @@ class GameInstance:
             loser = winner.lstrip("except:")
         else:
             winner_name = self.gameAdapter.get_username_by_email(winner)
-            self.broadcast("**{}** won! :tada:".format(winner_name))
+            self.broadcast(f"**{winner_name}** won! :tada:")
         for u in self.players:
             values = {"total_games": 1, "games_won": 0, "games_lost": 0, "games_drawn": 0}
             if loser == "":

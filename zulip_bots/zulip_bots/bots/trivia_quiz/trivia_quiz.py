@@ -191,15 +191,13 @@ def format_quiz_for_markdown(quiz_id: str, quiz: Dict[str, Any]) -> str:
     question = quiz["question"]
     answers = quiz["answers"]
     answer_list = "\n".join(
-        [
-            "* **{letter}** {answer}".format(
-                letter=letter,
-                answer=answers[letter],
-            )
-            for letter in "ABCD"
-        ]
+        "* **{letter}** {answer}".format(
+            letter=letter,
+            answer=answers[letter],
+        )
+        for letter in "ABCD"
     )
-    how_to_respond = """**reply**: answer {quiz_id} <letter>""".format(quiz_id=quiz_id)
+    how_to_respond = f"""**reply**: answer {quiz_id} <letter>"""
 
     content = """
 Q: {question}

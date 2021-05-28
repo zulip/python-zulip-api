@@ -21,7 +21,7 @@ ZULIP_API_KEY = "0123456789abcdef0123456789abcdef"
 def commit_notice_destination(path: str, commit: str) -> Optional[Dict[str, str]]:
     repo = path.split("/")[-1]
     if repo not in ["evil-master-plan", "my-super-secret-repository"]:
-        return dict(stream="commits", subject="%s" % (repo,))
+        return dict(stream="commits", subject=f"{repo}")
 
     # Return None for cases where you don't want a notice sent
     return None

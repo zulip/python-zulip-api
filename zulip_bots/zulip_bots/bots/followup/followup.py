@@ -52,7 +52,7 @@ class FollowupHandler:
     def get_bot_followup_response(self, message: Dict[str, str]) -> str:
         original_content = message["content"]
         original_sender = message["sender_email"]
-        temp_content = "from %s: " % (original_sender,)
+        temp_content = f"from {original_sender}: "
         new_content = temp_content + original_content
 
         return new_content

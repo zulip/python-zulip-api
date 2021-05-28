@@ -38,4 +38,4 @@ response = client.upload_file(file)
 try:
     print("File URI: {}".format(response["uri"]))
 except KeyError:
-    print("Error! API response was: {}".format(response))
+    print(f"Error! API response was: {response}")

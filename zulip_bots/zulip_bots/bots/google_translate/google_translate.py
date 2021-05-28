@@ -107,12 +107,12 @@ def get_translate_bot_response(message_content, config_file, author, all_languag
             text_to_translate, config_file["key"], target_language, source_language
         )
     except requests.exceptions.ConnectionError as conn_err:
-        return "Could not connect to Google Translate. {}.".format(conn_err)
+        return f"Could not connect to Google Translate. {conn_err}."
     except TranslateError as tr_err:
-        return "Translate Error. {}.".format(tr_err)
+        return f"Translate Error. {tr_err}."
     except Exception as err:
-        return "Error. {}.".format(err)
-    return "{} (from {})".format(translated_text, author)
+        return f"Error. {err}."
+    return f"{translated_text} (from {author})"
 
 
 handler_class = GoogleTranslateHandler

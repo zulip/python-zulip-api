@@ -64,12 +64,12 @@ def api_list_team() -> List[Dict[str, str]]:
 
 
 def api_show_team(hash_id: str) -> Dict[str, str]:
-    return make_API_request("/teams/{}".format(hash_id))
+    return make_API_request(f"/teams/{hash_id}")
 
 
 # NOTE: This function is not currently used
 def api_show_users(hash_id: str) -> Any:
-    return make_API_request("/teams/{}/members".format(hash_id))
+    return make_API_request(f"/teams/{hash_id}/members")
 
 
 def api_list_entries(team_id: Optional[str] = None) -> List[Dict[str, Any]]:
@@ -105,7 +105,7 @@ def team_info(team_name: str) -> str:
 def entries_list(team_name: str) -> str:
     if team_name:
         data = api_list_entries(get_team_hash(team_name))
-        response = "Entries for {}:".format(team_name)
+        response = f"Entries for {team_name}:"
     else:
         data = api_list_entries()
         response = "Entries for all teams:"

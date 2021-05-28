@@ -63,7 +63,7 @@ def exit_gracefully_if_zulip_config_is_missing(config_file: Optional[str]) -> No
             # but we'll catch those later.
             return
         else:
-            error_msg = "ERROR: %s does not exist." % (config_file,)
+            error_msg = f"ERROR: {config_file} does not exist."
 
     else:
         if zulip_env_vars_are_present():

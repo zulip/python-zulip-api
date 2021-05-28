@@ -105,7 +105,7 @@ try:
     mkdir_p(opts.data_dir)
 except OSError:
     # We can't write to the logfile, so just print and give up.
-    print("Unable to store RSS data at %s." % (opts.data_dir,), file=sys.stderr)
+    print(f"Unable to store RSS data at {opts.data_dir}.", file=sys.stderr)
     exit(1)
 
 log_file = os.path.join(opts.data_dir, "rss-bot.log")  # type: str
@@ -170,7 +170,7 @@ def send_zulip(entry: Any, feed_name: str) -> Dict[str, Any]:
     if opts.unwrap:
         body = unwrap_text(body)
 
-    content = "**[%s](%s)**\n%s\n%s" % (
+    content = "**[{}]({})**\n{}\n{}".format(
         entry.title,
         entry.link,
         strip_tags(body),
@@ -194,7 +194,7 @@ try:
     with open(opts.feed_file) as f:
         feed_urls = [feed.strip() for feed in f.readlines()]  # type: List[str]
 except OSError:
-    log_error_and_exit("Unable to read feed file at %s." % (opts.feed_file,))
+    log_error_and_exit(f"Unable to read feed file at {opts.feed_file}.")
 
 client = zulip.Client(
     email=opts.zulip_email,
@@ -245,7 +245,7 @@ for feed_url in feed_urls:
 
         response = send_zulip(entry, feed_name)  # type: Dict[str, Any]
         if response["result"] != "success":
-            logger.error("Error processing %s" % (feed_url,))
+            logger.error(f"Error processing {feed_url}")
             logger.error(str(response))
             if first_message:
                 # This is probably some fundamental problem like the stream not
