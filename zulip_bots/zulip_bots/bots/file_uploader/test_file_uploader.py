@@ -1,11 +1,8 @@
+from pathlib import Path
 from unittest.mock import Mock, patch
 
-from zulip_bots.test_lib import (
-    BotTestCase,
-    DefaultTests,
-)
+from zulip_bots.test_lib import BotTestCase, DefaultTests
 
-from pathlib import Path
 
 class TestFileUploaderBot(BotTestCase, DefaultTests):
     bot_name = "file_uploader"

@@ -1,22 +1,21 @@
 #!/usr/bin/env python3
-import os
-import logging
-import signal
-import traceback
-import zulip
-import sys
 import argparse
-import re
 import configparser
-
+import logging
+import os
+import re
+import signal
+import sys
+import traceback
 from collections import OrderedDict
-
 from types import FrameType
 from typing import Any, Callable, Dict, Optional
 
-from matrix_client.errors import MatrixRequestError
 from matrix_client.client import MatrixClient
+from matrix_client.errors import MatrixRequestError
 from requests.exceptions import MissingSchema
+
+import zulip
 
 GENERAL_NETWORK_USERNAME_REGEX = '@_?[a-zA-Z0-9]+_([a-zA-Z0-9-_]+):[a-zA-Z0-9.]+'
 MATRIX_USERNAME_REGEX = '@([a-zA-Z0-9-_]+):matrix.org'

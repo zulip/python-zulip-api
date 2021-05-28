@@ -1,7 +1,4 @@
-from zulip_bots.test_lib import (
-    BotTestCase,
-    DefaultTests,
-)
+from zulip_bots.test_lib import BotTestCase, DefaultTests
 
 
 class TestFollowUpBot(BotTestCase, DefaultTests):

@@ -1,9 +1,10 @@
 # See readme.md for instructions on running this code.
 import logging
 import ssl
+from typing import Dict
+
 import requests
 
-from typing import Dict
 from zulip_bots.lib import BotHandler
 
 HELP_MESSAGE = '''

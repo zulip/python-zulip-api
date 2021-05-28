@@ -1,7 +1,8 @@
-from zulip_bots.bots.mention.mention import MentionHandler
 from unittest.mock import patch
-from zulip_bots.test_lib import BotTestCase, DefaultTests
-from zulip_bots.test_lib import StubBotHandler
+
+from zulip_bots.bots.mention.mention import MentionHandler
+from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler
+
 
 class TestMentionBot(BotTestCase, DefaultTests):
     bot_name = "mention"

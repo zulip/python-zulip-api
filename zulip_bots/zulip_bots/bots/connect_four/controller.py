@@ -1,5 +1,6 @@
 from copy import deepcopy
 from functools import reduce
+
 from zulip_bots.game_handler import BadMoveException
 
 

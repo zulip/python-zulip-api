@@ -2,15 +2,15 @@ import configparser
 import json
 import logging
 import os
+import re
 import signal
 import sys
 import time
-import re
-
-
 from contextlib import contextmanager
-from typing import Any, Iterator, Optional, List, Dict, IO, Set, Text
+from typing import IO, Any, Dict, Iterator, List, Optional, Set, Text
+
 from typing_extensions import Protocol
+
 from zulip import Client, ZulipError
 
 

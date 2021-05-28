@@ -8,11 +8,11 @@ import threading
 import traceback
 from typing import Any, Callable, Dict
 
+import bridge_with_slack_config
 import slack_sdk
-import zulip
 from slack_sdk.rtm import RTMClient
 
-import bridge_with_slack_config
+import zulip
 
 # change these templates to change the format of displayed message
 ZULIP_MESSAGE_TEMPLATE = "**{username}**: {message}"

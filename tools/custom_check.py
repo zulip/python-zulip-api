@@ -1,4 +1,5 @@
 from typing import List
+
 from zulint.custom_rules import RuleList
 
 MYPY = False

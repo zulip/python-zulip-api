@@ -1,27 +1,12 @@
 import unittest
+from typing import IO, Any, Dict, List, Optional, Tuple
 
-from typing import List, Dict, Any, Tuple, Optional, IO
-
-from zulip_bots.custom_exceptions import (
-    ConfigValidationError,
-)
-
-from zulip_bots.request_test_lib import (
-    mock_http_conversation,
-    mock_request_exception
-)
-
-from zulip_bots.simple_lib import (
-    SimpleStorage,
-    MockMessageServer,
-)
-
-from zulip_bots.test_file_utils import (
-    get_bot_message_handler,
-    read_bot_fixture_data,
-)
-
+from zulip_bots.custom_exceptions import ConfigValidationError
 from zulip_bots.lib import BotIdentity
+from zulip_bots.request_test_lib import mock_http_conversation, mock_request_exception
+from zulip_bots.simple_lib import MockMessageServer, SimpleStorage
+from zulip_bots.test_file_utils import get_bot_message_handler, read_bot_fixture_data
+
 
 class StubBotHandler:
     def __init__(self) -> None:

@@ -1,5 +1,5 @@
-from unittest import TestCase
 from pathlib import Path
+from unittest import TestCase
 
 from zulip_bots import finder
 

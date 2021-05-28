@@ -2,6 +2,7 @@ from typing import Any, Dict, Optional
 
 from zulip_bots.test_lib import BotTestCase, DefaultTests
 
+
 class TestFrontBot(BotTestCase, DefaultTests):
     bot_name = 'front'
 

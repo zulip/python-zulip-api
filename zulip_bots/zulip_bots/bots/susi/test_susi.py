@@ -1,7 +1,5 @@
-from zulip_bots.test_lib import (
-    BotTestCase,
-    DefaultTests,
-)
+from zulip_bots.test_lib import BotTestCase, DefaultTests
+
 
 class TestSusiBot(BotTestCase, DefaultTests):
     bot_name = "susi"

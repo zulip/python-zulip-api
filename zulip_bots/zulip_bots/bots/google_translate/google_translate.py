@@ -3,6 +3,7 @@
 
 import requests
 
+
 class GoogleTranslateHandler:
     '''
     This bot will translate any messages sent to it using google translate.

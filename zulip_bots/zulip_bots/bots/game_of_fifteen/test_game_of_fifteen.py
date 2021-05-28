@@ -1,8 +1,8 @@
-from zulip_bots.test_lib import BotTestCase, DefaultTests
+from typing import Dict, List, Tuple
 
 from zulip_bots.bots.game_of_fifteen.game_of_fifteen import GameOfFifteenModel
 from zulip_bots.game_handler import BadMoveException
-from typing import Dict, List, Tuple
+from zulip_bots.test_lib import BotTestCase, DefaultTests
 
 
 class TestGameOfFifteenBot(BotTestCase, DefaultTests):

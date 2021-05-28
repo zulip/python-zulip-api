@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 
-from typing import Any, Dict, Generator, List, Tuple
-
+import itertools
 import os
 import sys
-
-import itertools
+from typing import Any, Dict, Generator, List, Tuple
 
 with open("README.md") as fh:
     long_description = fh.read()
@@ -73,13 +71,14 @@ setuptools_info = dict(
 )
 
 try:
-    from setuptools import setup, find_packages
+    from setuptools import find_packages, setup
     package_info.update(setuptools_info)
     package_info['packages'] = find_packages(exclude=['tests'])
 
 except ImportError:
     from distutils.core import setup
     from distutils.version import LooseVersion
+
     # Manual dependency check
     try:
         import requests

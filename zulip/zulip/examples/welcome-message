@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
+from typing import Any, Dict, List
+
 import zulip
-from typing import Any, List, Dict
 
 welcome_text = 'Hello {}, Welcome to Zulip!\n \
 * The first thing you should do is to install the development environment. \

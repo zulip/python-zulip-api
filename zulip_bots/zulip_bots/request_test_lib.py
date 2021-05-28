@@ -1,10 +1,10 @@
 import json
-import requests
-
 from contextlib import contextmanager
+from typing import Any, Dict, List
 from unittest.mock import patch
 
-from typing import Any, Dict, List
+import requests
+
 
 @contextmanager
 def mock_http_conversation(http_data: Dict[str, Any]) -> Any:

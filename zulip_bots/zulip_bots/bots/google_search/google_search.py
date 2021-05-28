@@ -1,12 +1,12 @@
 # See readme.md for instructions on running this code.
 import logging
+from typing import Dict, List
 
 import requests
-
 from bs4 import BeautifulSoup
 
-from typing import Dict, List
 from zulip_bots.lib import BotHandler
+
 
 def google_search(keywords: str) -> List[Dict[str, str]]:
     query = {'q': keywords}

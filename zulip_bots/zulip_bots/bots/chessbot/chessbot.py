@@ -1,8 +1,10 @@
+import copy
+import re
+from typing import Any, Dict, Optional
+
 import chess
 import chess.uci
-import re
-import copy
-from typing import Any, Optional, Dict
+
 from zulip_bots.lib import BotHandler
 
 START_REGEX = re.compile('start with other user$')

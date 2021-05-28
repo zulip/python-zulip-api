@@ -1,21 +1,20 @@
 #!/usr/bin/env python3
 
-from typing import Any, Dict, IO, List, NoReturn, Optional, Set, Tuple, Union
-from types import FrameType
-
-import sys
+import hashlib
 import json
-import re
-import time
-import subprocess
+import logging
 import optparse
 import os
-import textwrap
-import signal
-import logging
-import hashlib
-import tempfile
+import re
 import select
+import signal
+import subprocess
+import sys
+import tempfile
+import textwrap
+import time
+from types import FrameType
+from typing import IO, Any, Dict, List, NoReturn, Optional, Set, Tuple, Union
 
 from typing_extensions import Literal, TypedDict
 

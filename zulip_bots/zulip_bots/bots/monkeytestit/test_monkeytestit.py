@@ -1,7 +1,8 @@
+from importlib import import_module
 from unittest.mock import patch
 
-from importlib import import_module
 from zulip_bots.test_lib import BotTestCase, DefaultTests
+
 
 class TestMonkeyTestitBot(BotTestCase, DefaultTests):
     bot_name = "monkeytestit"

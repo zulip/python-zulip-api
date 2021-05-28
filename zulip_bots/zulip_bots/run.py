@@ -1,19 +1,18 @@
 #!/usr/bin/env python3
 
-import logging
 import argparse
-import sys
+import logging
 import os
-
-from zulip_bots.lib import (
-    zulip_env_vars_are_present,
-    run_message_handler_for_bot,
-    NoBotConfigException,
-)
-from zulip_bots import finder
-from zulip_bots.provision import provision_bot
-
+import sys
 from typing import Optional
+
+from zulip_bots import finder
+from zulip_bots.lib import (
+    NoBotConfigException,
+    run_message_handler_for_bot,
+    zulip_env_vars_are_present,
+)
+from zulip_bots.provision import provision_bot
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 

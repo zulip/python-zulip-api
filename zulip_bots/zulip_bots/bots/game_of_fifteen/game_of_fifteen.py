@@ -1,7 +1,8 @@
 import copy
+from typing import Any, Dict, List, Tuple
 
-from typing import List, Any, Tuple, Dict
-from zulip_bots.game_handler import GameAdapter, BadMoveException
+from zulip_bots.game_handler import BadMoveException, GameAdapter
+
 
 class GameOfFifteenModel:
 

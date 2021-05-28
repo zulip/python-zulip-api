@@ -1,6 +1,7 @@
+from unittest.mock import patch
+
 from zulip_bots.test_lib import BotTestCase, DefaultTests
 
-from unittest.mock import patch
 
 class TestGoogleSearchBot(BotTestCase, DefaultTests):
     bot_name = 'google_search'

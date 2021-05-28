@@ -1,7 +1,9 @@
 import base64
 import re
-import requests
 from typing import Any, Dict, Optional
+
+import requests
+
 from zulip_bots.lib import BotHandler
 
 GET_REGEX = re.compile('get "(?P<issue_key>.+)"$')

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
+import argparse
 import os
 import sys
-import argparse
 
 from zulip_bots.finder import import_module_from_source, resolve_bot_path
 from zulip_bots.simple_lib import MockMessageServer, TerminalBotHandler

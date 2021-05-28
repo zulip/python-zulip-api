@@ -1,5 +1,6 @@
 from zulip_bots.test_lib import BotTestCase, DefaultTests
 
+
 class TestJiraBot(BotTestCase, DefaultTests):
     bot_name = 'jira'
 

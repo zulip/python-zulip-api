@@ -1,8 +1,8 @@
 import logging
 from typing import Dict
-from zulip_bots.lib import BotHandler
+
 from zulip_bots.bots.monkeytestit.lib import parse
-from zulip_bots.lib import NoBotConfigException
+from zulip_bots.lib import BotHandler, NoBotConfigException
 
 
 class MonkeyTestitBot:

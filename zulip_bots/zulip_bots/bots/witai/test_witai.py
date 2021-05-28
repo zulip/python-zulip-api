@@ -1,6 +1,8 @@
+from typing import Any, Dict, Optional
 from unittest.mock import patch
-from typing import Dict, Any, Optional
-from zulip_bots.test_lib import BotTestCase, DefaultTests, get_bot_message_handler, StubBotHandler
+
+from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler, get_bot_message_handler
+
 
 class TestWitaiBot(BotTestCase, DefaultTests):
     bot_name = 'witai'

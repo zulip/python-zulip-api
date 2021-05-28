@@ -1,8 +1,9 @@
 
-from libraries import database
-from libraries import game_data
+from libraries import database, game_data
+
 from zulip_bots.simple_lib import SimpleStorage
 from zulip_bots.test_lib import BotTestCase, DefaultTests
+
 
 class DatabaseTest(BotTestCase, DefaultTests):
     bot_name = 'merels'

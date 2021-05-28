@@ -1,14 +1,15 @@
+import io
 from unittest import TestCase
-from unittest.mock import MagicMock, patch, ANY, create_autospec
+from unittest.mock import ANY, MagicMock, create_autospec, patch
+
 from zulip_bots.lib import (
     ExternalBotHandler,
     StateHandler,
-    run_message_handler_for_bot,
     extract_query_without_mention,
-    is_private_message_but_not_group_pm
+    is_private_message_but_not_group_pm,
+    run_message_handler_for_bot,
 )
 
-import io
 
 class FakeClient:
     def __init__(self, *args, **kwargs):

@@ -1,9 +1,7 @@
 import unittest
 
-from libraries import database
-from libraries import game_data
-from libraries import interface
-from libraries import mechanics
+from libraries import database, game_data, interface, mechanics
+
 from zulip_bots.simple_lib import SimpleStorage
 
 

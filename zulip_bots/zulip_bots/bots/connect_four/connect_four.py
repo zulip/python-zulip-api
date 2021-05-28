@@ -1,6 +1,7 @@
-from zulip_bots.game_handler import GameAdapter
-from zulip_bots.bots.connect_four.controller import ConnectFourModel
 from typing import Any
+
+from zulip_bots.bots.connect_four.controller import ConnectFourModel
+from zulip_bots.game_handler import GameAdapter
 
 
 class ConnectFourMessageHandler:

@@ -5,10 +5,13 @@
 # This hook is called when changesets are pushed to the master repository (ie
 # `hg push`). See https://zulip.com/integrations for installation instructions.
 
-import zulip
 import sys
 from typing import Text
-from mercurial import ui, repository as repo
+
+from mercurial import repository as repo
+from mercurial import ui
+
+import zulip
 
 VERSION = "0.9"
 

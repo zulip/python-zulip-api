@@ -5,8 +5,7 @@ for extract.py
 from json.decoder import JSONDecodeError
 from typing import Text
 
-from zulip_bots.bots.monkeytestit.lib import extract
-from zulip_bots.bots.monkeytestit.lib import report
+from zulip_bots.bots.monkeytestit.lib import extract, report
 
 
 def execute(message: Text, apikey: Text) -> Text:

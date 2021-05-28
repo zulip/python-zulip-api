@@ -1,6 +1,9 @@
 from unittest.mock import patch
-from zulip_bots.test_lib import BotTestCase, DefaultTests
+
 from requests.exceptions import ConnectionError
+
+from zulip_bots.test_lib import BotTestCase, DefaultTests
+
 
 class TestFlockBot(BotTestCase, DefaultTests):
     bot_name = "flock"

@@ -1,10 +1,10 @@
 # See readme.md for instructions on running this code.
-import logging
 import json
+import logging
+from typing import Dict
 
 import apiai
 
-from typing import Dict
 from zulip_bots.lib import BotHandler
 
 help_message = '''DialogFlow bot

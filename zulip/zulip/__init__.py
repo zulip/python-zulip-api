@@ -1,21 +1,34 @@
-import json
-import requests
-import time
-import traceback
-import sys
-import os
-import optparse
 import argparse
+import json
+import logging
+import optparse
+import os
 import platform
 import random
+import sys
+import time
+import traceback
 import types
+import urllib.parse
+from configparser import SafeConfigParser
 from distutils.version import LooseVersion
+from typing import (
+    IO,
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    List,
+    Mapping,
+    Optional,
+    Sequence,
+    Text,
+    Tuple,
+    Union,
+)
 
 import distro
-from configparser import SafeConfigParser
-import urllib.parse
-import logging
-from typing import Any, Callable, Dict, Iterable, IO, List, Mapping, Optional, Text, Tuple, Union, Sequence
+import requests
 
 __version__ = "0.8.0"
 

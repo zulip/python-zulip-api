@@ -1,10 +1,13 @@
 # See readme.md for instructions on running this code.
 
-from typing import Dict, Any, Optional, Callable
-from zulip_bots.lib import BotHandler
-import wit
 import importlib.abc
 import importlib.util
+from typing import Any, Callable, Dict, Optional
+
+import wit
+
+from zulip_bots.lib import BotHandler
+
 
 class WitaiHandler:
     def usage(self) -> str:

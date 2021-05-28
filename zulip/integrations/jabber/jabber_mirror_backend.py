@@ -23,6 +23,11 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import logging
+import optparse
+import sys
+from configparser import SafeConfigParser
+
 # The following is a table showing which kinds of messages are handled by the
 # mirror in each mode:
 #
@@ -37,18 +42,13 @@
 #               | other sender|  x  |    |        |
 # public mode   +-------------+-----+----+--------+----
 #               | self sender |     |    |        |
-from typing import Dict, List, Set, Optional
+from typing import Any, Callable, Dict, List, Optional, Set
 
-import logging
-import optparse
-
-from sleekxmpp import ClientXMPP, InvalidJID, JID
+from sleekxmpp import JID, ClientXMPP, InvalidJID
 from sleekxmpp.stanza import Message as JabberMessage
-from configparser import SafeConfigParser
-import sys
+
 import zulip
 from zulip import Client
-from typing import Any, Callable
 
 __version__ = "1.1"
 

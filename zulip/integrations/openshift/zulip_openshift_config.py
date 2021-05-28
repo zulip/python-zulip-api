@@ -1,5 +1,5 @@
 # https://github.com/python/mypy/issues/1141
-from typing import Dict, Text, Optional
+from typing import Dict, Optional, Text
 
 # Change these values to configure authentication for the plugin
 ZULIP_USER = 'openshift-bot@example.com'

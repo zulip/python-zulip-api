@@ -1,6 +1,8 @@
-from typing import Any, List, Dict
-from zulip_bots.lib import BotHandler
+from typing import Any, Dict, List
+
 import requests
+
+from zulip_bots.lib import BotHandler
 
 supported_commands = [
     ('help', 'Get the bot usage information.'),

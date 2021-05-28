@@ -1,8 +1,9 @@
-from typing import Dict
-from zulip_bots.lib import BotHandler
-
 import os
 from pathlib import Path
+from typing import Dict
+
+from zulip_bots.lib import BotHandler
+
 
 class FileUploaderHandler:
     def usage(self) -> str:

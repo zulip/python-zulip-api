@@ -1,5 +1,5 @@
 #
-from typing import Dict, Text, Optional
+from typing import Dict, Optional, Text
 
 # Name of the stream to send notifications to, default is "commits"
 STREAM_NAME = 'commits'

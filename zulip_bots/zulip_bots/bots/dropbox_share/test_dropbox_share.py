@@ -1,14 +1,15 @@
-from zulip_bots.test_lib import BotTestCase, DefaultTests
 from unittest.mock import patch
 
 from zulip_bots.bots.dropbox_share.test_util import (
     MockFileMetadata,
+    MockHttpResponse,
     MockListFolderResult,
+    MockPathLinkMetadata,
     MockSearchMatch,
     MockSearchResult,
-    MockPathLinkMetadata,
-    MockHttpResponse
 )
+from zulip_bots.test_lib import BotTestCase, DefaultTests
+
 
 def get_root_files_list(*args, **kwargs):
     return MockListFolderResult(

@@ -1,9 +1,9 @@
-import random
-
 import logging
+import random
+from typing import Dict, Optional
+
 import requests
 
-from typing import Dict, Optional
 from zulip_bots.lib import BotHandler
 
 XKCD_TEMPLATE_URL = 'https://xkcd.com/%s/info.0.json'

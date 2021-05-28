@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-import sys
-import subprocess
 import os
-import traceback
 import signal
+import subprocess
+import sys
+import traceback
 
 sys.path[:0] = [os.path.dirname(__file__)]
 from zephyr_mirror_backend import parse_args
@@ -12,6 +12,7 @@ from zephyr_mirror_backend import parse_args
 (options, args) = parse_args()
 
 from types import FrameType
+
 
 def die(signal: int, frame: FrameType) -> None:
 

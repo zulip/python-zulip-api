@@ -1,5 +1,6 @@
-from zulip_bots.game_handler import GameAdapter, BadMoveException
-from typing import List, Any
+from typing import Any, List
+
+from zulip_bots.game_handler import BadMoveException, GameAdapter
 
 
 class GameHandlerBotMessageHandler:

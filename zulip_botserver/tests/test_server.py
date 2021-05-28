@@ -1,17 +1,19 @@
-import mock
-import os
-from typing import Any, Dict
-from zulip_bots.lib import BotHandler
-import unittest
-from .server_test_lib import BotServerTestCase
 import json
+import os
+import unittest
 from collections import OrderedDict
 from importlib import import_module
-from types import ModuleType
 from pathlib import Path
+from types import ModuleType
+from typing import Any, Dict
 
+import mock
+
+from zulip_bots.lib import BotHandler
 from zulip_botserver import server
 from zulip_botserver.input_parameters import parse_args
+
+from .server_test_lib import BotServerTestCase
 
 
 class BotServerTests(BotServerTestCase):

@@ -2,12 +2,13 @@
 
 # Twitter integration for Zulip
 
+import argparse
 import os
 import sys
-import argparse
-from configparser import ConfigParser, NoSectionError, NoOptionError
+from configparser import ConfigParser, NoOptionError, NoSectionError
 
 import zulip
+
 VERSION = "0.9"
 CONFIGFILE = os.path.expanduser("~/.zulip_twitterrc")
 INSTRUCTIONS = r"""

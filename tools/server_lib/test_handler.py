@@ -1,10 +1,11 @@
 
-import os
-import sys
 import argparse
-import unittest
-import pytest
+import os
 import shutil
+import sys
+import unittest
+
+import pytest
 
 TOOLS_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(os.path.dirname(TOOLS_DIR))

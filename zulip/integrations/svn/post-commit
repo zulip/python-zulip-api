@@ -10,19 +10,22 @@
 # /srv/svn/carols 1843
 
 import os
-import sys
 import os.path
-import pysvn
+import sys
 from typing import Any, Dict, Optional, Text, Tuple
+
+import pysvn
 
 sys.path.insert(0, os.path.dirname(__file__))
 import zulip_svn_config as config
+
 VERSION = "0.9"
 
 if config.ZULIP_API_PATH is not None:
     sys.path.append(config.ZULIP_API_PATH)
 
 import zulip
+
 client = zulip.Client(
     email=config.ZULIP_USER,
     site=config.ZULIP_SITE,

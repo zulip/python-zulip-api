@@ -1,8 +1,10 @@
-import requests
 import logging
 from typing import Dict
-from zulip_bots.lib import BotHandler
+
+import requests
 from requests.exceptions import ConnectionError
+
+from zulip_bots.lib import BotHandler
 
 help_message = '''
 You can add datapoints towards your beeminder goals \

@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-import sys
-import os
-import logging
 import argparse
 import json
+import logging
+import os
+import sys
 import unicodedata
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'api'))
 import zulip
+
 
 def write_public_streams() -> None:
     public_streams = set()

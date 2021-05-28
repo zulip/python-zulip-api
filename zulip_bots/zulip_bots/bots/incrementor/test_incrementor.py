@@ -1,11 +1,7 @@
 from unittest.mock import patch
 
-from zulip_bots.test_lib import (
-    get_bot_message_handler,
-    StubBotHandler,
-    DefaultTests,
-    BotTestCase,
-)
+from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler, get_bot_message_handler
+
 
 class TestIncrementorBot(BotTestCase, DefaultTests):
     bot_name = "incrementor"
