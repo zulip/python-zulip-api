@@ -1,8 +1,10 @@
 import re
+from typing import Any, Dict
+
 import requests
 
-from typing import Any, Dict
 from zulip_bots.lib import BotHandler
+
 
 class LinkShortenerHandler:
     '''A Zulip bot that will shorten URLs ("links") in a conversation using the

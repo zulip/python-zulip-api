@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 import logging
 import sys
-
 from typing import Any, Dict, List
 
-import zulip
 import click
+
+import zulip
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 log = logging.getLogger("zulip-cli")

@@ -1,11 +1,13 @@
 # See readme.md for instructions on running this code.
 
-import simple_salesforce
-from typing import Dict, Any, List
-from zulip_bots.lib import BotHandler
-import re
 import logging
-from zulip_bots.bots.salesforce.utils import commands, object_types, link_query, default_query
+import re
+from typing import Any, Dict, List
+
+import simple_salesforce
+
+from zulip_bots.bots.salesforce.utils import commands, default_query, link_query, object_types
+from zulip_bots.lib import BotHandler
 
 base_help_text = '''Salesforce bot
 This bot can do simple salesforce query requests

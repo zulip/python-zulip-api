@@ -2,20 +2,21 @@
 #
 # This script depends on python-dateutil and python-pytz for properly handling
 # times and time zones of calendar events.
+import argparse
 import datetime
-import dateutil.parser
-import httplib2
 import itertools
 import logging
-import argparse
 import os
-import pytz
 import sys
 import time
 from typing import List, Optional, Set, Tuple
 
+import dateutil.parser
+import httplib2
+import pytz
 from oauth2client import client
 from oauth2client.file import Storage
+
 try:
     from googleapiclient import discovery
 except ImportError:

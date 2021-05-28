@@ -1,6 +1,9 @@
 from unittest.mock import patch
-from zulip_bots.test_lib import StubBotHandler, BotTestCase, DefaultTests, get_bot_message_handler
+
 from requests.exceptions import ConnectionError
+
+from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler, get_bot_message_handler
+
 
 class TestBeeminderBot(BotTestCase, DefaultTests):
     bot_name = "beeminder"

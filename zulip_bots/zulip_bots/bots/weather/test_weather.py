@@ -1,7 +1,8 @@
+from typing import Optional
 from unittest.mock import patch
+
 from zulip_bots.test_lib import BotTestCase, DefaultTests
 
-from typing import Optional
 
 class TestWeatherBot(BotTestCase, DefaultTests):
     bot_name = "weather"

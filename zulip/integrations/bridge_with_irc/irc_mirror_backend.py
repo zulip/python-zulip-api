@@ -1,9 +1,10 @@
+import multiprocessing as mp
+from typing import Any, Dict
+
 import irc.bot
 import irc.strings
 from irc.client import Event, ServerConnection, ip_numstr_to_quad
 from irc.client_aio import AioReactor
-import multiprocessing as mp
-from typing import Any, Dict
 
 
 class IRCBot(irc.bot.SingleServerIRCBot):

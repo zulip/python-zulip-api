@@ -1,7 +1,7 @@
 from unittest.mock import patch
-from zulip_bots.test_lib import BotTestCase, DefaultTests
-from zulip_bots.test_lib import StubBotHandler
+
 from zulip_bots.bots.link_shortener.link_shortener import LinkShortenerHandler
+from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler
 
 
 class TestLinkShortenerBot(BotTestCase, DefaultTests):

@@ -1,6 +1,9 @@
-import tweepy
 from typing import Dict
+
+import tweepy
+
 from zulip_bots.lib import BotHandler
+
 
 class TwitpostBot:
 

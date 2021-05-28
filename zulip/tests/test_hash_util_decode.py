@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
 import unittest
+from unittest import TestCase
+
 import zulip
 
-from unittest import TestCase
 
 class TestHashUtilDecode(TestCase):
     def test_hash_util_decode(self) -> None:

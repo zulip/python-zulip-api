@@ -1,7 +1,8 @@
 from unittest.mock import patch
-from zulip_bots.test_lib import BotTestCase, DefaultTests
-from zulip_bots.test_lib import StubBotHandler
+
 from zulip_bots.bots.baremetrics.baremetrics import BaremetricsHandler
+from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler
+
 
 class TestBaremetricsBot(BotTestCase, DefaultTests):
     bot_name = "baremetrics"

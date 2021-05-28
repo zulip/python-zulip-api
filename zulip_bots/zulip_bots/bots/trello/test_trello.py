@@ -1,8 +1,7 @@
 from unittest.mock import patch
 
 from zulip_bots.bots.trello.trello import TrelloHandler
-from zulip_bots.test_lib import BotTestCase, DefaultTests
-from zulip_bots.test_lib import StubBotHandler
+from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler
 
 mock_config = {
     'api_key': 'TEST',

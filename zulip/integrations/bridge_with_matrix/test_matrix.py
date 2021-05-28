@@ -1,22 +1,17 @@
-from .matrix_bridge import (
-    check_zulip_message_validity,
-    zulip_to_matrix,
-)
-
-from unittest import TestCase, mock
-from subprocess import Popen, PIPE
 import os
-
 import shutil
-
 from contextlib import contextmanager
+from subprocess import PIPE, Popen
 from tempfile import mkdtemp
+from unittest import TestCase, mock
+
+from .matrix_bridge import check_zulip_message_validity, zulip_to_matrix
 
 script_file = "matrix_bridge.py"
 script_dir = os.path.dirname(__file__)
 script = os.path.join(script_dir, script_file)
 
-from typing import List, Iterator
+from typing import Iterator, List
 
 sample_config_path = "matrix_test.conf"
 

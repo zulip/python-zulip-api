@@ -1,12 +1,12 @@
 # See readme.md for instructions on running this code.
 
 import copy
-from math import log10, floor
+from math import floor, log10
+from typing import Any, Dict, List
 
 from zulip_bots.bots.converter import utils
-
-from typing import Any, Dict, List
 from zulip_bots.lib import BotHandler
+
 
 def is_float(value: Any) -> bool:
     try:

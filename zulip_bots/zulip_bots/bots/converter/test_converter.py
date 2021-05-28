@@ -1,6 +1,6 @@
+from zulip_bots.bots.converter import utils
 from zulip_bots.test_lib import BotTestCase, DefaultTests
 
-from zulip_bots.bots.converter import utils
 
 class TestConverterBot(BotTestCase, DefaultTests):
     bot_name = "converter"

@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
 import argparse
+import glob
 import logging
 import os
-import sys
 import subprocess
-import glob
+import sys
 from typing import Iterator
+
 
 def get_bot_paths() -> Iterator[str]:
     current_dir = os.path.dirname(os.path.abspath(__file__))

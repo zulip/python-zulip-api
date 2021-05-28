@@ -1,7 +1,10 @@
-import requests
 import re
 from typing import Any, Dict
+
+import requests
+
 from zulip_bots.lib import BotHandler
+
 
 class FrontHandler:
     FRONT_API = "https://api2.frontapp.com/conversations/{}"

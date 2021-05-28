@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 # zulip-send -- Sends a message to the specified recipients.
 
-import sys
 import argparse
 import logging
-
+import sys
 from typing import Any, Dict
 
 import zulip

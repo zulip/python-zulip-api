@@ -1,6 +1,8 @@
-from zulip_bots.test_lib import BotTestCase, DefaultTests
-from zulip_bots.bots.virtual_fs.virtual_fs import sample_conversation
 from unittest.mock import patch
+
+from zulip_bots.bots.virtual_fs.virtual_fs import sample_conversation
+from zulip_bots.test_lib import BotTestCase, DefaultTests
+
 
 class TestVirtualFsBot(BotTestCase, DefaultTests):
     bot_name = "virtual_fs"

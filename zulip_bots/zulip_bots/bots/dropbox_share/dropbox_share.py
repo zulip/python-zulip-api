@@ -1,7 +1,9 @@
-from dropbox import Dropbox
-from typing import Any, Dict, List, Tuple
-from zulip_bots.lib import BotHandler
 import re
+from typing import Any, Dict, List, Tuple
+
+from dropbox import Dropbox
+
+from zulip_bots.lib import BotHandler
 
 URL = "[{name}](https://www.dropbox.com/home{path})"
 

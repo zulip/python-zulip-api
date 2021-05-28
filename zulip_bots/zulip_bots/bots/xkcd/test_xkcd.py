@@ -1,5 +1,7 @@
 from unittest.mock import MagicMock, patch
+
 from zulip_bots.test_lib import BotTestCase, DefaultTests
+
 
 class TestXkcdBot(BotTestCase, DefaultTests):
     bot_name = "xkcd"

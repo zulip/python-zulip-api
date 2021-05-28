@@ -1,8 +1,9 @@
 import configparser
 import sys
+from uuid import uuid4
 
 from zulip_bots.lib import BotIdentity
-from uuid import uuid4
+
 
 class SimpleStorage:
     def __init__(self):

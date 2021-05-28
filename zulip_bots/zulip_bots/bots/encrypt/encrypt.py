@@ -1,5 +1,7 @@
 from typing import Dict
+
 from zulip_bots.lib import BotHandler
+
 
 def encrypt(text: str) -> str:
     # This is where the actual ROT13 is applied

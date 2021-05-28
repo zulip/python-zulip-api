@@ -11,12 +11,15 @@
 # You may then need to restart trac (or restart Apache) for the bot
 # (or changes to the bot) to actually be loaded by trac.
 
+import os.path
+import sys
+
 from trac.core import Component, implements
 from trac.ticket import ITicketChangeListener
-import sys
-import os.path
+
 sys.path.insert(0, os.path.dirname(__file__))
 import zulip_trac_config as config
+
 VERSION = "0.9"
 
 from typing import Any, Dict
@@ -25,6 +28,7 @@ if config.ZULIP_API_PATH is not None:
     sys.path.append(config.ZULIP_API_PATH)
 
 import zulip
+
 client = zulip.Client(
     email=config.ZULIP_USER,
     site=config.ZULIP_SITE,

@@ -1,10 +1,11 @@
 # See readme.md for instructions on running this code.
 
-import re
 import os
-
+import re
 from typing import Any, Dict, List, Set, Tuple, Union
+
 from zulip_bots.lib import BotHandler
+
 
 class VirtualFsHandler:
     META = {

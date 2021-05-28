@@ -9,8 +9,8 @@ import re
 
 from zulip_bots.game_handler import BadMoveException
 
-from . import database
-from . import mechanics
+from . import database, mechanics
+
 COMMAND_PATTERN = re.compile(
     "^(\\w*).*(\\d,\\d).*(\\d,\\d)|^(\\w+).*(\\d,\\d)")
 

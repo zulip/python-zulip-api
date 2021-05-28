@@ -1,11 +1,13 @@
 # See readme.md for instructions on running this code.
 import logging
-import requests
-import html2text
 import string
-
 from typing import Dict
+
+import html2text
+import requests
+
 from zulip_bots.lib import BotHandler
+
 
 class DefineHandler:
     '''

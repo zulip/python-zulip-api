@@ -1,13 +1,8 @@
-from zulip_bots.test_lib import (
-    StubBotHandler,
-    BotTestCase,
-    DefaultTests,
-    get_bot_message_handler,
-)
-from zulip_bots.test_file_utils import (
-    read_bot_fixture_data,
-)
 from unittest.mock import patch
+
+from zulip_bots.test_file_utils import read_bot_fixture_data
+from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler, get_bot_message_handler
+
 
 class TestTwitpostBot(BotTestCase, DefaultTests):
     bot_name = "twitpost"

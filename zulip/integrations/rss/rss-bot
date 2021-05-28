@@ -3,21 +3,23 @@
 # RSS integration for Zulip
 #
 
+import argparse
 import calendar
 import errno
 import hashlib
-from html.parser import HTMLParser
 import logging
-import argparse
 import os
 import re
 import sys
 import time
 import urllib.parse
-from typing import Dict, List, Tuple, Any
+from html.parser import HTMLParser
+from typing import Any, Dict, List, Tuple
 
 import feedparser
+
 import zulip
+
 VERSION = "0.9"  # type: str
 RSS_DATA_DIR = os.path.expanduser(os.path.join('~', '.cache', 'zulip-rss'))  # type: str
 OLDNESS_THRESHOLD = 30  # type: int

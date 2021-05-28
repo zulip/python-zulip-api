@@ -1,7 +1,7 @@
 """Used to mainly compose a decorated report for the user
 """
 
-from typing import Dict, Text, List
+from typing import Dict, List, Text
 
 
 def compose(results: Dict) -> Text:

@@ -1,10 +1,11 @@
-import re
 import logging
+import re
+from typing import Any, Dict, Tuple, Union
 
 import requests
 
-from typing import Dict, Any, Tuple, Union
 from zulip_bots.lib import BotHandler
+
 
 class GithubHandler:
     '''

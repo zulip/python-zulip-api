@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
-from pathlib import Path
 import os
 import sys
+import unittest
+from pathlib import Path
+from typing import Optional
+from unittest import TestCase, mock
+from unittest.mock import patch
+
 import zulip_bots.run
 from zulip_bots.lib import extract_query_without_mention
-import unittest
-from typing import Optional
-from unittest import TestCase
-
-from unittest import mock
-from unittest.mock import patch
 
 
 class TestDefaultArguments(TestCase):

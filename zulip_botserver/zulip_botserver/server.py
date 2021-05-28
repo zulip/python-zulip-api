@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 
 import configparser
-import logging
-import json
-import os
-import sys
 import importlib.abc
 import importlib.util
-
+import json
+import logging
+import os
+import sys
 from collections import OrderedDict
 from configparser import MissingSectionHeaderError, NoOptionError
-from flask import Flask, request
 from importlib import import_module
-from typing import Any, Dict, List, Optional
 from types import ModuleType
+from typing import Any, Dict, List, Optional
+
+from flask import Flask, request
 from werkzeug.exceptions import BadRequest, Unauthorized
 
 from zulip import Client

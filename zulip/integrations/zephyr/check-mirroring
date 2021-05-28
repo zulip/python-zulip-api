@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
-import sys
-import time
+import hashlib
+import logging
 import optparse
 import random
-import logging
 import subprocess
-import hashlib
-import zephyr
-import zulip
-
+import sys
+import time
 from typing import Dict, List, Set, Tuple
+
+import zephyr
+
+import zulip
 
 parser = optparse.OptionParser()
 parser.add_option('--verbose',

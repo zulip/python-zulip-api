@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
+import argparse
 import os
+
 import zulip
 
-import argparse
 
 def main() -> None:
     usage = """zulip-api-examples [script_name]

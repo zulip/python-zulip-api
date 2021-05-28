@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 
-from contextlib import contextmanager
-import os
 import argparse
 import glob
+import os
 import shutil
 import tempfile
+from contextlib import contextmanager
 
 import crayons
-import twine.commands.upload
 import setuptools.sandbox
+import twine.commands.upload
 
 REPO_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 

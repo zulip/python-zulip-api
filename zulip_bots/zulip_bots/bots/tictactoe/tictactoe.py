@@ -1,8 +1,8 @@
 import copy
 import random
+from typing import Any, List, Tuple
 
-from typing import List, Any, Tuple
-from zulip_bots.game_handler import GameAdapter, BadMoveException
+from zulip_bots.game_handler import BadMoveException, GameAdapter
 
 # -------------------------------------
 

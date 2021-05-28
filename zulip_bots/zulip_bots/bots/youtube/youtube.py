@@ -1,8 +1,9 @@
-import requests
 import logging
+from typing import Dict, List, Optional, Tuple, Union
 
-from requests.exceptions import HTTPError, ConnectionError
-from typing import Dict, Union, List, Tuple, Optional
+import requests
+from requests.exceptions import ConnectionError, HTTPError
+
 from zulip_bots.lib import BotHandler
 
 commands_list = ('list', 'top', 'help')

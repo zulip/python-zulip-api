@@ -1,10 +1,13 @@
 import html
 import json
-import requests
 import random
 import re
-from typing import Optional, Any, Dict, Tuple
+from typing import Any, Dict, Optional, Tuple
+
+import requests
+
 from zulip_bots.lib import BotHandler
+
 
 class NotAvailableException(Exception):
     pass

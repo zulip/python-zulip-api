@@ -1,8 +1,10 @@
-from zulip_bots.test_lib import BotTestCase, DefaultTests
-from zulip_bots.game_handler import GameInstance
+from typing import Any, List, Tuple
+
 from libraries.constants import EMPTY_BOARD
 
-from typing import List, Tuple, Any
+from zulip_bots.game_handler import GameInstance
+from zulip_bots.test_lib import BotTestCase, DefaultTests
+
 
 class TestMerelsBot(BotTestCase, DefaultTests):
     bot_name = 'merels'

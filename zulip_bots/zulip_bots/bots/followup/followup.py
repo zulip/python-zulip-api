@@ -1,6 +1,8 @@
 # See readme.md for instructions on running this code.
 from typing import Dict
+
 from zulip_bots.lib import BotHandler
+
 
 class FollowupHandler:
     '''

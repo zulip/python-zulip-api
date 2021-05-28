@@ -53,7 +53,7 @@ setuptools_info = dict(
 )
 
 try:
-    from setuptools import setup, find_packages
+    from setuptools import find_packages, setup
     package_info.update(setuptools_info)
     package_info['packages'] = find_packages(exclude=['tests'])
 

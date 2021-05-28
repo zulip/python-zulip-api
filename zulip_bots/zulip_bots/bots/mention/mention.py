@@ -1,8 +1,11 @@
 # See readme.md for instructions on running this code.
 
+from typing import Any, Dict, List
+
 import requests
-from typing import Any, List, Dict
+
 from zulip_bots.lib import BotHandler
+
 
 class MentionHandler:
     def initialize(self, bot_handler: BotHandler) -> None:

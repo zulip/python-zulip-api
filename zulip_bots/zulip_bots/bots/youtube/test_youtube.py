@@ -1,8 +1,10 @@
-from unittest.mock import patch
-from requests.exceptions import HTTPError, ConnectionError
-
-from zulip_bots.test_lib import StubBotHandler, BotTestCase, DefaultTests, get_bot_message_handler
 from typing import Dict
+from unittest.mock import patch
+
+from requests.exceptions import ConnectionError, HTTPError
+
+from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler, get_bot_message_handler
+
 
 class TestYoutubeBot(BotTestCase, DefaultTests):
     bot_name = "youtube"

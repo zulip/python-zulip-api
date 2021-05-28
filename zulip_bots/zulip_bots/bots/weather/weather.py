@@ -1,7 +1,8 @@
 # See readme.md for instructions on running this code.
+from typing import Any, Dict
+
 import requests
 
-from typing import Any, Dict
 from zulip_bots.lib import BotHandler
 
 api_url = 'http://api.openweathermap.org/data/2.5/weather'

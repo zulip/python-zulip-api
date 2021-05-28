@@ -1,9 +1,10 @@
 import unittest
 
-from libraries import game
-from libraries import database
-from zulip_bots.simple_lib import SimpleStorage
+from libraries import database, game
+
 from zulip_bots.game_handler import BadMoveException
+from zulip_bots.simple_lib import SimpleStorage
+
 
 class GameTest(unittest.TestCase):
     def setUp(self):

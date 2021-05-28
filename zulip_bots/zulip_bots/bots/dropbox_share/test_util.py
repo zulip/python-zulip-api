@@ -1,5 +1,6 @@
 from typing import List
 
+
 class MockFileMetadata:
     def __init__(self, name: str, path_lower: str):
         self.name = name

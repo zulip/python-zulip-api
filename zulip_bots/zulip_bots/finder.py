@@ -2,8 +2,8 @@ import importlib
 import importlib.abc
 import importlib.util
 import os
-from typing import Any, Optional, Text, Tuple
 from pathlib import Path
+from typing import Any, Optional, Text, Tuple
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 

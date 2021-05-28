@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 
-from typing import Any, List, Dict, Callable
-
+import argparse
 import os
 import sys
-import argparse
-import zipfile
 import textwrap
-import requests
 import urllib.parse
+import zipfile
+from typing import Any, Callable, Dict, List
+
+import requests
 from requests import Response
 
 red = '\033[91m'  # type: str

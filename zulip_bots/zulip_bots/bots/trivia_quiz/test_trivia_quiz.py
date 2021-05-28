@@ -1,27 +1,18 @@
-import json
 import html
-
+import json
+from typing import Any, Dict, Optional, Tuple
 from unittest.mock import patch
-from typing import Optional, Tuple, Any, Dict
-
-from zulip_bots.test_lib import (
-    BotTestCase,
-    DefaultTests,
-    read_bot_fixture_data,
-    StubBotHandler,
-)
-
-from zulip_bots.request_test_lib import (
-    mock_request_exception,
-)
 
 from zulip_bots.bots.trivia_quiz.trivia_quiz import (
-    get_quiz_from_payload,
     fix_quotes,
     get_quiz_from_id,
-    update_quiz,
+    get_quiz_from_payload,
     handle_answer,
+    update_quiz,
 )
+from zulip_bots.request_test_lib import mock_request_exception
+from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler, read_bot_fixture_data
+
 
 class TestTriviaQuizBot(BotTestCase, DefaultTests):
     bot_name = "trivia_quiz"  # type: str

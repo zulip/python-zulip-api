@@ -2,15 +2,13 @@
 mechanisms as well as some functions for accessing the database.
 """
 
+from collections import Counter
 from math import sqrt
 
-from collections import Counter
-
-from . import constants
-from . import database
-from . import game_data
-from . import interface
 from zulip_bots.game_handler import BadMoveException
+
+from . import constants, database, game_data, interface
+
 
 def is_in_grid(vertical_pos, horizontal_pos):
     """Checks whether the cell actually exists or not

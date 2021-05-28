@@ -1,6 +1,8 @@
-import requests
 import logging
 from typing import Dict
+
+import requests
+
 from zulip_bots.lib import BotHandler
 
 # See readme.md for instructions on running this code.

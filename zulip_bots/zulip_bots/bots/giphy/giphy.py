@@ -1,10 +1,11 @@
-from typing import Dict, Union
-from zulip_bots.lib import BotHandler
-import requests
 import logging
-from requests.exceptions import HTTPError, ConnectionError
+from typing import Dict, Union
+
+import requests
+from requests.exceptions import ConnectionError, HTTPError
 
 from zulip_bots.custom_exceptions import ConfigValidationError
+from zulip_bots.lib import BotHandler
 
 GIPHY_TRANSLATE_API = 'http://api.giphy.com/v1/gifs/translate'
 GIPHY_RANDOM_API = 'http://api.giphy.com/v1/gifs/random'

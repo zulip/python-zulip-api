@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-import os
-import sys
-import subprocess
 import base64
+import os
+import subprocess
+import sys
 
 short_user = sys.argv[1]
 api_key = sys.argv[2]

@@ -1,12 +1,10 @@
-from zulip_bots.test_lib import BotTestCase, DefaultTests, read_bot_fixture_data
-
+import json
 from contextlib import contextmanager
-
+from typing import ByteString, Iterator
 from unittest.mock import patch
 
-from typing import Iterator, ByteString
+from zulip_bots.test_lib import BotTestCase, DefaultTests, read_bot_fixture_data
 
-import json
 
 class MockHttplibRequest():
     def __init__(self, response: str) -> None:

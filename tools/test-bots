@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 
-from os.path import dirname, basename
-
-import os
-import sys
 import argparse
 import glob
+import os
+import sys
 import unittest
+from os.path import basename, dirname
+
 import pytest
+
 
 def parse_args():
     description = """

@@ -3,8 +3,8 @@
 # An easy Trello integration for Zulip.
 
 
-import sys
 import argparse
+import sys
 
 try:
     import requests

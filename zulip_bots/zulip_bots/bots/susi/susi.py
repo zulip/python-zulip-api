@@ -1,6 +1,9 @@
-import requests
 from typing import Dict
+
+import requests
+
 from zulip_bots.lib import BotHandler
+
 
 class SusiHandler:
     '''

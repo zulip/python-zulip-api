@@ -1,8 +1,10 @@
 import logging
+from typing import Any, Dict, List, Optional, Tuple
+
 import requests
-from typing import Any, Dict, List, Tuple, Optional
-from zulip_bots.lib import BotHandler
 from requests.exceptions import ConnectionError
+
+from zulip_bots.lib import BotHandler
 
 USERS_LIST_URL = 'https://api.flock.co/v1/roster.listContacts'
 SEND_MESSAGE_URL = 'https://api.flock.co/v1/chat.sendMessage'

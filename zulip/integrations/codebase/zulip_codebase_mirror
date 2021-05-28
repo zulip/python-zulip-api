@@ -8,14 +8,14 @@
 #
 # python-dateutil is a dependency for this script.
 
-import requests
 import logging
-import pytz
-import time
-import sys
 import os
-
+import sys
+import time
 from datetime import datetime, timedelta
+
+import pytz
+import requests
 
 try:
     import dateutil.parser
@@ -26,12 +26,14 @@ except ImportError as e:
 
 sys.path.insert(0, os.path.dirname(__file__))
 import zulip_codebase_config as config
+
 VERSION = "0.9"
 
 if config.ZULIP_API_PATH is not None:
     sys.path.append(config.ZULIP_API_PATH)
+from typing import Any, Dict, List, Optional
+
 import zulip
-from typing import Any, List, Dict, Optional
 
 client = zulip.Client(
     email=config.ZULIP_USER,

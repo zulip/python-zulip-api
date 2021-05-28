@@ -15,8 +15,8 @@ For example:
 '''
 
 import os
-import sys
 import os.path
+import sys
 
 import git_p4
 
@@ -24,12 +24,14 @@ __version__ = "0.1"
 
 sys.path.insert(0, os.path.dirname(__file__))
 from typing import Any, Dict, Optional
+
 import zulip_perforce_config as config
 
 if config.ZULIP_API_PATH is not None:
     sys.path.append(config.ZULIP_API_PATH)
 
 import zulip
+
 client = zulip.Client(
     email=config.ZULIP_USER,
     site=config.ZULIP_SITE,

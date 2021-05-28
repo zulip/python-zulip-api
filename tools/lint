@@ -3,9 +3,9 @@
 import argparse
 import sys
 
-from zulint.command import add_default_linter_arguments, LinterConfig
+from zulint.command import LinterConfig, add_default_linter_arguments
 
-from custom_check import python_rules, non_py_rules
+from custom_check import non_py_rules, python_rules
 
 EXCLUDED_FILES = [
     # This is an external file that doesn't comply with our codestyle

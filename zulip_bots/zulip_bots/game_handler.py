@@ -1,10 +1,11 @@
 import json
-import re
-import random
 import logging
-from zulip_bots.lib import BotHandler
+import random
+import re
 from copy import deepcopy
-from typing import Any, Dict, Tuple, List
+from typing import Any, Dict, List, Tuple
+
+from zulip_bots.lib import BotHandler
 
 
 class BadMoveException(Exception):

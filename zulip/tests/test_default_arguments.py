@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 
 import argparse
-import os
 import io
+import os
 import unittest
-import zulip
-
 from unittest import TestCase
-from zulip import ZulipError
 from unittest.mock import patch
+
+import zulip
+from zulip import ZulipError
+
 
 class TestDefaultArguments(TestCase):
 

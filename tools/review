@@ -3,6 +3,7 @@
 import subprocess
 import sys
 
+
 def exit(message: str) -> None:
     print('PROBLEM!')
     print(message)

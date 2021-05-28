@@ -1,8 +1,9 @@
-import requests
 import logging
 import re
+from typing import Any, Dict, List, Optional
 
-from typing import Any, Dict, Optional, List
+import requests
+
 from zulip_bots.lib import BotHandler
 
 API_BASE_URL = "https://beta.idonethis.com/api/v2"
