@@ -37,6 +37,13 @@ def run() -> None:
     linter_config.external_linter(
         "gitlint", ["tools/lint-commits"], description="Git Lint for commit messages"
     )
+    linter_config.external_linter(
+        "isort",
+        ["isort"],
+        ["py"],
+        description="Sorts Python import statements",
+        check_arg=["--check-only", "--diff"],
+    )
 
     @linter_config.lint
     def custom_py() -> int:
