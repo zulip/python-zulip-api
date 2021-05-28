@@ -19,7 +19,7 @@ ZULIP_API_KEY = "0123456789abcdef0123456789abcdef"
 # * stream "commits"
 # * topic "branch_name"
 def commit_notice_destination(path: Text, commit: Text) -> Optional[Dict[Text, Text]]:
-    repo = path.split('/')[-1]
+    repo = path.split("/")[-1]
     if repo not in ["evil-master-plan", "my-super-secret-repository"]:
         return dict(stream="commits", subject="%s" % (repo,))
 

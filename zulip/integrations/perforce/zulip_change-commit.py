@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-'''Zulip notification change-commit hook.
+"""Zulip notification change-commit hook.
 
 In Perforce, The "change-commit" trigger is fired after a metadata has been
 created, files have been transferred, and the changelist committed to the depot
@@ -12,7 +12,7 @@ This specific trigger expects command-line arguments in the form:
 For example:
   1234 //depot/security/src/
 
-'''
+"""
 
 import os
 import os.path
@@ -43,11 +43,11 @@ try:
     changelist = int(sys.argv[1])  # type: int
     changeroot = sys.argv[2]  # type: str
 except IndexError:
-    print("Wrong number of arguments.\n\n", end=' ', file=sys.stderr)
+    print("Wrong number of arguments.\n\n", end=" ", file=sys.stderr)
     print(__doc__, file=sys.stderr)
     sys.exit(-1)
 except ValueError:
-    print("First argument must be an integer.\n\n", end=' ', file=sys.stderr)
+    print("First argument must be an integer.\n\n", end=" ", file=sys.stderr)
     print(__doc__, file=sys.stderr)
     sys.exit(-1)
 
@@ -79,7 +79,7 @@ if hasattr(config, "P4_WEB"):
 
 if p4web is not None:
     # linkify the change number
-    change = '[{change}]({p4web}/{change}?ac=10)'.format(p4web=p4web, change=change)
+    change = "[{change}]({p4web}/{change}?ac=10)".format(p4web=p4web, change=change)
 
 message = """**{user}** committed revision @{change} to `{path}`.
 

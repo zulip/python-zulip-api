@@ -5,7 +5,7 @@ from zulip_bots.test_lib import BotTestCase, DefaultTests
 
 
 class TestTicTacToeBot(BotTestCase, DefaultTests):
-    bot_name = 'tictactoe'
+    bot_name = "tictactoe"
 
     # FIXME: Add tests for computer moves
     # FIXME: Add test lib for game_handler
@@ -32,8 +32,8 @@ class TestTicTacToeBot(BotTestCase, DefaultTests):
 
     def test_determine_game_over_with_win(self) -> None:
         board = [[1, 1, 1], [0, 2, 0], [2, 0, 2]]
-        players = ['Human', 'Computer']
-        response = 'current turn'
+        players = ["Human", "Computer"]
+        response = "current turn"
         self._test_determine_game_over_with_win(board, players, response)
 
     def _test_determine_game_over_with_win(
@@ -46,8 +46,8 @@ class TestTicTacToeBot(BotTestCase, DefaultTests):
 
     def test_determine_game_over_with_draw(self) -> None:
         board = [[1, 2, 1], [1, 2, 1], [2, 1, 2]]
-        players = ['Human', 'Computer']
-        response = 'draw'
+        players = ["Human", "Computer"]
+        response = "draw"
         self._test_determine_game_over_with_draw(board, players, response)
 
     def _test_determine_game_over_with_draw(
@@ -113,7 +113,7 @@ class TestTicTacToeBot(BotTestCase, DefaultTests):
 
     def test_player_color(self) -> None:
         turn = 0
-        response = ':x:'
+        response = ":x:"
         self._test_player_color(turn, response)
 
     def _test_player_color(self, turn: int, expected_response: str) -> None:
@@ -127,19 +127,19 @@ class TestTicTacToeBot(BotTestCase, DefaultTests):
         self.assertNotEqual(message_handler.get_player_color(0), None)
         self.assertNotEqual(message_handler.game_start_message(), None)
         self.assertEqual(
-            message_handler.alert_move_message('foo', 'move 3'), 'foo put a token at 3'
+            message_handler.alert_move_message("foo", "move 3"), "foo put a token at 3"
         )
 
     def test_has_attributes(self) -> None:
         model, message_handler = self._get_game_handlers()
-        self.assertTrue(hasattr(message_handler, 'parse_board') is not None)
-        self.assertTrue(hasattr(message_handler, 'alert_move_message') is not None)
-        self.assertTrue(hasattr(model, 'current_board') is not None)
-        self.assertTrue(hasattr(model, 'determine_game_over') is not None)
+        self.assertTrue(hasattr(message_handler, "parse_board") is not None)
+        self.assertTrue(hasattr(message_handler, "alert_move_message") is not None)
+        self.assertTrue(hasattr(model, "current_board") is not None)
+        self.assertTrue(hasattr(model, "determine_game_over") is not None)
 
     def test_parse_board(self) -> None:
         board = [[0, 1, 0], [0, 0, 0], [0, 0, 2]]
-        response = ':one: :x: :three:\n\n' + ':four: :five: :six:\n\n' + ':seven: :eight: :o:\n\n'
+        response = ":one: :x: :three:\n\n" + ":four: :five: :six:\n\n" + ":seven: :eight: :o:\n\n"
         self._test_parse_board(board, response)
 
     def _test_parse_board(self, board: List[List[int]], expected_response: str) -> None:
@@ -151,19 +151,19 @@ class TestTicTacToeBot(BotTestCase, DefaultTests):
         if bot is None:
             bot, bot_handler = self._get_handlers()
         message = {
-            'sender_email': '{}@example.com'.format(name),
-            'sender_full_name': '{}'.format(name),
+            "sender_email": "{}@example.com".format(name),
+            "sender_full_name": "{}".format(name),
         }
         bot.add_user_to_cache(message)
         return bot
 
     def setup_game(self) -> None:
-        bot = self.add_user_to_cache('foo')
-        self.add_user_to_cache('baz', bot)
+        bot = self.add_user_to_cache("foo")
+        self.add_user_to_cache("baz", bot)
         instance = GameInstance(
-            bot, False, 'test game', 'abc123', ['foo@example.com', 'baz@example.com'], 'test'
+            bot, False, "test game", "abc123", ["foo@example.com", "baz@example.com"], "test"
         )
-        bot.instances.update({'abc123': instance})
+        bot.instances.update({"abc123": instance})
         instance.start()
         return bot
 

@@ -96,7 +96,7 @@ def process_logs() -> None:
             # immediately after rotation, this tool won't notice.
             file_data["last"] = 1
         output = subprocess.check_output(["tail", "-n+%s" % (file_data["last"],), log_file])
-        new_lines = output.decode('utf-8', errors='replace').split('\n')[:-1]
+        new_lines = output.decode("utf-8", errors="replace").split("\n")[:-1]
         if len(new_lines) > 0:
             process_lines(new_lines, log_file)
             file_data["last"] += len(new_lines)

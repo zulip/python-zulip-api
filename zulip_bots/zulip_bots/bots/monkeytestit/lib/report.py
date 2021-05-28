@@ -21,7 +21,7 @@ def compose(results: Dict) -> Text:
     :return: A response string containing the full report
     """
     if "error" in results:
-        return "Error: {}".format(results['error'])
+        return "Error: {}".format(results["error"])
 
     response = ""
 
@@ -48,7 +48,7 @@ def print_more_info_url(results: Dict) -> Text:
     :param results: A dictionary containing the results of a check
     :return: A response string containing the url info
     """
-    return "More info: {}".format(results['results_url'])
+    return "More info: {}".format(results["results_url"])
 
 
 def print_test_id(results: Dict) -> Text:
@@ -57,7 +57,7 @@ def print_test_id(results: Dict) -> Text:
     :param results: A dictionary containing the results of a check
     :return: A response string containing the test id
     """
-    return "Test: https://monkeytest.it/test/{}".format(results['test_id'])
+    return "Test: https://monkeytest.it/test/{}".format(results["test_id"])
 
 
 def print_failures_checkers(results: Dict) -> Text:
@@ -75,9 +75,9 @@ def print_failures_checkers(results: Dict) -> Text:
              checkers
     """
     failures_checkers = [
-        (checker, len(results['failures'][checker]))
+        (checker, len(results["failures"][checker]))
         for checker in get_enabled_checkers(results)
-        if checker in results['failures']
+        if checker in results["failures"]
     ]  # [('seo', 3), ..]
 
     failures_checkers_messages = [
@@ -97,7 +97,7 @@ def get_enabled_checkers(results: Dict) -> List:
     :param results: A dictionary containing the results of a check
     :return: A list containing enabled checkers
     """
-    checkers = results['enabled_checkers']
+    checkers = results["enabled_checkers"]
     enabled_checkers = []
     for checker in checkers.keys():
         if checkers[checker]:  # == True/False
@@ -126,4 +126,4 @@ def print_status(results: Dict) -> Text:
     :param results: A dictionary containing the results of a check
     :return: A response string containing check status
     """
-    return "Status: {}".format(results['status'])
+    return "Status: {}".format(results["status"])

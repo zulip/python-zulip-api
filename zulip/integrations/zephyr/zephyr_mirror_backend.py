@@ -39,8 +39,8 @@ def to_zulip_username(zephyr_username: str) -> str:
         (user, realm) = (zephyr_username, "ATHENA.MIT.EDU")
     if realm.upper() == "ATHENA.MIT.EDU":
         # Hack to make ctl's fake username setup work :)
-        if user.lower() == 'golem':
-            user = 'ctl'
+        if user.lower() == "golem":
+            user = "ctl"
         return user.lower() + "@mit.edu"
     return user.lower() + "|" + realm.upper() + "@mit.edu"
 
@@ -49,10 +49,10 @@ def to_zephyr_username(zulip_username: str) -> str:
     (user, realm) = zulip_username.split("@")
     if "|" not in user:
         # Hack to make ctl's fake username setup work :)
-        if user.lower() == 'ctl':
-            user = 'golem'
+        if user.lower() == "ctl":
+            user = "golem"
         return user.lower() + "@ATHENA.MIT.EDU"
-    match_user = re.match(r'([a-zA-Z0-9_]+)\|(.+)', user)
+    match_user = re.match(r"([a-zA-Z0-9_]+)\|(.+)", user)
     if not match_user:
         raise Exception("Could not parse Zephyr realm for cross-realm user %s" % (zulip_username,))
     return match_user.group(1).lower() + "@" + match_user.group(2).upper()
@@ -85,14 +85,14 @@ def unwrap_lines(body: str) -> str:
     previous_line = lines[0]
     for line in lines[1:]:
         line = line.rstrip()
-        if re.match(r'^\W', line, flags=re.UNICODE) and re.match(
-            r'^\W', previous_line, flags=re.UNICODE
+        if re.match(r"^\W", line, flags=re.UNICODE) and re.match(
+            r"^\W", previous_line, flags=re.UNICODE
         ):
             result += previous_line + "\n"
         elif (
             line == ""
             or previous_line == ""
-            or re.match(r'^\W', line, flags=re.UNICODE)
+            or re.match(r"^\W", line, flags=re.UNICODE)
             or different_paragraph(previous_line, line)
         ):
             # Use 2 newlines to separate sections so that we
@@ -122,31 +122,31 @@ def send_zulip(zeph: ZephyrDict) -> Dict[str, Any]:
     message = {}
     if options.forward_class_messages:
         message["forged"] = "yes"
-    message['type'] = zeph['type']
-    message['time'] = zeph['time']
-    message['sender'] = to_zulip_username(zeph['sender'])
+    message["type"] = zeph["type"]
+    message["time"] = zeph["time"]
+    message["sender"] = to_zulip_username(zeph["sender"])
     if "subject" in zeph:
         # Truncate the subject to the current limit in Zulip.  No
         # need to do this for stream names, since we're only
         # subscribed to valid stream names.
         message["subject"] = zeph["subject"][:60]
-    if zeph['type'] == 'stream':
+    if zeph["type"] == "stream":
         # Forward messages sent to -c foo -i bar to stream bar subject "instance"
         if zeph["stream"] == "message":
-            message['to'] = zeph['subject'].lower()
-            message['subject'] = "instance %s" % (zeph['subject'],)
+            message["to"] = zeph["subject"].lower()
+            message["subject"] = "instance %s" % (zeph["subject"],)
         elif zeph["stream"] == "tabbott-test5":
-            message['to'] = zeph['subject'].lower()
-            message['subject'] = "test instance %s" % (zeph['subject'],)
+            message["to"] = zeph["subject"].lower()
+            message["subject"] = "test instance %s" % (zeph["subject"],)
         else:
             message["to"] = zeph["stream"]
     else:
         message["to"] = zeph["recipient"]
-    message['content'] = unwrap_lines(zeph['content'])
+    message["content"] = unwrap_lines(zeph["content"])
 
     if options.test_mode and options.site == DEFAULT_SITE:
         logger.debug("Message is: %s" % (str(message),))
-        return {'result': "success"}
+        return {"result": "success"}
 
     return zulip_client.send_message(message)
 
@@ -311,13 +311,13 @@ def parse_zephyr_body(zephyr_data: str, notice_format: str) -> Tuple[str, str]:
     try:
         (zsig, body) = zephyr_data.split("\x00", 1)
         if (
-            notice_format == 'New transaction [$1] entered in $2\nFrom: $3 ($5)\nSubject: $4'
-            or notice_format == 'New transaction [$1] entered in $2\nFrom: $3\nSubject: $4'
+            notice_format == "New transaction [$1] entered in $2\nFrom: $3 ($5)\nSubject: $4"
+            or notice_format == "New transaction [$1] entered in $2\nFrom: $3\nSubject: $4"
         ):
             # Logic based off of owl_zephyr_get_message in barnowl
-            fields = body.split('\x00')
+            fields = body.split("\x00")
             if len(fields) == 5:
-                body = 'New transaction [%s] entered in %s\nFrom: %s (%s)\nSubject: %s' % (
+                body = "New transaction [%s] entered in %s\nFrom: %s (%s)\nSubject: %s" % (
                     fields[0],
                     fields[1],
                     fields[2],
@@ -327,7 +327,7 @@ def parse_zephyr_body(zephyr_data: str, notice_format: str) -> Tuple[str, str]:
     except ValueError:
         (zsig, body) = ("", zephyr_data)
     # Clean body of any null characters, since they're invalid in our protocol.
-    body = body.replace('\x00', '')
+    body = body.replace("\x00", "")
     return (zsig, body)
 
 
@@ -350,8 +350,8 @@ def parse_crypt_table(zephyr_class: str, instance: str) -> Optional[str]:
             continue
         groups = match.groupdict()
         if (
-            groups['class'].lower() == zephyr_class
-            and 'keypath' in groups
+            groups["class"].lower() == zephyr_class
+            and "keypath" in groups
             and groups.get("algorithm") == "AES"
         ):
             return groups["keypath"]
@@ -453,23 +453,23 @@ def process_notice(notice: "zephyr.ZNotice", log: Optional[IO[str]]) -> None:
 
     zeph: ZephyrDict
     zeph = {
-        'time': str(notice.time),
-        'sender': notice.sender,
-        'zsig': zsig,  # logged here but not used by app
-        'content': body,
+        "time": str(notice.time),
+        "sender": notice.sender,
+        "zsig": zsig,  # logged here but not used by app
+        "content": body,
     }
     if is_huddle:
-        zeph['type'] = 'private'
-        zeph['recipient'] = huddle_recipients
+        zeph["type"] = "private"
+        zeph["recipient"] = huddle_recipients
     elif is_personal:
         assert notice.recipient is not None
-        zeph['type'] = 'private'
-        zeph['recipient'] = to_zulip_username(notice.recipient)
+        zeph["type"] = "private"
+        zeph["recipient"] = to_zulip_username(notice.recipient)
     else:
-        zeph['type'] = 'stream'
-        zeph['stream'] = zephyr_class
+        zeph["type"] = "stream"
+        zeph["stream"] = zephyr_class
         if notice.instance.strip() != "":
-            zeph['subject'] = notice.instance
+            zeph["subject"] = notice.instance
         else:
             zeph["subject"] = '(instance "%s")' % (notice.instance,)
 
@@ -489,7 +489,7 @@ def process_notice(notice: "zephyr.ZNotice", log: Optional[IO[str]]) -> None:
         "Received a message on %s/%s from %s..." % (zephyr_class, notice.instance, notice.sender)
     )
     if log is not None:
-        log.write(json.dumps(zeph) + '\n')
+        log.write(json.dumps(zeph) + "\n")
         log.flush()
 
     if os.fork() == 0:
@@ -593,7 +593,7 @@ def zephyr_to_zulip(options: optparse.Values) -> None:
                         zeph["subject"] = zeph["instance"]
                     logger.info(
                         "sending saved message to %s from %s..."
-                        % (zeph.get('stream', zeph.get('recipient')), zeph['sender'])
+                        % (zeph.get("stream", zeph.get("recipient")), zeph["sender"])
                     )
                     send_zulip(zeph)
                 except Exception:
@@ -603,7 +603,7 @@ def zephyr_to_zulip(options: optparse.Values) -> None:
     logger.info("Successfully initialized; Starting receive loop.")
 
     if options.resend_log_path is not None:
-        with open(options.resend_log_path, 'a') as log:
+        with open(options.resend_log_path, "a") as log:
             process_loop(log)
     else:
         process_loop(None)
@@ -700,10 +700,10 @@ Feedback button or at support@zulip.com."""
     ]
 
     # Hack to make ctl's fake username setup work :)
-    if message['type'] == "stream" and zulip_account_email == "ctl@mit.edu":
+    if message["type"] == "stream" and zulip_account_email == "ctl@mit.edu":
         zwrite_args.extend(["-S", "ctl"])
 
-    if message['type'] == "stream":
+    if message["type"] == "stream":
         zephyr_class = message["display_recipient"]
         instance = message["subject"]
 
@@ -725,11 +725,11 @@ Feedback button or at support@zulip.com."""
                 zephyr_class = "message"
         zwrite_args.extend(["-c", zephyr_class, "-i", instance])
         logger.info("Forwarding message to class %s, instance %s" % (zephyr_class, instance))
-    elif message['type'] == "private":
-        if len(message['display_recipient']) == 1:
+    elif message["type"] == "private":
+        if len(message["display_recipient"]) == 1:
             recipient = to_zephyr_username(message["display_recipient"][0]["email"])
             recipients = [recipient]
-        elif len(message['display_recipient']) == 2:
+        elif len(message["display_recipient"]) == 2:
             recipient = ""
             for r in message["display_recipient"]:
                 if r["email"].lower() != zulip_account_email.lower():
@@ -1085,62 +1085,62 @@ def configure_logger(logger: logging.Logger, direction_name: Optional[str]) -> N
 def parse_args() -> Tuple[optparse.Values, List[str]]:
     parser = optparse.OptionParser()
     parser.add_option(
-        '--forward-class-messages', default=False, help=optparse.SUPPRESS_HELP, action='store_true'
+        "--forward-class-messages", default=False, help=optparse.SUPPRESS_HELP, action="store_true"
     )
-    parser.add_option('--shard', help=optparse.SUPPRESS_HELP)
-    parser.add_option('--noshard', default=False, help=optparse.SUPPRESS_HELP, action='store_true')
-    parser.add_option('--resend-log', dest='logs_to_resend', help=optparse.SUPPRESS_HELP)
-    parser.add_option('--enable-resend-log', dest='resend_log_path', help=optparse.SUPPRESS_HELP)
-    parser.add_option('--log-path', dest='log_path', help=optparse.SUPPRESS_HELP)
+    parser.add_option("--shard", help=optparse.SUPPRESS_HELP)
+    parser.add_option("--noshard", default=False, help=optparse.SUPPRESS_HELP, action="store_true")
+    parser.add_option("--resend-log", dest="logs_to_resend", help=optparse.SUPPRESS_HELP)
+    parser.add_option("--enable-resend-log", dest="resend_log_path", help=optparse.SUPPRESS_HELP)
+    parser.add_option("--log-path", dest="log_path", help=optparse.SUPPRESS_HELP)
     parser.add_option(
-        '--stream-file-path',
-        dest='stream_file_path',
+        "--stream-file-path",
+        dest="stream_file_path",
         default="/home/zulip/public_streams",
         help=optparse.SUPPRESS_HELP,
     )
     parser.add_option(
-        '--no-forward-personals',
-        dest='forward_personals',
+        "--no-forward-personals",
+        dest="forward_personals",
         help=optparse.SUPPRESS_HELP,
         default=True,
-        action='store_false',
+        action="store_false",
     )
     parser.add_option(
-        '--forward-mail-zephyrs',
-        dest='forward_mail_zephyrs',
+        "--forward-mail-zephyrs",
+        dest="forward_mail_zephyrs",
         help=optparse.SUPPRESS_HELP,
         default=False,
-        action='store_true',
+        action="store_true",
     )
     parser.add_option(
-        '--no-forward-from-zulip',
+        "--no-forward-from-zulip",
         default=True,
-        dest='forward_from_zulip',
+        dest="forward_from_zulip",
         help=optparse.SUPPRESS_HELP,
-        action='store_false',
+        action="store_false",
     )
-    parser.add_option('--verbose', default=False, help=optparse.SUPPRESS_HELP, action='store_true')
-    parser.add_option('--sync-subscriptions', default=False, action='store_true')
-    parser.add_option('--ignore-expired-tickets', default=False, action='store_true')
-    parser.add_option('--site', default=DEFAULT_SITE, help=optparse.SUPPRESS_HELP)
-    parser.add_option('--on-startup-command', default=None, help=optparse.SUPPRESS_HELP)
-    parser.add_option('--user', default=os.environ["USER"], help=optparse.SUPPRESS_HELP)
+    parser.add_option("--verbose", default=False, help=optparse.SUPPRESS_HELP, action="store_true")
+    parser.add_option("--sync-subscriptions", default=False, action="store_true")
+    parser.add_option("--ignore-expired-tickets", default=False, action="store_true")
+    parser.add_option("--site", default=DEFAULT_SITE, help=optparse.SUPPRESS_HELP)
+    parser.add_option("--on-startup-command", default=None, help=optparse.SUPPRESS_HELP)
+    parser.add_option("--user", default=os.environ["USER"], help=optparse.SUPPRESS_HELP)
     parser.add_option(
-        '--stamp-path',
+        "--stamp-path",
         default="/afs/athena.mit.edu/user/t/a/tabbott/for_friends",
         help=optparse.SUPPRESS_HELP,
     )
-    parser.add_option('--session-path', default=None, help=optparse.SUPPRESS_HELP)
-    parser.add_option('--nagios-class', default=None, help=optparse.SUPPRESS_HELP)
-    parser.add_option('--nagios-path', default=None, help=optparse.SUPPRESS_HELP)
+    parser.add_option("--session-path", default=None, help=optparse.SUPPRESS_HELP)
+    parser.add_option("--nagios-class", default=None, help=optparse.SUPPRESS_HELP)
+    parser.add_option("--nagios-path", default=None, help=optparse.SUPPRESS_HELP)
     parser.add_option(
-        '--use-sessions', default=False, action='store_true', help=optparse.SUPPRESS_HELP
+        "--use-sessions", default=False, action="store_true", help=optparse.SUPPRESS_HELP
     )
     parser.add_option(
-        '--test-mode', default=False, help=optparse.SUPPRESS_HELP, action='store_true'
+        "--test-mode", default=False, help=optparse.SUPPRESS_HELP, action="store_true"
     )
     parser.add_option(
-        '--api-key-file', default=os.path.join(os.environ["HOME"], "Private", ".humbug-api-key")
+        "--api-key-file", default=os.path.join(os.environ["HOME"], "Private", ".humbug-api-key")
     )
     return parser.parse_args()
 
@@ -1235,7 +1235,7 @@ or specify the --api-key-file option."""
             # Personals mirror on behalf of another user.
             pgrep_query = "%s.*--user=%s" % (pgrep_query, options.user)
         proc = subprocess.Popen(
-            ['pgrep', '-U', os.environ["USER"], "-f", pgrep_query],
+            ["pgrep", "-U", os.environ["USER"], "-f", pgrep_query],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )

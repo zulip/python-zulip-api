@@ -12,18 +12,18 @@ Example: send-message --type=stream commits --subject="my subject" --message="te
 Example: send-message user1@example.com user2@example.com
 """
 parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage))
-parser.add_argument('recipients', nargs='+')
-parser.add_argument('--subject', default='test')
-parser.add_argument('--message', default='test message')
-parser.add_argument('--type', default='private')
+parser.add_argument("recipients", nargs="+")
+parser.add_argument("--subject", default="test")
+parser.add_argument("--message", default="test message")
+parser.add_argument("--type", default="private")
 options = parser.parse_args()
 
 client = zulip.init_from_options(options)
 
 message_data = {
-    'type': options.type,
-    'content': options.message,
-    'subject': options.subject,
-    'to': options.recipients,
+    "type": options.type,
+    "content": options.message,
+    "subject": options.subject,
+    "to": options.recipients,
 }
 print(client.send_message(message_data))

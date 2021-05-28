@@ -19,18 +19,18 @@ class MonkeyTestitBot:
 
     def initialize(self, bot_handler: BotHandler) -> None:
         try:
-            self.config = bot_handler.get_config_info('monkeytestit')
+            self.config = bot_handler.get_config_info("monkeytestit")
         except NoBotConfigException:
             bot_handler.quit(
                 "Quitting because there's no config file "
                 "supplied. See doc.md for a guide on setting up "
                 "one. If you already know the drill, just create "
-                "a .conf file with \"monkeytestit\" as the "
+                'a .conf file with "monkeytestit" as the '
                 "section header and api_key = <your key> for "
                 "the api key."
             )
 
-        self.api_key = self.config.get('api_key')
+        self.api_key = self.config.get("api_key")
 
         if not self.api_key:
             bot_handler.quit(
@@ -48,7 +48,7 @@ class MonkeyTestitBot:
             )
 
     def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
-        content = message['content']
+        content = message["content"]
 
         response = parse.execute(content, self.api_key)
 

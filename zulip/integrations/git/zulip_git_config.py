@@ -2,7 +2,7 @@
 from typing import Dict, Optional, Text
 
 # Name of the stream to send notifications to, default is "commits"
-STREAM_NAME = 'commits'
+STREAM_NAME = "commits"
 
 # Change these values to configure authentication for the plugin
 ZULIP_USER = "git-bot@example.com"
@@ -37,7 +37,7 @@ def commit_notice_destination(repo: Text, branch: Text, commit: Text) -> Optiona
 #
 # return '!avatar(%s) [%s](https://example.com/commits/%s)\n' % (author, subject, commit_id)
 def format_commit_message(author: Text, subject: Text, commit_id: Text) -> Text:
-    return '!avatar(%s) %s\n' % (author, subject)
+    return "!avatar(%s) %s\n" % (author, subject)
 
 
 ## If properly installed, the Zulip API should be in your import

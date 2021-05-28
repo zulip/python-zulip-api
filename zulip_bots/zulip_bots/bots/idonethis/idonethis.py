@@ -36,7 +36,7 @@ def make_API_request(
     body: Optional[Dict[str, str]] = None,
     params: Optional[Dict[str, str]] = None,
 ) -> Any:
-    headers = {'Authorization': 'Token ' + api_key}
+    headers = {"Authorization": "Token " + api_key}
     if method == "GET":
         r = requests.get(API_BASE_URL + endpoint, headers=headers, params=params)
     elif method == "POST":
@@ -45,13 +45,13 @@ def make_API_request(
         return r.json()
     elif (
         r.status_code == 401
-        and 'error' in r.json()
-        and r.json()['error'] == "Invalid API Authentication"
+        and "error" in r.json()
+        and r.json()["error"] == "Invalid API Authentication"
     ):
-        logging.error('Error authenticating, please check key ' + str(r.url))
+        logging.error("Error authenticating, please check key " + str(r.url))
         raise AuthenticationException()
     else:
-        logging.error('Error make API request, code ' + str(r.status_code) + '. json: ' + r.json())
+        logging.error("Error make API request, code " + str(r.status_code) + ". json: " + r.json())
         raise UnspecifiedProblemException()
 
 
@@ -84,14 +84,14 @@ def api_create_entry(body: str, team_id: str) -> Dict[str, Any]:
 
 
 def list_teams() -> str:
-    response = ["Teams:"] + [" * " + team['name'] for team in api_list_team()]
+    response = ["Teams:"] + [" * " + team["name"] for team in api_list_team()]
     return "\n".join(response)
 
 
 def get_team_hash(team_name: str) -> str:
     for team in api_list_team():
-        if team['name'].lower() == team_name.lower() or team['hash_id'] == team_name:
-            return team['hash_id']
+        if team["name"].lower() == team_name.lower() or team["hash_id"] == team_name:
+            return team["hash_id"]
     raise TeamNotFoundException(team_name)
 
 
@@ -120,7 +120,7 @@ def entries_list(team_name: str) -> str:
                 "  * Team: {teamname}",
                 "  * ID: {hash_id}",
             ]
-        ).format(username=entry['user']['full_name'], teamname=entry['team']['name'], **entry)
+        ).format(username=entry["user"]["full_name"], teamname=entry["team"]["name"], **entry)
     return response
 
 
@@ -151,15 +151,15 @@ More information in my help"""
 
     team_id = get_team_hash(team)
     data = api_create_entry(new_message, team_id)
-    return "Great work :thumbs_up:. New entry `{}` created!".format(data['body_formatted'])
+    return "Great work :thumbs_up:. New entry `{}` created!".format(data["body_formatted"])
 
 
 class IDoneThisHandler:
     def initialize(self, bot_handler: BotHandler) -> None:
         global api_key, default_team
-        self.config_info = bot_handler.get_config_info('idonethis')
-        if 'api_key' in self.config_info:
-            api_key = self.config_info['api_key']
+        self.config_info = bot_handler.get_config_info("idonethis")
+        if "api_key" in self.config_info:
+            api_key = self.config_info["api_key"]
         else:
             logging.error("An API key must be specified for this bot to run.")
             logging.error(
@@ -167,8 +167,8 @@ class IDoneThisHandler:
             )
             bot_handler.quit()
 
-        if 'default_team' in self.config_info:
-            default_team = self.config_info['default_team']
+        if "default_team" in self.config_info:
+            default_team = self.config_info["default_team"]
         else:
             logging.error(
                 "Cannot find default team. Users will need to manually specify a team each time an entry is created."
@@ -192,7 +192,7 @@ class IDoneThisHandler:
         else:
             default_team_message = "There is currently no default team set up :frowning:."
         return (
-            '''
+            """
 This bot allows for interaction with idonethis, a collaboration tool to increase a team's productivity.
 Below are some of the commands you can use, and what they do.
 
@@ -211,7 +211,7 @@ Below are some of the commands you can use, and what they do.
     Create a new entry. Optionally supply `--team=<team>` for teams with no spaces or `"--team=<team>"`
     for teams with spaces. For example `@mention i did "--team=product team" something` will create a
     new entry `something` for the product team.
-        '''
+        """
             + default_team_message
         )
 
@@ -219,7 +219,7 @@ Below are some of the commands you can use, and what they do.
         bot_handler.send_reply(message, self.get_response(message))
 
     def get_response(self, message: Dict[str, Any]) -> str:
-        message_content = message['content'].strip().split()
+        message_content = message["content"].strip().split()
         reply = ""
         try:
             command = " ".join(message_content[:2])

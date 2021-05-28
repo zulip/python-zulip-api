@@ -100,24 +100,24 @@ class ZulipPlugin(Component):
 
         content = "%s updated %s" % (author, markdown_ticket_url(ticket))
         if comment:
-            content += ' with comment: %s\n\n' % (markdown_block(comment),)
+            content += " with comment: %s\n\n" % (markdown_block(comment),)
         else:
             content += ":\n\n"
         field_changes = []
         for key, value in old_values.items():
             if key == "description":
-                content += '- Changed %s from %s\n\nto %s' % (
+                content += "- Changed %s from %s\n\nto %s" % (
                     key,
                     markdown_block(value),
                     markdown_block(ticket.values.get(key)),
                 )
             elif old_values.get(key) == "":
-                field_changes.append('%s: => **%s**' % (key, ticket.values.get(key)))
+                field_changes.append("%s: => **%s**" % (key, ticket.values.get(key)))
             elif ticket.values.get(key) == "":
                 field_changes.append('%s: **%s** => ""' % (key, old_values.get(key)))
             else:
                 field_changes.append(
-                    '%s: **%s** => **%s**' % (key, old_values.get(key), ticket.values.get(key))
+                    "%s: **%s** => **%s**" % (key, old_values.get(key), ticket.values.get(key))
                 )
         content += ", ".join(field_changes)
 

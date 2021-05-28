@@ -10,7 +10,7 @@ from typing import Dict
 sys.path.insert(0, os.path.dirname(__file__))
 import zulip_openshift_config as config
 
-VERSION = '0.1'
+VERSION = "0.1"
 
 if config.ZULIP_API_PATH is not None:
     sys.path.append(config.ZULIP_API_PATH)
@@ -21,7 +21,7 @@ client = zulip.Client(
     email=config.ZULIP_USER,
     site=config.ZULIP_SITE,
     api_key=config.ZULIP_API_KEY,
-    client='ZulipOpenShift/' + VERSION,
+    client="ZulipOpenShift/" + VERSION,
 )
 
 
@@ -29,19 +29,19 @@ def get_deployment_details() -> Dict[str, str]:
     # "gear deployments" output example:
     #   Activation time - Deployment ID - Git Ref - Git SHA1
     #   2017-01-07 15:40:30 -0500 - 9e2b7143 - master - b9ce57c - ACTIVE
-    dep = subprocess.check_output(['gear', 'deployments'], universal_newlines=True).splitlines()[1]
-    splits = dep.split(' - ')
+    dep = subprocess.check_output(["gear", "deployments"], universal_newlines=True).splitlines()[1]
+    splits = dep.split(" - ")
 
     return dict(
-        app_name=os.environ['OPENSHIFT_APP_NAME'],
-        url=os.environ['OPENSHIFT_APP_DNS'],
+        app_name=os.environ["OPENSHIFT_APP_NAME"],
+        url=os.environ["OPENSHIFT_APP_DNS"],
         branch=splits[2],
         commit_id=splits[3],
     )
 
 
 def send_bot_message(deployment: Dict[str, str]) -> None:
-    destination = config.deployment_notice_destination(deployment['branch'])
+    destination = config.deployment_notice_destination(deployment["branch"])
     if destination is None:
         # No message should be sent
         return
@@ -49,10 +49,10 @@ def send_bot_message(deployment: Dict[str, str]) -> None:
 
     client.send_message(
         {
-            'type': 'stream',
-            'to': destination['stream'],
-            'subject': destination['subject'],
-            'content': message,
+            "type": "stream",
+            "to": destination["stream"],
+            "subject": destination["subject"],
+            "content": message,
         }
     )
 

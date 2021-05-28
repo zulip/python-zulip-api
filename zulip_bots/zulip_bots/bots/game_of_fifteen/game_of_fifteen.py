@@ -31,8 +31,8 @@ class GameOfFifteenModel:
 
     def determine_game_over(self, players: List[str]) -> str:
         if self.won(self.current_board):
-            return 'current turn'
-        return ''
+            return "current turn"
+        return ""
 
     def won(self, board: Any) -> bool:
         for i in range(3):
@@ -52,16 +52,16 @@ class GameOfFifteenModel:
     def make_move(self, move: str, player_number: int, computer_move: bool = False) -> Any:
         board = self.current_board
         move = move.strip()
-        move = move.split(' ')
+        move = move.split(" ")
 
-        if '' in move:
-            raise BadMoveException('You should enter space separated digits.')
+        if "" in move:
+            raise BadMoveException("You should enter space separated digits.")
         moves = len(move)
         for m in range(1, moves):
             tile = int(move[m])
             coordinates = self.get_coordinates(board)
             if tile not in coordinates:
-                raise BadMoveException('You can only move tiles which exist in the board.')
+                raise BadMoveException("You can only move tiles which exist in the board.")
             i, j = coordinates[tile]
             if (j - 1) > -1 and board[i][j - 1] == 0:
                 board[i][j - 1] = tile
@@ -77,7 +77,7 @@ class GameOfFifteenModel:
                 board[i][j] = 0
             else:
                 raise BadMoveException(
-                    'You can only move tiles which are adjacent to :grey_question:.'
+                    "You can only move tiles which are adjacent to :grey_question:."
                 )
             if m == moves - 1:
                 return board
@@ -86,30 +86,30 @@ class GameOfFifteenModel:
 class GameOfFifteenMessageHandler:
 
     tiles = {
-        '0': ':grey_question:',
-        '1': ':one:',
-        '2': ':two:',
-        '3': ':three:',
-        '4': ':four:',
-        '5': ':five:',
-        '6': ':six:',
-        '7': ':seven:',
-        '8': ':eight:',
+        "0": ":grey_question:",
+        "1": ":one:",
+        "2": ":two:",
+        "3": ":three:",
+        "4": ":four:",
+        "5": ":five:",
+        "6": ":six:",
+        "7": ":seven:",
+        "8": ":eight:",
     }
 
     def parse_board(self, board: Any) -> str:
         # Header for the top of the board
-        board_str = ''
+        board_str = ""
 
         for row in range(3):
-            board_str += '\n\n'
+            board_str += "\n\n"
             for column in range(3):
                 board_str += self.tiles[str(board[row][column])]
         return board_str
 
     def alert_move_message(self, original_player: str, move_info: str) -> str:
-        tile = move_info.replace('move ', '')
-        return original_player + ' moved ' + tile
+        tile = move_info.replace("move ", "")
+        return original_player + " moved " + tile
 
     def game_start_message(self) -> str:
         return (
@@ -119,23 +119,23 @@ class GameOfFifteenMessageHandler:
 
 
 class GameOfFifteenBotHandler(GameAdapter):
-    '''
+    """
     Bot that uses the Game Adapter class
     to allow users to play Game of Fifteen
-    '''
+    """
 
     def __init__(self) -> None:
-        game_name = 'Game of Fifteen'
-        bot_name = 'Game of Fifteen'
+        game_name = "Game of Fifteen"
+        bot_name = "Game of Fifteen"
         move_help_message = (
-            '* To make your move during a game, type\n```move <tile1> <tile2> ...```'
+            "* To make your move during a game, type\n```move <tile1> <tile2> ...```"
         )
-        move_regex = r'move [\d{1}\s]+$'
+        move_regex = r"move [\d{1}\s]+$"
         model = GameOfFifteenModel
         gameMessageHandler = GameOfFifteenMessageHandler
-        rules = '''Arrange the board’s tiles from smallest to largest, left to right,
+        rules = """Arrange the board’s tiles from smallest to largest, left to right,
                   top to bottom, and tiles adjacent to :grey_question: can only be moved.
-                  Final configuration will have :grey_question: in top left.'''
+                  Final configuration will have :grey_question: in top left."""
 
         super().__init__(
             game_name,

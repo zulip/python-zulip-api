@@ -7,13 +7,13 @@ import subprocess
 import sys
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-ZULIP_BOTS_DIR = os.path.join(CURRENT_DIR, '..', 'zulip_bots')
+ZULIP_BOTS_DIR = os.path.join(CURRENT_DIR, "..", "zulip_bots")
 sys.path.append(ZULIP_BOTS_DIR)
 
-red = '\033[91m'
-green = '\033[92m'
-end_format = '\033[0m'
-bold = '\033[1m'
+red = "\033[91m"
+green = "\033[92m"
+end_format = "\033[0m"
+bold = "\033[1m"
 
 
 def main():
@@ -23,25 +23,25 @@ Creates a Python virtualenv. Its Python version is equal to
 the Python version this command is executed with."""
     parser = argparse.ArgumentParser(usage=usage)
     parser.add_argument(
-        '--python-interpreter',
-        '-p',
-        metavar='PATH_TO_PYTHON_INTERPRETER',
+        "--python-interpreter",
+        "-p",
+        metavar="PATH_TO_PYTHON_INTERPRETER",
         default=os.path.abspath(sys.executable),
-        help='Path to the Python interpreter to use when provisioning.',
+        help="Path to the Python interpreter to use when provisioning.",
     )
     parser.add_argument(
-        '--force', '-f', action='store_true', help='create venv even with outdated Python version.'
+        "--force", "-f", action="store_true", help="create venv even with outdated Python version."
     )
     options = parser.parse_args()
 
-    base_dir = os.path.abspath(os.path.join(__file__, '..', '..'))
+    base_dir = os.path.abspath(os.path.join(__file__, "..", ".."))
     py_version_output = subprocess.check_output(
-        [options.python_interpreter, '--version'], stderr=subprocess.STDOUT, universal_newlines=True
+        [options.python_interpreter, "--version"], stderr=subprocess.STDOUT, universal_newlines=True
     )
     # The output has the format "Python 1.2.3"
-    py_version_list = py_version_output.split()[1].split('.')
+    py_version_list = py_version_output.split()[1].split(".")
     py_version = tuple(int(num) for num in py_version_list[0:2])
-    venv_name = 'zulip-api-py{}-venv'.format(py_version[0])
+    venv_name = "zulip-api-py{}-venv".format(py_version[0])
 
     if py_version <= (3, 1) and (not options.force):
         print(
@@ -53,7 +53,7 @@ the Python version this command is executed with."""
     venv_dir = os.path.join(base_dir, venv_name)
     if not os.path.isdir(venv_dir):
         try:
-            return_code = subprocess.call([options.python_interpreter, '-m', 'venv', venv_dir])
+            return_code = subprocess.call([options.python_interpreter, "-m", "venv", venv_dir])
         except OSError:
             print(
                 "{red}Installation with venv failed. Probable errors are: "
@@ -77,34 +77,34 @@ the Python version this command is executed with."""
     else:
         print("Virtualenv already exists.")
 
-    if os.path.isdir(os.path.join(venv_dir, 'Scripts')):
+    if os.path.isdir(os.path.join(venv_dir, "Scripts")):
         # POSIX compatibility layer and Linux environment emulation for Windows
         # venv uses /Scripts instead of /bin on Windows cmd and Power Shell.
         # Read https://docs.python.org/3/library/venv.html
-        venv_exec_dir = 'Scripts'
+        venv_exec_dir = "Scripts"
     else:
-        venv_exec_dir = 'bin'
+        venv_exec_dir = "bin"
 
     # On OS X, ensure we use the virtualenv version of the python binary for
     # future subprocesses instead of the version that this script was launched with. See
     # https://stackoverflow.com/questions/26323852/whats-the-meaning-of-pyvenv-launcher-environment-variable
-    if '__PYVENV_LAUNCHER__' in os.environ:
-        del os.environ['__PYVENV_LAUNCHER__']
+    if "__PYVENV_LAUNCHER__" in os.environ:
+        del os.environ["__PYVENV_LAUNCHER__"]
 
     # In order to install all required packages for the venv, `pip` needs to be executed by
     # the venv's Python interpreter. `--prefix venv_dir` ensures that all modules are installed
     # in the right place.
     def install_dependencies(requirements_filename):
-        pip_path = os.path.join(venv_dir, venv_exec_dir, 'pip')
+        pip_path = os.path.join(venv_dir, venv_exec_dir, "pip")
         # We first install a modern version of pip that supports --prefix
-        subprocess.call([pip_path, 'install', 'pip>=9.0'])
+        subprocess.call([pip_path, "install", "pip>=9.0"])
         if subprocess.call(
             [
                 pip_path,
-                'install',
-                '--prefix',
+                "install",
+                "--prefix",
                 venv_dir,
-                '-r',
+                "-r",
                 os.path.join(base_dir, requirements_filename),
             ]
         ):
@@ -114,7 +114,7 @@ the Python version this command is executed with."""
                 )
             )
 
-    install_dependencies('requirements.txt')
+    install_dependencies("requirements.txt")
 
     # Install all requirements for all bots. get_bot_paths()
     # has requirements that must be satisfied prior to calling
@@ -127,15 +127,15 @@ the Python version this command is executed with."""
         relative_path = os.path.join(*path_split)
         install_dependencies(relative_path)
 
-    print(green + 'Success!' + end_format)
+    print(green + "Success!" + end_format)
 
-    activate_command = os.path.join(base_dir, venv_dir, venv_exec_dir, 'activate')
+    activate_command = os.path.join(base_dir, venv_dir, venv_exec_dir, "activate")
     # We make the path look like a Unix path, because most Windows users
     # are likely to be running in a bash shell.
-    activate_command = activate_command.replace(os.sep, '/')
-    print('\nRun the following to enter into the virtualenv:\n')
-    print(bold + '  source ' + activate_command + end_format + "\n")
+    activate_command = activate_command.replace(os.sep, "/")
+    print("\nRun the following to enter into the virtualenv:\n")
+    print(bold + "  source " + activate_command + end_format + "\n")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

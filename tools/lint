@@ -9,7 +9,7 @@ from custom_check import non_py_rules, python_rules
 
 EXCLUDED_FILES = [
     # This is an external file that doesn't comply with our codestyle
-    'zulip/integrations/perforce/git_p4.py',
+    "zulip/integrations/perforce/git_p4.py",
 ]
 
 
@@ -21,21 +21,21 @@ def run() -> None:
     linter_config = LinterConfig(args)
 
     by_lang = linter_config.list_files(
-        file_types=['py', 'sh', 'json', 'md', 'txt'], exclude=EXCLUDED_FILES
+        file_types=["py", "sh", "json", "md", "txt"], exclude=EXCLUDED_FILES
     )
 
     linter_config.external_linter(
-        'mypy',
-        [sys.executable, 'tools/run-mypy'],
-        ['py'],
+        "mypy",
+        [sys.executable, "tools/run-mypy"],
+        ["py"],
         pass_targets=False,
         description="Static type checker for Python (config: mypy.ini)",
     )
     linter_config.external_linter(
-        'flake8', ['flake8'], ['py'], description="Standard Python linter (config: .flake8)"
+        "flake8", ["flake8"], ["py"], description="Standard Python linter (config: .flake8)"
     )
     linter_config.external_linter(
-        'gitlint', ['tools/lint-commits'], description="Git Lint for commit messages"
+        "gitlint", ["tools/lint-commits"], description="Git Lint for commit messages"
     )
 
     @linter_config.lint
@@ -55,5 +55,5 @@ def run() -> None:
     linter_config.do_lint()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run()

@@ -10,7 +10,7 @@ Get all the topics for a specific stream.
 import zulip
 
 parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage))
-parser.add_argument('--stream-id', required=True)
+parser.add_argument("--stream-id", required=True)
 options = parser.parse_args()
 
 client = zulip.init_from_options(options)

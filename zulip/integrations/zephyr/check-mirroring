@@ -13,12 +13,12 @@ import zephyr
 import zulip
 
 parser = optparse.OptionParser()
-parser.add_option('--verbose', dest='verbose', default=False, action='store_true')
-parser.add_option('--site', dest='site', default=None, action='store')
-parser.add_option('--sharded', default=False, action='store_true')
+parser.add_option("--verbose", dest="verbose", default=False, action="store_true")
+parser.add_option("--site", dest="site", default=None, action="store")
+parser.add_option("--sharded", default=False, action="store_true")
 (options, args) = parser.parse_args()
 
-mit_user = 'tabbott/extra@ATHENA.MIT.EDU'
+mit_user = "tabbott/extra@ATHENA.MIT.EDU"
 
 zulip_client = zulip.Client(verbose=True, client="ZulipMonitoring/0.1", site=options.site)
 
@@ -116,11 +116,11 @@ def send_zephyr(zwrite_args: List[str], content: str) -> bool:
 # Subscribe to Zulip
 try:
     res = zulip_client.register(event_types=["message"])
-    if 'error' in res['result']:
+    if "error" in res["result"]:
         logging.error("Error subscribing to Zulips!")
-        logging.error(res['msg'])
+        logging.error(res["msg"])
         print_status_and_exit(1)
-    queue_id, last_event_id = (res['queue_id'], res['last_event_id'])
+    queue_id, last_event_id = (res["queue_id"], res["last_event_id"])
 except Exception:
     logger.exception("Unexpected error subscribing to Zulips")
     print_status_and_exit(1)
@@ -129,9 +129,9 @@ except Exception:
 zephyr_subs_to_add = []
 for (stream, test) in test_streams:
     if stream == "message":
-        zephyr_subs_to_add.append((stream, 'personal', mit_user))
+        zephyr_subs_to_add.append((stream, "personal", mit_user))
     else:
-        zephyr_subs_to_add.append((stream, '*', '*'))
+        zephyr_subs_to_add.append((stream, "*", "*"))
 
 actually_subscribed = False
 for tries in range(10):
@@ -263,11 +263,11 @@ logger.info("Starting receiving messages!")
 
 # receive zulips
 res = zulip_client.get_events(queue_id=queue_id, last_event_id=last_event_id)
-if 'error' in res['result']:
+if "error" in res["result"]:
     logging.error("Error receiving Zulips!")
-    logging.error(res['msg'])
+    logging.error(res["msg"])
     print_status_and_exit(1)
-messages = [event['message'] for event in res['events']]
+messages = [event["message"] for event in res["events"]]
 logger.info("Finished receiving Zulip messages!")
 
 receive_zephyrs()
@@ -296,7 +296,7 @@ def process_keys(content_list: List[str]) -> Tuple[Dict[str, int], Set[str], Set
 # The h_foo variables are about the messages we _received_ in Zulip
 # The z_foo variables are about the messages we _received_ in Zephyr
 h_contents = [message["content"] for message in messages]
-z_contents = [notice.message.split('\0')[1] for notice in notices]
+z_contents = [notice.message.split("\0")[1] for notice in notices]
 (h_key_counts, h_missing_z, h_missing_h, h_duplicates, h_success) = process_keys(h_contents)
 (z_key_counts, z_missing_z, z_missing_h, z_duplicates, z_success) = process_keys(z_contents)
 

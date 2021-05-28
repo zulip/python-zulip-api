@@ -18,37 +18,37 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 def parse_args() -> argparse.Namespace:
-    usage = '''
+    usage = """
         zulip-run-bot <bot_name> --config-file ~/zuliprc
         zulip-run-bot --help
-        '''
+        """
 
     parser = argparse.ArgumentParser(usage=usage)
-    parser.add_argument('bot', action='store', help='the name or path of an existing bot to run')
+    parser.add_argument("bot", action="store", help="the name or path of an existing bot to run")
 
-    parser.add_argument('--quiet', '-q', action='store_true', help='turn off logging output')
+    parser.add_argument("--quiet", "-q", action="store_true", help="turn off logging output")
 
     parser.add_argument(
-        '--config-file',
-        '-c',
-        action='store',
-        help='zulip configuration file (e.g. ~/Downloads/zuliprc)',
+        "--config-file",
+        "-c",
+        action="store",
+        help="zulip configuration file (e.g. ~/Downloads/zuliprc)",
     )
 
     parser.add_argument(
-        '--bot-config-file',
-        '-b',
-        action='store',
-        help='third party configuration file (e.g. ~/giphy.conf',
+        "--bot-config-file",
+        "-b",
+        action="store",
+        help="third party configuration file (e.g. ~/giphy.conf",
     )
 
     parser.add_argument(
-        '--force',
-        action='store_true',
-        help='try running the bot even if dependencies install fails',
+        "--force",
+        action="store_true",
+        help="try running the bot even if dependencies install fails",
     )
 
-    parser.add_argument('--provision', action='store_true', help='install dependencies for the bot')
+    parser.add_argument("--provision", action="store_true", help="install dependencies for the bot")
 
     args = parser.parse_args()
     return args
@@ -63,26 +63,26 @@ def exit_gracefully_if_zulip_config_is_missing(config_file: Optional[str]) -> No
             # but we'll catch those later.
             return
         else:
-            error_msg = 'ERROR: %s does not exist.' % (config_file,)
+            error_msg = "ERROR: %s does not exist." % (config_file,)
 
     else:
         if zulip_env_vars_are_present():
             return
         else:
-            error_msg = 'ERROR: You did not supply a Zulip config file.'
+            error_msg = "ERROR: You did not supply a Zulip config file."
 
     if error_msg:
-        print('\n')
+        print("\n")
         print(error_msg)
         print(
-            '''
+            """
             You may need to download a config file from the Zulip app, or
             if you have already done that, you need to specify the file
             location correctly on the command line.
 
             If you don't want to use a config file, you must set
             these env vars: ZULIP_EMAIL, ZULIP_API_KEY, ZULIP_SITE.
-        '''
+        """
         )
 
         sys.exit(1)
@@ -96,11 +96,11 @@ def exit_gracefully_if_bot_config_file_does_not_exist(bot_config_file: Optional[
 
     if not os.path.exists(bot_config_file):
         print(
-            '''
+            """
             ERROR: %s does not exist.
 
             You probably just specified the wrong file location here.
-            '''
+            """
             % (bot_config_file,)
         )
         sys.exit(1)
@@ -163,15 +163,15 @@ def main() -> None:
         )
     except NoBotConfigException:
         print(
-            '''
+            """
             ERROR: Your bot requires you to specify a third party
             config file with the --bot-config-file option.
 
             Exiting now.
-            '''
+            """
         )
         sys.exit(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

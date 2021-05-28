@@ -9,13 +9,13 @@ class TestConverterBot(BotTestCase, DefaultTests):
         dialog = [
             (
                 "",
-                'Too few arguments given. Enter `@convert help` '
-                'for help on using the converter.\n',
+                "Too few arguments given. Enter `@convert help` "
+                "for help on using the converter.\n",
             ),
             (
                 "foo bar",
-                'Too few arguments given. Enter `@convert help` '
-                'for help on using the converter.\n',
+                "Too few arguments given. Enter `@convert help` "
+                "for help on using the converter.\n",
             ),
             ("2 m cm", "2 m = 200.0 cm\n"),
             ("12.0 celsius fahrenheit", "12.0 celsius = 53.600054 fahrenheit\n"),

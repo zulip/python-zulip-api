@@ -18,7 +18,7 @@ class IRCBot(irc.bot.SingleServerIRCBot):
         channel: irc.bot.Channel,
         nickname: str,
         server: str,
-        nickserv_password: str = '',
+        nickserv_password: str = "",
         port: int = 6667,
     ) -> None:
         self.channel = channel  # type: irc.bot.Channel
@@ -61,8 +61,8 @@ class IRCBot(irc.bot.SingleServerIRCBot):
 
     def on_welcome(self, c: ServerConnection, e: Event) -> None:
         if len(self.nickserv_password) > 0:
-            msg = 'identify %s' % (self.nickserv_password,)
-            c.privmsg('NickServ', msg)
+            msg = "identify %s" % (self.nickserv_password,)
+            c.privmsg("NickServ", msg)
         c.join(self.channel)
 
         def forward_to_irc(msg: Dict[str, Any]) -> None:

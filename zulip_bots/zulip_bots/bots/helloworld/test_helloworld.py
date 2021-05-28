@@ -6,9 +6,9 @@ class TestHelpBot(BotTestCase, DefaultTests):
 
     def test_bot(self) -> None:
         dialog = [
-            ('', 'beep boop'),
-            ('help', 'beep boop'),
-            ('foo', 'beep boop'),
+            ("", "beep boop"),
+            ("help", "beep boop"),
+            ("foo", "beep boop"),
         ]
 
         self.verify_dialog(dialog)

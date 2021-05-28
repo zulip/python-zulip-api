@@ -2,5 +2,5 @@
 
 from server_lib.test_handler import handle_input_and_run_tests_for_package
 
-if __name__ == '__main__':
-    handle_input_and_run_tests_for_package('Botserver', ['zulip_botserver'])
+if __name__ == "__main__":
+    handle_input_and_run_tests_for_package("Botserver", ["zulip_botserver"])
