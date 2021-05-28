@@ -1,10 +1,10 @@
 """Used to mainly compose a decorated report for the user
 """
 
-from typing import Dict, List, Text
+from typing import Dict, List
 
 
-def compose(results: Dict) -> Text:
+def compose(results: Dict) -> str:
     """Composes a report based on test results
 
     An example would be:
@@ -38,7 +38,7 @@ def compose(results: Dict) -> Text:
     return response
 
 
-def print_more_info_url(results: Dict) -> Text:
+def print_more_info_url(results: Dict) -> str:
     """Creates info for the test URL from monkeytest.it
 
     Example:
@@ -51,7 +51,7 @@ def print_more_info_url(results: Dict) -> Text:
     return "More info: {}".format(results["results_url"])
 
 
-def print_test_id(results: Dict) -> Text:
+def print_test_id(results: Dict) -> str:
     """Prints the test-id with attached to the url
 
     :param results: A dictionary containing the results of a check
@@ -60,7 +60,7 @@ def print_test_id(results: Dict) -> Text:
     return "Test: https://monkeytest.it/test/{}".format(results["test_id"])
 
 
-def print_failures_checkers(results: Dict) -> Text:
+def print_failures_checkers(results: Dict) -> str:
     """Creates info for failures in enabled checkers
 
     Example:
@@ -105,7 +105,7 @@ def get_enabled_checkers(results: Dict) -> List:
     return enabled_checkers
 
 
-def print_enabled_checkers(results: Dict) -> Text:
+def print_enabled_checkers(results: Dict) -> str:
     """Creates info for enabled checkers. This joins the list of enabled
     checkers and format it with the current string response
 
@@ -118,7 +118,7 @@ def print_enabled_checkers(results: Dict) -> Text:
     return "Enabled checkers: {}".format(", ".join(get_enabled_checkers(results)))
 
 
-def print_status(results: Dict) -> Text:
+def print_status(results: Dict) -> str:
     """Creates info for the check status.
 
     Example: Status: tests_failed

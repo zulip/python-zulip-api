@@ -7,7 +7,7 @@ import signal
 import sys
 import time
 from contextlib import contextmanager
-from typing import IO, Any, Dict, Iterator, List, Optional, Set, Text
+from typing import IO, Any, Dict, Iterator, List, Optional, Set
 
 from typing_extensions import Protocol
 
@@ -79,13 +79,13 @@ class BotIdentity:
 
 
 class BotStorage(Protocol):
-    def put(self, key: Text, value: Any) -> None:
+    def put(self, key: str, value: Any) -> None:
         ...
 
-    def get(self, key: Text) -> Any:
+    def get(self, key: str) -> Any:
         ...
 
-    def contains(self, key: Text) -> bool:
+    def contains(self, key: str) -> bool:
         ...
 
 
@@ -100,13 +100,13 @@ class CachedStorage:
         self._cache = init_data
         self._dirty_keys: Set[str] = set()
 
-    def put(self, key: Text, value: Any) -> None:
+    def put(self, key: str, value: Any) -> None:
         # In the cached storage, values being put to the storage is not flushed to the parent storage.
         # It will be marked dirty until it get flushed.
         self._cache[key] = value
         self._dirty_keys.add(key)
 
-    def get(self, key: Text) -> Any:
+    def get(self, key: str) -> Any:
         # Unless the key is not found in the cache, the cached storage will not lookup the parent storage.
         if key in self._cache:
             return self._cache[key]
@@ -123,11 +123,11 @@ class CachedStorage:
             key = self._dirty_keys.pop()
             self._parent_storage.put(key, self._cache[key])
 
-    def flush_one(self, key: Text) -> None:
+    def flush_one(self, key: str) -> None:
         self._dirty_keys.remove(key)
         self._parent_storage.put(key, self._cache[key])
 
-    def contains(self, key: Text) -> bool:
+    def contains(self, key: str) -> bool:
         if key in self._cache:
             return True
         else:
@@ -139,15 +139,15 @@ class StateHandler:
         self._client = client
         self.marshal = lambda obj: json.dumps(obj)
         self.demarshal = lambda obj: json.loads(obj)
-        self.state_ = dict()  # type: Dict[Text, Any]
+        self.state_ = dict()
 
-    def put(self, key: Text, value: Any) -> None:
+    def put(self, key: str, value: Any) -> None:
         self.state_[key] = self.marshal(value)
         response = self._client.update_storage({"storage": {key: self.state_[key]}})
         if response["result"] != "success":
             raise StateHandlerError("Error updating state: {}".format(str(response)))
 
-    def get(self, key: Text) -> Any:
+    def get(self, key: str) -> Any:
         if key in self.state_:
             return self.demarshal(self.state_[key])
 
@@ -159,12 +159,12 @@ class StateHandler:
         self.state_[key] = marshalled_value
         return self.demarshal(marshalled_value)
 
-    def contains(self, key: Text) -> bool:
+    def contains(self, key: str) -> bool:
         return key in self.state_
 
 
 @contextmanager
-def use_storage(storage: BotStorage, keys: List[Text]) -> Iterator[BotStorage]:
+def use_storage(storage: BotStorage, keys: List[str]) -> Iterator[BotStorage]:
     # The context manager for StateHandler that minimizes the number of round-trips to the server.
     # It will fetch all the data using the specified keys and store them to
     # a CachedStorage that will not communicate with the server until manually

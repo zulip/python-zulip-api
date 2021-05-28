@@ -3,12 +3,11 @@ for extract.py
 """
 
 from json.decoder import JSONDecodeError
-from typing import Text
 
 from zulip_bots.bots.monkeytestit.lib import extract, report
 
 
-def execute(message: Text, apikey: Text) -> Text:
+def execute(message: str, apikey: str) -> str:
     """Parses message and returns a dictionary
 
     :param message: The message
@@ -69,7 +68,7 @@ def execute(message: Text, apikey: Text) -> Text:
         return "Unknown command. Available commands: `check <website> " "[params]`"
 
 
-def failed(message: Text) -> Text:
+def failed(message: str) -> str:
     """Simply attaches a failed marker to a message
 
     :param message: The message

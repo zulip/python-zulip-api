@@ -22,7 +22,6 @@ from typing import (
     Mapping,
     Optional,
     Sequence,
-    Text,
     Tuple,
     Union,
 )
@@ -313,7 +312,7 @@ def get_default_config_filename() -> Optional[str]:
     return config_file
 
 
-def validate_boolean_field(field: Optional[Text]) -> Union[bool, None]:
+def validate_boolean_field(field: Optional[str]) -> Union[bool, None]:
     if not isinstance(field, str):
         return None
 
@@ -563,7 +562,7 @@ class Client:
         req_files = []
 
         for (key, val) in orig_request.items():
-            if isinstance(val, str) or isinstance(val, Text):
+            if isinstance(val, str) or isinstance(val, str):
                 request[key] = val
             else:
                 request[key] = json.dumps(val)

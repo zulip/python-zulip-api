@@ -6,7 +6,6 @@
 # `hg push`). See https://zulip.com/integrations for installation instructions.
 
 import sys
-from typing import Text
 
 from mercurial import repository as repo
 from mercurial import ui
@@ -17,8 +16,8 @@ VERSION = "0.9"
 
 
 def format_summary_line(
-    web_url: str, user: str, base: int, tip: int, branch: str, node: Text
-) -> Text:
+    web_url: str, user: str, base: int, tip: int, branch: str, node: str
+) -> str:
     """
     Format the first line of the message, which contains summary
     information about the changeset and links to the changelog if a
@@ -71,7 +70,7 @@ def format_commit_lines(web_url: str, repo: repo, base: int, tip: int) -> str:
 
 
 def send_zulip(
-    email: str, api_key: str, site: str, stream: str, subject: str, content: Text
+    email: str, api_key: str, site: str, stream: str, subject: str, content: str
 ) -> None:
     """
     Send a message to Zulip using the provided credentials, which should be for
@@ -100,7 +99,7 @@ def get_config(ui: ui, item: str) -> str:
         sys.exit(1)
 
 
-def hook(ui: ui, repo: repo, **kwargs: Text) -> None:
+def hook(ui: ui, repo: repo, **kwargs: str) -> None:
     """
     Invoked by configuring a [hook] entry in .hg/hgrc.
     """

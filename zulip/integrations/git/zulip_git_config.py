@@ -1,5 +1,5 @@
 #
-from typing import Dict, Optional, Text
+from typing import Dict, Optional
 
 # Name of the stream to send notifications to, default is "commits"
 STREAM_NAME = "commits"
@@ -23,7 +23,7 @@ ZULIP_API_KEY = "0123456789abcdef0123456789abcdef"
 # * stream "commits"
 # * topic "master"
 # And similarly for branch "test-post-receive" (for use when testing).
-def commit_notice_destination(repo: Text, branch: Text, commit: Text) -> Optional[Dict[Text, Text]]:
+def commit_notice_destination(repo: str, branch: str, commit: str) -> Optional[Dict[str, str]]:
     if branch in ["master", "test-post-receive"]:
         return dict(stream=STREAM_NAME, subject="%s" % (branch,))
 
@@ -36,7 +36,7 @@ def commit_notice_destination(repo: Text, branch: Text, commit: Text) -> Optiona
 # graphical repository viewer, e.g.
 #
 # return '!avatar(%s) [%s](https://example.com/commits/%s)\n' % (author, subject, commit_id)
-def format_commit_message(author: Text, subject: Text, commit_id: Text) -> Text:
+def format_commit_message(author: str, subject: str, commit_id: str) -> str:
     return "!avatar(%s) %s\n" % (author, subject)
 
 

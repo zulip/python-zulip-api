@@ -3,12 +3,12 @@ import importlib.abc
 import importlib.util
 import os
 from pathlib import Path
-from typing import Any, Optional, Text, Tuple
+from typing import Any, Optional, Tuple
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-def import_module_from_source(path: Text, name: Text) -> Any:
+def import_module_from_source(path: str, name: str) -> Any:
     spec = importlib.util.spec_from_file_location(name, path)
     module = importlib.util.module_from_spec(spec)
     loader = spec.loader
@@ -18,14 +18,14 @@ def import_module_from_source(path: Text, name: Text) -> Any:
     return module
 
 
-def import_module_by_name(name: Text) -> Any:
+def import_module_by_name(name: str) -> Any:
     try:
         return importlib.import_module(name)
     except ImportError:
         return None
 
 
-def resolve_bot_path(name: Text) -> Optional[Tuple[Path, Text]]:
+def resolve_bot_path(name: str) -> Optional[Tuple[Path, str]]:
     if os.path.isfile(name):
         bot_path = Path(name)
         bot_name = Path(bot_path).stem
