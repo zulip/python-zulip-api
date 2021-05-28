@@ -13,6 +13,7 @@ except ImportError:
     print("http://docs.python-requests.org/en/master/user/install/")
     sys.exit(1)
 
+
 def get_model_id(options):
     """get_model_id
 
@@ -24,19 +25,14 @@ def get_model_id(options):
 
     """
 
-    trello_api_url = 'https://api.trello.com/1/board/{}'.format(
-        options.trello_board_id
-    )
+    trello_api_url = 'https://api.trello.com/1/board/{}'.format(options.trello_board_id)
 
     params = {
         'key': options.trello_api_key,
         'token': options.trello_token,
     }
 
-    trello_response = requests.get(
-        trello_api_url,
-        params=params
-    )
+    trello_response = requests.get(trello_api_url, params=params)
 
     if trello_response.status_code != 200:
         print('Error: Can\'t get the idModel. Please check the configuration')
@@ -68,13 +64,10 @@ def get_webhook_id(options, id_model):
             options.trello_board_name,
         ),
         'callbackURL': options.zulip_webhook_url,
-        'idModel': id_model
+        'idModel': id_model,
     }
 
-    trello_response = requests.post(
-        trello_api_url,
-        data=data
-    )
+    trello_response = requests.post(trello_api_url, data=data)
 
     if trello_response.status_code != 200:
         print('Error: Can\'t create the Webhook:', trello_response.text)
@@ -83,6 +76,7 @@ def get_webhook_id(options, id_model):
     webhook_info_json = trello_response.json()
 
     return webhook_info_json['id']
+
 
 def create_webhook(options):
     """create_webhook
@@ -106,8 +100,12 @@ def create_webhook(options):
     if id_webhook:
         print('Success! The webhook ID is', id_webhook)
 
-    print('Success! The webhook for the {} Trello board was successfully created.'.format(
-        options.trello_board_name))
+    print(
+        'Success! The webhook for the {} Trello board was successfully created.'.format(
+            options.trello_board_name
+        )
+    )
+
 
 def main():
     description = """
@@ -120,28 +118,36 @@ at <https://zulip.com/integrations/doc/trello>.
 """
 
     parser = argparse.ArgumentParser(description=description)
-    parser.add_argument('--trello-board-name',
-                        required=True,
-                        help='The Trello board name.')
-    parser.add_argument('--trello-board-id',
-                        required=True,
-                        help=('The Trello board short ID. Can usually be found '
-                              'in the URL of the Trello board.'))
-    parser.add_argument('--trello-api-key',
-                        required=True,
-                        help=('Visit https://trello.com/1/appkey/generate to generate '
-                              'an APPLICATION_KEY (need to be logged into Trello).'))
-    parser.add_argument('--trello-token',
-                        required=True,
-                        help=('Visit https://trello.com/1/appkey/generate and under '
-                              '`Developer API Keys`, click on `Token` and generate '
-                              'a Trello access token.'))
-    parser.add_argument('--zulip-webhook-url',
-                        required=True,
-                        help='The webhook URL that Trello will query.')
+    parser.add_argument('--trello-board-name', required=True, help='The Trello board name.')
+    parser.add_argument(
+        '--trello-board-id',
+        required=True,
+        help=('The Trello board short ID. Can usually be found ' 'in the URL of the Trello board.'),
+    )
+    parser.add_argument(
+        '--trello-api-key',
+        required=True,
+        help=(
+            'Visit https://trello.com/1/appkey/generate to generate '
+            'an APPLICATION_KEY (need to be logged into Trello).'
+        ),
+    )
+    parser.add_argument(
+        '--trello-token',
+        required=True,
+        help=(
+            'Visit https://trello.com/1/appkey/generate and under '
+            '`Developer API Keys`, click on `Token` and generate '
+            'a Trello access token.'
+        ),
+    )
+    parser.add_argument(
+        '--zulip-webhook-url', required=True, help='The webhook URL that Trello will query.'
+    )
 
     options = parser.parse_args()
     create_webhook(options)
+
 
 if __name__ == '__main__':
     main()

@@ -8,22 +8,25 @@ from zulip_bots.lib import BotHandler
 
 commands_list = ('list', 'top', 'help')
 
-class YoutubeHandler:
 
+class YoutubeHandler:
     def usage(self) -> str:
         return '''
             This plugin will allow users to search
             for a given search term on Youtube.
             Use '@mention-bot help' to get more information on the bot usage.
             '''
-    help_content = "*Help for YouTube bot* :robot_face: : \n\n" \
-                   "The bot responds to messages starting with @mention-bot.\n\n" \
-                   "`@mention-bot <search terms>` will return top Youtube video for the given `<search term>`.\n" \
-                   "`@mention-bot top <search terms>` also returns the top Youtube result.\n" \
-                   "`@mention-bot list <search terms>` will return a list Youtube videos for the given <search term>.\n \n" \
-                   "Example:\n" \
-                   " * @mention-bot funny cats\n" \
-                   " * @mention-bot list funny dogs"
+
+    help_content = (
+        "*Help for YouTube bot* :robot_face: : \n\n"
+        "The bot responds to messages starting with @mention-bot.\n\n"
+        "`@mention-bot <search terms>` will return top Youtube video for the given `<search term>`.\n"
+        "`@mention-bot top <search terms>` also returns the top Youtube result.\n"
+        "`@mention-bot list <search terms>` will return a list Youtube videos for the given <search term>.\n \n"
+        "Example:\n"
+        " * @mention-bot funny cats\n"
+        " * @mention-bot list funny dogs"
+    )
 
     def initialize(self, bot_handler: BotHandler) -> None:
         self.config_info = bot_handler.get_config_info('youtube')
@@ -31,9 +34,10 @@ class YoutubeHandler:
         try:
             search_youtube('test', self.config_info['key'], self.config_info['video_region'])
         except HTTPError as e:
-            if (e.response.json()['error']['errors'][0]['reason'] == 'keyInvalid'):
-                bot_handler.quit('Invalid key.'
-                                 'Follow the instructions in doc.md for setting API key.')
+            if e.response.json()['error']['errors'][0]['reason'] == 'keyInvalid':
+                bot_handler.quit(
+                    'Invalid key.' 'Follow the instructions in doc.md for setting API key.'
+                )
             else:
                 raise
         except ConnectionError:
@@ -45,15 +49,12 @@ class YoutubeHandler:
             bot_handler.send_reply(message, self.help_content)
         else:
             cmd, query = get_command_query(message)
-            bot_response = get_bot_response(query,
-                                            cmd,
-                                            self.config_info)
+            bot_response = get_bot_response(query, cmd, self.config_info)
             logging.info(bot_response.format())
             bot_handler.send_reply(message, bot_response)
 
 
-def search_youtube(query: str, key: str,
-                   region: str, max_results: int = 1) -> List[List[str]]:
+def search_youtube(query: str, key: str, region: str, max_results: int = 1) -> List[List[str]]:
 
     videos = []
     params = {
@@ -63,7 +64,8 @@ def search_youtube(query: str, key: str,
         'q': query,
         'alt': 'json',
         'type': 'video',
-        'regionCode': region}  # type: Dict[str, Union[str, int]]
+        'regionCode': region,
+    }  # type: Dict[str, Union[str, int]]
 
     url = 'https://www.googleapis.com/youtube/v3/search'
     try:
@@ -77,8 +79,7 @@ def search_youtube(query: str, key: str,
     # matching videos, channels, and playlists.
     for search_result in search_response.get('items', []):
         if search_result['id']['kind'] == 'youtube#video':
-            videos.append([search_result['snippet']['title'],
-                           search_result['id']['videoId']])
+            videos.append([search_result['snippet']['title'], search_result['id']['videoId']])
     return videos
 
 
@@ -86,18 +87,20 @@ def get_command_query(message: Dict[str, str]) -> Tuple[Optional[str], str]:
     blocks = message['content'].lower().split()
     command = blocks[0]
     if command in commands_list:
-        query = message['content'][len(command) + 1:].lstrip()
+        query = message['content'][len(command) + 1 :].lstrip()
         return command, query
     else:
         return None, message['content']
 
 
-def get_bot_response(query: Optional[str], command: Optional[str], config_info: Dict[str, str]) -> str:
+def get_bot_response(
+    query: Optional[str], command: Optional[str], config_info: Dict[str, str]
+) -> str:
 
     key = config_info['key']
     max_results = int(config_info['number_of_results'])
     region = config_info['video_region']
-    video_list = []   # type: List[List[str]]
+    video_list = []  # type: List[List[str]]
     try:
         if query == '' or query is None:
             return YoutubeHandler.help_content
@@ -111,19 +114,23 @@ def get_bot_response(query: Optional[str], command: Optional[str], config_info: 
             return YoutubeHandler.help_content
 
     except (ConnectionError, HTTPError):
-        return 'Uh-Oh, couldn\'t process the request ' \
-               'right now.\nPlease again later'
+        return 'Uh-Oh, couldn\'t process the request ' 'right now.\nPlease again later'
 
     reply = 'Here is what I found for `' + query + '` : '
 
     if len(video_list) == 0:
-        return 'Oops ! Sorry I couldn\'t find any video for  `' + query + '` :slightly_frowning_face:'
+        return (
+            'Oops ! Sorry I couldn\'t find any video for  `' + query + '` :slightly_frowning_face:'
+        )
     elif len(video_list) == 1:
-        return (reply + '\n%s - [Watch now](https://www.youtube.com/watch?v=%s)' % (video_list[0][0], video_list[0][1])).strip()
+        return (
+            reply
+            + '\n%s - [Watch now](https://www.youtube.com/watch?v=%s)'
+            % (video_list[0][0], video_list[0][1])
+        ).strip()
 
     for title, id in video_list:
-        reply = reply + \
-            '\n * %s - [Watch now](https://www.youtube.com/watch/%s)' % (title, id)
+        reply = reply + '\n * %s - [Watch now](https://www.youtube.com/watch/%s)' % (title, id)
     # Using link https://www.youtube.com/watch/<id> to
     # prevent showing multiple previews
     return reply

@@ -17,12 +17,14 @@ from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler, read_
 class TestTriviaQuizBot(BotTestCase, DefaultTests):
     bot_name = "trivia_quiz"  # type: str
 
-    new_question_response = '\nQ: Which class of animals are newts members of?\n\n' + \
-        '* **A** Amphibian\n' + \
-        '* **B** Fish\n' + \
-        '* **C** Reptiles\n' + \
-        '* **D** Mammals\n' + \
-        '**reply**: answer Q001 <letter>'
+    new_question_response = (
+        '\nQ: Which class of animals are newts members of?\n\n'
+        + '* **A** Amphibian\n'
+        + '* **B** Fish\n'
+        + '* **C** Reptiles\n'
+        + '* **D** Mammals\n'
+        + '**reply**: answer Q001 <letter>'
+    )
 
     def get_test_quiz(self) -> Tuple[Dict[str, Any], Any]:
         bot_handler = StubBotHandler()
@@ -58,13 +60,12 @@ class TestTriviaQuizBot(BotTestCase, DefaultTests):
             mock_html_unescape.side_effect = Exception
             with self.assertRaises(Exception) as exception:
                 fix_quotes('test')
-            self.assertEqual(str(exception.exception), "Please use python3.4 or later for this bot.")
+            self.assertEqual(
+                str(exception.exception), "Please use python3.4 or later for this bot."
+            )
 
     def test_invalid_answer(self) -> None:
-        invalid_replies = ['answer A',
-                           'answer A Q10',
-                           'answer Q001 K',
-                           'answer 001 A']
+        invalid_replies = ['answer A', 'answer A Q10', 'answer Q001 K', 'answer 001 A']
         for reply in invalid_replies:
             self._test(reply, 'Invalid answer format')
 
@@ -84,13 +85,17 @@ class TestTriviaQuizBot(BotTestCase, DefaultTests):
         self.assertEqual(quiz['pending'], True)
 
         # test incorrect answer
-        with patch('zulip_bots.bots.trivia_quiz.trivia_quiz.get_quiz_from_id',
-                   return_value=json.dumps(quiz)):
+        with patch(
+            'zulip_bots.bots.trivia_quiz.trivia_quiz.get_quiz_from_id',
+            return_value=json.dumps(quiz),
+        ):
             self._test('answer Q001 B', ':disappointed: WRONG, Foo Test User! B is not correct.')
 
         # test correct answer
-        with patch('zulip_bots.bots.trivia_quiz.trivia_quiz.get_quiz_from_id',
-                   return_value=json.dumps(quiz)):
+        with patch(
+            'zulip_bots.bots.trivia_quiz.trivia_quiz.get_quiz_from_id',
+            return_value=json.dumps(quiz),
+        ):
             with patch('zulip_bots.bots.trivia_quiz.trivia_quiz.start_new_quiz'):
                 self._test('answer Q001 A', ':tada: **Amphibian** is correct, Foo Test User!')
 
@@ -128,7 +133,9 @@ class TestTriviaQuizBot(BotTestCase, DefaultTests):
 
         # test response  and storage after three failed attempts
         start_new_question, response = handle_answer(quiz, 'D', 'Q001', bot_handler, 'Test User')
-        self.assertEqual(response, ':disappointed: WRONG, Test User! The correct answer is **Amphibian**.')
+        self.assertEqual(
+            response, ':disappointed: WRONG, Test User! The correct answer is **Amphibian**.'
+        )
         self.assertTrue(start_new_question)
         quiz_reset = json.loads(bot_handler.storage.get('Q001'))
         self.assertEqual(quiz_reset['pending'], False)
@@ -136,8 +143,12 @@ class TestTriviaQuizBot(BotTestCase, DefaultTests):
         # test response after question has ended
         incorrect_answers = ['B', 'C', 'D']
         for ans in incorrect_answers:
-            start_new_question, response = handle_answer(quiz, ans, 'Q001', bot_handler, 'Test User')
-            self.assertEqual(response, ':disappointed: WRONG, Test User! The correct answer is **Amphibian**.')
+            start_new_question, response = handle_answer(
+                quiz, ans, 'Q001', bot_handler, 'Test User'
+            )
+            self.assertEqual(
+                response, ':disappointed: WRONG, Test User! The correct answer is **Amphibian**.'
+            )
             self.assertFalse(start_new_question)
         start_new_question, response = handle_answer(quiz, 'A', 'Q001', bot_handler, 'Test User')
         self.assertEqual(response, ':tada: **Amphibian** is correct, Test User!')

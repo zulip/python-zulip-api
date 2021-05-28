@@ -67,37 +67,34 @@ Make sure to go the application you created and click "create my
 access token" as well. Fill in the values displayed.
 """
 
+
 def write_config(config: ConfigParser, configfile_path: str) -> None:
     with open(configfile_path, 'w') as configfile:
         config.write(configfile)
 
+
 parser = zulip.add_default_arguments(argparse.ArgumentParser("Fetch tweets from Twitter."))
-parser.add_argument('--instructions',
-                    action='store_true',
-                    help='Show instructions for the twitter bot setup and exit'
-                    )
-parser.add_argument('--limit-tweets',
-                    default=15,
-                    type=int,
-                    help='Maximum number of tweets to send at once')
-parser.add_argument('--search',
-                    dest='search_terms',
-                    help='Terms to search on',
-                    action='store')
-parser.add_argument('--stream',
-                    dest='stream',
-                    help='The stream to which to send tweets',
-                    default="twitter",
-                    action='store')
-parser.add_argument('--twitter-name',
-                    dest='twitter_name',
-                    help='Twitter username to poll new tweets from"')
-parser.add_argument('--excluded-terms',
-                    dest='excluded_terms',
-                    help='Terms to exclude tweets on')
-parser.add_argument('--excluded-users',
-                    dest='excluded_users',
-                    help='Users to exclude tweets on')
+parser.add_argument(
+    '--instructions',
+    action='store_true',
+    help='Show instructions for the twitter bot setup and exit',
+)
+parser.add_argument(
+    '--limit-tweets', default=15, type=int, help='Maximum number of tweets to send at once'
+)
+parser.add_argument('--search', dest='search_terms', help='Terms to search on', action='store')
+parser.add_argument(
+    '--stream',
+    dest='stream',
+    help='The stream to which to send tweets',
+    default="twitter",
+    action='store',
+)
+parser.add_argument(
+    '--twitter-name', dest='twitter_name', help='Twitter username to poll new tweets from"'
+)
+parser.add_argument('--excluded-terms', dest='excluded_terms', help='Terms to exclude tweets on')
+parser.add_argument('--excluded-users', dest='excluded_users', help='Users to exclude tweets on')
 
 opts = parser.parse_args()
 
@@ -150,18 +147,22 @@ try:
 except ImportError:
     parser.error("Please install python-twitter")
 
-api = twitter.Api(consumer_key=consumer_key,
-                  consumer_secret=consumer_secret,
-                  access_token_key=access_token_key,
-                  access_token_secret=access_token_secret)
+api = twitter.Api(
+    consumer_key=consumer_key,
+    consumer_secret=consumer_secret,
+    access_token_key=access_token_key,
+    access_token_secret=access_token_secret,
+)
 
 user = api.VerifyCredentials()
 
 if not user.id:
-    print("Unable to log in to twitter with supplied credentials. Please double-check and try again")
+    print(
+        "Unable to log in to twitter with supplied credentials. Please double-check and try again"
+    )
     sys.exit(1)
 
-client = zulip.init_from_options(opts, client=client_type+VERSION)
+client = zulip.init_from_options(opts, client=client_type + VERSION)
 
 if opts.search_terms:
     search_query = " OR ".join(opts.search_terms.split(","))
@@ -190,7 +191,7 @@ if opts.excluded_users:
 else:
     excluded_users = []
 
-for status in statuses[::-1][:opts.limit_tweets]:
+for status in statuses[::-1][: opts.limit_tweets]:
     # Check if the tweet is from an excluded user
     exclude = False
     for user in excluded_users:
@@ -237,12 +238,7 @@ for status in statuses[::-1][:opts.limit_tweets]:
     elif opts.twitter_name:
         subject = composed
 
-    message = {
-        "type": "stream",
-        "to": [opts.stream],
-        "subject": subject,
-        "content": url
-    }
+    message = {"type": "stream", "to": [opts.stream], "subject": subject, "content": url}
 
     ret = client.send_message(message)
 

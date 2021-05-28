@@ -37,11 +37,11 @@ def commit_notice_destination(path: Text, changelist: int) -> Optional[Dict[Text
         directory = dirs[2]
 
     if directory not in ["evil-master-plan", "my-super-secret-repository"]:
-        return dict(stream  = "%s-commits" % (directory,),
-                    subject = path)
+        return dict(stream="%s-commits" % (directory,), subject=path)
 
     # Return None for cases where you don't want a notice sent
     return None
+
 
 ## If properly installed, the Zulip API should be in your import
 ## path, but if not, set a custom path below

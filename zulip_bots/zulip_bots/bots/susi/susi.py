@@ -50,4 +50,5 @@ class SusiHandler:
             answer = "I don't understand. Can you rephrase?"
         bot_handler.send_reply(message, answer)
 
+
 handler_class = SusiHandler

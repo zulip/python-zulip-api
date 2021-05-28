@@ -32,8 +32,9 @@ def get_help_text() -> str:
     command_text = ''
     for command in commands:
         if 'template' in command.keys() and 'description' in command.keys():
-            command_text += '**{}**: {}\n'.format('{} [arguments]'.format(
-                command['template']), command['description'])
+            command_text += '**{}**: {}\n'.format(
+                '{} [arguments]'.format(command['template']), command['description']
+            )
     object_type_text = ''
     for object_type in object_types.values():
         object_type_text += '{}\n'.format(object_type['table'])
@@ -41,11 +42,11 @@ def get_help_text() -> str:
 
 
 def format_result(
-        result: Dict[str, Any],
-        exclude_keys: List[str] = [],
-        force_keys: List[str] = [],
-        rank_output: bool = False,
-        show_all_keys: bool = False
+    result: Dict[str, Any],
+    exclude_keys: List[str] = [],
+    force_keys: List[str] = [],
+    rank_output: bool = False,
+    show_all_keys: bool = False,
 ) -> str:
     exclude_keys += ['Name', 'attributes', 'Id']
     output = ''
@@ -53,8 +54,7 @@ def format_result(
         return 'No records found.'
     if result['totalSize'] == 1:
         record = result['records'][0]
-        output += '**[{}]({}{})**\n'.format(record['Name'],
-                                            login_url, record['Id'])
+        output += '**[{}]({}{})**\n'.format(record['Name'], login_url, record['Id'])
         for key, value in record.items():
             if key not in exclude_keys:
                 output += '>**{}**: {}\n'.format(key, value)
@@ -62,8 +62,7 @@ def format_result(
         for i, record in enumerate(result['records']):
             if rank_output:
                 output += '{}) '.format(i + 1)
-            output += '**[{}]({}{})**\n'.format(record['Name'],
-                                                login_url, record['Id'])
+            output += '**[{}]({}{})**\n'.format(record['Name'], login_url, record['Id'])
             added_keys = False
             for key, value in record.items():
                 if key in force_keys or (show_all_keys and key not in exclude_keys):
@@ -74,7 +73,9 @@ def format_result(
     return output
 
 
-def query_salesforce(arg: str, salesforce: simple_salesforce.Salesforce, command: Dict[str, Any]) -> str:
+def query_salesforce(
+    arg: str, salesforce: simple_salesforce.Salesforce, command: Dict[str, Any]
+) -> str:
     arg = arg.strip()
     qarg = arg.split(' -', 1)[0]
     split_args = []  # type: List[str]
@@ -92,8 +93,9 @@ def query_salesforce(arg: str, salesforce: simple_salesforce.Salesforce, command
     if 'query' in command.keys():
         query = command['query']
     object_type = object_types[command['object']]
-    res = salesforce.query(query.format(
-        object_type['fields'], object_type['table'], qarg, limit_num))
+    res = salesforce.query(
+        query.format(object_type['fields'], object_type['table'], qarg, limit_num)
+    )
     exclude_keys = []  # type: List[str]
     if 'exclude_keys' in command.keys():
         exclude_keys = command['exclude_keys']
@@ -106,7 +108,13 @@ def query_salesforce(arg: str, salesforce: simple_salesforce.Salesforce, command
     show_all_keys = 'show' in split_args
     if 'show_all_keys' in command.keys():
         show_all_keys = command['show_all_keys'] or 'show' in split_args
-    return format_result(res, exclude_keys=exclude_keys, force_keys=force_keys, rank_output=rank_output, show_all_keys=show_all_keys)
+    return format_result(
+        res,
+        exclude_keys=exclude_keys,
+        force_keys=force_keys,
+        rank_output=rank_output,
+        show_all_keys=show_all_keys,
+    )
 
 
 def get_salesforce_link_details(link: str, sf: Any) -> str:
@@ -116,8 +124,7 @@ def get_salesforce_link_details(link: str, sf: Any) -> str:
         return 'Invalid salesforce link'
     id = re_id_res.group().strip('/')
     for object_type in object_types.values():
-        res = sf.query(link_query.format(
-            object_type['fields'], object_type['table'], id))
+        res = sf.query(link_query.format(object_type['fields'], object_type['table'], id))
         if res['totalSize'] == 1:
             return format_result(res)
     return 'No object found. Make sure it is of the supported types. Type `help` for more info.'
@@ -160,7 +167,7 @@ class SalesforceHandler:
             self.sf = simple_salesforce.Salesforce(
                 username=self.config_info['username'],
                 password=self.config_info['password'],
-                security_token=self.config_info['security_token']
+                security_token=self.config_info['security_token'],
             )
         except simple_salesforce.exceptions.SalesforceAuthenticationFailed as err:
             bot_handler.quit('Failed to log in to Salesforce. {} {}'.format(err.code, err.message))

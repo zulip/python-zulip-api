@@ -27,12 +27,10 @@ class StubBotHandler:
         self.transcript.append(('send_message', message))
         return self.message_server.send(message)
 
-    def send_reply(self, message: Dict[str, Any], response: str,
-                   widget_content: Optional[str] = None) -> Dict[str, Any]:
-        response_message = dict(
-            content=response,
-            widget_content=widget_content
-        )
+    def send_reply(
+        self, message: Dict[str, Any], response: str, widget_content: Optional[str] = None
+    ) -> Dict[str, Any]:
+        response_message = dict(content=response, widget_content=widget_content)
         self.transcript.append(('send_reply', response_message))
         return self.message_server.send(response_message)
 
@@ -59,21 +57,12 @@ class StubBotHandler:
         return {}
 
     def unique_reply(self) -> Dict[str, Any]:
-        responses = [
-            message
-            for (method, message)
-            in self.transcript
-            if method == 'send_reply'
-        ]
+        responses = [message for (method, message) in self.transcript if method == 'send_reply']
         self.ensure_unique_response(responses)
         return responses[0]
 
     def unique_response(self) -> Dict[str, Any]:
-        responses = [
-            message
-            for (method, message)
-            in self.transcript
-        ]
+        responses = [message for (method, message) in self.transcript]
         self.ensure_unique_response(responses)
         return responses[0]
 
@@ -181,4 +170,6 @@ class BotTestCase(unittest.TestCase):
         return mock_request_exception()
 
     def mock_config_info(self, config_info: Dict[str, str]) -> Any:
-        return unittest.mock.patch('zulip_bots.test_lib.StubBotHandler.get_config_info', return_value=config_info)
+        return unittest.mock.patch(
+            'zulip_bots.test_lib.StubBotHandler.get_config_info', return_value=config_info
+        )

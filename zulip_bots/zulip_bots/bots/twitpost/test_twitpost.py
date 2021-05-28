@@ -6,10 +6,12 @@ from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler, get_b
 
 class TestTwitpostBot(BotTestCase, DefaultTests):
     bot_name = "twitpost"
-    mock_config = {'consumer_key': 'abcdefghijklmnopqrstuvwxy',
-                   'consumer_secret': 'aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyy',
-                   'access_token': '123456789012345678-ABCDefgh1234afdsa678lKj6gHhslsi',
-                   'access_token_secret': 'yf0SI0x6Ct2OmF0cDQc1E0eLKXrVAPFx4QkZF2f9PfFCt'}
+    mock_config = {
+        'consumer_key': 'abcdefghijklmnopqrstuvwxy',
+        'consumer_secret': 'aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyy',
+        'access_token': '123456789012345678-ABCDefgh1234afdsa678lKj6gHhslsi',
+        'access_token_secret': 'yf0SI0x6Ct2OmF0cDQc1E0eLKXrVAPFx4QkZF2f9PfFCt',
+    }
     api_response = read_bot_fixture_data('twitpost', 'api_response')
 
     def test_bot_usage(self) -> None:
@@ -27,12 +29,14 @@ class TestTwitpostBot(BotTestCase, DefaultTests):
 
     def test_help(self) -> None:
         with self.mock_config_info(self.mock_config):
-            self.verify_reply('help',
-                              "*Help for Twitter-post bot* :twitter: : \n\n"
-                              "The bot tweets on twitter when message starts with @twitpost.\n\n"
-                              "`@twitpost tweet <content>` will tweet on twitter with given `<content>`.\n"
-                              "Example:\n"
-                              " * @twitpost tweet hey batman\n")
+            self.verify_reply(
+                'help',
+                "*Help for Twitter-post bot* :twitter: : \n\n"
+                "The bot tweets on twitter when message starts with @twitpost.\n\n"
+                "`@twitpost tweet <content>` will tweet on twitter with given `<content>`.\n"
+                "Example:\n"
+                " * @twitpost tweet hey batman\n",
+            )
 
     @patch('tweepy.API.update_status', return_value=api_response)
     def test_tweet(self, mockedarg):

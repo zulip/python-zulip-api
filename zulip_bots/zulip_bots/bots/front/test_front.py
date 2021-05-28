@@ -24,11 +24,14 @@ class TestFrontBot(BotTestCase, DefaultTests):
 
     def test_help(self) -> None:
         with self.mock_config_info({'api_key': "TEST"}):
-            self.verify_reply('help', "`archive` Archive a conversation.\n"
-                                      "`delete` Delete a conversation.\n"
-                                      "`spam` Mark a conversation as spam.\n"
-                                      "`open` Restore a conversation.\n"
-                                      "`comment <text>` Leave a comment.\n")
+            self.verify_reply(
+                'help',
+                "`archive` Archive a conversation.\n"
+                "`delete` Delete a conversation.\n"
+                "`spam` Mark a conversation as spam.\n"
+                "`open` Restore a conversation.\n"
+                "`comment <text>` Leave a comment.\n",
+            )
 
     def test_archive(self) -> None:
         with self.mock_config_info({'api_key': "TEST"}):
@@ -94,6 +97,9 @@ class TestFrontBotWrongTopic(BotTestCase, DefaultTests):
 
     def test_no_conversation_id(self) -> None:
         with self.mock_config_info({'api_key': "TEST"}):
-            self.verify_reply('archive', "No coversation ID found. Please make "
-                                         "sure that the name of the topic "
-                                         "contains a valid coversation ID.")
+            self.verify_reply(
+                'archive',
+                "No coversation ID found. Please make "
+                "sure that the name of the topic "
+                "contains a valid coversation ID.",
+            )

@@ -145,6 +145,7 @@ Jira Bot:
  > Issue *BOTS-16* was edited! https://example.atlassian.net/browse/BOTS-16
 '''
 
+
 class JiraHandler:
     def usage(self) -> str:
         return '''
@@ -181,7 +182,8 @@ class JiraHandler:
     def jql_search(self, jql_query: str) -> str:
         UNKNOWN_VAL = '*unknown*'
         jira_response = requests.get(
-            self.domain_with_protocol + '/rest/api/2/search?jql={}&fields=key,summary,status'.format(jql_query),
+            self.domain_with_protocol
+            + '/rest/api/2/search?jql={}&fields=key,summary,status'.format(jql_query),
             headers={'Authorization': self.auth},
         ).json()
 
@@ -197,7 +199,9 @@ class JiraHandler:
                 fields = issue.get('fields', {})
                 summary = fields.get('summary', UNKNOWN_VAL)
                 status_name = fields.get('status', {}).get('name', UNKNOWN_VAL)
-                response += "\n - {}: [{}]({}) **[{}]**".format(issue['key'], summary, url + issue['key'], status_name)
+                response += "\n - {}: [{}]({}) **[{}]**".format(
+                    issue['key'], summary, url + issue['key'], status_name
+                )
 
         return response
 
@@ -246,20 +250,31 @@ class JiraHandler:
                     ' - Project: *{}*\n'
                     ' - Priority: *{}*\n'
                     ' - Status: *{}*\n'
-                ).format(key, url, summary, type_name, description, creator_name, project_name,
-                         priority_name, status_name)
+                ).format(
+                    key,
+                    url,
+                    summary,
+                    type_name,
+                    description,
+                    creator_name,
+                    project_name,
+                    priority_name,
+                    status_name,
+                )
         elif create_match:
             jira_response = requests.post(
                 self.domain_with_protocol + '/rest/api/2/issue',
                 headers={'Authorization': self.auth},
-                json=make_create_json(create_match.group('summary'),
-                                      create_match.group('project_key'),
-                                      create_match.group('type_name'),
-                                      create_match.group('description'),
-                                      create_match.group('assignee'),
-                                      create_match.group('priority_name'),
-                                      create_match.group('labels'),
-                                      create_match.group('due_date'))
+                json=make_create_json(
+                    create_match.group('summary'),
+                    create_match.group('project_key'),
+                    create_match.group('type_name'),
+                    create_match.group('description'),
+                    create_match.group('assignee'),
+                    create_match.group('priority_name'),
+                    create_match.group('labels'),
+                    create_match.group('due_date'),
+                ),
             )
 
             jira_response_json = jira_response.json() if jira_response.text else {}
@@ -277,14 +292,16 @@ class JiraHandler:
             jira_response = requests.put(
                 self.domain_with_protocol + '/rest/api/2/issue/' + key,
                 headers={'Authorization': self.auth},
-                json=make_edit_json(edit_match.group('summary'),
-                                    edit_match.group('project_key'),
-                                    edit_match.group('type_name'),
-                                    edit_match.group('description'),
-                                    edit_match.group('assignee'),
-                                    edit_match.group('priority_name'),
-                                    edit_match.group('labels'),
-                                    edit_match.group('due_date'))
+                json=make_edit_json(
+                    edit_match.group('summary'),
+                    edit_match.group('project_key'),
+                    edit_match.group('type_name'),
+                    edit_match.group('description'),
+                    edit_match.group('assignee'),
+                    edit_match.group('priority_name'),
+                    edit_match.group('labels'),
+                    edit_match.group('due_date'),
+                ),
             )
 
             jira_response_json = jira_response.json() if jira_response.text else {}
@@ -310,6 +327,7 @@ class JiraHandler:
 
         bot_handler.send_reply(message, response)
 
+
 def make_jira_auth(username: str, password: str) -> str:
     '''Makes an auth header for Jira in the form 'Basic: <encoded credentials>'.
 
@@ -321,10 +339,17 @@ def make_jira_auth(username: str, password: str) -> str:
     encoded = base64.b64encode(combo.encode('utf-8')).decode('utf-8')
     return 'Basic ' + encoded
 
-def make_create_json(summary: str, project_key: str, type_name: str,
-                     description: Optional[str], assignee: Optional[str],
-                     priority_name: Optional[str], labels: Optional[str],
-                     due_date: Optional[str]) -> Any:
+
+def make_create_json(
+    summary: str,
+    project_key: str,
+    type_name: str,
+    description: Optional[str],
+    assignee: Optional[str],
+    priority_name: Optional[str],
+    labels: Optional[str],
+    due_date: Optional[str],
+) -> Any:
     '''Makes a JSON string for the Jira REST API editing endpoint based on
     fields that could be edited.
 
@@ -341,12 +366,8 @@ def make_create_json(summary: str, project_key: str, type_name: str,
     '''
     json_fields = {
         'summary': summary,
-        'project': {
-            'key': project_key
-        },
-        'issuetype': {
-            'name': type_name
-        }
+        'project': {'key': project_key},
+        'issuetype': {'name': type_name},
     }
     if description:
         json_fields['description'] = description
@@ -363,10 +384,17 @@ def make_create_json(summary: str, project_key: str, type_name: str,
 
     return json
 
-def make_edit_json(summary: Optional[str], project_key: Optional[str],
-                   type_name: Optional[str], description: Optional[str],
-                   assignee: Optional[str], priority_name: Optional[str],
-                   labels: Optional[str], due_date: Optional[str]) -> Any:
+
+def make_edit_json(
+    summary: Optional[str],
+    project_key: Optional[str],
+    type_name: Optional[str],
+    description: Optional[str],
+    assignee: Optional[str],
+    priority_name: Optional[str],
+    labels: Optional[str],
+    due_date: Optional[str],
+) -> Any:
     '''Makes a JSON string for the Jira REST API editing endpoint based on
     fields that could be edited.
 
@@ -404,6 +432,7 @@ def make_edit_json(summary: Optional[str], project_key: Optional[str],
 
     return json
 
+
 def check_is_editing_something(match: Any) -> bool:
     '''Checks if an editing match is actually going to do editing. It is
     possible for an edit regex to match without doing any editing because each
@@ -423,5 +452,6 @@ def check_is_editing_something(match: Any) -> bool:
         or match.group('labels')
         or match.group('due_date')
     )
+
 
 handler_class = JiraHandler

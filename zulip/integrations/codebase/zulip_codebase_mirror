@@ -39,7 +39,8 @@ client = zulip.Client(
     email=config.ZULIP_USER,
     site=config.ZULIP_SITE,
     api_key=config.ZULIP_API_KEY,
-    client="ZulipCodebase/" + VERSION)
+    client="ZulipCodebase/" + VERSION,
+)
 user_agent = "Codebase To Zulip Mirroring script (zulip-devel@googlegroups.com)"
 
 # find some form of JSON loader/dumper, with a preference order for speed.
@@ -52,13 +53,18 @@ while len(json_implementations):
     except ImportError:
         continue
 
+
 def make_api_call(path: str) -> Optional[List[Dict[str, Any]]]:
-    response = requests.get("https://api3.codebasehq.com/%s" % (path,),
-                            auth=(config.CODEBASE_API_USERNAME, config.CODEBASE_API_KEY),
-                            params={'raw': 'True'},
-                            headers = {"User-Agent": user_agent,
-                                       "Content-Type": "application/json",
-                                       "Accept": "application/json"})
+    response = requests.get(
+        "https://api3.codebasehq.com/%s" % (path,),
+        auth=(config.CODEBASE_API_USERNAME, config.CODEBASE_API_KEY),
+        params={'raw': 'True'},
+        headers={
+            "User-Agent": user_agent,
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        },
+    )
     if response.status_code == 200:
         return json.loads(response.text)
 
@@ -69,11 +75,15 @@ def make_api_call(path: str) -> Optional[List[Dict[str, Any]]]:
         logging.error("Bad authorization from Codebase. Please check your credentials")
         sys.exit(-1)
     else:
-        logging.warn("Found non-success response status code: %s %s" % (response.status_code, response.text))
+        logging.warn(
+            "Found non-success response status code: %s %s" % (response.status_code, response.text)
+        )
         return None
+
 
 def make_url(path: str) -> str:
     return "%s/%s" % (config.CODEBASE_ROOT_URL, path)
+
 
 def handle_event(event: Dict[str, Any]) -> None:
     event = event['event']
@@ -114,11 +124,17 @@ def handle_event(event: Dict[str, Any]) -> None:
         else:
             if new_ref:
                 branch = "new branch %s" % (branch,)
-            content = ("%s pushed %s commit(s) to %s in project %s:\n\n" %
-                       (actor_name, num_commits, branch, project))
+            content = "%s pushed %s commit(s) to %s in project %s:\n\n" % (
+                actor_name,
+                num_commits,
+                branch,
+                project,
+            )
             for commit in raw_props.get('commits'):
                 ref = commit.get('ref')
-                url = make_url("projects/%s/repositories/%s/commit/%s" % (project_link, repo_link, ref))
+                url = make_url(
+                    "projects/%s/repositories/%s/commit/%s" % (project_link, repo_link, ref)
+                )
                 message = commit.get('message')
                 content += "* [%s](%s): %s\n" % (ref, url, message)
     elif event_type == 'ticketing_ticket':
@@ -133,8 +149,10 @@ def handle_event(event: Dict[str, Any]) -> None:
         if assignee is None:
             assignee = "no one"
         subject = "#%s: %s" % (num, name)
-        content = ("""%s created a new ticket [#%s](%s) priority **%s** assigned to %s:\n\n~~~ quote\n %s""" %
-                   (actor_name, num, url, priority, assignee, name))
+        content = (
+            """%s created a new ticket [#%s](%s) priority **%s** assigned to %s:\n\n~~~ quote\n %s"""
+            % (actor_name, num, url, priority, assignee, name)
+        )
     elif event_type == 'ticketing_note':
         stream = config.ZULIP_TICKETS_STREAM_NAME
 
@@ -148,11 +166,19 @@ def handle_event(event: Dict[str, Any]) -> None:
 
         content = ""
         if body is not None and len(body) > 0:
-            content = "%s added a comment to ticket [#%s](%s):\n\n~~~ quote\n%s\n\n" % (actor_name, num, url, body)
+            content = "%s added a comment to ticket [#%s](%s):\n\n~~~ quote\n%s\n\n" % (
+                actor_name,
+                num,
+                url,
+                body,
+            )
 
         if 'status_id' in changes:
             status_change = changes.get('status_id')
-            content += "Status changed from **%s** to **%s**\n\n" % (status_change[0], status_change[1])
+            content += "Status changed from **%s** to **%s**\n\n" % (
+                status_change[0],
+                status_change[1],
+            )
     elif event_type == 'ticketing_milestone':
         stream = config.ZULIP_TICKETS_STREAM_NAME
 
@@ -172,10 +198,17 @@ def handle_event(event: Dict[str, Any]) -> None:
         if commit:
             repo_link = raw_props.get('repository_permalink')
 
-            url = make_url('projects/%s/repositories/%s/commit/%s' % (project_link, repo_link, commit))
+            url = make_url(
+                'projects/%s/repositories/%s/commit/%s' % (project_link, repo_link, commit)
+            )
 
             subject = "%s commented on %s" % (actor_name, commit)
-            content = "%s commented on [%s](%s):\n\n~~~ quote\n%s" % (actor_name, commit, url, comment)
+            content = "%s commented on [%s](%s):\n\n~~~ quote\n%s" % (
+                actor_name,
+                commit,
+                url,
+                comment,
+            )
         else:
             # Otherwise, this is a Discussion item, and handle it
             subj = raw_props.get("subject")
@@ -199,17 +232,32 @@ def handle_event(event: Dict[str, Any]) -> None:
         servers = raw_props.get('servers')
         repo_link = raw_props.get('repository_permalink')
 
-        start_ref_url = make_url("projects/%s/repositories/%s/commit/%s" % (project_link, repo_link, start_ref))
-        end_ref_url = make_url("projects/%s/repositories/%s/commit/%s" % (project_link, repo_link, end_ref))
-        between_url = make_url("projects/%s/repositories/%s/compare/%s...%s" % (
-            project_link, repo_link, start_ref, end_ref))
+        start_ref_url = make_url(
+            "projects/%s/repositories/%s/commit/%s" % (project_link, repo_link, start_ref)
+        )
+        end_ref_url = make_url(
+            "projects/%s/repositories/%s/commit/%s" % (project_link, repo_link, end_ref)
+        )
+        between_url = make_url(
+            "projects/%s/repositories/%s/compare/%s...%s"
+            % (project_link, repo_link, start_ref, end_ref)
+        )
 
         subject = "Deployment to %s" % (environment,)
 
-        content = ("%s deployed [%s](%s) [through](%s) [%s](%s) to the **%s** environment." %
-                   (actor_name, start_ref, start_ref_url, between_url, end_ref, end_ref_url, environment))
+        content = "%s deployed [%s](%s) [through](%s) [%s](%s) to the **%s** environment." % (
+            actor_name,
+            start_ref,
+            start_ref_url,
+            between_url,
+            end_ref,
+            end_ref_url,
+            environment,
+        )
         if servers is not None:
-            content += "\n\nServers deployed to: %s" % (", ".join(["`%s`" % (server,) for server in servers]))
+            content += "\n\nServers deployed to: %s" % (
+                ", ".join(["`%s`" % (server,) for server in servers])
+            )
 
     elif event_type == 'named_tree':
         # Docs say named_tree type used for new/deleting branches and tags,
@@ -228,10 +276,9 @@ def handle_event(event: Dict[str, Any]) -> None:
         if len(subject) > 60:
             subject = subject[:57].rstrip() + '...'
 
-        res = client.send_message({"type": "stream",
-                                   "to": stream,
-                                   "subject": subject,
-                                   "content": content})
+        res = client.send_message(
+            {"type": "stream", "to": stream, "subject": subject, "content": content}
+        )
         if res['result'] == 'success':
             logging.info("Successfully sent Zulip with id: %s" % (res['id'],))
         else:
@@ -278,6 +325,7 @@ def run_mirror() -> None:
         open(config.RESUME_FILE, 'w').write(since.strftime("%s"))
         logging.info("Shutting down Codebase mirror")
 
+
 # void function that checks the permissions of the files this script needs.
 def check_permissions() -> None:
     # check that the log file can be written
@@ -291,8 +339,11 @@ def check_permissions() -> None:
     try:
         open(config.RESUME_FILE, "a+")
     except OSError as e:
-        sys.stderr.write("Could not open up the file %s for reading and writing" % (config.RESUME_FILE,))
+        sys.stderr.write(
+            "Could not open up the file %s for reading and writing" % (config.RESUME_FILE,)
+        )
         sys.stderr.write(str(e))
+
 
 if __name__ == "__main__":
     assert isinstance(config.RESUME_FILE, str), "RESUME_FILE path not given; refusing to continue"

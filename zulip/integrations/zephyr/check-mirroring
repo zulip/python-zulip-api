@@ -13,36 +13,25 @@ import zephyr
 import zulip
 
 parser = optparse.OptionParser()
-parser.add_option('--verbose',
-                  dest='verbose',
-                  default=False,
-                  action='store_true')
-parser.add_option('--site',
-                  dest='site',
-                  default=None,
-                  action='store')
-parser.add_option('--sharded',
-                  default=False,
-                  action='store_true')
+parser.add_option('--verbose', dest='verbose', default=False, action='store_true')
+parser.add_option('--site', dest='site', default=None, action='store')
+parser.add_option('--sharded', default=False, action='store_true')
 (options, args) = parser.parse_args()
 
 mit_user = 'tabbott/extra@ATHENA.MIT.EDU'
 
-zulip_client = zulip.Client(
-    verbose=True,
-    client="ZulipMonitoring/0.1",
-    site=options.site)
+zulip_client = zulip.Client(verbose=True, client="ZulipMonitoring/0.1", site=options.site)
 
 # Configure logging
-log_file     = "/var/log/zulip/check-mirroring-log"
-log_format   = "%(asctime)s: %(message)s"
+log_file = "/var/log/zulip/check-mirroring-log"
+log_format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=log_format)
 
-formatter    = logging.Formatter(log_format)
+formatter = logging.Formatter(log_format)
 file_handler = logging.FileHandler(log_file)
 file_handler.setFormatter(formatter)
 
-logger       = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 logger.addHandler(file_handler)
 
@@ -75,12 +64,13 @@ if options.sharded:
     for (stream, test) in test_streams:
         if stream == "message":
             continue
-        assert(hashlib.sha1(stream.encode("utf-8")).hexdigest().startswith(test))
+        assert hashlib.sha1(stream.encode("utf-8")).hexdigest().startswith(test)
 else:
     test_streams = [
         ("message", "p"),
         ("tabbott-nagios-test", "a"),
     ]
+
 
 def print_status_and_exit(status: int) -> None:
 
@@ -91,6 +81,7 @@ def print_status_and_exit(status: int) -> None:
     print(status)
     sys.exit(status)
 
+
 def send_zulip(message: Dict[str, str]) -> None:
     result = zulip_client.send_message(message)
     if result["result"] != "success":
@@ -99,11 +90,16 @@ def send_zulip(message: Dict[str, str]) -> None:
         logger.error(str(result))
         print_status_and_exit(1)
 
+
 # Returns True if and only if we "Detected server failure" sending the zephyr.
 def send_zephyr(zwrite_args: List[str], content: str) -> bool:
-    p = subprocess.Popen(zwrite_args, stdin=subprocess.PIPE,
-                         stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                         universal_newlines=True)
+    p = subprocess.Popen(
+        zwrite_args,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        universal_newlines=True,
+    )
     stdout, stderr = p.communicate(input=content)
     if p.returncode != 0:
         if "Detected server failure while receiving acknowledgement for" in stdout:
@@ -115,6 +111,7 @@ def send_zephyr(zwrite_args: List[str], content: str) -> bool:
         logger.error(stderr)
         print_status_and_exit(1)
     return False
+
 
 # Subscribe to Zulip
 try:
@@ -164,6 +161,8 @@ if not actually_subscribed:
 # Prepare keys
 zhkeys = {}  # type: Dict[str, Tuple[str, str]]
 hzkeys = {}  # type: Dict[str, Tuple[str, str]]
+
+
 def gen_key(key_dict: Dict[str, Tuple[str, str]]) -> str:
     bits = str(random.getrandbits(32))
     while bits in key_dict:
@@ -171,9 +170,11 @@ def gen_key(key_dict: Dict[str, Tuple[str, str]]) -> str:
         bits = str(random.getrandbits(32))
     return bits
 
+
 def gen_keys(key_dict: Dict[str, Tuple[str, str]]) -> None:
     for (stream, test) in test_streams:
         key_dict[gen_key(key_dict)] = (stream, test)
+
 
 gen_keys(zhkeys)
 gen_keys(hzkeys)
@@ -196,6 +197,7 @@ def receive_zephyrs() -> None:
             continue
         notices.append(notice)
 
+
 logger.info("Starting sending messages!")
 # Send zephyrs
 zsig = "Timothy Good Abbott"
@@ -212,12 +214,15 @@ for key, (stream, test) in zhkeys.items():
         zhkeys[new_key] = value
         server_failure_again = send_zephyr(zwrite_args, str(new_key))
         if server_failure_again:
-            logging.error("Zephyr server failure twice in a row on keys %s and %s!  Aborting." %
-                          (key, new_key))
+            logging.error(
+                "Zephyr server failure twice in a row on keys %s and %s!  Aborting."
+                % (key, new_key)
+            )
             print_status_and_exit(1)
         else:
-            logging.warning("Replaced key %s with %s due to Zephyr server failure." %
-                            (key, new_key))
+            logging.warning(
+                "Replaced key %s with %s due to Zephyr server failure." % (key, new_key)
+            )
     receive_zephyrs()
 
 receive_zephyrs()
@@ -226,18 +231,22 @@ logger.info("Sent Zephyr messages!")
 # Send Zulips
 for key, (stream, test) in hzkeys.items():
     if stream == "message":
-        send_zulip({
-            "type": "private",
-            "content": str(key),
-            "to": zulip_client.email,
-        })
+        send_zulip(
+            {
+                "type": "private",
+                "content": str(key),
+                "to": zulip_client.email,
+            }
+        )
     else:
-        send_zulip({
-            "type": "stream",
-            "subject": "test",
-            "content": str(key),
-            "to": stream,
-        })
+        send_zulip(
+            {
+                "type": "stream",
+                "subject": "test",
+                "content": str(key),
+                "to": stream,
+            }
+        )
     receive_zephyrs()
 
 logger.info("Sent Zulip messages!")
@@ -265,6 +274,8 @@ receive_zephyrs()
 logger.info("Finished receiving Zephyr messages!")
 
 all_keys = set(list(zhkeys.keys()) + list(hzkeys.keys()))
+
+
 def process_keys(content_list: List[str]) -> Tuple[Dict[str, int], Set[str], Set[str], bool, bool]:
 
     # Start by filtering out any keys that might have come from
@@ -280,6 +291,7 @@ def process_keys(content_list: List[str]) -> Tuple[Dict[str, int], Set[str], Set
     duplicates = any(val > 1 for val in key_counts.values())
     success = all(val == 1 for val in key_counts.values())
     return key_counts, z_missing, h_missing, duplicates, success
+
 
 # The h_foo variables are about the messages we _received_ in Zulip
 # The z_foo variables are about the messages we _received_ in Zephyr
@@ -302,12 +314,16 @@ for key in all_keys:
         continue
     if key in zhkeys:
         (stream, test) = zhkeys[key]
-        logger.warning("%10s: z got %s, h got %s.  Sent via Zephyr(%s): class %s" %
-                       (key, z_key_counts[key], h_key_counts[key], test, stream))
+        logger.warning(
+            "%10s: z got %s, h got %s.  Sent via Zephyr(%s): class %s"
+            % (key, z_key_counts[key], h_key_counts[key], test, stream)
+        )
     if key in hzkeys:
         (stream, test) = hzkeys[key]
-        logger.warning("%10s: z got %s. h got %s.  Sent via Zulip(%s): class %s" %
-                       (key, z_key_counts[key], h_key_counts[key], test, stream))
+        logger.warning(
+            "%10s: z got %s. h got %s.  Sent via Zulip(%s): class %s"
+            % (key, z_key_counts[key], h_key_counts[key], test, stream)
+        )
 logger.error("")
 logger.error("Summary of specific problems:")
 
@@ -322,10 +338,14 @@ if z_duplicates:
 
 if z_missing_z:
     logger.error("zephyr: Didn't receive all the Zephyrs we sent on the Zephyr end!")
-    logger.error("zephyr: This is probably an issue with check-mirroring sending or receiving Zephyrs.")
+    logger.error(
+        "zephyr: This is probably an issue with check-mirroring sending or receiving Zephyrs."
+    )
 if h_missing_h:
     logger.error("zulip: Didn't receive all the Zulips we sent on the Zulip end!")
-    logger.error("zulip: This is probably an issue with check-mirroring sending or receiving Zulips.")
+    logger.error(
+        "zulip: This is probably an issue with check-mirroring sending or receiving Zulips."
+    )
 if z_missing_h:
     logger.error("zephyr: Didn't receive all the Zulips we sent on the Zephyr end!")
     if z_missing_h == h_missing_h:

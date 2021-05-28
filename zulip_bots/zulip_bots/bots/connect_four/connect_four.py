@@ -46,8 +46,10 @@ class ConnectFourBotHandler(GameAdapter):
     def __init__(self) -> None:
         game_name = 'Connect Four'
         bot_name = 'connect_four'
-        move_help_message = '* To make your move during a game, type\n' \
-                            '```move <column-number>``` or ```<column-number>```'
+        move_help_message = (
+            '* To make your move during a game, type\n'
+            '```move <column-number>``` or ```<column-number>```'
+        )
         move_regex = '(move ([1-7])$)|(([1-7])$)'
         model = ConnectFourModel
         gameMessageHandler = ConnectFourMessageHandler
@@ -61,7 +63,7 @@ class ConnectFourBotHandler(GameAdapter):
             model,
             gameMessageHandler,
             rules,
-            max_players=2
+            max_players=2,
         )
 
 

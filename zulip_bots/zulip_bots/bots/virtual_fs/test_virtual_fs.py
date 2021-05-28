@@ -6,21 +6,23 @@ from zulip_bots.test_lib import BotTestCase, DefaultTests
 
 class TestVirtualFsBot(BotTestCase, DefaultTests):
     bot_name = "virtual_fs"
-    help_txt = ('foo@example.com:\n\nThis bot implements a virtual file system for a stream.\n'
-                'The locations of text are persisted for the lifetime of the bot\n'
-                'running, and if you rename a stream, you will lose the info.\n'
-                'Example commands:\n\n```\n'
-                '@mention-bot sample_conversation: sample conversation with the bot\n'
-                '@mention-bot mkdir: create a directory\n'
-                '@mention-bot ls: list a directory\n'
-                '@mention-bot cd: change directory\n'
-                '@mention-bot pwd: show current path\n'
-                '@mention-bot write: write text\n'
-                '@mention-bot read: read text\n'
-                '@mention-bot rm: remove a file\n'
-                '@mention-bot rmdir: remove a directory\n'
-                '```\n'
-                'Use commands like `@mention-bot help write` for more details on specific\ncommands.\n')
+    help_txt = (
+        'foo@example.com:\n\nThis bot implements a virtual file system for a stream.\n'
+        'The locations of text are persisted for the lifetime of the bot\n'
+        'running, and if you rename a stream, you will lose the info.\n'
+        'Example commands:\n\n```\n'
+        '@mention-bot sample_conversation: sample conversation with the bot\n'
+        '@mention-bot mkdir: create a directory\n'
+        '@mention-bot ls: list a directory\n'
+        '@mention-bot cd: change directory\n'
+        '@mention-bot pwd: show current path\n'
+        '@mention-bot write: write text\n'
+        '@mention-bot read: read text\n'
+        '@mention-bot rm: remove a file\n'
+        '@mention-bot rmdir: remove a directory\n'
+        '```\n'
+        'Use commands like `@mention-bot help write` for more details on specific\ncommands.\n'
+    )
 
     def test_multiple_recipient_conversation(self) -> None:
         expected = [
@@ -52,9 +54,7 @@ class TestVirtualFsBot(BotTestCase, DefaultTests):
         # for the user's benefit if they ask.  But then we can also
         # use it to test that the bot works as advertised.
         expected = [
-            (request, 'foo@example.com:\n' + reply)
-            for (request, reply)
-            in sample_conversation()
+            (request, 'foo@example.com:\n' + reply) for (request, reply) in sample_conversation()
         ]
         self.verify_dialog(expected)
 

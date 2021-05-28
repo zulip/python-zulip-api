@@ -1,4 +1,3 @@
-
 from libraries import database, game_data
 
 from zulip_bots.simple_lib import SimpleStorage
@@ -15,8 +14,7 @@ class DatabaseTest(BotTestCase, DefaultTests):
     def test_obtain_gamedata(self):
         self.merels.update_game("topic1", "X", 0, 0, 'NNNNNNNNNNNNNNNNNNNNNNNN', "", 0)
         res = self.merels.get_game_data("topic1")
-        self.assertTupleEqual(res, (
-            'topic1', 'X', 0, 0, 'NNNNNNNNNNNNNNNNNNNNNNNN', "", 0))
+        self.assertTupleEqual(res, ('topic1', 'X', 0, 0, 'NNNNNNNNNNNNNNNNNNNNNNNN', "", 0))
         self.assertEqual(len(res), 7)
 
     def test_obtain_nonexisting_gamedata(self):

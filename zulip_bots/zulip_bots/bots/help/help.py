@@ -19,4 +19,5 @@ class HelpHandler:
         help_content = "Info on Zulip can be found here:\nhttps://github.com/zulip/zulip"
         bot_handler.send_reply(message, help_content)
 
+
 handler_class = HelpHandler

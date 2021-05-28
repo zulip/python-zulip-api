@@ -45,6 +45,7 @@ class FakeClient:
     def upload_file(self, file):
         pass
 
+
 class FakeBotHandler:
     def usage(self):
         return '''
@@ -55,15 +56,13 @@ class FakeBotHandler:
     def handle_message(self, message, bot_handler):
         pass
 
+
 class LibTest(TestCase):
     def test_basics(self):
         client = FakeClient()
 
         handler = ExternalBotHandler(
-            client=client,
-            root_dir=None,
-            bot_details=None,
-            bot_config_file=None
+            client=client, root_dir=None, bot_details=None, bot_config_file=None
         )
 
         message = None
@@ -97,9 +96,9 @@ class LibTest(TestCase):
         self.assertEqual(val, [1, 2, 3])
 
         # force us to get non-cached values
-        client.get_storage = MagicMock(return_value=dict(
-            result='success',
-            storage=dict(non_cached_key='[5]')))
+        client.get_storage = MagicMock(
+            return_value=dict(result='success', storage=dict(non_cached_key='[5]'))
+        )
         val = state_handler.get('non_cached_key')
         client.get_storage.assert_called_with({'keys': ['non_cached_key']})
         self.assertEqual(val, [5])
@@ -113,14 +112,15 @@ class LibTest(TestCase):
     def test_react(self):
         client = FakeClient()
         handler = ExternalBotHandler(
-            client = client,
-            root_dir=None,
-            bot_details=None,
-            bot_config_file=None
+            client=client, root_dir=None, bot_details=None, bot_config_file=None
         )
         emoji_name = 'wave'
         message = {'id': 10}
-        expected = {'message_id': message['id'], 'emoji_name': 'wave', 'reaction_type': 'unicode_emoji'}
+        expected = {
+            'message_id': message['id'],
+            'emoji_name': 'wave',
+            'reaction_type': 'unicode_emoji',
+        }
         client.add_reaction = MagicMock()
         handler.react(message, emoji_name)
         client.add_reaction.assert_called_once_with(dict(expected))
@@ -129,34 +129,38 @@ class LibTest(TestCase):
         client = FakeClient()
         profile = client.get_profile()
         handler = ExternalBotHandler(
-            client=client,
-            root_dir=None,
-            bot_details=None,
-            bot_config_file=None
+            client=client, root_dir=None, bot_details=None, bot_config_file=None
         )
         to = {'id': 43}
-        expected = [({'type': 'private', 'display_recipient': [to]},
-                     {'type': 'private', 'to': [to['id']]}, None),
-                    ({'type': 'private', 'display_recipient': [to, profile]},
-                     {'type': 'private', 'to': [to['id'], profile['id']]}, 'widget_content'),
-                    ({'type': 'stream', 'display_recipient': 'Stream name', 'subject': 'Topic'},
-                     {'type': 'stream', 'to': 'Stream name', 'subject': 'Topic'}, 'test widget')]
+        expected = [
+            (
+                {'type': 'private', 'display_recipient': [to]},
+                {'type': 'private', 'to': [to['id']]},
+                None,
+            ),
+            (
+                {'type': 'private', 'display_recipient': [to, profile]},
+                {'type': 'private', 'to': [to['id'], profile['id']]},
+                'widget_content',
+            ),
+            (
+                {'type': 'stream', 'display_recipient': 'Stream name', 'subject': 'Topic'},
+                {'type': 'stream', 'to': 'Stream name', 'subject': 'Topic'},
+                'test widget',
+            ),
+        ]
         response_text = "Response"
         for test in expected:
             client.send_message = MagicMock()
             handler.send_reply(test[0], response_text, test[2])
-            client.send_message.assert_called_once_with(dict(
-                test[1], content=response_text, widget_content=test[2]))
+            client.send_message.assert_called_once_with(
+                dict(test[1], content=response_text, widget_content=test[2])
+            )
 
     def test_content_and_full_content(self):
         client = FakeClient()
         client.get_profile()
-        ExternalBotHandler(
-            client=client,
-            root_dir=None,
-            bot_details=None,
-            bot_config_file=None
-        )
+        ExternalBotHandler(client=client, root_dir=None, bot_details=None, bot_config_file=None)
 
     def test_run_message_handler_for_bot(self):
         with patch('zulip_bots.lib.Client', new=FakeClient) as fake_client:
@@ -168,30 +172,32 @@ class LibTest(TestCase):
 
             def call_on_each_event_mock(self, callback, event_types=None, narrow=None):
                 def test_message(message, flags):
-                    event = {'message': message,
-                             'flags': flags,
-                             'type': 'message'}
+                    event = {'message': message, 'flags': flags, 'type': 'message'}
                     callback(event)
 
                 # In the following test, expected_message is the dict that we expect
                 # to be passed to the bot's handle_message function.
-                original_message = {'content': '@**Alice** bar',
-                                    'type': 'stream'}
-                expected_message = {'type': 'stream',
-                                    'content': 'bar',
-                                    'full_content': '@**Alice** bar'}
+                original_message = {'content': '@**Alice** bar', 'type': 'stream'}
+                expected_message = {
+                    'type': 'stream',
+                    'content': 'bar',
+                    'full_content': '@**Alice** bar',
+                }
                 test_message(original_message, {'mentioned'})
                 mock_bot_handler.handle_message.assert_called_with(
-                    message=expected_message,
-                    bot_handler=ANY)
+                    message=expected_message, bot_handler=ANY
+                )
 
             fake_client.call_on_each_event = call_on_each_event_mock.__get__(
-                fake_client, fake_client.__class__)
-            run_message_handler_for_bot(lib_module=mock_lib_module,
-                                        quiet=True,
-                                        config_file=None,
-                                        bot_config_file=None,
-                                        bot_name='testbot')
+                fake_client, fake_client.__class__
+            )
+            run_message_handler_for_bot(
+                lib_module=mock_lib_module,
+                quiet=True,
+                config_file=None,
+                bot_config_file=None,
+                bot_name='testbot',
+            )
 
     def test_upload_file(self):
         client, handler = self._create_client_and_handler_for_file_upload()
@@ -213,10 +219,7 @@ class LibTest(TestCase):
     def test_extract_query_without_mention(self):
         client = FakeClient()
         handler = ExternalBotHandler(
-            client=client,
-            root_dir=None,
-            bot_details=None,
-            bot_config_file=None
+            client=client, root_dir=None, bot_details=None, bot_config_file=None
         )
         message = {'content': "@**Alice** Hello World"}
         self.assertEqual(extract_query_without_mention(message, handler), "Hello World")
@@ -230,10 +233,7 @@ class LibTest(TestCase):
     def test_is_private_message_but_not_group_pm(self):
         client = FakeClient()
         handler = ExternalBotHandler(
-            client=client,
-            root_dir=None,
-            bot_details=None,
-            bot_config_file=None
+            client=client, root_dir=None, bot_details=None, bot_config_file=None
         )
         message = {}
         message['display_recipient'] = 'some stream'
@@ -253,9 +253,6 @@ class LibTest(TestCase):
         client.upload_file = MagicMock()
 
         handler = ExternalBotHandler(
-            client=client,
-            root_dir=None,
-            bot_details=None,
-            bot_config_file=None
+            client=client, root_dir=None, bot_details=None, bot_config_file=None
         )
         return client, handler

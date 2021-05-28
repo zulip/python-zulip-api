@@ -23,12 +23,18 @@ def execute(message: Text, apikey: Text) -> Text:
         len_params = len(params)
 
         if len_params < 2:
-            return failed("You **must** provide at least an URL to perform a "
-                          "check.")
+            return failed("You **must** provide at least an URL to perform a " "check.")
 
-        options = {"secret": apikey, "url": params[1], "on_load": "true",
-                   "on_click": "true", "page_weight": "true", "seo": "true",
-                   "broken_links": "true", "asset_count": "true"}
+        options = {
+            "secret": apikey,
+            "url": params[1],
+            "on_load": "true",
+            "on_click": "true",
+            "page_weight": "true",
+            "seo": "true",
+            "broken_links": "true",
+            "asset_count": "true",
+        }
 
         # Set the options only if supplied
 
@@ -48,9 +54,11 @@ def execute(message: Text, apikey: Text) -> Text:
         try:
             fetch_result = extract.fetch(options)
         except JSONDecodeError:
-            return failed("Cannot decode a JSON response. "
-                          "Perhaps faulty link. Link must start "
-                          "with `http://` or `https://`.")
+            return failed(
+                "Cannot decode a JSON response. "
+                "Perhaps faulty link. Link must start "
+                "with `http://` or `https://`."
+            )
 
         return report.compose(fetch_result)
 
@@ -58,8 +66,7 @@ def execute(message: Text, apikey: Text) -> Text:
         # the user needs to modify the asset_count. There are probably ways
         # to counteract this, but I think this is more fast to run.
     else:
-        return "Unknown command. Available commands: `check <website> " \
-               "[params]`"
+        return "Unknown command. Available commands: `check <website> " "[params]`"
 
 
 def failed(message: Text) -> Text:

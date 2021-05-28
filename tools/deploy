@@ -18,6 +18,7 @@ bold = '\033[1m'  # type: str
 
 bots_dir = '.bots'  # type: str
 
+
 def pack(options: argparse.Namespace) -> None:
     # Basic sanity checks for input.
     if not options.path:
@@ -53,14 +54,19 @@ def pack(options: argparse.Namespace) -> None:
     # Pack the zuliprc
     zip_file.write(options.config, 'zuliprc')
     # Pack the config file for the botfarm.
-    bot_config = textwrap.dedent('''\
+    bot_config = textwrap.dedent(
+        '''\
         [deploy]
         bot={}
         zuliprc=zuliprc
-        '''.format(options.main))
+        '''.format(
+            options.main
+        )
+    )
     zip_file.writestr('config.ini', bot_config)
     zip_file.close()
     print('pack: Created zip file at: {}.'.format(zip_file_path))
+
 
 def check_common_options(options: argparse.Namespace) -> None:
     if not options.server:
@@ -70,18 +76,20 @@ def check_common_options(options: argparse.Namespace) -> None:
         print('tools/deploy: Botfarm deploy token not specified.')
         sys.exit(1)
 
-def handle_common_response_without_data(response: Response,
-                                        operation: str,
-                                        success_message: str) -> bool:
+
+def handle_common_response_without_data(
+    response: Response, operation: str, success_message: str
+) -> bool:
     return handle_common_response(
         response=response,
         operation=operation,
-        success_handler=lambda r: print('{}: {}'.format(operation, success_message))
+        success_handler=lambda r: print('{}: {}'.format(operation, success_message)),
     )
 
-def handle_common_response(response: Response,
-                           operation: str,
-                           success_handler: Callable[[Dict[str, Any]], Any]) -> bool:
+
+def handle_common_response(
+    response: Response, operation: str, success_handler: Callable[[Dict[str, Any]], Any]
+) -> bool:
     if response.status_code == requests.codes.ok:
         response_data = response.json()
         if response_data['status'] == 'success':
@@ -99,6 +107,7 @@ def handle_common_response(response: Response,
         print('{}: Error {}. Aborting.'.format(operation, response.status_code))
     return False
 
+
 def upload(options: argparse.Namespace) -> None:
     check_common_options(options)
     file_path = os.path.join(bots_dir, options.botname + '.zip')
@@ -109,9 +118,12 @@ def upload(options: argparse.Namespace) -> None:
     headers = {'key': options.token}
     url = urllib.parse.urljoin(options.server, 'bots/upload')
     response = requests.post(url, files=files, headers=headers)
-    result = handle_common_response_without_data(response, 'upload', 'Uploaded the bot package to botfarm.')
+    result = handle_common_response_without_data(
+        response, 'upload', 'Uploaded the bot package to botfarm.'
+    )
     if result is False:
         sys.exit(1)
+
 
 def clean(options: argparse.Namespace) -> None:
     file_path = os.path.join(bots_dir, options.botname + '.zip')
@@ -121,15 +133,19 @@ def clean(options: argparse.Namespace) -> None:
     else:
         print('clean: File \'{}\' not found.'.format(file_path))
 
+
 def process(options: argparse.Namespace) -> None:
     check_common_options(options)
     headers = {'key': options.token}
     url = urllib.parse.urljoin(options.server, 'bots/process')
     payload = {'name': options.botname}
     response = requests.post(url, headers=headers, json=payload)
-    result = handle_common_response_without_data(response, 'process', 'The bot has been processed by the botfarm.')
+    result = handle_common_response_without_data(
+        response, 'process', 'The bot has been processed by the botfarm.'
+    )
     if result is False:
         sys.exit(1)
+
 
 def start(options: argparse.Namespace) -> None:
     check_common_options(options)
@@ -137,9 +153,12 @@ def start(options: argparse.Namespace) -> None:
     url = urllib.parse.urljoin(options.server, 'bots/start')
     payload = {'name': options.botname}
     response = requests.post(url, headers=headers, json=payload)
-    result = handle_common_response_without_data(response, 'start', 'The bot has been started by the botfarm.')
+    result = handle_common_response_without_data(
+        response, 'start', 'The bot has been started by the botfarm.'
+    )
     if result is False:
         sys.exit(1)
+
 
 def stop(options: argparse.Namespace) -> None:
     check_common_options(options)
@@ -147,15 +166,19 @@ def stop(options: argparse.Namespace) -> None:
     url = urllib.parse.urljoin(options.server, 'bots/stop')
     payload = {'name': options.botname}
     response = requests.post(url, headers=headers, json=payload)
-    result = handle_common_response_without_data(response, 'stop', 'The bot has been stopped by the botfarm.')
+    result = handle_common_response_without_data(
+        response, 'stop', 'The bot has been stopped by the botfarm.'
+    )
     if result is False:
         sys.exit(1)
+
 
 def prepare(options: argparse.Namespace) -> None:
     pack(options)
     upload(options)
     clean(options)
     process(options)
+
 
 def log(options: argparse.Namespace) -> None:
     check_common_options(options)
@@ -171,15 +194,19 @@ def log(options: argparse.Namespace) -> None:
     if result is False:
         sys.exit(1)
 
+
 def delete(options: argparse.Namespace) -> None:
     check_common_options(options)
     headers = {'key': options.token}
     url = urllib.parse.urljoin(options.server, 'bots/delete')
     payload = {'name': options.botname}
     response = requests.post(url, headers=headers, json=payload)
-    result = handle_common_response_without_data(response, 'delete', 'The bot has been removed from the botfarm.')
+    result = handle_common_response_without_data(
+        response, 'delete', 'The bot has been removed from the botfarm.'
+    )
     if result is False:
         sys.exit(1)
+
 
 def list_bots(options: argparse.Namespace) -> None:
     check_common_options(options)
@@ -190,9 +217,12 @@ def list_bots(options: argparse.Namespace) -> None:
         pretty_print = False
     url = urllib.parse.urljoin(options.server, 'bots/list')
     response = requests.get(url, headers=headers)
-    result = handle_common_response(response, 'ls', lambda r: print_bots(r['bots']['list'], pretty_print))
+    result = handle_common_response(
+        response, 'ls', lambda r: print_bots(r['bots']['list'], pretty_print)
+    )
     if result is False:
         sys.exit(1)
+
 
 def print_bots(bots: List[Any], pretty_print: bool) -> None:
     if pretty_print:
@@ -200,6 +230,7 @@ def print_bots(bots: List[Any], pretty_print: bool) -> None:
     else:
         for bot in bots:
             print('{}\t{}\t{}\t{}'.format(bot['name'], bot['status'], bot['email'], bot['site']))
+
 
 def print_bots_pretty(bots: List[Any]) -> None:
     if len(bots) == 0:
@@ -230,6 +261,7 @@ def print_bots_pretty(bots: List[Any]) -> None:
                 bot['site'].rjust(site_col_len),
             )
             print(row)
+
 
 def main() -> None:
     usage = """tools/deploy <command> <bot-name> [options]
@@ -267,23 +299,25 @@ To list user's bots, use:
     parser = argparse.ArgumentParser(usage=usage)
     parser.add_argument('command', help='Command to run.')
     parser.add_argument('botname', nargs='?', help='Name of bot to operate on.')
-    parser.add_argument('--server', '-s',
-                        metavar='SERVERURL',
-                        default=os.environ.get('SERVER', ''),
-                        help='Url of the Zulip Botfarm server.')
-    parser.add_argument('--token', '-t',
-                        default=os.environ.get('TOKEN', ''),
-                        help='Deploy Token for the Botfarm.')
-    parser.add_argument('--path', '-p',
-                        help='Path to the bot directory.')
-    parser.add_argument('--config', '-c',
-                        help='Path to the zuliprc file.')
-    parser.add_argument('--main', '-m',
-                        help='Path to the bot\'s main file, relative to the bot\'s directory.')
-    parser.add_argument('--lines', '-l',
-                        help='Number of lines in log required.')
-    parser.add_argument('--format', '-f', action='store_true',
-                        help='Print user\'s bots in human readable format')
+    parser.add_argument(
+        '--server',
+        '-s',
+        metavar='SERVERURL',
+        default=os.environ.get('SERVER', ''),
+        help='Url of the Zulip Botfarm server.',
+    )
+    parser.add_argument(
+        '--token', '-t', default=os.environ.get('TOKEN', ''), help='Deploy Token for the Botfarm.'
+    )
+    parser.add_argument('--path', '-p', help='Path to the bot directory.')
+    parser.add_argument('--config', '-c', help='Path to the zuliprc file.')
+    parser.add_argument(
+        '--main', '-m', help='Path to the bot\'s main file, relative to the bot\'s directory.'
+    )
+    parser.add_argument('--lines', '-l', help='Number of lines in log required.')
+    parser.add_argument(
+        '--format', '-f', action='store_true', help='Print user\'s bots in human readable format'
+    )
     options = parser.parse_args()
     if not options.command:
         print('tools/deploy: No command specified.')
@@ -308,5 +342,7 @@ To list user's bots, use:
         commands[options.command](options)
     else:
         print('tools/deploy: No command \'{}\' found.'.format(options.command))
+
+
 if __name__ == '__main__':
     main()

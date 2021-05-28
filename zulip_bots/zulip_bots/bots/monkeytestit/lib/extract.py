@@ -20,9 +20,11 @@ def fetch(options: dict):
     res = requests.get("https://monkeytest.it/test", params=options)
 
     if "server timed out" in res.text:
-        return {"error": "The server timed out before sending a response to "
-                         "the request. Report is available at "
-                         "[Test Report History]"
-                         "(https://monkeytest.it/dashboard)."}
+        return {
+            "error": "The server timed out before sending a response to "
+            "the request. Report is available at "
+            "[Test Report History]"
+            "(https://monkeytest.it/dashboard)."
+        }
 
     return json.loads(res.text)

@@ -9,6 +9,7 @@ from zulip_bots.lib import BotHandler
 XKCD_TEMPLATE_URL = 'https://xkcd.com/%s/info.0.json'
 LATEST_XKCD_URL = 'https://xkcd.com/info.0.json'
 
+
 class XkcdHandler:
     '''
     This plugin provides several commands that can be used for fetch a comic
@@ -40,27 +41,33 @@ class XkcdHandler:
         xkcd_bot_response = get_xkcd_bot_response(message, quoted_name)
         bot_handler.send_reply(message, xkcd_bot_response)
 
+
 class XkcdBotCommand:
     LATEST = 0
     RANDOM = 1
     COMIC_ID = 2
 
+
 class XkcdNotFoundError(Exception):
     pass
 
+
 class XkcdServerError(Exception):
     pass
+
 
 def get_xkcd_bot_response(message: Dict[str, str], quoted_name: str) -> str:
     original_content = message['content'].strip()
     command = original_content.strip()
 
-    commands_help = ("%s"
-                     "\n* `{0} help` to show this help message."
-                     "\n* `{0} latest` to fetch the latest comic strip from xkcd."
-                     "\n* `{0} random` to fetch a random comic strip from xkcd."
-                     "\n* `{0} <comic id>` to fetch a comic strip based on `<comic id>` "
-                     "e.g `{0} 1234`.".format(quoted_name))
+    commands_help = (
+        "%s"
+        "\n* `{0} help` to show this help message."
+        "\n* `{0} latest` to fetch the latest comic strip from xkcd."
+        "\n* `{0} random` to fetch a random comic strip from xkcd."
+        "\n* `{0} <comic id>` to fetch a comic strip based on `<comic id>` "
+        "e.g `{0} 1234`.".format(quoted_name)
+    )
 
     try:
         if command == 'help':
@@ -72,19 +79,25 @@ def get_xkcd_bot_response(message: Dict[str, str], quoted_name: str) -> str:
         elif command.isdigit():
             fetched = fetch_xkcd_query(XkcdBotCommand.COMIC_ID, command)
         else:
-            return commands_help % ("xkcd bot only supports these commands, not `%s`:" % (command,),)
+            return commands_help % (
+                "xkcd bot only supports these commands, not `%s`:" % (command,),
+            )
     except (requests.exceptions.ConnectionError, XkcdServerError):
         logging.exception('Connection error occurred when trying to connect to xkcd server')
         return 'Sorry, I cannot process your request right now, please try again later!'
     except XkcdNotFoundError:
-        logging.exception('XKCD server responded 404 when trying to fetch comic with id %s'
-                          % (command,))
+        logging.exception(
+            'XKCD server responded 404 when trying to fetch comic with id %s' % (command,)
+        )
         return 'Sorry, there is likely no xkcd comic strip with id: #%s' % (command,)
     else:
-        return ("#%s: **%s**\n[%s](%s)" % (fetched['num'],
-                                           fetched['title'],
-                                           fetched['alt'],
-                                           fetched['img']))
+        return "#%s: **%s**\n[%s](%s)" % (
+            fetched['num'],
+            fetched['title'],
+            fetched['alt'],
+            fetched['img'],
+        )
+
 
 def fetch_xkcd_query(mode: int, comic_id: Optional[str] = None) -> Dict[str, str]:
     try:
@@ -119,5 +132,6 @@ def fetch_xkcd_query(mode: int, comic_id: Optional[str] = None) -> Dict[str, str
         raise
 
     return xkcd_json
+
 
 handler_class = XkcdHandler

@@ -10,6 +10,7 @@ class GoogleTranslateHandler:
     Before using it, make sure you set up google api keys, and enable google
     cloud translate from the google cloud console.
     '''
+
     def usage(self):
         return '''
             This plugin allows users translate messages
@@ -27,11 +28,14 @@ class GoogleTranslateHandler:
             bot_handler.quit(str(e))
 
     def handle_message(self, message, bot_handler):
-        bot_response = get_translate_bot_response(message['content'],
-                                                  self.config_info,
-                                                  message['sender_full_name'],
-                                                  self.supported_languages)
+        bot_response = get_translate_bot_response(
+            message['content'],
+            self.config_info,
+            message['sender_full_name'],
+            self.supported_languages,
+        )
         bot_handler.send_reply(message, bot_response)
+
 
 api_url = 'https://translation.googleapis.com/language/translate/v2'
 
@@ -44,16 +48,19 @@ Visit [here](https://cloud.google.com/translate/docs/languages) for all language
 
 language_not_found_text = '{} language not found. Visit [here](https://cloud.google.com/translate/docs/languages) for all languages'
 
+
 def get_supported_languages(key):
     parameters = {'key': key, 'target': 'en'}
-    response = requests.get(api_url + '/languages', params = parameters)
+    response = requests.get(api_url + '/languages', params=parameters)
     if response.status_code == requests.codes.ok:
         languages = response.json()['data']['languages']
         return {lang['name'].lower(): lang['language'].lower() for lang in languages}
     raise TranslateError(response.json()['error']['message'])
 
+
 class TranslateError(Exception):
     pass
+
 
 def translate(text_to_translate, key, dest, src):
     parameters = {'q': text_to_translate, 'target': dest, 'key': key}
@@ -64,12 +71,14 @@ def translate(text_to_translate, key, dest, src):
         return response.json()['data']['translations'][0]['translatedText']
     raise TranslateError(response.json()['error']['message'])
 
+
 def get_code_for_language(language, all_languages):
     if language.lower() not in all_languages.values():
         if language.lower() not in all_languages.keys():
             return ''
         language = all_languages[language.lower()]
     return language
+
 
 def get_translate_bot_response(message_content, config_file, author, all_languages):
     message_content = message_content.strip()
@@ -94,7 +103,9 @@ def get_translate_bot_response(message_content, config_file, author, all_languag
         if source_language == '':
             return language_not_found_text.format("Source")
     try:
-        translated_text = translate(text_to_translate, config_file['key'], target_language, source_language)
+        translated_text = translate(
+            text_to_translate, config_file['key'], target_language, source_language
+        )
     except requests.exceptions.ConnectionError as conn_err:
         return "Could not connect to Google Translate. {}.".format(conn_err)
     except TranslateError as tr_err:
@@ -102,5 +113,6 @@ def get_translate_bot_response(message_content, config_file, author, all_languag
     except Exception as err:
         return "Error. {}.".format(err)
     return "{} (from {})".format(translated_text, author)
+
 
 handler_class = GoogleTranslateHandler

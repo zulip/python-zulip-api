@@ -114,9 +114,11 @@ To make your next move, respond to Chess Bot with
 
     def test_main(self) -> None:
         with self.mock_config_info({'stockfish_location': '/foo/bar'}):
-            self.verify_dialog([
-                ('start with other user', self.START_RESPONSE),
-                ('do e4', self.DO_E4_RESPONSE),
-                ('do Ke4', self.DO_KE4_RESPONSE),
-                ('resign', self.RESIGN_RESPONSE),
-            ])
+            self.verify_dialog(
+                [
+                    ('start with other user', self.START_RESPONSE),
+                    ('do e4', self.DO_E4_RESPONSE),
+                    ('do Ke4', self.DO_KE4_RESPONSE),
+                    ('resign', self.RESIGN_RESPONSE),
+                ]
+            )

@@ -15,7 +15,10 @@ import zulip
 
 VERSION = "0.9"
 
-def format_summary_line(web_url: str, user: str, base: int, tip: int, branch: str, node: Text) -> Text:
+
+def format_summary_line(
+    web_url: str, user: str, base: int, tip: int, branch: str, node: Text
+) -> Text:
     """
     Format the first line of the message, which contains summary
     information about the changeset and links to the changelog if a
@@ -29,16 +32,18 @@ def format_summary_line(web_url: str, user: str, base: int, tip: int, branch: st
     if web_url:
         shortlog_base_url = web_url.rstrip("/") + "/shortlog/"
         summary_url = "{shortlog}{tip}?revcount={revcount}".format(
-            shortlog=shortlog_base_url, tip=tip - 1, revcount=revcount)
+            shortlog=shortlog_base_url, tip=tip - 1, revcount=revcount
+        )
         formatted_commit_count = "[{revcount} commit{s}]({url})".format(
-            revcount=revcount, s=plural, url=summary_url)
+            revcount=revcount, s=plural, url=summary_url
+        )
     else:
-        formatted_commit_count = "{revcount} commit{s}".format(
-            revcount=revcount, s=plural)
+        formatted_commit_count = "{revcount} commit{s}".format(revcount=revcount, s=plural)
 
     return "**{user}** pushed {commits} to **{branch}** (`{tip}:{node}`):\n\n".format(
-        user=user, commits=formatted_commit_count, branch=branch, tip=tip,
-        node=node[:12])
+        user=user, commits=formatted_commit_count, branch=branch, tip=tip, node=node[:12]
+    )
+
 
 def format_commit_lines(web_url: str, repo: repo, base: int, tip: int) -> str:
     """
@@ -56,8 +61,7 @@ def format_commit_lines(web_url: str, repo: repo, base: int, tip: int) -> str:
 
         if web_url:
             summary_url = rev_base_url + str(rev_ctx)
-            summary = "* [{summary}]({url})".format(
-                summary=one_liner, url=summary_url)
+            summary = "* [{summary}]({url})".format(summary=one_liner, url=summary_url)
         else:
             summary = "* {summary}".format(summary=one_liner)
 
@@ -65,14 +69,17 @@ def format_commit_lines(web_url: str, repo: repo, base: int, tip: int) -> str:
 
     return "\n".join(summary for summary in commit_summaries)
 
-def send_zulip(email: str, api_key: str, site: str, stream: str, subject: str, content: Text) -> None:
+
+def send_zulip(
+    email: str, api_key: str, site: str, stream: str, subject: str, content: Text
+) -> None:
     """
     Send a message to Zulip using the provided credentials, which should be for
     a bot in most cases.
     """
-    client = zulip.Client(email=email, api_key=api_key,
-                          site=site,
-                          client="ZulipMercurial/" + VERSION)
+    client = zulip.Client(
+        email=email, api_key=api_key, site=site, client="ZulipMercurial/" + VERSION
+    )
 
     message_data = {
         "type": "stream",
@@ -83,6 +90,7 @@ def send_zulip(email: str, api_key: str, site: str, stream: str, subject: str, c
 
     client.send_message(message_data)
 
+
 def get_config(ui: ui, item: str) -> str:
     try:
         # config returns configuration value.
@@ -90,6 +98,7 @@ def get_config(ui: ui, item: str) -> str:
     except IndexError:
         ui.warn("Zulip: Could not find required item {} in hg config.".format(item))
         sys.exit(1)
+
 
 def hook(ui: ui, repo: repo, **kwargs: Text) -> None:
     """

@@ -16,8 +16,8 @@ class Storage:
     def get(self, topic_name):
         return self.data[topic_name]
 
-class MerelsModel:
 
+class MerelsModel:
     def __init__(self, board: Any = None) -> None:
         self.topic = "merels"
         self.storage = Storage(self.topic)
@@ -34,8 +34,9 @@ class MerelsModel:
         data = game_data.GameData(merels.get_game_data(self.topic))
 
         if data.get_phase() > 1:
-            if (mechanics.get_piece("X", data.grid()) <= 2) or\
-                    (mechanics.get_piece("O", data.grid()) <= 2):
+            if (mechanics.get_piece("X", data.grid()) <= 2) or (
+                mechanics.get_piece("O", data.grid()) <= 2
+            ):
                 return True
         return False
 
@@ -43,13 +44,13 @@ class MerelsModel:
         if self.storage.get(self.topic) == '["X", 0, 0, "NNNNNNNNNNNNNNNNNNNNNNNN", "", 0]':
             self.storage.put(
                 self.topic,
-                '["{}", 0, 0, "NNNNNNNNNNNNNNNNNNNNNNNN", "", 0]'.format(
-                    self.token[player_number]
-                ))
+                '["{}", 0, 0, "NNNNNNNNNNNNNNNNNNNNNNNN", "", 0]'.format(self.token[player_number]),
+            )
         self.current_board, same_player_move = game.beat(move, self.topic, self.storage)
         if same_player_move != "":
             raise SamePlayerMove(same_player_move)
         return self.current_board
+
 
 class MerelsMessageHandler:
     tokens = [':o_button:', ':cross_mark_button:']
@@ -66,11 +67,13 @@ class MerelsMessageHandler:
     def game_start_message(self) -> str:
         return game.getHelp()
 
+
 class MerelsHandler(GameAdapter):
     '''
     You can play merels! Make sure your message starts with
     "@mention-bot".
     '''
+
     META = {
         'name': 'merels',
         'description': 'Lets you play merels against any player.',
@@ -95,9 +98,10 @@ class MerelsHandler(GameAdapter):
             model,
             gameMessageHandler,
             rules,
-            max_players = 2,
-            min_players = 2,
-            supports_computer=False
+            max_players=2,
+            min_players=2,
+            supports_computer=False,
         )
+
 
 handler_class = MerelsHandler

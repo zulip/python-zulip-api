@@ -10,8 +10,17 @@ from irc.client_aio import AioReactor
 class IRCBot(irc.bot.SingleServerIRCBot):
     reactor_class = AioReactor
 
-    def __init__(self, zulip_client: Any, stream: str, topic: str, channel: irc.bot.Channel,
-                 nickname: str, server: str, nickserv_password: str = '', port: int = 6667) -> None:
+    def __init__(
+        self,
+        zulip_client: Any,
+        stream: str,
+        topic: str,
+        channel: irc.bot.Channel,
+        nickname: str,
+        server: str,
+        nickserv_password: str = '',
+        port: int = 6667,
+    ) -> None:
         self.channel = channel  # type: irc.bot.Channel
         self.zulip_client = zulip_client
         self.stream = stream
@@ -31,9 +40,7 @@ class IRCBot(irc.bot.SingleServerIRCBot):
         # Taken from
         # https://github.com/jaraco/irc/blob/master/irc/client_aio.py,
         # in particular the method of AioSimpleIRCClient
-        self.c = self.reactor.loop.run_until_complete(
-            self.connection.connect(*args, **kwargs)
-        )
+        self.c = self.reactor.loop.run_until_complete(self.connection.connect(*args, **kwargs))
         print("Listening now. Please send an IRC message to verify operation")
 
     def check_subscription_or_die(self) -> None:
@@ -43,7 +50,10 @@ class IRCBot(irc.bot.SingleServerIRCBot):
             exit(1)
         subs = [s["name"] for s in resp["subscriptions"]]
         if self.stream not in subs:
-            print("The bot is not yet subscribed to stream '%s'. Please subscribe the bot to the stream first." % (self.stream,))
+            print(
+                "The bot is not yet subscribed to stream '%s'. Please subscribe the bot to the stream first."
+                % (self.stream,)
+            )
             exit(1)
 
     def on_nicknameinuse(self, c: ServerConnection, e: Event) -> None:
@@ -70,8 +80,11 @@ class IRCBot(irc.bot.SingleServerIRCBot):
                 else:
                     return
             else:
-                recipients = [u["short_name"] for u in msg["display_recipient"] if
-                              u["email"] != msg["sender_email"]]
+                recipients = [
+                    u["short_name"]
+                    for u in msg["display_recipient"]
+                    if u["email"] != msg["sender_email"]
+                ]
                 if len(recipients) == 1:
                     send = lambda x: self.c.privmsg(recipients[0], x)
                 else:
@@ -89,12 +102,16 @@ class IRCBot(irc.bot.SingleServerIRCBot):
             return
 
         # Forward the PM to Zulip
-        print(self.zulip_client.send_message({
-            "sender": sender,
-            "type": "private",
-            "to": "username@example.com",
-            "content": content,
-        }))
+        print(
+            self.zulip_client.send_message(
+                {
+                    "sender": sender,
+                    "type": "private",
+                    "to": "username@example.com",
+                    "content": content,
+                }
+            )
+        )
 
     def on_pubmsg(self, c: ServerConnection, e: Event) -> None:
         content = e.arguments[0]
@@ -103,12 +120,16 @@ class IRCBot(irc.bot.SingleServerIRCBot):
             return
 
         # Forward the stream message to Zulip
-        print(self.zulip_client.send_message({
-            "type": "stream",
-            "to": self.stream,
-            "subject": self.topic,
-            "content": "**{}**: {}".format(sender, content),
-        }))
+        print(
+            self.zulip_client.send_message(
+                {
+                    "type": "stream",
+                    "to": self.stream,
+                    "subject": self.topic,
+                    "content": "**{}**: {}".format(sender, content),
+                }
+            )
+        )
 
     def on_dccmsg(self, c: ServerConnection, e: Event) -> None:
         c.privmsg("You said: " + e.arguments[0])

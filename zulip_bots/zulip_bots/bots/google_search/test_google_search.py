@@ -11,7 +11,7 @@ class TestGoogleSearchBot(BotTestCase, DefaultTests):
         with self.mock_http_conversation('test_normal'):
             self.verify_reply(
                 'zulip',
-                'Found Result: [Zulip](https://www.google.com/url?url=https%3A%2F%2Fzulip.com%2F)'
+                'Found Result: [Zulip](https://www.google.com/url?url=https%3A%2F%2Fzulip.com%2F)',
             )
 
     def test_bot_help(self) -> None:
@@ -31,9 +31,10 @@ class TestGoogleSearchBot(BotTestCase, DefaultTests):
             self.verify_reply('no res', 'Found no results.')
 
     def test_attribute_error(self) -> None:
-        with self.mock_http_conversation('test_attribute_error'), \
-                patch('logging.exception'):
-            self.verify_reply('test', 'Error: Search failed. \'NoneType\' object has no attribute \'findAll\'.')
+        with self.mock_http_conversation('test_attribute_error'), patch('logging.exception'):
+            self.verify_reply(
+                'test', 'Error: Search failed. \'NoneType\' object has no attribute \'findAll\'.'
+            )
 
     # Makes sure cached results, irrelevant links, or empty results are not displayed
     def test_ignore_links(self) -> None:
@@ -43,5 +44,5 @@ class TestGoogleSearchBot(BotTestCase, DefaultTests):
             # See test_ignore_links.json
             self.verify_reply(
                 'zulip',
-                'Found Result: [Zulip](https://www.google.com/url?url=https%3A%2F%2Fzulip.com%2F)'
+                'Found Result: [Zulip](https://www.google.com/url?url=https%3A%2F%2Fzulip.com%2F)',
             )

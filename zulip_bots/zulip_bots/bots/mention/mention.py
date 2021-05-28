@@ -20,13 +20,19 @@ class MentionHandler:
             'Authorization': 'Bearer ' + self.access_token,
             'Accept-Version': '1.15',
         }
-        test_query_response = requests.get('https://api.mention.net/api/accounts/me', headers=test_query_header)
+        test_query_response = requests.get(
+            'https://api.mention.net/api/accounts/me', headers=test_query_header
+        )
 
         try:
             test_query_data = test_query_response.json()
-            if test_query_data['error'] == 'invalid_grant' and \
-               test_query_data['error_description'] == 'The access token provided is invalid.':
-                bot_handler.quit('Access Token Invalid. Please see doc.md to find out how to get it.')
+            if (
+                test_query_data['error'] == 'invalid_grant'
+                and test_query_data['error_description'] == 'The access token provided is invalid.'
+            ):
+                bot_handler.quit(
+                    'Access Token Invalid. Please see doc.md to find out how to get it.'
+                )
         except KeyError:
             pass
 
@@ -71,18 +77,15 @@ class MentionHandler:
 
         create_alert_data = {
             'name': keyword,
-            'query': {
-                'type': 'basic',
-                'included_keywords': [keyword]
-            },
+            'query': {'type': 'basic', 'included_keywords': [keyword]},
             'languages': ['en'],
-            'sources': ['web']
+            'sources': ['web'],
         }  # type: Any
 
         response = requests.post(
-            'https://api.mention.net/api/accounts/' + self.account_id
-            + '/alerts',
-            data=create_alert_data, headers=create_alert_header,
+            'https://api.mention.net/api/accounts/' + self.account_id + '/alerts',
+            data=create_alert_data,
+            headers=create_alert_header,
         )
         data_json = response.json()
         alert_id = data_json['alert']['id']
@@ -94,8 +97,11 @@ class MentionHandler:
             'Accept-Version': '1.15',
         }
         response = requests.get(
-            'https://api.mention.net/api/accounts/' + self.account_id
-            + '/alerts/' + alert_id + '/mentions',
+            'https://api.mention.net/api/accounts/'
+            + self.account_id
+            + '/alerts/'
+            + alert_id
+            + '/mentions',
             headers=get_mentions_header,
         )
         data_json = response.json()
@@ -123,7 +129,9 @@ class MentionHandler:
             reply += "[{title}]({id})\n".format(title=mention['title'], id=mention['original_url'])
         return reply
 
+
 handler_class = MentionHandler
+
 
 class MentionNoResponseException(Exception):
     pass

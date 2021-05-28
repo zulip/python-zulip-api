@@ -14,6 +14,7 @@ def die(signal: int, frame: FrameType) -> None:
     """We actually want to exit, so run os._exit (so as not to be caught and restarted)"""
     os._exit(1)
 
+
 signal.signal(signal.SIGINT, die)
 
 args = [os.path.join(os.path.dirname(sys.argv[0]), "jabber_mirror_backend.py")]

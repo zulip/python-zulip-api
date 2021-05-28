@@ -7,6 +7,7 @@ from zulip_bots.lib import BotHandler
 
 # See readme.md for instructions on running this code.
 
+
 class WikipediaHandler:
     '''
     This plugin facilitates searching Wikipedia for a
@@ -47,36 +48,47 @@ class WikipediaHandler:
             return help_text.format(bot_handler.identity().mention)
 
         query_wiki_url = 'https://en.wikipedia.org/w/api.php'
-        query_wiki_params = dict(
-            action='query',
-            list='search',
-            srsearch=query,
-            format='json'
-        )
+        query_wiki_params = dict(action='query', list='search', srsearch=query, format='json')
         try:
             data = requests.get(query_wiki_url, params=query_wiki_params)
 
         except requests.exceptions.RequestException:
             logging.error('broken link')
-            return 'Uh-Oh ! Sorry ,couldn\'t process the request right now.:slightly_frowning_face:\n' \
-                   'Please try again later.'
+            return (
+                'Uh-Oh ! Sorry ,couldn\'t process the request right now.:slightly_frowning_face:\n'
+                'Please try again later.'
+            )
 
         # Checking if the bot accessed the link.
         if data.status_code != 200:
             logging.error('Page not found.')
-            return 'Uh-Oh ! Sorry ,couldn\'t process the request right now.:slightly_frowning_face:\n' \
-                   'Please try again later.'
+            return (
+                'Uh-Oh ! Sorry ,couldn\'t process the request right now.:slightly_frowning_face:\n'
+                'Please try again later.'
+            )
 
         new_content = 'For search term:' + query + '\n'
 
         # Checking if there is content for the searched term
         if len(data.json()['query']['search']) == 0:
-            new_content = 'I am sorry. The search term you provided is not found :slightly_frowning_face:'
+            new_content = (
+                'I am sorry. The search term you provided is not found :slightly_frowning_face:'
+            )
         else:
             for i in range(min(3, len(data.json()['query']['search']))):
                 search_string = data.json()['query']['search'][i]['title'].replace(' ', '_')
                 url = 'https://en.wikipedia.org/wiki/' + search_string
-                new_content += str(i+1) + ':' + '[' + search_string + ']' + '(' + url.replace('"', "%22") + ')\n'
+                new_content += (
+                    str(i + 1)
+                    + ':'
+                    + '['
+                    + search_string
+                    + ']'
+                    + '('
+                    + url.replace('"', "%22")
+                    + ')\n'
+                )
         return new_content
+
 
 handler_class = WikipediaHandler

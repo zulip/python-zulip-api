@@ -20,5 +20,6 @@ class TestHashUtilDecode(TestCase):
             with self.subTest(encoded_string=encoded_string):
                 self.assertEqual(zulip.hash_util_decode(encoded_string), decoded_string)
 
+
 if __name__ == '__main__':
     unittest.main()

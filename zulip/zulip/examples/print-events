@@ -19,8 +19,10 @@ options = parser.parse_args()
 
 client = zulip.init_from_options(options)
 
+
 def print_event(event: Dict[str, Any]) -> None:
     print(event)
+
 
 # This is a blocking call, and will continuously poll for new events
 # Note also the filter here is messages to the stream Denmark; if you

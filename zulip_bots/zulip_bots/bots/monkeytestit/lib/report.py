@@ -74,13 +74,15 @@ def print_failures_checkers(results: Dict) -> Text:
     :return: A response string containing number of failures in each enabled
              checkers
     """
-    failures_checkers = [(checker, len(results['failures'][checker]))
-                         for checker in get_enabled_checkers(results)
-                         if checker in results['failures']]  # [('seo', 3), ..]
+    failures_checkers = [
+        (checker, len(results['failures'][checker]))
+        for checker in get_enabled_checkers(results)
+        if checker in results['failures']
+    ]  # [('seo', 3), ..]
 
-    failures_checkers_messages = ["{} ({})".format(fail_checker[0],
-                                  fail_checker[1]) for fail_checker in
-                                  failures_checkers]
+    failures_checkers_messages = [
+        "{} ({})".format(fail_checker[0], fail_checker[1]) for fail_checker in failures_checkers
+    ]
 
     failures_checkers_message = ", ".join(failures_checkers_messages)
     return "Failures from checkers: {}".format(failures_checkers_message)
@@ -113,8 +115,7 @@ def print_enabled_checkers(results: Dict) -> Text:
     :param results: A dictionary containing the results of a check
     :return: A response string containing enabled checkers
     """
-    return "Enabled checkers: {}".format(", "
-                                         .join(get_enabled_checkers(results)))
+    return "Enabled checkers: {}".format(", ".join(get_enabled_checkers(results)))
 
 
 def print_status(results: Dict) -> Text:

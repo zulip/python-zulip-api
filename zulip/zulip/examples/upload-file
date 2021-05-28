@@ -10,6 +10,7 @@ import zulip
 class StringIO(_StringIO):
     name = ''  # https://github.com/python/typeshed/issues/598
 
+
 usage = """upload-file [options]
 
 Upload a file, and print the corresponding URI.

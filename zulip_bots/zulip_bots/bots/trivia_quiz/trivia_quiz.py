@@ -12,8 +12,10 @@ from zulip_bots.lib import BotHandler
 class NotAvailableException(Exception):
     pass
 
+
 class InvalidAnswerException(Exception):
     pass
+
 
 class TriviaQuizHandler:
     def usage(self) -> str:
@@ -45,8 +47,9 @@ class TriviaQuizHandler:
                 bot_handler.send_reply(message, bot_response)
                 return
             quiz = json.loads(quiz_payload)
-            start_new_question, bot_response = handle_answer(quiz, answer, quiz_id,
-                                                             bot_handler, message['sender_full_name'])
+            start_new_question, bot_response = handle_answer(
+                quiz, answer, quiz_id, bot_handler, message['sender_full_name']
+            )
             bot_handler.send_reply(message, bot_response)
             if start_new_question:
                 start_new_quiz(message, bot_handler)
@@ -55,8 +58,10 @@ class TriviaQuizHandler:
             bot_response = 'type "new" for a new question'
         bot_handler.send_reply(message, bot_response)
 
+
 def get_quiz_from_id(quiz_id: str, bot_handler: BotHandler) -> str:
     return bot_handler.storage.get(quiz_id)
+
 
 def start_new_quiz(message: Dict[str, Any], bot_handler: BotHandler) -> None:
     quiz = get_trivia_quiz()
@@ -65,6 +70,7 @@ def start_new_quiz(message: Dict[str, Any], bot_handler: BotHandler) -> None:
     widget_content = format_quiz_for_widget(quiz_id, quiz)
     bot_handler.storage.put(quiz_id, json.dumps(quiz))
     bot_handler.send_reply(message, bot_response, widget_content)
+
 
 def parse_answer(query: str) -> Tuple[str, str]:
     m = re.match(r'answer\s+(Q...)\s+(.)', query)
@@ -78,10 +84,12 @@ def parse_answer(query: str) -> Tuple[str, str]:
 
     return (quiz_id, answer)
 
+
 def get_trivia_quiz() -> Dict[str, Any]:
     payload = get_trivia_payload()
     quiz = get_quiz_from_payload(payload)
     return quiz
+
 
 def get_trivia_payload() -> Dict[str, Any]:
 
@@ -99,6 +107,7 @@ def get_trivia_payload() -> Dict[str, Any]:
     payload = data.json()
     return payload
 
+
 def fix_quotes(s: str) -> Optional[str]:
     # opentdb is nice enough to escape HTML for us, but
     # we are sending this to code that does that already :)
@@ -110,6 +119,7 @@ def fix_quotes(s: str) -> Optional[str]:
     except Exception:
         raise Exception('Please use python3.4 or later for this bot.')
 
+
 def get_quiz_from_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
     result = payload['results'][0]
     question = result['question']
@@ -119,12 +129,8 @@ def get_quiz_from_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
     answers = dict()
     answers[correct_letter] = result['correct_answer']
     for i in range(3):
-        answers[letters[i+1]] = result['incorrect_answers'][i]
-    answers = {
-        letter: fix_quotes(answer)
-        for letter, answer
-        in answers.items()
-    }
+        answers[letters[i + 1]] = result['incorrect_answers'][i]
+    answers = {letter: fix_quotes(answer) for letter, answer in answers.items()}
     quiz = dict(
         question=fix_quotes(question),
         answers=answers,
@@ -133,6 +139,7 @@ def get_quiz_from_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
         correct_letter=correct_letter,
     )  # type: Dict[str, Any]
     return quiz
+
 
 def generate_quiz_id(storage: Any) -> str:
     try:
@@ -144,6 +151,7 @@ def generate_quiz_id(storage: Any) -> str:
     storage.put('quiz_id', quiz_num)
     quiz_id = 'Q%03d' % (quiz_num,)
     return quiz_id
+
 
 def format_quiz_for_widget(quiz_id: str, quiz: Dict[str, Any]) -> str:
     widget_type = 'zform'
@@ -178,16 +186,19 @@ def format_quiz_for_widget(quiz_id: str, quiz: Dict[str, Any]) -> str:
     payload = json.dumps(widget_content)
     return payload
 
+
 def format_quiz_for_markdown(quiz_id: str, quiz: Dict[str, Any]) -> str:
     question = quiz['question']
     answers = quiz['answers']
-    answer_list = '\n'.join([
-        '* **{letter}** {answer}'.format(
-            letter=letter,
-            answer=answers[letter],
-        )
-        for letter in 'ABCD'
-    ])
+    answer_list = '\n'.join(
+        [
+            '* **{letter}** {answer}'.format(
+                letter=letter,
+                answer=answers[letter],
+            )
+            for letter in 'ABCD'
+        ]
+    )
     how_to_respond = '''**reply**: answer {quiz_id} <letter>'''.format(quiz_id=quiz_id)
 
     content = '''
@@ -201,8 +212,10 @@ Q: {question}
     )
     return content
 
+
 def update_quiz(quiz: Dict[str, Any], quiz_id: str, bot_handler: BotHandler) -> None:
     bot_handler.storage.put(quiz_id, json.dumps(quiz))
+
 
 def build_response(is_correct: bool, num_answers: int) -> str:
     if is_correct:
@@ -214,15 +227,17 @@ def build_response(is_correct: bool, num_answers: int) -> str:
             response = ':disappointed: WRONG, {sender_name}! {option} is not correct.'
     return response
 
-def handle_answer(quiz: Dict[str, Any], option: str, quiz_id: str,
-                  bot_handler: BotHandler, sender_name: str) -> Tuple[bool, str]:
+
+def handle_answer(
+    quiz: Dict[str, Any], option: str, quiz_id: str, bot_handler: BotHandler, sender_name: str
+) -> Tuple[bool, str]:
     answer = quiz['answers'][quiz['correct_letter']]
-    is_new_answer = (option not in quiz['answered_options'])
+    is_new_answer = option not in quiz['answered_options']
     if is_new_answer:
         quiz['answered_options'].append(option)
 
     num_answers = len(quiz['answered_options'])
-    is_correct = (option == quiz['correct_letter'])
+    is_correct = option == quiz['correct_letter']
 
     start_new_question = quiz['pending'] and (is_correct or num_answers >= 3)
     if start_new_question or is_correct:
@@ -232,7 +247,8 @@ def handle_answer(quiz: Dict[str, Any], option: str, quiz_id: str,
         update_quiz(quiz, quiz_id, bot_handler)
 
     response = build_response(is_correct, num_answers).format(
-        option=option, answer=answer, id=quiz_id, sender_name=sender_name)
+        option=option, answer=answer, id=quiz_id, sender_name=sender_name
+    )
     return start_new_question, response
 
 

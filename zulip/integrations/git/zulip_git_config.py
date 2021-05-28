@@ -25,11 +25,11 @@ ZULIP_API_KEY = "0123456789abcdef0123456789abcdef"
 # And similarly for branch "test-post-receive" (for use when testing).
 def commit_notice_destination(repo: Text, branch: Text, commit: Text) -> Optional[Dict[Text, Text]]:
     if branch in ["master", "test-post-receive"]:
-        return dict(stream  = STREAM_NAME,
-                    subject = "%s" % (branch,))
+        return dict(stream=STREAM_NAME, subject="%s" % (branch,))
 
     # Return None for cases where you don't want a notice sent
     return None
+
 
 # Modify this function to change how commits are displayed; the most
 # common customization is to include a link to the commit in your
@@ -38,6 +38,7 @@ def commit_notice_destination(repo: Text, branch: Text, commit: Text) -> Optiona
 # return '!avatar(%s) [%s](https://example.com/commits/%s)\n' % (author, subject, commit_id)
 def format_commit_message(author: Text, subject: Text, commit_id: Text) -> Text:
     return '!avatar(%s) %s\n' % (author, subject)
+
 
 ## If properly installed, the Zulip API should be in your import
 ## path, but if not, set a custom path below

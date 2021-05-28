@@ -35,10 +35,9 @@ class IncrementorHandler:
 
             storage.put('number', num)
             if storage.get('message_id') is not None:
-                result = bot_handler.update_message(dict(
-                    message_id=storage.get('message_id'),
-                    content=str(num)
-                ))
+                result = bot_handler.update_message(
+                    dict(message_id=storage.get('message_id'), content=str(num))
+                )
 
                 # When there isn't an error while updating the message, we won't
                 # attempt to send the it again.

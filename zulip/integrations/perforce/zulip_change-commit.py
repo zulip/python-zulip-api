@@ -36,7 +36,8 @@ client = zulip.Client(
     email=config.ZULIP_USER,
     site=config.ZULIP_SITE,
     api_key=config.ZULIP_API_KEY,
-    client="ZulipPerforce/" + __version__)  # type: zulip.Client
+    client="ZulipPerforce/" + __version__,
+)  # type: zulip.Client
 
 try:
     changelist = int(sys.argv[1])  # type: int
@@ -52,7 +53,9 @@ except ValueError:
 
 metadata = git_p4.p4_describe(changelist)  # type: Dict[str, str]
 
-destination = config.commit_notice_destination(changeroot, changelist)  # type: Optional[Dict[str, str]]
+destination = config.commit_notice_destination(
+    changeroot, changelist
+)  # type: Optional[Dict[str, str]]
 
 if destination is None:
     # Don't forward the notice anywhere
@@ -84,10 +87,8 @@ message = """**{user}** committed revision @{change} to `{path}`.
 {desc}
 ```
 """.format(
-    user=metadata["user"],
-    change=change,
-    path=changeroot,
-    desc=metadata["desc"])  # type: str
+    user=metadata["user"], change=change, path=changeroot, desc=metadata["desc"]
+)  # type: str
 
 message_data = {
     "type": "stream",

@@ -19,8 +19,8 @@ options = parser.parse_args()
 
 client = zulip.init_from_options(options)
 
-print(client.update_message_flags({
-    'op': options.op,
-    'flag': options.flag,
-    'messages': options.messages
-}))
+print(
+    client.update_message_flags(
+        {'op': options.op, 'flag': options.flag, 'messages': options.messages}
+    )
+)

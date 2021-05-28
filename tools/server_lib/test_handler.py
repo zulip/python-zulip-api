@@ -1,4 +1,3 @@
-
 import argparse
 import os
 import shutil
@@ -10,21 +9,26 @@ import pytest
 TOOLS_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(os.path.dirname(TOOLS_DIR))
 
+
 def handle_input_and_run_tests_for_package(package_name, path_list):
     parser = argparse.ArgumentParser(description="Run tests for {}.".format(package_name))
-    parser.add_argument('--coverage',
-                        nargs='?',
-                        const=True,
-                        default=False,
-                        help='compute test coverage (--coverage combine to combine with previous reports)')
-    parser.add_argument('--pytest', '-p',
-                        default=False,
-                        action='store_true',
-                        help="run tests with pytest")
-    parser.add_argument('--verbose', '-v',
-                        default=False,
-                        action='store_true',
-                        help='show verbose output (with pytest)')
+    parser.add_argument(
+        '--coverage',
+        nargs='?',
+        const=True,
+        default=False,
+        help='compute test coverage (--coverage combine to combine with previous reports)',
+    )
+    parser.add_argument(
+        '--pytest', '-p', default=False, action='store_true', help="run tests with pytest"
+    )
+    parser.add_argument(
+        '--verbose',
+        '-v',
+        default=False,
+        action='store_true',
+        help='show verbose output (with pytest)',
+    )
     options = parser.parse_args()
 
     test_session_title = ' Running tests for {} '.format(package_name)
@@ -33,6 +37,7 @@ def handle_input_and_run_tests_for_package(package_name, path_list):
 
     if options.coverage:
         import coverage
+
         cov = coverage.Coverage(config_file="tools/.coveragerc")
         if options.coverage == 'combine':
             cov.load()
@@ -42,11 +47,11 @@ def handle_input_and_run_tests_for_package(package_name, path_list):
         location_to_run_in = os.path.join(TOOLS_DIR, '..', *path_list)
         paths_to_test = ['.']
         pytest_options = [
-            '-s',    # show output from tests; this hides the progress bar though
-            '-x',    # stop on first test failure
+            '-s',  # show output from tests; this hides the progress bar though
+            '-x',  # stop on first test failure
             '--ff',  # runs last failure first
         ]
-        pytest_options += (['-v'] if options.verbose else [])
+        pytest_options += ['-v'] if options.verbose else []
         os.chdir(location_to_run_in)
         result = pytest.main(paths_to_test + pytest_options)
         if result != 0:

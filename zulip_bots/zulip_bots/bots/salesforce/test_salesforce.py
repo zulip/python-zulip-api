@@ -26,7 +26,7 @@ def mock_salesforce_auth(is_success: bool) -> Iterator[None]:
     else:
         with patch(
             'simple_salesforce.api.Salesforce.__init__',
-            side_effect=SalesforceAuthenticationFailed(403, 'auth failed')
+            side_effect=SalesforceAuthenticationFailed(403, 'auth failed'),
         ) as mock_sf_init:
             mock_sf_init.return_value = None
             yield
@@ -34,16 +34,13 @@ def mock_salesforce_auth(is_success: bool) -> Iterator[None]:
 
 @contextmanager
 def mock_salesforce_commands_types() -> Iterator[None]:
-    with patch('zulip_bots.bots.salesforce.utils.commands', mock_commands), \
-            patch('zulip_bots.bots.salesforce.utils.object_types', mock_object_types):
+    with patch('zulip_bots.bots.salesforce.utils.commands', mock_commands), patch(
+        'zulip_bots.bots.salesforce.utils.object_types', mock_object_types
+    ):
         yield
 
 
-mock_config = {
-    'username': 'name@example.com',
-    'password': 'foo',
-    'security_token': 'abcdefg'
-}
+mock_config = {'username': 'name@example.com', 'password': 'foo', 'security_token': 'abcdefg'}
 
 help_text = '''Salesforce bot
 This bot can do simple salesforce query requests
@@ -86,24 +83,15 @@ mock_commands = [
         'rank_output': True,
         'force_keys': ['Amount'],
         'exclude_keys': ['Status'],
-        'show_all_keys': True
+        'show_all_keys': True,
     },
-    {
-        'commands': ['echo'],
-        'callback': echo
-    }
+    {'commands': ['echo'], 'callback': echo},
 ]
 
 
 mock_object_types = {
-    'contact': {
-        'fields': 'Id, Name, Phone',
-        'table': 'Table'
-    },
-    'opportunity': {
-        'fields': 'Id, Name, Amount, Status',
-        'table': 'Table'
-    }
+    'contact': {'fields': 'Id, Name, Phone', 'table': 'Table'},
+    'opportunity': {'fields': 'Id, Name, Amount, Status', 'table': 'Table'},
 }
 
 
@@ -111,16 +99,15 @@ class TestSalesforceBot(BotTestCase, DefaultTests):
     bot_name = "salesforce"  # type: str
 
     def _test(self, test_name: str, message: str, response: str, auth_success: bool = True) -> None:
-        with self.mock_config_info(mock_config), \
-                mock_salesforce_auth(auth_success), \
-                mock_salesforce_query(test_name, 'salesforce'), \
-                mock_salesforce_commands_types():
+        with self.mock_config_info(mock_config), mock_salesforce_auth(
+            auth_success
+        ), mock_salesforce_query(test_name, 'salesforce'), mock_salesforce_commands_types():
             self.verify_reply(message, response)
 
     def _test_initialize(self, auth_success: bool = True) -> None:
-        with self.mock_config_info(mock_config), \
-                mock_salesforce_auth(auth_success), \
-                mock_salesforce_commands_types():
+        with self.mock_config_info(mock_config), mock_salesforce_auth(
+            auth_success
+        ), mock_salesforce_commands_types():
             bot, bot_handler = self._get_handlers()
 
     def test_bot_responds_to_empty_message(self) -> None:
@@ -170,8 +157,7 @@ class TestSalesforceBot(BotTestCase, DefaultTests):
     def test_help(self) -> None:
         self._test('test_one_result', 'help', help_text)
         self._test('test_one_result', 'foo bar baz', help_text)
-        self._test('test_one_result', 'find contact',
-                   'Usage: find contact <name> [arguments]')
+        self._test('test_one_result', 'find contact', 'Usage: find contact <name> [arguments]')
 
     def test_bad_auth(self) -> None:
         with self.assertRaises(StubBotHandler.BotQuitException):
@@ -184,15 +170,15 @@ class TestSalesforceBot(BotTestCase, DefaultTests):
         res = '''**[foo](https://login.salesforce.com/foo_id)**
 >**Phone**: 020 1234 5678
 '''
-        self._test('test_one_result',
-                   'https://login.salesforce.com/1c3e5g7i9k1m3o5q7s', res)
+        self._test('test_one_result', 'https://login.salesforce.com/1c3e5g7i9k1m3o5q7s', res)
 
     def test_link_invalid(self) -> None:
-        self._test('test_one_result',
-                   'https://login.salesforce.com/foo/bar/1c3e5g7$i9k1m3o5q7',
-                   'Invalid salesforce link')
+        self._test(
+            'test_one_result',
+            'https://login.salesforce.com/foo/bar/1c3e5g7$i9k1m3o5q7',
+            'Invalid salesforce link',
+        )
 
     def test_link_no_results(self) -> None:
         res = 'No object found. Make sure it is of the supported types. Type `help` for more info.'
-        self._test('test_no_results',
-                   'https://login.salesforce.com/1c3e5g7i9k1m3o5q7s', res)
+        self._test('test_no_results', 'https://login.salesforce.com/1c3e5g7i9k1m3o5q7s', res)

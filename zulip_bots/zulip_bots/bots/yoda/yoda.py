@@ -25,6 +25,7 @@ HELP_MESSAGE = '''
 class ApiKeyError(Exception):
     '''raise this when there is an error with the Mashape Api Key'''
 
+
 class ServiceUnavailableError(Exception):
     '''raise this when the service is unavailable.'''
 
@@ -34,6 +35,7 @@ class YodaSpeakHandler:
     This bot will allow users to translate a sentence into 'Yoda speak'.
     It looks for messages starting with '@mention-bot'.
     '''
+
     def initialize(self, bot_handler: BotHandler) -> None:
         self.api_key = bot_handler.get_config_info('yoda')['api_key']
 
@@ -56,13 +58,11 @@ class YodaSpeakHandler:
 
     def send_to_yoda_api(self, sentence: str) -> str:
         # function for sending sentence to api
-        response = requests.get("https://yoda.p.mashape.com/yoda",
-                                params=dict(sentence=sentence),
-                                headers={
-                                    "X-Mashape-Key": self.api_key,
-                                    "Accept": "text/plain"
-                                }
-                                )
+        response = requests.get(
+            "https://yoda.p.mashape.com/yoda",
+            params=dict(sentence=sentence),
+            headers={"X-Mashape-Key": self.api_key, "Accept": "text/plain"},
+        )
 
         if response.status_code == 200:
             return response.json()['text']
@@ -74,8 +74,12 @@ class YodaSpeakHandler:
             error_message = response.json()['message']
             logging.error(error_message)
             error_code = response.status_code
-            error_message = error_message + 'Error code: ' + str(error_code) +\
-                ' Did you follow the instructions in the `readme.md` file?'
+            error_message = (
+                error_message
+                + 'Error code: '
+                + str(error_code)
+                + ' Did you follow the instructions in the `readme.md` file?'
+            )
             return error_message
 
     def format_input(self, original_content: str) -> str:
@@ -104,19 +108,18 @@ class YodaSpeakHandler:
                 logging.error(reply_message)
 
             except ApiKeyError:
-                reply_message = 'Invalid Api Key. Did you follow the instructions in the `readme.md` file?'
+                reply_message = (
+                    'Invalid Api Key. Did you follow the instructions in the `readme.md` file?'
+                )
                 logging.error(reply_message)
 
             bot_handler.send_reply(message, reply_message)
 
-    def send_message(self, bot_handler: BotHandler, message: str, stream: str, subject: str) -> None:
+    def send_message(
+        self, bot_handler: BotHandler, message: str, stream: str, subject: str
+    ) -> None:
         # function for sending a message
-        bot_handler.send_message(dict(
-            type='stream',
-            to=stream,
-            subject=subject,
-            content=message
-        ))
+        bot_handler.send_message(dict(type='stream', to=stream, subject=subject, content=message))
 
     def is_help(self, original_content: str) -> bool:
         # gets rid of whitespace around the edges, so that they aren't a problem in the future
@@ -125,5 +128,6 @@ class YodaSpeakHandler:
             return True
         else:
             return False
+
 
 handler_class = YodaSpeakHandler

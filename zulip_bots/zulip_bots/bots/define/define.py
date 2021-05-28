@@ -66,12 +66,15 @@ class DefineHandler:
                     # Show definitions line by line.
                     for d in definitions:
                         example = d['example'] if d['example'] else '*No example available.*'
-                        response += '\n' + '* (**{}**) {}\n&nbsp;&nbsp;{}'.format(d['type'], d['definition'], html2text.html2text(example))
+                        response += '\n' + '* (**{}**) {}\n&nbsp;&nbsp;{}'.format(
+                            d['type'], d['definition'], html2text.html2text(example)
+                        )
 
             except Exception:
                 response += self.REQUEST_ERROR_MESSAGE
                 logging.exception("")
 
             return response
+
 
 handler_class = DefineHandler

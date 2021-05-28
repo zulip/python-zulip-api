@@ -38,7 +38,9 @@ sent = set()  # type: Set[Tuple[int, datetime.datetime]]
 
 sys.path.append(os.path.dirname(__file__))
 
-parser = zulip.add_default_arguments(argparse.ArgumentParser(r"""
+parser = zulip.add_default_arguments(
+    argparse.ArgumentParser(
+        r"""
 
 google-calendar --calendar calendarID@example.calendar.google.com
 
@@ -53,23 +55,29 @@ google-calendar --calendar calendarID@example.calendar.google.com
     revealed to local users through the command line.
 
     Depends on: google-api-python-client
-"""))
+"""
+    )
+)
 
 
-parser.add_argument('--interval',
-                    dest='interval',
-                    default=30,
-                    type=int,
-                    action='store',
-                    help='Minutes before event for reminder [default: 30]',
-                    metavar='MINUTES')
+parser.add_argument(
+    '--interval',
+    dest='interval',
+    default=30,
+    type=int,
+    action='store',
+    help='Minutes before event for reminder [default: 30]',
+    metavar='MINUTES',
+)
 
-parser.add_argument('--calendar',
-                    dest = 'calendarID',
-                    default = 'primary',
-                    type = str,
-                    action = 'store',
-                    help = 'Calendar ID for the calendar you want to receive reminders from.')
+parser.add_argument(
+    '--calendar',
+    dest='calendarID',
+    default='primary',
+    type=str,
+    action='store',
+    help='Calendar ID for the calendar you want to receive reminders from.',
+)
 
 options = parser.parse_args()
 
@@ -77,6 +85,7 @@ if not (options.zulip_email):
     parser.error('You must specify --user')
 
 zulip_client = zulip.init_from_options(options)
+
 
 def get_credentials() -> client.Credentials:
     """Gets valid user credentials from storage.
@@ -89,8 +98,7 @@ def get_credentials() -> client.Credentials:
         Credentials, the obtained credential.
     """
     try:
-        credential_path = os.path.join(HOME_DIR,
-                                       'google-credentials.json')
+        credential_path = os.path.join(HOME_DIR, 'google-credentials.json')
 
         store = Storage(credential_path)
         credentials = store.get()
@@ -110,8 +118,17 @@ def populate_events() -> Optional[None]:
     service = discovery.build('calendar', 'v3', http=creds)
 
     now = datetime.datetime.now(pytz.utc).isoformat()
-    feed = service.events().list(calendarId=options.calendarID, timeMin=now, maxResults=5,
-                                 singleEvents=True, orderBy='startTime').execute()
+    feed = (
+        service.events()
+        .list(
+            calendarId=options.calendarID,
+            timeMin=now,
+            maxResults=5,
+            singleEvents=True,
+            orderBy='startTime',
+        )
+        .execute()
+    )
 
     events = []
     for event in feed["items"]:
@@ -172,13 +189,12 @@ def send_reminders() -> Optional[None]:
     else:
         message = 'Reminder:\n\n' + '\n'.join('* ' + m for m in messages)
 
-    zulip_client.send_message(dict(
-        type    = 'private',
-        to      = options.zulip_email,
-        sender  = options.zulip_email,
-        content = message))
+    zulip_client.send_message(
+        dict(type='private', to=options.zulip_email, sender=options.zulip_email, content=message)
+    )
 
     sent.update(keys)
+
 
 # Loop forever
 for i in itertools.count():

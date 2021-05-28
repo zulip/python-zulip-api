@@ -63,6 +63,7 @@ Use commands like `@mention-bot help write` for more details on specific
 commands.
 '''
 
+
 def sample_conversation() -> List[Tuple[str, str]]:
     return [
         ('cd /', 'Current path: /'),
@@ -112,12 +113,14 @@ def sample_conversation() -> List[Tuple[str, str]]:
         ('write', 'ERROR: syntax: write <path> <some_text>'),
     ]
 
+
 REGEXES = dict(
     command='(cd|ls|mkdir|read|rmdir|rm|write|pwd)',
     path=r'(\S+)',
     optional_path=r'(\S*)',
     some_text='(.+)',
 )
+
 
 def get_commands() -> Dict[str, Tuple[Any, List[str]]]:
     return {
@@ -132,19 +135,16 @@ def get_commands() -> Dict[str, Tuple[Any, List[str]]]:
         'pwd': (fs_pwd, []),
     }
 
+
 def fs_command(fs: str, user: str, cmd: str) -> Tuple[str, Any]:
     cmd = cmd.strip()
     if cmd == 'help':
         return fs, get_help()
     if cmd == 'sample_conversation':
-        sample = '\n\n'.join(
-            '\n'.join(tup)
-            for tup
-            in sample_conversation()
-        )
+        sample = '\n\n'.join('\n'.join(tup) for tup in sample_conversation())
         return fs, sample
     cmd_name = cmd.split()[0]
-    cmd_args = cmd[len(cmd_name):].strip()
+    cmd_args = cmd[len(cmd_name) :].strip()
     commands = get_commands()
     if cmd_name not in commands:
         return fs, 'ERROR: unrecognized command'
@@ -161,6 +161,7 @@ def fs_command(fs: str, user: str, cmd: str) -> Tuple[str, Any]:
     else:
         return fs, 'ERROR: ' + syntax_help(cmd_name)
 
+
 def syntax_help(cmd_name: str) -> str:
     commands = get_commands()
     f, arg_names = commands[cmd_name]
@@ -171,15 +172,15 @@ def syntax_help(cmd_name: str) -> str:
         cmd = cmd_name
     return 'syntax: {}'.format(cmd)
 
+
 def fs_new() -> Dict[str, Any]:
-    fs = {
-        '/': directory([]),
-        'user_paths': dict()
-    }
+    fs = {'/': directory([]), 'user_paths': dict()}
     return fs
+
 
 def fs_help(fs: Dict[str, Any], user: str, cmd_name: str) -> Tuple[Dict[str, Any], Any]:
     return fs, syntax_help(cmd_name)
+
 
 def fs_mkdir(fs: Dict[str, Any], user: str, fn: str) -> Tuple[Dict[str, Any], Any]:
     path, msg = make_path(fs, user, fn)
@@ -197,6 +198,7 @@ def fs_mkdir(fs: Dict[str, Any], user: str, fn: str) -> Tuple[Dict[str, Any], An
     new_fs[path] = directory([])
     msg = 'directory created'
     return new_fs, msg
+
 
 def fs_ls(fs: Dict[str, Any], user: str, fn: str) -> Tuple[Dict[str, Any], Any]:
     if fn == '.' or fn == '':
@@ -216,10 +218,12 @@ def fs_ls(fs: Dict[str, Any], user: str, fn: str) -> Tuple[Dict[str, Any], Any]:
     msg = '\n'.join('* ' + nice_path(fs, path) for path in sorted(fns))
     return fs, msg
 
+
 def fs_pwd(fs: Dict[str, Any], user: str) -> Tuple[Dict[str, Any], Any]:
     path = fs['user_paths'][user]
     msg = nice_path(fs, path)
     return fs, msg
+
 
 def fs_rm(fs: Dict[str, Any], user: str, fn: str) -> Tuple[Dict[str, Any], Any]:
     path, msg = make_path(fs, user, fn)
@@ -238,6 +242,7 @@ def fs_rm(fs: Dict[str, Any], user: str, fn: str) -> Tuple[Dict[str, Any], Any]:
     msg = 'removed'
     return new_fs, msg
 
+
 def fs_rmdir(fs: Dict[str, Any], user: str, fn: str) -> Tuple[Dict[str, Any], Any]:
     path, msg = make_path(fs, user, fn)
     if msg:
@@ -253,10 +258,11 @@ def fs_rmdir(fs: Dict[str, Any], user: str, fn: str) -> Tuple[Dict[str, Any], An
     directory = get_directory(path)
     new_fs[directory]['fns'].remove(path)
     for sub_path in list(new_fs.keys()):
-        if sub_path.startswith(path+'/'):
+        if sub_path.startswith(path + '/'):
             new_fs.pop(sub_path)
     msg = 'removed'
     return new_fs, msg
+
 
 def fs_write(fs: Dict[str, Any], user: str, fn: str, content: str) -> Tuple[Dict[str, Any], Any]:
     path, msg = make_path(fs, user, fn)
@@ -276,6 +282,7 @@ def fs_write(fs: Dict[str, Any], user: str, fn: str, content: str) -> Tuple[Dict
     msg = 'file written'
     return new_fs, msg
 
+
 def fs_read(fs: Dict[str, Any], user: str, fn: str) -> Tuple[Dict[str, Any], Any]:
     path, msg = make_path(fs, user, fn)
     if msg:
@@ -288,6 +295,7 @@ def fs_read(fs: Dict[str, Any], user: str, fn: str) -> Tuple[Dict[str, Any], Any
         return fs, msg
     val = fs[path]['content']
     return fs, val
+
 
 def fs_cd(fs: Dict[str, Any], user: str, fn: str) -> Tuple[Dict[str, Any], Any]:
     if len(fn) > 1 and fn[-1] == '/':
@@ -302,6 +310,7 @@ def fs_cd(fs: Dict[str, Any], user: str, fn: str) -> Tuple[Dict[str, Any], Any]:
     fs['user_paths'][user] = path
     return fs, "Current path: {}".format(nice_path(fs, path))
 
+
 def make_path(fs: Dict[str, Any], user: str, leaf: str) -> List[str]:
     if leaf == '/':
         return ['/', '']
@@ -315,16 +324,18 @@ def make_path(fs: Dict[str, Any], user: str, leaf: str) -> List[str]:
     path += leaf
     return [path, '']
 
+
 def nice_path(fs: Dict[str, Any], path: str) -> str:
     path_nice = path
     slash = path.rfind('/')
     if path not in fs:
         return 'ERROR: the current directory does not exist'
     if fs[path]['kind'] == 'text':
-        path_nice = '{}*{}*'.format(path[:slash+1], path[slash+1:])
+        path_nice = '{}*{}*'.format(path[: slash + 1], path[slash + 1 :])
     elif path != '/':
         path_nice = '{}/'.format(path)
     return path_nice
+
 
 def get_directory(path: str) -> str:
     slash = path.rfind('/')
@@ -333,15 +344,19 @@ def get_directory(path: str) -> str:
     else:
         return path[:slash]
 
+
 def directory(fns: Union[Set[str], List[Any]]) -> Dict[str, Union[str, List[Any]]]:
     return dict(kind='dir', fns=list(fns))
 
+
 def text_file(content: str) -> Dict[str, str]:
     return dict(kind='text', content=content)
+
 
 def is_directory(fs: Dict[str, Any], fn: str) -> bool:
     if fn not in fs:
         return False
     return fs[fn]['kind'] == 'dir'
+
 
 handler_class = VirtualFsHandler
