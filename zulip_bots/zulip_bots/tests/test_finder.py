@@ -5,7 +5,6 @@ from zulip_bots import finder
 
 
 class FinderTestCase(TestCase):
-
     def test_resolve_bot_path(self) -> None:
         current_directory = Path(__file__).parents[1].as_posix()
         expected_bot_path = Path(current_directory + '/bots/helloworld/helloworld.py')

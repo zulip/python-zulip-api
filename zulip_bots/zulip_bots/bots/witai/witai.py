@@ -59,7 +59,9 @@ class WitaiHandler:
             print(e)
             return
 
+
 handler_class = WitaiHandler
+
 
 def get_handle(location: str) -> Optional[Callable[[Dict[str, Any]], Optional[str]]]:
     '''Returns a function to be used when generating a response from Wit.ai

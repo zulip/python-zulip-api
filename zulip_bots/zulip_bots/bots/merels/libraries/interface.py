@@ -56,13 +56,31 @@ def graph_grid(grid):
     5  |    [{}]---------[{}]---------[{}]    |
        |                 |                 |
     6 [{}]---------------[{}]---------------[{}]`'''.format(
-        grid[0][0], grid[0][3], grid[0][6],
-        grid[1][1], grid[1][3], grid[1][5],
-        grid[2][2], grid[2][3], grid[2][4],
-        grid[3][0], grid[3][1], grid[3][2], grid[3][4], grid[3][5], grid[3][6],
-        grid[4][2], grid[4][3], grid[4][4],
-        grid[5][1], grid[5][3], grid[5][5],
-        grid[6][0], grid[6][3], grid[6][6])
+        grid[0][0],
+        grid[0][3],
+        grid[0][6],
+        grid[1][1],
+        grid[1][3],
+        grid[1][5],
+        grid[2][2],
+        grid[2][3],
+        grid[2][4],
+        grid[3][0],
+        grid[3][1],
+        grid[3][2],
+        grid[3][4],
+        grid[3][5],
+        grid[3][6],
+        grid[4][2],
+        grid[4][3],
+        grid[4][4],
+        grid[5][1],
+        grid[5][3],
+        grid[5][5],
+        grid[6][0],
+        grid[6][3],
+        grid[6][6],
+    )
 
 
 def construct_grid(board):
@@ -78,8 +96,7 @@ def construct_grid(board):
 
     for k, cell in enumerate(board):
         if cell == "O" or cell == "X":
-            grid[constants.ALLOWED_MOVES[k][0]][
-                constants.ALLOWED_MOVES[k][1]] = cell
+            grid[constants.ALLOWED_MOVES[k][0]][constants.ALLOWED_MOVES[k][1]] = cell
 
     return grid
 

@@ -32,18 +32,22 @@ class FollowupHandler:
 
     def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
         if message['content'] == '':
-            bot_response = "Please specify the message you want to send to followup stream after @mention-bot"
+            bot_response = (
+                "Please specify the message you want to send to followup stream after @mention-bot"
+            )
             bot_handler.send_reply(message, bot_response)
         elif message['content'] == 'help':
             bot_handler.send_reply(message, self.usage())
         else:
             bot_response = self.get_bot_followup_response(message)
-            bot_handler.send_message(dict(
-                type='stream',
-                to=self.stream,
-                subject=message['sender_email'],
-                content=bot_response,
-            ))
+            bot_handler.send_message(
+                dict(
+                    type='stream',
+                    to=self.stream,
+                    subject=message['sender_email'],
+                    content=bot_response,
+                )
+            )
 
     def get_bot_followup_response(self, message: Dict[str, str]) -> str:
         original_content = message['content']
@@ -52,5 +56,6 @@ class FollowupHandler:
         new_content = temp_content + original_content
 
         return new_content
+
 
 handler_class = FollowupHandler

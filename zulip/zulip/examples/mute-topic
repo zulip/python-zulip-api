@@ -18,13 +18,10 @@ options = parser.parse_args()
 
 client = zulip.init_from_options(options)
 
-OPERATIONS = {
-    'mute': 'add',
-    'unmute': 'remove'
-}
+OPERATIONS = {'mute': 'add', 'unmute': 'remove'}
 
-print(client.mute_topic({
-    'op': OPERATIONS[options.op],
-    'stream': options.stream,
-    'topic': options.topic
-}))
+print(
+    client.mute_topic(
+        {'op': OPERATIONS[options.op], 'stream': options.stream, 'topic': options.topic}
+    )
+)

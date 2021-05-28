@@ -18,6 +18,7 @@ import zulip
 ZULIP_MESSAGE_TEMPLATE = "**{username}**: {message}"
 SLACK_MESSAGE_TEMPLATE = "<{username}> {message}"
 
+
 def check_zulip_message_validity(msg: Dict[str, Any], config: Dict[str, Any]) -> bool:
     is_a_stream = msg["type"] == "stream"
     in_the_specified_stream = msg["display_recipient"] == config["stream"]
@@ -30,6 +31,7 @@ def check_zulip_message_validity(msg: Dict[str, Any], config: Dict[str, Any]) ->
         return True
     return False
 
+
 class SlackBridge:
     def __init__(self, config: Dict[str, Any]) -> None:
         self.config = config
@@ -40,7 +42,8 @@ class SlackBridge:
         self.zulip_client = zulip.Client(
             email=self.zulip_config["email"],
             api_key=self.zulip_config["api_key"],
-            site=self.zulip_config["site"])
+            site=self.zulip_config["site"],
+        )
         self.zulip_stream = self.zulip_config["stream"]
         self.zulip_subject = self.zulip_config["topic"]
 
@@ -69,18 +72,22 @@ class SlackBridge:
             message_valid = check_zulip_message_validity(msg, self.zulip_config)
             if message_valid:
                 self.wrap_slack_mention_with_bracket(msg)
-                slack_text = SLACK_MESSAGE_TEMPLATE.format(username=msg["sender_full_name"],
-                                                           message=msg["content"])
+                slack_text = SLACK_MESSAGE_TEMPLATE.format(
+                    username=msg["sender_full_name"], message=msg["content"]
+                )
                 self.slack_webclient.chat_postMessage(
                     channel=self.channel,
                     text=slack_text,
                 )
+
         return _zulip_to_slack
 
     def run_slack_listener(self) -> None:
         members = self.slack_webclient.users_list()['members']
         # See also https://api.slack.com/changelog/2017-09-the-one-about-usernames
-        self.slack_id_to_name = {u["id"]: u["profile"].get("display_name", u["profile"]["real_name"]) for u in members}
+        self.slack_id_to_name = {
+            u["id"]: u["profile"].get("display_name", u["profile"]["real_name"]) for u in members
+        }
         self.slack_name_to_id = {v: k for k, v in self.slack_id_to_name.items()}
 
         @RTMClient.run_on(event='message')
@@ -96,13 +103,12 @@ class SlackBridge:
             self.replace_slack_id_with_name(msg)
             content = ZULIP_MESSAGE_TEMPLATE.format(username=user, message=msg['text'])
             msg_data = dict(
-                type="stream",
-                to=self.zulip_stream,
-                subject=self.zulip_subject,
-                content=content)
+                type="stream", to=self.zulip_stream, subject=self.zulip_subject, content=content
+            )
             self.zulip_client.send_message(msg_data)
 
         self.slack_client.start()
+
 
 if __name__ == "__main__":
     usage = """run-slack-bridge
@@ -124,7 +130,9 @@ if __name__ == "__main__":
         try:
             sb = SlackBridge(config)
 
-            zp = threading.Thread(target=sb.zulip_client.call_on_each_message, args=(sb.zulip_to_slack(),))
+            zp = threading.Thread(
+                target=sb.zulip_client.call_on_each_message, args=(sb.zulip_to_slack(),)
+            )
             sp = threading.Thread(target=sb.run_slack_listener, args=())
             print("Starting message handler on Zulip client")
             zp.start()

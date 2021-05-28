@@ -16,6 +16,7 @@ def get_bot_paths() -> Iterator[str]:
     paths = filter(lambda d: os.path.isdir(d), bots_subdirs)
     return paths
 
+
 def provision_bot(path_to_bot: str, force: bool) -> None:
     req_path = os.path.join(path_to_bot, 'requirements.txt')
     if os.path.isfile(req_path):
@@ -49,21 +50,24 @@ Example: ./provision.py helloworld xkcd wikipedia
 """
     parser = argparse.ArgumentParser(usage=usage)
 
-    parser.add_argument('bots_to_provision',
-                        metavar='bots',
-                        nargs='*',
-                        default=available_bots,
-                        help='specific bots to provision (default is all)')
+    parser.add_argument(
+        'bots_to_provision',
+        metavar='bots',
+        nargs='*',
+        default=available_bots,
+        help='specific bots to provision (default is all)',
+    )
 
-    parser.add_argument('--force',
-                        default=False,
-                        action="store_true",
-                        help='Continue installation despite pip errors.')
+    parser.add_argument(
+        '--force',
+        default=False,
+        action="store_true",
+        help='Continue installation despite pip errors.',
+    )
 
-    parser.add_argument('--quiet', '-q',
-                        action='store_true',
-                        default=False,
-                        help='Turn off logging output.')
+    parser.add_argument(
+        '--quiet', '-q', action='store_true', default=False, help='Turn off logging output.'
+    )
 
     return parser.parse_args()
 
@@ -76,6 +80,7 @@ def main() -> None:
 
     for bot in options.bots_to_provision:
         provision_bot(bot, options.force)
+
 
 if __name__ == '__main__':
     main()

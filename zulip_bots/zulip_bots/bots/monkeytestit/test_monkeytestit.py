@@ -9,7 +9,8 @@ class TestMonkeyTestitBot(BotTestCase, DefaultTests):
 
     def setUp(self):
         self.monkeytestit_class = import_module(
-            "zulip_bots.bots.monkeytestit.monkeytestit").MonkeyTestitBot
+            "zulip_bots.bots.monkeytestit.monkeytestit"
+        ).MonkeyTestitBot
 
     def test_bot_responds_to_empty_message(self):
         message = dict(

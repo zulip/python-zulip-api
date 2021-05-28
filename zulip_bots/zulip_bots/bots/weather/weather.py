@@ -7,6 +7,7 @@ from zulip_bots.lib import BotHandler
 
 api_url = 'http://api.openweathermap.org/data/2.5/weather'
 
+
 class WeatherHandler:
     def initialize(self, bot_handler: BotHandler) -> None:
         self.api_key = bot_handler.get_config_info('weather')['key']
@@ -68,6 +69,7 @@ def to_celsius(temp_kelvin: float) -> float:
 
 
 def to_fahrenheit(temp_kelvin: float) -> float:
-    return int(temp_kelvin) * (9. / 5.) - 459.67
+    return int(temp_kelvin) * (9.0 / 5.0) - 459.67
+
 
 handler_class = WeatherHandler

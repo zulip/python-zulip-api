@@ -10,17 +10,12 @@ class TestWitaiBot(BotTestCase, DefaultTests):
     MOCK_CONFIG_INFO = {
         'token': '12345678',
         'handler_location': '/Users/abcd/efgh',
-        'help_message': 'Qwertyuiop!'
+        'help_message': 'Qwertyuiop!',
     }
 
     MOCK_WITAI_RESPONSE = {
         '_text': 'What is your favorite food?',
-        'entities': {
-            'intent': [{
-                'confidence': 1.0,
-                'value': 'favorite_food'
-            }]
-        }
+        'entities': {'intent': [{'confidence': 1.0, 'value': 'favorite_food'}]},
     }
 
     def test_normal(self) -> None:
@@ -29,10 +24,7 @@ class TestWitaiBot(BotTestCase, DefaultTests):
                 get_bot_message_handler(self.bot_name).initialize(StubBotHandler())
 
                 with patch('wit.Wit.message', return_value=self.MOCK_WITAI_RESPONSE):
-                    self.verify_reply(
-                        'What is your favorite food?',
-                        'pizza'
-                    )
+                    self.verify_reply('What is your favorite food?', 'pizza')
 
     # This overrides the default one in `BotTestCase`.
     def test_bot_responds_to_empty_message(self) -> None:
@@ -41,6 +33,7 @@ class TestWitaiBot(BotTestCase, DefaultTests):
                 get_bot_message_handler(self.bot_name).initialize(StubBotHandler())
                 with patch('wit.Wit.message', return_value=self.MOCK_WITAI_RESPONSE):
                     self.verify_reply('', 'Qwertyuiop!')
+
 
 def mock_handle(res: Dict[str, Any]) -> Optional[str]:
     if res['entities']['intent'][0]['value'] == 'favorite_food':

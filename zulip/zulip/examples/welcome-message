@@ -52,12 +52,15 @@ streams_to_watch = ['new members']
 # These streams will cause anyone who sends a message there to be removed from the watchlist
 streams_to_cancel = ['development help']
 
+
 def get_watchlist() -> List[Any]:
     storage = client.get_storage()
     return list(storage['storage'].values())
 
+
 def set_watchlist(watchlist: List[str]) -> None:
     client.update_storage({'storage': dict(enumerate(watchlist))})
+
 
 def handle_event(event: Dict[str, Any]) -> None:
     try:
@@ -74,11 +77,13 @@ def handle_event(event: Dict[str, Any]) -> None:
             if event['message']['sender_email'] in watchlist:
                 watchlist.remove(event['message']['sender_email'])
                 if stream not in streams_to_cancel:
-                    client.send_message({
-                        'type': 'private',
-                        'to': event['message']['sender_email'],
-                        'content': welcome_text.format(event['message']['sender_short_name'])
-                    })
+                    client.send_message(
+                        {
+                            'type': 'private',
+                            'to': event['message']['sender_email'],
+                            'content': welcome_text.format(event['message']['sender_short_name']),
+                        }
+                    )
                 set_watchlist(watchlist)
                 return
     except Exception as err:
@@ -88,6 +93,7 @@ def handle_event(event: Dict[str, Any]) -> None:
 def start_event_handler() -> None:
     print("Starting event handler...")
     client.call_on_each_event(handle_event, event_types=['realm_user', 'message'])
+
 
 client = zulip.Client()
 start_event_handler()

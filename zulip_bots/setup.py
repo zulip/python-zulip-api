@@ -52,7 +52,7 @@ package_info = dict(
     entry_points={
         'console_scripts': [
             'zulip-run-bot=zulip_bots.run:main',
-            'zulip-terminal=zulip_bots.terminal:main'
+            'zulip-terminal=zulip_bots.terminal:main',
         ],
     },
     include_package_data=True,
@@ -71,6 +71,7 @@ setuptools_info = dict(
 
 try:
     from setuptools import find_packages, setup
+
     package_info.update(setuptools_info)
     package_info['packages'] = find_packages()
     package_info['package_data'] = package_data
@@ -85,11 +86,13 @@ except ImportError:
         try:
             module = import_module(module_name)  # type: Any
             if version is not None:
-                assert(LooseVersion(module.__version__) >= LooseVersion(version))
+                assert LooseVersion(module.__version__) >= LooseVersion(version)
         except (ImportError, AssertionError):
             if version is not None:
-                print("{name}>={version} is not installed.".format(
-                    name=module_name, version=version), file=sys.stderr)
+                print(
+                    "{name}>={version} is not installed.".format(name=module_name, version=version),
+                    file=sys.stderr,
+                )
             else:
                 print("{name} is not installed.".format(name=module_name), file=sys.stderr)
             sys.exit(1)

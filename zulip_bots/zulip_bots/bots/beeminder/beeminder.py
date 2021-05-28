@@ -16,6 +16,7 @@ following the syntax shown below :smile:.\n \
 \n* `comment`**:** Add a comment [**NOTE:** Optional field, default is *None*]\
 '''
 
+
 def get_beeminder_response(message_content: str, config_info: Dict[str, str]) -> str:
     username = config_info['username']
     goalname = config_info['goalname']
@@ -25,37 +26,36 @@ def get_beeminder_response(message_content: str, config_info: Dict[str, str]) ->
     if message_content == '' or message_content == 'help':
         return help_message
 
-    url = "https://www.beeminder.com/api/v1/users/{}/goals/{}/datapoints.json".format(username, goalname)
+    url = "https://www.beeminder.com/api/v1/users/{}/goals/{}/datapoints.json".format(
+        username, goalname
+    )
     message_pieces = message_content.split(',')
     for i in range(len(message_pieces)):
         message_pieces[i] = message_pieces[i].strip()
 
-    if (len(message_pieces) == 1):
-        payload = {
-            "value": message_pieces[0],
-            "auth_token": auth_token
-        }
-    elif (len(message_pieces) == 2):
-        if (message_pieces[1].isdigit()):
+    if len(message_pieces) == 1:
+        payload = {"value": message_pieces[0], "auth_token": auth_token}
+    elif len(message_pieces) == 2:
+        if message_pieces[1].isdigit():
             payload = {
                 "daystamp": message_pieces[0],
                 "value": message_pieces[1],
-                "auth_token": auth_token
+                "auth_token": auth_token,
             }
         else:
             payload = {
                 "value": message_pieces[0],
                 "comment": message_pieces[1],
-                "auth_token": auth_token
+                "auth_token": auth_token,
             }
-    elif (len(message_pieces) == 3):
+    elif len(message_pieces) == 3:
         payload = {
             "daystamp": message_pieces[0],
             "value": message_pieces[1],
             "comment": message_pieces[2],
-            "auth_token": auth_token
+            "auth_token": auth_token,
         }
-    elif (len(message_pieces) > 3):
+    elif len(message_pieces) > 3:
         return "Make sure you follow the syntax.\n You can take a look \
 at syntax by: @mention-botname help"
 
@@ -63,13 +63,17 @@ at syntax by: @mention-botname help"
         r = requests.post(url, json=payload)
 
         if r.status_code != 200:
-            if r.status_code == 401:   # Handles case of invalid key and missing key
+            if r.status_code == 401:  # Handles case of invalid key and missing key
                 return "Error. Check your key!"
             else:
-                return "Error occured : {}".format(r.status_code)   # Occures in case of unprocessable entity
+                return "Error occured : {}".format(
+                    r.status_code
+                )  # Occures in case of unprocessable entity
         else:
             datapoint_link = "https://www.beeminder.com/{}/{}".format(username, goalname)
-            return "[Datapoint]({}) created.".format(datapoint_link)   # Handles the case of successful datapoint creation
+            return "[Datapoint]({}) created.".format(
+                datapoint_link
+            )  # Handles the case of successful datapoint creation
     except ConnectionError as e:
         logging.exception(str(e))
         return "Uh-Oh, couldn't process the request \
@@ -87,7 +91,9 @@ class BeeminderHandler:
         # Check for valid auth_token
         auth_token = self.config_info['auth_token']
         try:
-            r = requests.get("https://www.beeminder.com/api/v1/users/me.json", params={'auth_token': auth_token})
+            r = requests.get(
+                "https://www.beeminder.com/api/v1/users/me.json", params={'auth_token': auth_token}
+            )
             if r.status_code == 401:
                 bot_handler.quit('Invalid key!')
         except ConnectionError as e:
@@ -99,5 +105,6 @@ class BeeminderHandler:
     def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
         response = get_beeminder_response(message['content'], self.config_info)
         bot_handler.send_reply(message, response)
+
 
 handler_class = BeeminderHandler

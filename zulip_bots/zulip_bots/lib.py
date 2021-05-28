@@ -30,6 +30,7 @@ def get_bots_directory_path() -> str:
     current_dir = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(current_dir, 'bots')
 
+
 def zulip_env_vars_are_present() -> bool:
     # We generally require a Zulip config file, but if
     # the user supplies the correct environment vars, we
@@ -46,6 +47,7 @@ def zulip_env_vars_are_present() -> bool:
     # If none of the absolutely critical env vars are
     # missing, we can proceed without a config file.
     return True
+
 
 class RateLimit:
     def __init__(self, message_limit: int, interval_limit: int) -> None:
@@ -68,11 +70,13 @@ class RateLimit:
         logging.error(self.error_message)
         sys.exit(1)
 
+
 class BotIdentity:
     def __init__(self, name: str, email: str) -> None:
         self.name = name
         self.email = email
         self.mention = '@**' + name + '**'
+
 
 class BotStorage(Protocol):
     def put(self, key: Text, value: Any) -> None:
@@ -83,6 +87,7 @@ class BotStorage(Protocol):
 
     def contains(self, key: Text) -> bool:
         ...
+
 
 class CachedStorage:
     def __init__(self, parent_storage: BotStorage, init_data: Dict[str, Any]) -> None:
@@ -128,6 +133,7 @@ class CachedStorage:
         else:
             return self._parent_storage.contains(key)
 
+
 class StateHandler:
     def __init__(self, client: Client) -> None:
         self._client = client
@@ -156,6 +162,7 @@ class StateHandler:
     def contains(self, key: Text) -> bool:
         return key in self.state_
 
+
 @contextmanager
 def use_storage(storage: BotStorage, keys: List[Text]) -> Iterator[BotStorage]:
     # The context manager for StateHandler that minimizes the number of round-trips to the server.
@@ -166,6 +173,7 @@ def use_storage(storage: BotStorage, keys: List[Text]) -> Iterator[BotStorage]:
     cache = CachedStorage(storage, data)
     yield cache
     cache.flush()
+
 
 class BotHandler(Protocol):
 
@@ -186,7 +194,9 @@ class BotHandler(Protocol):
     def send_message(self, message: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         ...
 
-    def send_reply(self, message: Dict[str, Any], response: str, widget_content: Optional[str] = None) -> Optional[Dict[str, Any]]:
+    def send_reply(
+        self, message: Dict[str, Any], response: str, widget_content: Optional[str] = None
+    ) -> Optional[Dict[str, Any]]:
         ...
 
     def update_message(self, message: Dict[str, Any]) -> Optional[Dict[str, Any]]:
@@ -197,6 +207,7 @@ class BotHandler(Protocol):
 
     def quit(self, message: str = "") -> None:
         ...
+
 
 class ExternalBotHandler:
     def __init__(
@@ -211,19 +222,27 @@ class ExternalBotHandler:
         try:
             user_profile = client.get_profile()
         except ZulipError as e:
-            print('''
+            print(
+                '''
                 ERROR: {}
 
                 Have you not started the server?
                 Or did you mis-specify the URL?
-                '''.format(e))
+                '''.format(
+                    e
+                )
+            )
             sys.exit(1)
 
         if user_profile.get('result') == 'error':
             msg = user_profile.get('msg', 'unknown')
-            print('''
+            print(
+                '''
                 ERROR: {}
-                '''.format(msg))
+                '''.format(
+                    msg
+                )
+            )
             sys.exit(1)
 
         self._rate_limit = RateLimit(20, 5)
@@ -238,8 +257,10 @@ class ExternalBotHandler:
             self.full_name = user_profile['full_name']
             self.email = user_profile['email']
         except KeyError:
-            logging.error('Cannot fetch user profile, make sure you have set'
-                          ' up the zuliprc file correctly.')
+            logging.error(
+                'Cannot fetch user profile, make sure you have set'
+                ' up the zuliprc file correctly.'
+            )
             sys.exit(1)
 
     @property
@@ -250,9 +271,9 @@ class ExternalBotHandler:
         return BotIdentity(self.full_name, self.email)
 
     def react(self, message: Dict[str, Any], emoji_name: str) -> Dict[str, Any]:
-        return self._client.add_reaction(dict(message_id=message['id'],
-                                              emoji_name=emoji_name,
-                                              reaction_type='unicode_emoji'))
+        return self._client.add_reaction(
+            dict(message_id=message['id'], emoji_name=emoji_name, reaction_type='unicode_emoji')
+        )
 
     def send_message(self, message: Dict[str, Any]) -> Dict[str, Any]:
         if not self._rate_limit.is_legal():
@@ -262,22 +283,28 @@ class ExternalBotHandler:
             print("ERROR!: " + str(resp))
         return resp
 
-    def send_reply(self, message: Dict[str, Any], response: str, widget_content: Optional[str] = None) -> Dict[str, Any]:
+    def send_reply(
+        self, message: Dict[str, Any], response: str, widget_content: Optional[str] = None
+    ) -> Dict[str, Any]:
         if message['type'] == 'private':
-            return self.send_message(dict(
-                type='private',
-                to=[x['id'] for x in message['display_recipient']],
-                content=response,
-                widget_content=widget_content,
-            ))
+            return self.send_message(
+                dict(
+                    type='private',
+                    to=[x['id'] for x in message['display_recipient']],
+                    content=response,
+                    widget_content=widget_content,
+                )
+            )
         else:
-            return self.send_message(dict(
-                type='stream',
-                to=message['display_recipient'],
-                subject=message['subject'],
-                content=response,
-                widget_content=widget_content,
-            ))
+            return self.send_message(
+                dict(
+                    type='stream',
+                    to=message['display_recipient'],
+                    subject=message['subject'],
+                    content=response,
+                    widget_content=widget_content,
+                )
+            )
 
     def update_message(self, message: Dict[str, Any]) -> Dict[str, Any]:
         if not self._rate_limit.is_legal():
@@ -300,7 +327,8 @@ class ExternalBotHandler:
                 raise NoBotConfigException(bot_name)
 
             if bot_name not in self.bot_config_file:
-                print('''
+                print(
+                    '''
                     WARNING!
 
                     {} does not adhere to the
@@ -311,7 +339,10 @@ class ExternalBotHandler:
                     The suggested name is {}.conf
 
                     We will proceed anyway.
-                    '''.format(self.bot_config_file, bot_name))
+                    '''.format(
+                        self.bot_config_file, bot_name
+                    )
+                )
 
             # We expect the caller to pass in None if the user does
             # not specify a bot_config_file.  If they pass in a bogus
@@ -343,8 +374,10 @@ class ExternalBotHandler:
         if abs_filepath.startswith(self._root_dir):
             return open(abs_filepath)
         else:
-            raise PermissionError("Cannot open file \"{}\". Bots may only access "
-                                  "files in their local directory.".format(abs_filepath))
+            raise PermissionError(
+                "Cannot open file \"{}\". Bots may only access "
+                "files in their local directory.".format(abs_filepath)
+            )
 
     def quit(self, message: str = "") -> None:
         sys.exit(message)
@@ -361,15 +394,17 @@ def extract_query_without_mention(message: Dict[str, Any], client: BotHandler) -
     extended_mention_match = extended_mention_regex.match(content)
 
     if extended_mention_match:
-        return content[extended_mention_match.end():].lstrip()
+        return content[extended_mention_match.end() :].lstrip()
 
     if content.startswith(mention):
-        return content[len(mention):].lstrip()
+        return content[len(mention) :].lstrip()
 
     return None
 
 
-def is_private_message_but_not_group_pm(message_dict: Dict[str, Any], current_user: BotHandler) -> bool:
+def is_private_message_but_not_group_pm(
+    message_dict: Dict[str, Any], current_user: BotHandler
+) -> bool:
     """
     Checks whether a message dict represents a PM from another user.
 
@@ -380,7 +415,9 @@ def is_private_message_but_not_group_pm(message_dict: Dict[str, Any], current_us
     if not message_dict['type'] == 'private':
         return False
     is_message_from_self = current_user.user_id == message_dict['sender_id']
-    recipients = [x['email'] for x in message_dict['display_recipient'] if current_user.email != x['email']]
+    recipients = [
+        x['email'] for x in message_dict['display_recipient'] if current_user.email != x['email']
+    ]
     return len(recipients) == 1 and not is_message_from_self
 
 
@@ -442,7 +479,9 @@ def run_message_handler_for_bot(
         if hasattr(message_handler, 'usage'):
             print(message_handler.usage())
         else:
-            print('WARNING: {} is missing usage handler, please add one eventually'.format(bot_name))
+            print(
+                'WARNING: {} is missing usage handler, please add one eventually'.format(bot_name)
+            )
 
     def handle_message(message: Dict[str, Any], flags: List[str]) -> None:
         logging.info('waiting for next message')
@@ -457,15 +496,14 @@ def run_message_handler_for_bot(
         if is_mentioned:
             # message['content'] will be None when the bot's @-mention is not at the beginning.
             # In that case, the message shall not be handled.
-            message['content'] = extract_query_without_mention(message=message, client=restricted_client)
+            message['content'] = extract_query_without_mention(
+                message=message, client=restricted_client
+            )
             if message['content'] is None:
                 return
 
         if is_private_message or is_mentioned:
-            message_handler.handle_message(
-                message=message,
-                bot_handler=restricted_client
-            )
+            message_handler.handle_message(message=message, bot_handler=restricted_client)
 
     signal.signal(signal.SIGINT, exit_gracefully)
 

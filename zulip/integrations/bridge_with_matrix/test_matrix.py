@@ -30,22 +30,26 @@ topic = matrix
 
 """
 
+
 @contextmanager
 def new_temp_dir() -> Iterator[str]:
     path = mkdtemp()
     yield path
     shutil.rmtree(path)
 
+
 class MatrixBridgeScriptTests(TestCase):
     def output_from_script(self, options: List[str]) -> List[str]:
-        popen = Popen(["python", script] + options, stdin=PIPE, stdout=PIPE, universal_newlines=True)
+        popen = Popen(
+            ["python", script] + options, stdin=PIPE, stdout=PIPE, universal_newlines=True
+        )
         return popen.communicate()[0].strip().split("\n")
 
     def test_no_args(self) -> None:
         output_lines = self.output_from_script([])
         expected_lines = [
             "Options required: -c or --config to run, OR --write-sample-config.",
-            "usage: {} [-h]".format(script_file)
+            "usage: {} [-h]".format(script_file),
         ]
         for expected, output in zip(expected_lines, output_lines):
             self.assertIn(expected, output)
@@ -74,19 +78,27 @@ class MatrixBridgeScriptTests(TestCase):
 
     def test_write_sample_config_from_zuliprc(self) -> None:
         zuliprc_template = ["[api]", "email={email}", "key={key}", "site={site}"]
-        zulip_params = {'email': 'foo@bar',
-                        'key': 'some_api_key',
-                        'site': 'https://some.chat.serverplace'}
+        zulip_params = {
+            'email': 'foo@bar',
+            'key': 'some_api_key',
+            'site': 'https://some.chat.serverplace',
+        }
         with new_temp_dir() as tempdir:
             path = os.path.join(tempdir, sample_config_path)
             zuliprc_path = os.path.join(tempdir, "zuliprc")
             with open(zuliprc_path, "w") as zuliprc_file:
                 zuliprc_file.write("\n".join(zuliprc_template).format(**zulip_params))
-            output_lines = self.output_from_script(["--write-sample-config", path,
-                                                    "--from-zuliprc", zuliprc_path])
-            self.assertEqual(output_lines,
-                             ["Wrote sample configuration to '{}' using zuliprc file '{}'"
-                              .format(path, zuliprc_path)])
+            output_lines = self.output_from_script(
+                ["--write-sample-config", path, "--from-zuliprc", zuliprc_path]
+            )
+            self.assertEqual(
+                output_lines,
+                [
+                    "Wrote sample configuration to '{}' using zuliprc file '{}'".format(
+                        path, zuliprc_path
+                    )
+                ],
+            )
 
             with open(path) as sample_file:
                 sample_lines = [line.strip() for line in sample_file.readlines()]
@@ -101,23 +113,26 @@ class MatrixBridgeScriptTests(TestCase):
             path = os.path.join(tempdir, sample_config_path)
             zuliprc_path = os.path.join(tempdir, "zuliprc")
             # No writing of zuliprc file here -> triggers check for zuliprc absence
-            output_lines = self.output_from_script(["--write-sample-config", path,
-                                                    "--from-zuliprc", zuliprc_path])
-            self.assertEqual(output_lines,
-                             ["Could not write sample config: Zuliprc file '{}' does not exist."
-                              .format(zuliprc_path)])
+            output_lines = self.output_from_script(
+                ["--write-sample-config", path, "--from-zuliprc", zuliprc_path]
+            )
+            self.assertEqual(
+                output_lines,
+                [
+                    "Could not write sample config: Zuliprc file '{}' does not exist.".format(
+                        zuliprc_path
+                    )
+                ],
+            )
+
 
 class MatrixBridgeZulipToMatrixTests(TestCase):
-    valid_zulip_config = dict(
-        stream="some stream",
-        topic="some topic",
-        email="some@email"
-    )
+    valid_zulip_config = dict(stream="some stream", topic="some topic", email="some@email")
     valid_msg = dict(
         sender_email="John@Smith.smith",  # must not be equal to config:email
         type="stream",  # Can only mirror Zulip streams
         display_recipient=valid_zulip_config['stream'],
-        subject=valid_zulip_config['topic']
+        subject=valid_zulip_config['topic'],
     )
 
     def test_zulip_message_validity_success(self) -> None:

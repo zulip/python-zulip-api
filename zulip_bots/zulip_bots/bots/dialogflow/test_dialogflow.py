@@ -6,14 +6,15 @@ from unittest.mock import patch
 from zulip_bots.test_lib import BotTestCase, DefaultTests, read_bot_fixture_data
 
 
-class MockHttplibRequest():
+class MockHttplibRequest:
     def __init__(self, response: str) -> None:
         self.response = response
 
     def read(self) -> ByteString:
         return json.dumps(self.response).encode()
 
-class MockTextRequest():
+
+class MockTextRequest:
     def __init__(self) -> None:
         self.session_id = ""
         self.query = ""
@@ -21,6 +22,7 @@ class MockTextRequest():
 
     def getresponse(self) -> MockHttplibRequest:
         return MockHttplibRequest(self.response)
+
 
 @contextmanager
 def mock_dialogflow(test_name: str, bot_name: str) -> Iterator[None]:
@@ -38,12 +40,14 @@ def mock_dialogflow(test_name: str, bot_name: str) -> Iterator[None]:
         mock_text_request.return_value = request
         yield
 
+
 class TestDialogFlowBot(BotTestCase, DefaultTests):
     bot_name = 'dialogflow'
 
     def _test(self, test_name: str, message: str, response: str) -> None:
-        with self.mock_config_info({'key': 'abcdefg', 'bot_info': 'bot info foo bar'}), \
-                mock_dialogflow(test_name, 'dialogflow'):
+        with self.mock_config_info(
+            {'key': 'abcdefg', 'bot_info': 'bot info foo bar'}
+        ), mock_dialogflow(test_name, 'dialogflow'):
             self.verify_reply(message, response)
 
     def test_normal(self) -> None:

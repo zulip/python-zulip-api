@@ -28,12 +28,16 @@ options = parser.parse_args()
 
 client = zulip.init_from_options(options)
 
-print(client.get_messages({
-    'anchor': options.anchor,
-    'use_first_unread_anchor': options.use_first_unread_anchor,
-    'num_before': options.num_before,
-    'num_after': options.num_after,
-    'narrow': options.narrow,
-    'client_gravatar': options.client_gravatar,
-    'apply_markdown': options.apply_markdown
-}))
+print(
+    client.get_messages(
+        {
+            'anchor': options.anchor,
+            'use_first_unread_anchor': options.use_first_unread_anchor,
+            'num_before': options.num_before,
+            'num_after': options.num_after,
+            'narrow': options.narrow,
+            'client_gravatar': options.client_gravatar,
+            'apply_markdown': options.apply_markdown,
+        }
+    )
+)

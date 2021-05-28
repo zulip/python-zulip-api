@@ -9,20 +9,19 @@ class TestConnectFourBot(BotTestCase, DefaultTests):
     bot_name = 'connect_four'
 
     def make_request_message(
-        self,
-        content: str,
-        user: str = 'foo@example.com',
-        user_name: str = 'foo'
+        self, content: str, user: str = 'foo@example.com', user_name: str = 'foo'
     ) -> Dict[str, str]:
-        message = dict(
-            sender_email=user,
-            content=content,
-            sender_full_name=user_name
-        )
+        message = dict(sender_email=user, content=content, sender_full_name=user_name)
         return message
 
     # Function that serves similar purpose to BotTestCase.verify_dialog, but allows for multiple responses to be handled
-    def verify_response(self, request: str, expected_response: str, response_number: int, user: str = 'foo@example.com') -> None:
+    def verify_response(
+        self,
+        request: str,
+        expected_response: str,
+        response_number: int,
+        user: str = 'foo@example.com',
+    ) -> None:
         '''
         This function serves a similar purpose
         to BotTestCase.verify_dialog, but allows
@@ -36,11 +35,7 @@ class TestConnectFourBot(BotTestCase, DefaultTests):
 
         bot.handle_message(message, bot_handler)
 
-        responses = [
-            message
-            for (method, message)
-            in bot_handler.transcript
-        ]
+        responses = [message for (method, message) in bot_handler.transcript]
 
         first_response = responses[response_number]
         self.assertEqual(expected_response, first_response['content'])
@@ -73,7 +68,9 @@ class TestConnectFourBot(BotTestCase, DefaultTests):
         self.verify_response('help', self.help_message(), 0)
 
     def test_game_message_handler_responses(self) -> None:
-        board = ':one: :two: :three: :four: :five: :six: :seven:\n\n' + '\
+        board = (
+            ':one: :two: :three: :four: :five: :six: :seven:\n\n'
+            + '\
 :white_circle: :white_circle: :white_circle: :white_circle: \
 :white_circle: :white_circle: :white_circle: \n\n\
 :white_circle: :white_circle: :white_circle: :white_circle: \
@@ -86,16 +83,18 @@ class TestConnectFourBot(BotTestCase, DefaultTests):
 :white_circle: :white_circle: \n\n\
 :blue_circle: :red_circle: :white_circle: :white_circle: :white_circle: \
 :white_circle: :white_circle: '
+        )
         bot, bot_handler = self._get_handlers()
-        self.assertEqual(bot.gameMessageHandler.parse_board(
-            self.almost_win_board), board)
+        self.assertEqual(bot.gameMessageHandler.parse_board(self.almost_win_board), board)
+        self.assertEqual(bot.gameMessageHandler.get_player_color(1), ':red_circle:')
         self.assertEqual(
-            bot.gameMessageHandler.get_player_color(1), ':red_circle:')
-        self.assertEqual(bot.gameMessageHandler.alert_move_message(
-            'foo', 'move 6'), 'foo moved in column 6')
-        self.assertEqual(bot.gameMessageHandler.game_start_message(
-        ), 'Type `move <column-number>` or `<column-number>` to place a token.\n\
-The first player to get 4 in a row wins!\n Good Luck!')
+            bot.gameMessageHandler.alert_move_message('foo', 'move 6'), 'foo moved in column 6'
+        )
+        self.assertEqual(
+            bot.gameMessageHandler.game_start_message(),
+            'Type `move <column-number>` or `<column-number>` to place a token.\n\
+The first player to get 4 in a row wins!\n Good Luck!',
+        )
 
     blank_board = [
         [0, 0, 0, 0, 0, 0, 0],
@@ -103,7 +102,8 @@ The first player to get 4 in a row wins!\n Good Luck!')
         [0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0]]
+        [0, 0, 0, 0, 0, 0, 0],
+    ]
 
     almost_win_board = [
         [0, 0, 0, 0, 0, 0, 0],
@@ -111,7 +111,8 @@ The first player to get 4 in a row wins!\n Good Luck!')
         [0, 0, 0, 0, 0, 0, 0],
         [1, -1, 0, 0, 0, 0, 0],
         [1, -1, 0, 0, 0, 0, 0],
-        [1, -1, 0, 0, 0, 0, 0]]
+        [1, -1, 0, 0, 0, 0, 0],
+    ]
 
     almost_draw_board = [
         [1, -1, 1, -1, 1, -1, 0],
@@ -119,13 +120,12 @@ The first player to get 4 in a row wins!\n Good Luck!')
         [0, 0, 0, 0, 0, 0, -1],
         [0, 0, 0, 0, 0, 0, 1],
         [0, 0, 0, 0, 0, 0, -1],
-        [0, 0, 0, 0, 0, 0, 1]]
+        [0, 0, 0, 0, 0, 0, 1],
+    ]
 
     def test_connect_four_logic(self) -> None:
         def confirmAvailableMoves(
-            good_moves: List[int],
-            bad_moves: List[int],
-            board: List[List[int]]
+            good_moves: List[int], bad_moves: List[int], board: List[List[int]]
         ) -> None:
             connectFourModel.update_board(board)
 
@@ -139,18 +139,16 @@ The first player to get 4 in a row wins!\n Good Luck!')
             column_number: int,
             token_number: int,
             initial_board: List[List[int]],
-            final_board: List[List[int]]
+            final_board: List[List[int]],
         ) -> None:
             connectFourModel.update_board(initial_board)
-            test_board = connectFourModel.make_move(
-                'move ' + str(column_number), token_number)
+            test_board = connectFourModel.make_move('move ' + str(column_number), token_number)
 
             self.assertEqual(test_board, final_board)
 
         def confirmGameOver(board: List[List[int]], result: str) -> None:
             connectFourModel.update_board(board)
-            game_over = connectFourModel.determine_game_over(
-                ['first_player', 'second_player'])
+            game_over = connectFourModel.determine_game_over(['first_player', 'second_player'])
 
             self.assertEqual(game_over, result)
 
@@ -170,7 +168,8 @@ The first player to get 4 in a row wins!\n Good Luck!')
             [0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0]]
+            [0, 0, 0, 0, 0, 0, 0],
+        ]
 
         full_board = [
             [1, 1, 1, 1, 1, 1, 1],
@@ -178,7 +177,8 @@ The first player to get 4 in a row wins!\n Good Luck!')
             [1, 1, 1, 1, 1, 1, 1],
             [1, 1, 1, 1, 1, 1, 1],
             [1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1]]
+            [1, 1, 1, 1, 1, 1, 1],
+        ]
 
         single_column_board = [
             [1, 1, 1, 0, 1, 1, 1],
@@ -186,7 +186,8 @@ The first player to get 4 in a row wins!\n Good Luck!')
             [1, 1, 1, 0, 1, 1, 1],
             [1, 1, 1, 0, 1, 1, 1],
             [1, 1, 1, 0, 1, 1, 1],
-            [1, 1, 1, 0, 1, 1, 1]]
+            [1, 1, 1, 0, 1, 1, 1],
+        ]
 
         diagonal_board = [
             [0, 0, 0, 0, 0, 0, 1],
@@ -194,7 +195,8 @@ The first player to get 4 in a row wins!\n Good Luck!')
             [0, 0, 0, 0, 1, 1, 1],
             [0, 0, 0, 1, 1, 1, 1],
             [0, 0, 1, 1, 1, 1, 1],
-            [0, 1, 1, 1, 1, 1, 1]]
+            [0, 1, 1, 1, 1, 1, 1],
+        ]
 
         # Winning Board Setups
         # Each array if consists of two arrays:
@@ -204,190 +206,222 @@ The first player to get 4 in a row wins!\n Good Luck!')
         # for simplicity (random -1 and 1s could be added)
         horizontal_win_boards = [
             [
-                [[0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [1, 1, 1, 1, 0, 0, 0]],
-
-                [[0, 0, 0, 1, 1, 1, 1],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0]],
-
-                [[0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 1, 1, 1, 1, 0],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0]]
+                [
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [1, 1, 1, 1, 0, 0, 0],
+                ],
+                [
+                    [0, 0, 0, 1, 1, 1, 1],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                ],
+                [
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 1, 1, 1, 1, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                ],
             ],
             [
-                [[0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [-1, -1, -1, -1, 0, 0, 0]],
-
-                [[0, 0, 0, -1, -1, -1, -1],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0]],
-
-                [[0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, -1, -1, -1, -1, 0],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0]]
-            ]
+                [
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [-1, -1, -1, -1, 0, 0, 0],
+                ],
+                [
+                    [0, 0, 0, -1, -1, -1, -1],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                ],
+                [
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, -1, -1, -1, -1, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                ],
+            ],
         ]
 
         vertical_win_boards = [
             [
-                [[0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [1, 0, 0, 0, 0, 0, 0],
-                 [1, 0, 0, 0, 0, 0, 0],
-                 [1, 0, 0, 0, 0, 0, 0],
-                 [1, 0, 0, 0, 0, 0, 0]],
-
-                [[0, 0, 0, 0, 0, 0, 1],
-                 [0, 0, 0, 0, 0, 0, 1],
-                 [0, 0, 0, 0, 0, 0, 1],
-                 [0, 0, 0, 0, 0, 0, 1],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0]],
-
-                [[0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 1, 0, 0, 0],
-                 [0, 0, 0, 1, 0, 0, 0],
-                 [0, 0, 0, 1, 0, 0, 0],
-                 [0, 0, 0, 1, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0]]
+                [
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [1, 0, 0, 0, 0, 0, 0],
+                    [1, 0, 0, 0, 0, 0, 0],
+                    [1, 0, 0, 0, 0, 0, 0],
+                    [1, 0, 0, 0, 0, 0, 0],
+                ],
+                [
+                    [0, 0, 0, 0, 0, 0, 1],
+                    [0, 0, 0, 0, 0, 0, 1],
+                    [0, 0, 0, 0, 0, 0, 1],
+                    [0, 0, 0, 0, 0, 0, 1],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                ],
+                [
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 1, 0, 0, 0],
+                    [0, 0, 0, 1, 0, 0, 0],
+                    [0, 0, 0, 1, 0, 0, 0],
+                    [0, 0, 0, 1, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                ],
             ],
             [
-                [[0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [-1, 0, 0, 0, 0, 0, 0],
-                 [-1, 0, 0, 0, 0, 0, 0],
-                 [-1, 0, 0, 0, 0, 0, 0],
-                 [-1, 0, 0, 0, 0, 0, 0]],
-
-                [[0, 0, 0, 0, 0, 0, -1],
-                 [0, 0, 0, 0, 0, 0, -1],
-                 [0, 0, 0, 0, 0, 0, -1],
-                 [0, 0, 0, 0, 0, 0, -1],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0]],
-
-                [[0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, -1, 0, 0, 0],
-                 [0, 0, 0, -1, 0, 0, 0],
-                 [0, 0, 0, -1, 0, 0, 0],
-                 [0, 0, 0, -1, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0]]
-            ]
+                [
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [-1, 0, 0, 0, 0, 0, 0],
+                    [-1, 0, 0, 0, 0, 0, 0],
+                    [-1, 0, 0, 0, 0, 0, 0],
+                    [-1, 0, 0, 0, 0, 0, 0],
+                ],
+                [
+                    [0, 0, 0, 0, 0, 0, -1],
+                    [0, 0, 0, 0, 0, 0, -1],
+                    [0, 0, 0, 0, 0, 0, -1],
+                    [0, 0, 0, 0, 0, 0, -1],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                ],
+                [
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, -1, 0, 0, 0],
+                    [0, 0, 0, -1, 0, 0, 0],
+                    [0, 0, 0, -1, 0, 0, 0],
+                    [0, 0, 0, -1, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                ],
+            ],
         ]
 
         major_diagonal_win_boards = [
             [
-                [[1, 0, 0, 0, 0, 0, 0],
-                 [0, 1, 0, 0, 0, 0, 0],
-                 [0, 0, 1, 0, 0, 0, 0],
-                 [0, 0, 0, 1, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0]],
-
-                [[0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 1, 0, 0, 0],
-                 [0, 0, 0, 0, 1, 0, 0],
-                 [0, 0, 0, 0, 0, 1, 0],
-                 [0, 0, 0, 0, 0, 0, 1]],
-
-                [[0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 1, 0, 0, 0, 0],
-                 [0, 0, 0, 1, 0, 0, 0],
-                 [0, 0, 0, 0, 1, 0, 0],
-                 [0, 0, 0, 0, 0, 1, 0],
-                 [0, 0, 0, 0, 0, 0, 0]]
+                [
+                    [1, 0, 0, 0, 0, 0, 0],
+                    [0, 1, 0, 0, 0, 0, 0],
+                    [0, 0, 1, 0, 0, 0, 0],
+                    [0, 0, 0, 1, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                ],
+                [
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 1, 0, 0, 0],
+                    [0, 0, 0, 0, 1, 0, 0],
+                    [0, 0, 0, 0, 0, 1, 0],
+                    [0, 0, 0, 0, 0, 0, 1],
+                ],
+                [
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 1, 0, 0, 0, 0],
+                    [0, 0, 0, 1, 0, 0, 0],
+                    [0, 0, 0, 0, 1, 0, 0],
+                    [0, 0, 0, 0, 0, 1, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                ],
             ],
             [
-                [[-1, 0, 0, 0, 0, 0, 0],
-                 [0, -1, 0, 0, 0, 0, 0],
-                 [0, 0, -1, 0, 0, 0, 0],
-                 [0, 0, 0, -1, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0]],
-
-                [[0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, -1, 0, 0, 0],
-                 [0, 0, 0, 0, -1, 0, 0],
-                 [0, 0, 0, 0, 0, -1, 0],
-                 [0, 0, 0, 0, 0, 0, -1]],
-
-                [[0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, -1, 0, 0, 0, 0],
-                 [0, 0, 0, -1, 0, 0, 0],
-                 [0, 0, 0, 0, -1, 0, 0],
-                 [0, 0, 0, 0, 0, -1, 0],
-                 [0, 0, 0, 0, 0, 0, 0]]
-            ]
+                [
+                    [-1, 0, 0, 0, 0, 0, 0],
+                    [0, -1, 0, 0, 0, 0, 0],
+                    [0, 0, -1, 0, 0, 0, 0],
+                    [0, 0, 0, -1, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                ],
+                [
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, -1, 0, 0, 0],
+                    [0, 0, 0, 0, -1, 0, 0],
+                    [0, 0, 0, 0, 0, -1, 0],
+                    [0, 0, 0, 0, 0, 0, -1],
+                ],
+                [
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, -1, 0, 0, 0, 0],
+                    [0, 0, 0, -1, 0, 0, 0],
+                    [0, 0, 0, 0, -1, 0, 0],
+                    [0, 0, 0, 0, 0, -1, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                ],
+            ],
         ]
 
         minor_diagonal_win_boards = [
             [
-                [[0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 1, 0, 0, 0],
-                 [0, 0, 1, 0, 0, 0, 0],
-                 [0, 1, 0, 0, 0, 0, 0],
-                 [1, 0, 0, 0, 0, 0, 0]],
-
-                [[0, 0, 0, 0, 0, 0, 1],
-                 [0, 0, 0, 0, 0, 1, 0],
-                 [0, 0, 0, 0, 1, 0, 0],
-                 [0, 0, 0, 1, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0]],
-
-                [[0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 1, 0, 0],
-                 [0, 0, 0, 1, 0, 0, 0],
-                 [0, 0, 1, 0, 0, 0, 0],
-                 [0, 1, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0]]
+                [
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 1, 0, 0, 0],
+                    [0, 0, 1, 0, 0, 0, 0],
+                    [0, 1, 0, 0, 0, 0, 0],
+                    [1, 0, 0, 0, 0, 0, 0],
+                ],
+                [
+                    [0, 0, 0, 0, 0, 0, 1],
+                    [0, 0, 0, 0, 0, 1, 0],
+                    [0, 0, 0, 0, 1, 0, 0],
+                    [0, 0, 0, 1, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                ],
+                [
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 1, 0, 0],
+                    [0, 0, 0, 1, 0, 0, 0],
+                    [0, 0, 1, 0, 0, 0, 0],
+                    [0, 1, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                ],
             ],
             [
-                [[0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, -1, 0, 0, 0],
-                 [0, 0, -1, 0, 0, 0, 0],
-                 [0, -1, 0, 0, 0, 0, 0],
-                 [-1, 0, 0, 0, 0, 0, 0]],
-
-                [[0, 0, 0, 0, 0, 0, -1],
-                 [0, 0, 0, 0, 0, -1, 0],
-                 [0, 0, 0, 0, -1, 0, 0],
-                 [0, 0, 0, -1, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0]],
-
-                [[0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, -1, 0, 0],
-                 [0, 0, 0, -1, 0, 0, 0],
-                 [0, 0, -1, 0, 0, 0, 0],
-                 [0, -1, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0]]
-            ]
+                [
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, -1, 0, 0, 0],
+                    [0, 0, -1, 0, 0, 0, 0],
+                    [0, -1, 0, 0, 0, 0, 0],
+                    [-1, 0, 0, 0, 0, 0, 0],
+                ],
+                [
+                    [0, 0, 0, 0, 0, 0, -1],
+                    [0, 0, 0, 0, 0, -1, 0],
+                    [0, 0, 0, 0, -1, 0, 0],
+                    [0, 0, 0, -1, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                ],
+                [
+                    [0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, -1, 0, 0],
+                    [0, 0, 0, -1, 0, 0, 0],
+                    [0, 0, -1, 0, 0, 0, 0],
+                    [0, -1, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0],
+                ],
+            ],
         ]
 
         # Test Move Validation Logic
@@ -397,8 +431,7 @@ The first player to get 4 in a row wins!\n Good Luck!')
 
         # Test Available Move Logic
         connectFourModel.update_board(blank_board)
-        self.assertEqual(connectFourModel.available_moves(),
-                         [0, 1, 2, 3, 4, 5, 6])
+        self.assertEqual(connectFourModel.available_moves(), [0, 1, 2, 3, 4, 5, 6])
 
         connectFourModel.update_board(single_column_board)
         self.assertEqual(connectFourModel.available_moves(), [3])
@@ -407,69 +440,117 @@ The first player to get 4 in a row wins!\n Good Luck!')
         self.assertEqual(connectFourModel.available_moves(), [])
 
         # Test Move Logic
-        confirmMove(1, 0, blank_board,
-                    [[0, 0, 0, 0, 0, 0, 0],
-                     [0, 0, 0, 0, 0, 0, 0],
-                     [0, 0, 0, 0, 0, 0, 0],
-                     [0, 0, 0, 0, 0, 0, 0],
-                     [0, 0, 0, 0, 0, 0, 0],
-                     [1, 0, 0, 0, 0, 0, 0]])
+        confirmMove(
+            1,
+            0,
+            blank_board,
+            [
+                [0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0],
+                [1, 0, 0, 0, 0, 0, 0],
+            ],
+        )
 
-        confirmMove(1, 1, blank_board,
-                    [[0, 0, 0, 0, 0, 0, 0],
-                     [0, 0, 0, 0, 0, 0, 0],
-                     [0, 0, 0, 0, 0, 0, 0],
-                     [0, 0, 0, 0, 0, 0, 0],
-                     [0, 0, 0, 0, 0, 0, 0],
-                     [-1, 0, 0, 0, 0, 0, 0]])
+        confirmMove(
+            1,
+            1,
+            blank_board,
+            [
+                [0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0],
+                [-1, 0, 0, 0, 0, 0, 0],
+            ],
+        )
 
-        confirmMove(1, 0, diagonal_board,
-                    [[0, 0, 0, 0, 0, 0, 1],
-                     [0, 0, 0, 0, 0, 1, 1],
-                     [0, 0, 0, 0, 1, 1, 1],
-                     [0, 0, 0, 1, 1, 1, 1],
-                     [0, 0, 1, 1, 1, 1, 1],
-                     [1, 1, 1, 1, 1, 1, 1]])
+        confirmMove(
+            1,
+            0,
+            diagonal_board,
+            [
+                [0, 0, 0, 0, 0, 0, 1],
+                [0, 0, 0, 0, 0, 1, 1],
+                [0, 0, 0, 0, 1, 1, 1],
+                [0, 0, 0, 1, 1, 1, 1],
+                [0, 0, 1, 1, 1, 1, 1],
+                [1, 1, 1, 1, 1, 1, 1],
+            ],
+        )
 
-        confirmMove(2, 0, diagonal_board,
-                    [[0, 0, 0, 0, 0, 0, 1],
-                     [0, 0, 0, 0, 0, 1, 1],
-                     [0, 0, 0, 0, 1, 1, 1],
-                     [0, 0, 0, 1, 1, 1, 1],
-                     [0, 1, 1, 1, 1, 1, 1],
-                     [0, 1, 1, 1, 1, 1, 1]])
+        confirmMove(
+            2,
+            0,
+            diagonal_board,
+            [
+                [0, 0, 0, 0, 0, 0, 1],
+                [0, 0, 0, 0, 0, 1, 1],
+                [0, 0, 0, 0, 1, 1, 1],
+                [0, 0, 0, 1, 1, 1, 1],
+                [0, 1, 1, 1, 1, 1, 1],
+                [0, 1, 1, 1, 1, 1, 1],
+            ],
+        )
 
-        confirmMove(3, 0, diagonal_board,
-                    [[0, 0, 0, 0, 0, 0, 1],
-                     [0, 0, 0, 0, 0, 1, 1],
-                     [0, 0, 0, 0, 1, 1, 1],
-                     [0, 0, 1, 1, 1, 1, 1],
-                     [0, 0, 1, 1, 1, 1, 1],
-                     [0, 1, 1, 1, 1, 1, 1]])
+        confirmMove(
+            3,
+            0,
+            diagonal_board,
+            [
+                [0, 0, 0, 0, 0, 0, 1],
+                [0, 0, 0, 0, 0, 1, 1],
+                [0, 0, 0, 0, 1, 1, 1],
+                [0, 0, 1, 1, 1, 1, 1],
+                [0, 0, 1, 1, 1, 1, 1],
+                [0, 1, 1, 1, 1, 1, 1],
+            ],
+        )
 
-        confirmMove(4, 0, diagonal_board,
-                    [[0, 0, 0, 0, 0, 0, 1],
-                     [0, 0, 0, 0, 0, 1, 1],
-                     [0, 0, 0, 1, 1, 1, 1],
-                     [0, 0, 0, 1, 1, 1, 1],
-                     [0, 0, 1, 1, 1, 1, 1],
-                     [0, 1, 1, 1, 1, 1, 1]])
+        confirmMove(
+            4,
+            0,
+            diagonal_board,
+            [
+                [0, 0, 0, 0, 0, 0, 1],
+                [0, 0, 0, 0, 0, 1, 1],
+                [0, 0, 0, 1, 1, 1, 1],
+                [0, 0, 0, 1, 1, 1, 1],
+                [0, 0, 1, 1, 1, 1, 1],
+                [0, 1, 1, 1, 1, 1, 1],
+            ],
+        )
 
-        confirmMove(5, 0, diagonal_board,
-                    [[0, 0, 0, 0, 0, 0, 1],
-                     [0, 0, 0, 0, 1, 1, 1],
-                     [0, 0, 0, 0, 1, 1, 1],
-                     [0, 0, 0, 1, 1, 1, 1],
-                     [0, 0, 1, 1, 1, 1, 1],
-                     [0, 1, 1, 1, 1, 1, 1]])
+        confirmMove(
+            5,
+            0,
+            diagonal_board,
+            [
+                [0, 0, 0, 0, 0, 0, 1],
+                [0, 0, 0, 0, 1, 1, 1],
+                [0, 0, 0, 0, 1, 1, 1],
+                [0, 0, 0, 1, 1, 1, 1],
+                [0, 0, 1, 1, 1, 1, 1],
+                [0, 1, 1, 1, 1, 1, 1],
+            ],
+        )
 
-        confirmMove(6, 0, diagonal_board,
-                    [[0, 0, 0, 0, 0, 1, 1],
-                     [0, 0, 0, 0, 0, 1, 1],
-                     [0, 0, 0, 0, 1, 1, 1],
-                     [0, 0, 0, 1, 1, 1, 1],
-                     [0, 0, 1, 1, 1, 1, 1],
-                     [0, 1, 1, 1, 1, 1, 1]])
+        confirmMove(
+            6,
+            0,
+            diagonal_board,
+            [
+                [0, 0, 0, 0, 0, 1, 1],
+                [0, 0, 0, 0, 0, 1, 1],
+                [0, 0, 0, 0, 1, 1, 1],
+                [0, 0, 0, 1, 1, 1, 1],
+                [0, 0, 1, 1, 1, 1, 1],
+                [0, 1, 1, 1, 1, 1, 1],
+            ],
+        )
 
         # Test Game Over Logic:
         confirmGameOver(blank_board, '')

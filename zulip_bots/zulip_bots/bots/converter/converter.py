@@ -15,14 +15,17 @@ def is_float(value: Any) -> bool:
     except ValueError:
         return False
 
+
 # Rounds the number 'x' to 'digits' significant digits.
 # A normal 'round()' would round the number to an absolute amount of
 # fractional decimals, e.g. 0.00045 would become 0.0.
 # 'round_to()' rounds only the digits that are not 0.
 # 0.00045 would then become 0.0005.
 
+
 def round_to(x: float, digits: int) -> float:
-    return round(x, digits-int(floor(log10(abs(x)))))
+    return round(x, digits - int(floor(log10(abs(x)))))
+
 
 class ConverterHandler:
     '''
@@ -48,6 +51,7 @@ class ConverterHandler:
     def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
         bot_response = get_bot_converter_response(message, bot_handler)
         bot_handler.send_reply(message, bot_response)
+
 
 def get_bot_converter_response(message: Dict[str, str], bot_handler: BotHandler) -> str:
     content = message['content']
@@ -78,10 +82,10 @@ def get_bot_converter_response(message: Dict[str, str], bot_handler: BotHandler)
             for key, exp in utils.PREFIXES.items():
                 if unit_from.startswith(key):
                     exponent += exp
-                    unit_from = unit_from[len(key):]
+                    unit_from = unit_from[len(key) :]
                 if unit_to.startswith(key):
                     exponent -= exp
-                    unit_to = unit_to[len(key):]
+                    unit_to = unit_to[len(key) :]
 
             uf_to_std = utils.UNITS.get(unit_from, [])  # type: List[Any]
             ut_to_std = utils.UNITS.get(unit_to, [])  # type: List[Any]
@@ -97,8 +101,13 @@ def get_bot_converter_response(message: Dict[str, str], bot_handler: BotHandler)
             if uf_to_std[2] != ut_to_std[2]:
                 unit_from = unit_from.capitalize() if uf_to_std[2] == 'kelvin' else unit_from
                 results.append(
-                    '`' + unit_to.capitalize() + '` and `' + unit_from + '`'
-                    + ' are not from the same category. ' + utils.QUICK_HELP
+                    '`'
+                    + unit_to.capitalize()
+                    + '` and `'
+                    + unit_from
+                    + '`'
+                    + ' are not from the same category. '
+                    + utils.QUICK_HELP
                 )
                 continue
 
@@ -114,10 +123,11 @@ def get_bot_converter_response(message: Dict[str, str], bot_handler: BotHandler)
                 number_res *= 10 ** exponent
             number_res = round_to(number_res, 7)
 
-            results.append('{} {} = {} {}'.format(number,
-                                                  words[convert_index + 2],
-                                                  number_res,
-                                                  words[convert_index + 3]))
+            results.append(
+                '{} {} = {} {}'.format(
+                    number, words[convert_index + 2], number_res, words[convert_index + 3]
+                )
+            )
 
         else:
             results.append('Too few arguments given. ' + utils.QUICK_HELP)
@@ -127,5 +137,6 @@ def get_bot_converter_response(message: Dict[str, str], bot_handler: BotHandler)
         new_content += ((str(idx) + '. conversion: ') if len(results) > 1 else '') + result + '\n'
 
     return new_content
+
 
 handler_class = ConverterHandler

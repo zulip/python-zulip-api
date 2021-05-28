@@ -31,7 +31,9 @@ class TestFollowUpBot(BotTestCase, DefaultTests):
         self.assertEqual(response['to'], 'issue')
 
     def test_bot_responds_to_empty_message(self) -> None:
-        bot_response = 'Please specify the message you want to send to followup stream after @mention-bot'
+        bot_response = (
+            'Please specify the message you want to send to followup stream after @mention-bot'
+        )
 
         with self.mock_config_info({'stream': 'followup'}):
             self.verify_reply('', bot_response)

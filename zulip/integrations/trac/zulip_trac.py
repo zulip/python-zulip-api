@@ -33,38 +33,50 @@ client = zulip.Client(
     email=config.ZULIP_USER,
     site=config.ZULIP_SITE,
     api_key=config.ZULIP_API_KEY,
-    client="ZulipTrac/" + VERSION)
+    client="ZulipTrac/" + VERSION,
+)
+
 
 def markdown_ticket_url(ticket: Any, heading: str = "ticket") -> str:
     return "[%s #%s](%s/%s)" % (heading, ticket.id, config.TRAC_BASE_TICKET_URL, ticket.id)
 
+
 def markdown_block(desc: str) -> str:
     return "\n\n>" + "\n> ".join(desc.split("\n")) + "\n"
+
 
 def truncate(string: str, length: int) -> str:
     if len(string) <= length:
         return string
-    return string[:length - 3] + "..."
+    return string[: length - 3] + "..."
+
 
 def trac_subject(ticket: Any) -> str:
     return truncate("#%s: %s" % (ticket.id, ticket.values.get("summary")), 60)
 
+
 def send_update(ticket: Any, content: str) -> None:
-    client.send_message({
-        "type": "stream",
-        "to": config.STREAM_FOR_NOTIFICATIONS,
-        "content": content,
-        "subject": trac_subject(ticket)
-    })
+    client.send_message(
+        {
+            "type": "stream",
+            "to": config.STREAM_FOR_NOTIFICATIONS,
+            "content": content,
+            "subject": trac_subject(ticket),
+        }
+    )
+
 
 class ZulipPlugin(Component):
     implements(ITicketChangeListener)
 
     def ticket_created(self, ticket: Any) -> None:
         """Called when a ticket is created."""
-        content = "%s created %s in component **%s**, priority **%s**:\n" % \
-            (ticket.values.get("reporter"), markdown_ticket_url(ticket),
-             ticket.values.get("component"), ticket.values.get("priority"))
+        content = "%s created %s in component **%s**, priority **%s**:\n" % (
+            ticket.values.get("reporter"),
+            markdown_ticket_url(ticket),
+            ticket.values.get("component"),
+            ticket.values.get("priority"),
+        )
         # Include the full subject if it will be truncated
         if len(ticket.values.get("summary")) > 60:
             content += "**%s**\n" % (ticket.values.get("summary"),)
@@ -72,7 +84,9 @@ class ZulipPlugin(Component):
             content += "%s" % (markdown_block(ticket.values.get("description")),)
         send_update(ticket, content)
 
-    def ticket_changed(self, ticket: Any, comment: str, author: str, old_values: Dict[str, Any]) -> None:
+    def ticket_changed(
+        self, ticket: Any, comment: str, author: str, old_values: Dict[str, Any]
+    ) -> None:
         """Called when a ticket is modified.
 
         `old_values` is a dictionary containing the previous values of the
@@ -92,15 +106,19 @@ class ZulipPlugin(Component):
         field_changes = []
         for key, value in old_values.items():
             if key == "description":
-                content += '- Changed %s from %s\n\nto %s' % (key, markdown_block(value),
-                                                              markdown_block(ticket.values.get(key)))
+                content += '- Changed %s from %s\n\nto %s' % (
+                    key,
+                    markdown_block(value),
+                    markdown_block(ticket.values.get(key)),
+                )
             elif old_values.get(key) == "":
                 field_changes.append('%s: => **%s**' % (key, ticket.values.get(key)))
             elif ticket.values.get(key) == "":
                 field_changes.append('%s: **%s** => ""' % (key, old_values.get(key)))
             else:
-                field_changes.append('%s: **%s** => **%s**' % (key, old_values.get(key),
-                                                               ticket.values.get(key)))
+                field_changes.append(
+                    '%s: **%s** => **%s**' % (key, old_values.get(key), ticket.values.get(key))
+                )
         content += ", ".join(field_changes)
 
         send_update(ticket, content)

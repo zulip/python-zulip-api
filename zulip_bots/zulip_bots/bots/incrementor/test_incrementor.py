@@ -20,10 +20,7 @@ class TestIncrementorBot(BotTestCase, DefaultTests):
             bot.handle_message(message, bot_handler)
             bot.handle_message(message, bot_handler)
 
-        content_updates = [
-            item[0][0]['content']
-            for item in m.call_args_list
-        ]
+        content_updates = [item[0][0]['content'] for item in m.call_args_list]
         self.assertEqual(content_updates, ['2', '3', '4'])
 
     def test_bot_edit_timeout(self) -> None:
@@ -44,8 +41,5 @@ class TestIncrementorBot(BotTestCase, DefaultTests):
         # When there is an error, the bot should resend the message with the new value.
         self.assertEqual(m.call_count, 2)
 
-        content_updates = [
-            item[0][0]['content']
-            for item in m.call_args_list
-        ]
+        content_updates = [item[0][0]['content'] for item in m.call_args_list]
         self.assertEqual(content_updates, ['2', '3'])

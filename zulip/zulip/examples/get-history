@@ -15,8 +15,12 @@ Example: get-history --stream announce --topic important"""
 parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage))
 parser.add_argument('--stream', required=True, help="The stream name to get the history")
 parser.add_argument('--topic', help="The topic name to get the history")
-parser.add_argument('--filename', default='history.json', help="The file name to store the fetched  \
-                    history.\n Default 'history.json'")
+parser.add_argument(
+    '--filename',
+    default='history.json',
+    help="The file name to store the fetched  \
+                    history.\n Default 'history.json'",
+)
 options = parser.parse_args()
 
 client = zulip.init_from_options(options)
@@ -33,7 +37,7 @@ request = {
     'num_after': 1000,
     'narrow': narrow,
     'client_gravatar': False,
-    'apply_markdown': False
+    'apply_markdown': False,
 }
 
 all_messages = []  # type: List[Dict[str, Any]]

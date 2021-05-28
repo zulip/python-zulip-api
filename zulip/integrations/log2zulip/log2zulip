@@ -14,10 +14,12 @@ import traceback
 sys.path.append("/home/zulip/deployments/current")
 try:
     from scripts.lib.setup_path import setup_path
+
     setup_path()
 except ImportError:
     try:
         import scripts.lib.setup_path_on_import
+
         scripts.lib.setup_path_on_import  # Suppress unused import warning
     except ImportError:
         pass
@@ -31,6 +33,7 @@ import zulip
 
 temp_dir = "/var/tmp/" if os.name == "posix" else tempfile.gettempdir()
 
+
 def mkdir_p(path: str) -> None:
     # Python doesn't have an analog to `mkdir -p` < Python 3.2.
     try:
@@ -41,14 +44,18 @@ def mkdir_p(path: str) -> None:
         else:
             raise
 
+
 def send_log_zulip(file_name: str, count: int, lines: List[str], extra: str = "") -> None:
     content = "%s new errors%s:\n```\n%s\n```" % (count, extra, "\n".join(lines))
-    zulip_client.send_message({
-        "type": "stream",
-        "to": "logs",
-        "subject": "%s on %s" % (file_name, platform.node()),
-        "content": content,
-    })
+    zulip_client.send_message(
+        {
+            "type": "stream",
+            "to": "logs",
+            "subject": "%s on %s" % (file_name, platform.node()),
+            "content": content,
+        }
+    )
+
 
 def process_lines(raw_lines: List[str], file_name: str) -> None:
     lines = []
@@ -64,6 +71,7 @@ def process_lines(raw_lines: List[str], file_name: str) -> None:
         send_log_zulip(file_name, len(lines), lines[0:3], extra=", examples include")
     else:
         send_log_zulip(file_name, len(lines), lines)
+
 
 def process_logs() -> None:
     data_file_path = os.path.join(temp_dir, "log2zulip.state")
@@ -94,6 +102,7 @@ def process_logs() -> None:
             file_data["last"] += len(new_lines)
         new_data[log_file] = file_data
     open(data_file_path, "w").write(json.dumps(new_data))
+
 
 if __name__ == "__main__":
     parser = zulip.add_default_arguments(argparse.ArgumentParser())  # type: argparse.ArgumentParser

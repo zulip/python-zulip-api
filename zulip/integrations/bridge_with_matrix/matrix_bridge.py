@@ -24,19 +24,22 @@ MATRIX_USERNAME_REGEX = '@([a-zA-Z0-9-_]+):matrix.org'
 ZULIP_MESSAGE_TEMPLATE = "**{username}**: {message}"
 MATRIX_MESSAGE_TEMPLATE = "<{username}> {message}"
 
+
 class Bridge_ConfigException(Exception):
     pass
+
 
 class Bridge_FatalMatrixException(Exception):
     pass
 
+
 class Bridge_ZulipFatalException(Exception):
     pass
 
+
 def matrix_login(matrix_client: Any, matrix_config: Dict[str, Any]) -> None:
     try:
-        matrix_client.login_with_password(matrix_config["username"],
-                                          matrix_config["password"])
+        matrix_client.login_with_password(matrix_config["username"], matrix_config["password"])
     except MatrixRequestError as exception:
         if exception.code == 403:
             raise Bridge_FatalMatrixException("Bad username or password.")
@@ -44,6 +47,7 @@ def matrix_login(matrix_client: Any, matrix_config: Dict[str, Any]) -> None:
             raise Bridge_FatalMatrixException("Check if your server details are correct.")
     except MissingSchema:
         raise Bridge_FatalMatrixException("Bad URL format.")
+
 
 def matrix_join_room(matrix_client: Any, matrix_config: Dict[str, Any]) -> Any:
     try:
@@ -55,9 +59,11 @@ def matrix_join_room(matrix_client: Any, matrix_config: Dict[str, Any]) -> Any:
         else:
             raise Bridge_FatalMatrixException("Couldn't find room.")
 
+
 def die(signal: int, frame: FrameType) -> None:
     # We actually want to exit, so run os._exit (so as not to be caught and restarted)
     os._exit(1)
+
 
 def matrix_to_zulip(
     zulip_client: zulip.Client,
@@ -78,12 +84,14 @@ def matrix_to_zulip(
 
         if not_from_zulip_bot and content:
             try:
-                result = zulip_client.send_message({
-                    "type": "stream",
-                    "to": zulip_config["stream"],
-                    "subject": zulip_config["topic"],
-                    "content": content,
-                })
+                result = zulip_client.send_message(
+                    {
+                        "type": "stream",
+                        "to": zulip_config["stream"],
+                        "subject": zulip_config["topic"],
+                        "content": content,
+                    }
+                )
             except Exception as exception:  # XXX This should be more specific
                 # Generally raised when user is forbidden
                 raise Bridge_ZulipFatalException(exception)
@@ -93,6 +101,7 @@ def matrix_to_zulip(
 
     return _matrix_to_zulip
 
+
 def get_message_content_from_event(event: Dict[str, Any], no_noise: bool) -> Optional[str]:
     irc_nick = shorten_irc_nick(event['sender'])
     if event['type'] == "m.room.member":
@@ -101,18 +110,18 @@ def get_message_content_from_event(event: Dict[str, Any], no_noise: bool) -> Opt
         # Join and leave events can be noisy. They are ignored by default.
         # To enable these events pass `no_noise` as `False` as the script argument
         if event['membership'] == "join":
-            content = ZULIP_MESSAGE_TEMPLATE.format(username=irc_nick,
-                                                    message="joined")
+            content = ZULIP_MESSAGE_TEMPLATE.format(username=irc_nick, message="joined")
         elif event['membership'] == "leave":
-            content = ZULIP_MESSAGE_TEMPLATE.format(username=irc_nick,
-                                                    message="quit")
+            content = ZULIP_MESSAGE_TEMPLATE.format(username=irc_nick, message="quit")
     elif event['type'] == "m.room.message":
         if event['content']['msgtype'] == "m.text" or event['content']['msgtype'] == "m.emote":
-            content = ZULIP_MESSAGE_TEMPLATE.format(username=irc_nick,
-                                                    message=event['content']['body'])
+            content = ZULIP_MESSAGE_TEMPLATE.format(
+                username=irc_nick, message=event['content']['body']
+            )
     else:
         content = event['type']
     return content
+
 
 def shorten_irc_nick(nick: str) -> str:
     """
@@ -130,8 +139,8 @@ def shorten_irc_nick(nick: str) -> str:
         return match.group(1)
     return nick
 
-def zulip_to_matrix(config: Dict[str, Any], room: Any) -> Callable[[Dict[str, Any]], None]:
 
+def zulip_to_matrix(config: Dict[str, Any], room: Any) -> Callable[[Dict[str, Any]], None]:
     def _zulip_to_matrix(msg: Dict[str, Any]) -> None:
         """
         Zulip -> Matrix
@@ -139,11 +148,14 @@ def zulip_to_matrix(config: Dict[str, Any], room: Any) -> Callable[[Dict[str, An
         message_valid = check_zulip_message_validity(msg, config)
         if message_valid:
             matrix_username = msg["sender_full_name"].replace(' ', '')
-            matrix_text = MATRIX_MESSAGE_TEMPLATE.format(username=matrix_username,
-                                                         message=msg["content"])
+            matrix_text = MATRIX_MESSAGE_TEMPLATE.format(
+                username=matrix_username, message=msg["content"]
+            )
             # Forward Zulip message to Matrix
             room.send_text(matrix_text)
+
     return _zulip_to_matrix
+
 
 def check_zulip_message_validity(msg: Dict[str, Any], config: Dict[str, Any]) -> bool:
     is_a_stream = msg["type"] == "stream"
@@ -157,6 +169,7 @@ def check_zulip_message_validity(msg: Dict[str, Any], config: Dict[str, Any]) ->
         return True
     return False
 
+
 def generate_parser() -> argparse.ArgumentParser:
     description = """
     Script to bridge between a topic in a Zulip stream, and a Matrix channel.
@@ -169,18 +182,33 @@ def generate_parser() -> argparse.ArgumentParser:
         * #zulip:matrix.org (zulip channel on Matrix)
         * #freenode_#zulip:matrix.org (zulip channel on irc.freenode.net)"""
 
-    parser = argparse.ArgumentParser(description=description,
-                                     formatter_class=argparse.RawTextHelpFormatter)
-    parser.add_argument('-c', '--config', required=False,
-                        help="Path to the config file for the bridge.")
-    parser.add_argument('--write-sample-config', metavar='PATH', dest='sample_config',
-                        help="Generate a configuration template at the specified location.")
-    parser.add_argument('--from-zuliprc', metavar='ZULIPRC', dest='zuliprc',
-                        help="Optional path to zuliprc file for bot, when using --write-sample-config")
-    parser.add_argument('--show-join-leave', dest='no_noise',
-                        default=True, action='store_false',
-                        help="Enable IRC join/leave events.")
+    parser = argparse.ArgumentParser(
+        description=description, formatter_class=argparse.RawTextHelpFormatter
+    )
+    parser.add_argument(
+        '-c', '--config', required=False, help="Path to the config file for the bridge."
+    )
+    parser.add_argument(
+        '--write-sample-config',
+        metavar='PATH',
+        dest='sample_config',
+        help="Generate a configuration template at the specified location.",
+    )
+    parser.add_argument(
+        '--from-zuliprc',
+        metavar='ZULIPRC',
+        dest='zuliprc',
+        help="Optional path to zuliprc file for bot, when using --write-sample-config",
+    )
+    parser.add_argument(
+        '--show-join-leave',
+        dest='no_noise',
+        default=True,
+        action='store_false',
+        help="Enable IRC join/leave events.",
+    )
     return parser
+
 
 def read_configuration(config_file: str) -> Dict[str, Dict[str, str]]:
     config = configparser.ConfigParser()
@@ -197,25 +225,40 @@ def read_configuration(config_file: str) -> Dict[str, Dict[str, str]]:
 
     return {section: dict(config[section]) for section in config.sections()}
 
+
 def write_sample_config(target_path: str, zuliprc: Optional[str]) -> None:
     if os.path.exists(target_path):
-        raise Bridge_ConfigException("Path '{}' exists; not overwriting existing file.".format(target_path))
+        raise Bridge_ConfigException(
+            "Path '{}' exists; not overwriting existing file.".format(target_path)
+        )
 
-    sample_dict = OrderedDict((
-        ('matrix', OrderedDict((
-            ('host', 'https://matrix.org'),
-            ('username', 'username'),
-            ('password', 'password'),
-            ('room_id', '#zulip:matrix.org'),
-        ))),
-        ('zulip', OrderedDict((
-            ('email', 'glitch-bot@chat.zulip.org'),
-            ('api_key', 'aPiKeY'),
-            ('site', 'https://chat.zulip.org'),
-            ('stream', 'test here'),
-            ('topic', 'matrix'),
-        ))),
-    ))
+    sample_dict = OrderedDict(
+        (
+            (
+                'matrix',
+                OrderedDict(
+                    (
+                        ('host', 'https://matrix.org'),
+                        ('username', 'username'),
+                        ('password', 'password'),
+                        ('room_id', '#zulip:matrix.org'),
+                    )
+                ),
+            ),
+            (
+                'zulip',
+                OrderedDict(
+                    (
+                        ('email', 'glitch-bot@chat.zulip.org'),
+                        ('api_key', 'aPiKeY'),
+                        ('site', 'https://chat.zulip.org'),
+                        ('stream', 'test here'),
+                        ('topic', 'matrix'),
+                    )
+                ),
+            ),
+        )
+    )
 
     if zuliprc is not None:
         if not os.path.exists(zuliprc):
@@ -238,6 +281,7 @@ def write_sample_config(target_path: str, zuliprc: Optional[str]) -> None:
     with open(target_path, 'w') as target:
         sample.write(target)
 
+
 def main() -> None:
     signal.signal(signal.SIGINT, die)
     logging.basicConfig(level=logging.WARNING)
@@ -254,8 +298,11 @@ def main() -> None:
         if options.zuliprc is None:
             print("Wrote sample configuration to '{}'".format(options.sample_config))
         else:
-            print("Wrote sample configuration to '{}' using zuliprc file '{}'"
-                  .format(options.sample_config, options.zuliprc))
+            print(
+                "Wrote sample configuration to '{}' using zuliprc file '{}'".format(
+                    options.sample_config, options.zuliprc
+                )
+            )
         sys.exit(0)
     elif not options.config:
         print("Options required: -c or --config to run, OR --write-sample-config.")
@@ -277,9 +324,11 @@ def main() -> None:
     while backoff.keep_going():
         print("Starting matrix mirroring bot")
         try:
-            zulip_client = zulip.Client(email=zulip_config["email"],
-                                        api_key=zulip_config["api_key"],
-                                        site=zulip_config["site"])
+            zulip_client = zulip.Client(
+                email=zulip_config["email"],
+                api_key=zulip_config["api_key"],
+                site=zulip_config["site"],
+            )
             matrix_client = MatrixClient(matrix_config["host"])
 
             # Login to Matrix
@@ -287,8 +336,9 @@ def main() -> None:
             # Join a room in Matrix
             room = matrix_join_room(matrix_client, matrix_config)
 
-            room.add_listener(matrix_to_zulip(zulip_client, zulip_config, matrix_config,
-                                              options.no_noise))
+            room.add_listener(
+                matrix_to_zulip(zulip_client, zulip_config, matrix_config, options.no_noise)
+            )
 
             print("Starting listener thread on Matrix client")
             matrix_client.start_listener_thread()
@@ -305,6 +355,7 @@ def main() -> None:
         except Exception:
             traceback.print_exc()
         backoff.fail()
+
 
 if __name__ == '__main__':
     main()

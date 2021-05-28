@@ -9,20 +9,19 @@ class TestGameOfFifteenBot(BotTestCase, DefaultTests):
     bot_name = 'game_of_fifteen'
 
     def make_request_message(
-        self,
-        content: str,
-        user: str = 'foo@example.com',
-        user_name: str = 'foo'
+        self, content: str, user: str = 'foo@example.com', user_name: str = 'foo'
     ) -> Dict[str, str]:
-        message = dict(
-            sender_email=user,
-            content=content,
-            sender_full_name=user_name
-        )
+        message = dict(sender_email=user, content=content, sender_full_name=user_name)
         return message
 
     # Function that serves similar purpose to BotTestCase.verify_dialog, but allows for multiple responses to be handled
-    def verify_response(self, request: str, expected_response: str, response_number: int, user: str = 'foo@example.com') -> None:
+    def verify_response(
+        self,
+        request: str,
+        expected_response: str,
+        response_number: int,
+        user: str = 'foo@example.com',
+    ) -> None:
         '''
         This function serves a similar purpose
         to BotTestCase.verify_dialog, but allows
@@ -36,11 +35,7 @@ class TestGameOfFifteenBot(BotTestCase, DefaultTests):
 
         bot.handle_message(message, bot_handler)
 
-        responses = [
-            message
-            for (method, message)
-            in bot_handler.transcript
-        ]
+        responses = [message for (method, message) in bot_handler.transcript]
 
         first_response = responses[response_number]
         self.assertEqual(expected_response, first_response['content'])
@@ -63,23 +58,19 @@ class TestGameOfFifteenBot(BotTestCase, DefaultTests):
     def test_game_message_handler_responses(self) -> None:
         board = '\n\n:grey_question::one::two:\n\n:three::four::five:\n\n:six::seven::eight:'
         bot, bot_handler = self._get_handlers()
-        self.assertEqual(bot.gameMessageHandler.parse_board(
-            self.winning_board), board)
-        self.assertEqual(bot.gameMessageHandler.alert_move_message(
-            'foo', 'move 1'), 'foo moved 1')
-        self.assertEqual(bot.gameMessageHandler.game_start_message(
-        ), "Welcome to Game of Fifteen!"
-           "To make a move, type @-mention `move <tile1> <tile2> ...`")
+        self.assertEqual(bot.gameMessageHandler.parse_board(self.winning_board), board)
+        self.assertEqual(bot.gameMessageHandler.alert_move_message('foo', 'move 1'), 'foo moved 1')
+        self.assertEqual(
+            bot.gameMessageHandler.game_start_message(),
+            "Welcome to Game of Fifteen!"
+            "To make a move, type @-mention `move <tile1> <tile2> ...`",
+        )
 
-    winning_board = [[0, 1, 2],
-                     [3, 4, 5],
-                     [6, 7, 8]]
+    winning_board = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
 
     def test_game_of_fifteen_logic(self) -> None:
         def confirmAvailableMoves(
-            good_moves: List[int],
-            bad_moves: List[int],
-            board: List[List[int]]
+            good_moves: List[int], bad_moves: List[int], board: List[List[int]]
         ) -> None:
             gameOfFifteenModel.update_board(board)
             for move in good_moves:
@@ -92,18 +83,16 @@ class TestGameOfFifteenBot(BotTestCase, DefaultTests):
             tile: str,
             token_number: int,
             initial_board: List[List[int]],
-            final_board: List[List[int]]
+            final_board: List[List[int]],
         ) -> None:
             gameOfFifteenModel.update_board(initial_board)
-            test_board = gameOfFifteenModel.make_move(
-                'move ' + tile, token_number)
+            test_board = gameOfFifteenModel.make_move('move ' + tile, token_number)
 
             self.assertEqual(test_board, final_board)
 
         def confirmGameOver(board: List[List[int]], result: str) -> None:
             gameOfFifteenModel.update_board(board)
-            game_over = gameOfFifteenModel.determine_game_over(
-                ['first_player'])
+            game_over = gameOfFifteenModel.determine_game_over(['first_player'])
 
             self.assertEqual(game_over, result)
 
@@ -115,62 +104,43 @@ class TestGameOfFifteenBot(BotTestCase, DefaultTests):
         gameOfFifteenModel = GameOfFifteenModel()
 
         # Basic Board setups
-        initial_board = [[8, 7, 6],
-                         [5, 4, 3],
-                         [2, 1, 0]]
+        initial_board = [[8, 7, 6], [5, 4, 3], [2, 1, 0]]
 
-        sample_board = [[7, 6, 8],
-                        [3, 0, 1],
-                        [2, 4, 5]]
+        sample_board = [[7, 6, 8], [3, 0, 1], [2, 4, 5]]
 
-        winning_board = [[0, 1, 2],
-                         [3, 4, 5],
-                         [6, 7, 8]]
+        winning_board = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
 
         # Test Move Validation Logic
         confirmAvailableMoves([1, 2, 3, 4, 5, 6, 7, 8], [0, 9, -1], initial_board)
 
         # Test Move Logic
-        confirmMove('1', 0, initial_board,
-                    [[8, 7, 6],
-                     [5, 4, 3],
-                     [2, 0, 1]])
+        confirmMove('1', 0, initial_board, [[8, 7, 6], [5, 4, 3], [2, 0, 1]])
 
-        confirmMove('1 2', 0, initial_board,
-                    [[8, 7, 6],
-                     [5, 4, 3],
-                     [0, 2, 1]])
+        confirmMove('1 2', 0, initial_board, [[8, 7, 6], [5, 4, 3], [0, 2, 1]])
 
-        confirmMove('1 2 5', 0, initial_board,
-                    [[8, 7, 6],
-                     [0, 4, 3],
-                     [5, 2, 1]])
+        confirmMove('1 2 5', 0, initial_board, [[8, 7, 6], [0, 4, 3], [5, 2, 1]])
 
-        confirmMove('1 2 5 4', 0, initial_board,
-                    [[8, 7, 6],
-                     [4, 0, 3],
-                     [5, 2, 1]])
+        confirmMove('1 2 5 4', 0, initial_board, [[8, 7, 6], [4, 0, 3], [5, 2, 1]])
 
-        confirmMove('3', 0, sample_board,
-                    [[7, 6, 8],
-                     [0, 3, 1],
-                     [2, 4, 5]])
+        confirmMove('3', 0, sample_board, [[7, 6, 8], [0, 3, 1], [2, 4, 5]])
 
-        confirmMove('3 7', 0, sample_board,
-                    [[0, 6, 8],
-                     [7, 3, 1],
-                     [2, 4, 5]])
+        confirmMove('3 7', 0, sample_board, [[0, 6, 8], [7, 3, 1], [2, 4, 5]])
 
         # Test coordinates logic:
-        confirm_coordinates(initial_board, {8: (0, 0),
-                                            7: (0, 1),
-                                            6: (0, 2),
-                                            5: (1, 0),
-                                            4: (1, 1),
-                                            3: (1, 2),
-                                            2: (2, 0),
-                                            1: (2, 1),
-                                            0: (2, 2)})
+        confirm_coordinates(
+            initial_board,
+            {
+                8: (0, 0),
+                7: (0, 1),
+                6: (0, 2),
+                5: (1, 0),
+                4: (1, 1),
+                3: (1, 2),
+                2: (2, 0),
+                1: (2, 1),
+                0: (2, 2),
+            },
+        )
 
         # Test Game Over Logic:
         confirmGameOver(winning_board, 'current turn')
@@ -183,9 +153,7 @@ class TestGameOfFifteenBot(BotTestCase, DefaultTests):
         move3 = 'move 23'
         move4 = 'move 0'
         move5 = 'move  1  2'
-        initial_board = [[8, 7, 6],
-                         [5, 4, 3],
-                         [2, 1, 0]]
+        initial_board = [[8, 7, 6], [5, 4, 3], [2, 1, 0]]
 
         model.update_board(initial_board)
         with self.assertRaises(BadMoveException):

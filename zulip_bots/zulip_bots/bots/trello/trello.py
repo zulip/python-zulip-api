@@ -10,11 +10,12 @@ supported_commands = [
     ('get-all-boards', 'Get all the boards under the configured account.'),
     ('get-all-cards <board_id>', 'Get all the cards in the given board.'),
     ('get-all-checklists <card_id>', 'Get all the checklists in the given card.'),
-    ('get-all-lists <board_id>', 'Get all the lists in the given board.')
+    ('get-all-lists <board_id>', 'Get all the lists in the given board.'),
 ]
 
 INVALID_ARGUMENTS_ERROR_MESSAGE = 'Invalid Arguments.'
 RESPONSE_ERROR_MESSAGE = 'Invalid Response. Please check configuration and parameters.'
+
 
 class TrelloHandler:
     def initialize(self, bot_handler: BotHandler) -> None:
@@ -23,16 +24,14 @@ class TrelloHandler:
         self.access_token = self.config_info['access_token']
         self.user_name = self.config_info['user_name']
 
-        self.auth_params = {
-            'key': self.api_key,
-            'token': self.access_token
-        }
+        self.auth_params = {'key': self.api_key, 'token': self.access_token}
 
         self.check_access_token(bot_handler)
 
     def check_access_token(self, bot_handler: BotHandler) -> None:
-        test_query_response = requests.get('https://api.trello.com/1/members/{}/'.format(self.user_name),
-                                           params=self.auth_params)
+        test_query_response = requests.get(
+            'https://api.trello.com/1/members/{}/'.format(self.user_name), params=self.auth_params
+        )
 
         if test_query_response.text == 'invalid key':
             bot_handler.quit('Invalid Credentials. Please see doc.md to find out how to get them.')
@@ -97,10 +96,14 @@ class TrelloHandler:
         bot_response = []  # type: List[str]
         get_board_desc_url = 'https://api.trello.com/1/boards/{}/'
         for index, board in enumerate(boards):
-            board_desc_response = requests.get(get_board_desc_url.format(board), params=self.auth_params)
+            board_desc_response = requests.get(
+                get_board_desc_url.format(board), params=self.auth_params
+            )
 
             board_data = board_desc_response.json()
-            bot_response += ['{_count}.[{name}]({url}) (`{id}`)'.format(_count=index + 1, **board_data)]
+            bot_response += [
+                '{_count}.[{name}]({url}) (`{id}`)'.format(_count=index + 1, **board_data)
+            ]
 
         return '\n'.join(bot_response)
 
@@ -116,7 +119,9 @@ class TrelloHandler:
             cards = cards_response.json()
             bot_response = ['**Cards:**']
             for index, card in enumerate(cards):
-                bot_response += ['{_count}. [{name}]({url}) (`{id}`)'.format(_count=index + 1, **card)]
+                bot_response += [
+                    '{_count}. [{name}]({url}) (`{id}`)'.format(_count=index + 1, **card)
+                ]
 
         except (KeyError, ValueError, TypeError):
             return RESPONSE_ERROR_MESSAGE
@@ -139,7 +144,11 @@ class TrelloHandler:
 
                 if 'checkItems' in checklist:
                     for item in checklist['checkItems']:
-                        bot_response += [' * [{}] {}'.format('X' if item['state'] == 'complete' else '-', item['name'])]
+                        bot_response += [
+                            ' * [{}] {}'.format(
+                                'X' if item['state'] == 'complete' else '-', item['name']
+                            )
+                        ]
 
         except (KeyError, ValueError, TypeError):
             return RESPONSE_ERROR_MESSAGE
@@ -169,5 +178,6 @@ class TrelloHandler:
             return RESPONSE_ERROR_MESSAGE
 
         return '\n'.join(bot_response)
+
 
 handler_class = TrelloHandler

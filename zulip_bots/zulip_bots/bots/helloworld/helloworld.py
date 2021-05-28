@@ -19,8 +19,9 @@ class HelloWorldHandler:
         content = 'beep boop'  # type: str
         bot_handler.send_reply(message, content)
 
-        emoji_name = 'wave'    # type: str
+        emoji_name = 'wave'  # type: str
         bot_handler.react(message, emoji_name)
         return
+
 
 handler_class = HelloWorldHandler

@@ -26,12 +26,7 @@ class MockModel:
     def __init__(self) -> None:
         self.current_board = 'mock board'
 
-    def make_move(
-        self,
-        move: str,
-        player: int,
-        is_computer: bool = False
-    ) -> Any:
+    def make_move(self, move: str, player: int, is_computer: bool = False) -> Any:
         if not is_computer:
             if int(move.replace('move ', '')) < 9:
                 return 'mock board'
@@ -67,7 +62,7 @@ class GameHandlerBotHandler(GameAdapter):
             gameMessageHandler,
             rules,
             max_players=2,
-            supports_computer=True
+            supports_computer=True,
         )
 
 

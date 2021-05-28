@@ -10,5 +10,5 @@ config = {
         "username": "slack username",
         "token": "slack token",
         "channel": "C5Z5N7R8A -- must be channel id",
-    }
+    },
 }

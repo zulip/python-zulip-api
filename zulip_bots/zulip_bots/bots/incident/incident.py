@@ -13,8 +13,10 @@ ANSWERS = {
     '4': 'escalate',
 }
 
+
 class InvalidAnswerException(Exception):
     pass
+
 
 class IncidentHandler:
     def usage(self) -> str:
@@ -43,18 +45,20 @@ class IncidentHandler:
             bot_response = 'type "new <description>" for a new incident'
             bot_handler.send_reply(message, bot_response)
 
+
 def start_new_incident(query: str, message: Dict[str, Any], bot_handler: BotHandler) -> None:
     # Here is where we would enter the incident in some sort of backend
     # system.  We just simulate everything by having an incident id that
     # we generate here.
 
-    incident = query[len('new '):]
+    incident = query[len('new ') :]
 
     ticket_id = generate_ticket_id(bot_handler.storage)
     bot_response = format_incident_for_markdown(ticket_id, incident)
     widget_content = format_incident_for_widget(ticket_id, incident)
 
     bot_handler.send_reply(message, bot_response, widget_content)
+
 
 def parse_answer(query: str) -> Tuple[str, str]:
     m = re.match(r'answer\s+(TICKET....)\s+(.)', query)
@@ -74,6 +78,7 @@ def parse_answer(query: str) -> Tuple[str, str]:
 
     return (ticket_id, ANSWERS[answer])
 
+
 def generate_ticket_id(storage: Any) -> str:
     try:
         incident_num = storage.get('ticket_id')
@@ -84,6 +89,7 @@ def generate_ticket_id(storage: Any) -> str:
     storage.put('ticket_id', incident_num)
     ticket_id = 'TICKET%04d' % (incident_num,)
     return ticket_id
+
 
 def format_incident_for_widget(ticket_id: str, incident: Dict[str, Any]) -> str:
     widget_type = 'zform'
@@ -116,14 +122,17 @@ def format_incident_for_widget(ticket_id: str, incident: Dict[str, Any]) -> str:
     payload = json.dumps(widget_content)
     return payload
 
+
 def format_incident_for_markdown(ticket_id: str, incident: Dict[str, Any]) -> str:
-    answer_list = '\n'.join([
-        '* **{code}** {answer}'.format(
-            code=code,
-            answer=ANSWERS[code],
-        )
-        for code in '1234'
-    ])
+    answer_list = '\n'.join(
+        [
+            '* **{code}** {answer}'.format(
+                code=code,
+                answer=ANSWERS[code],
+            )
+            for code in '1234'
+        ]
+    )
     how_to_respond = '''**reply**: answer {ticket_id} <code>'''.format(ticket_id=ticket_id)
 
     content = '''
@@ -138,5 +147,6 @@ Q: {question}
         incident=incident,
     )
     return content
+
 
 handler_class = IncidentHandler

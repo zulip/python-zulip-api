@@ -7,6 +7,7 @@ from typing import Any, Optional, Text, Tuple
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
+
 def import_module_from_source(path: Text, name: Text) -> Any:
     spec = importlib.util.spec_from_file_location(name, path)
     module = importlib.util.module_from_spec(spec)
@@ -16,11 +17,13 @@ def import_module_from_source(path: Text, name: Text) -> Any:
     loader.exec_module(module)
     return module
 
+
 def import_module_by_name(name: Text) -> Any:
     try:
         return importlib.import_module(name)
     except ImportError:
         return None
+
 
 def resolve_bot_path(name: Text) -> Optional[Tuple[Path, Text]]:
     if os.path.isfile(name):

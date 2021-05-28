@@ -12,6 +12,7 @@ This bot will interact with dialogflow bots.
 Simply send this bot a message, and it will respond depending on the configured bot's behaviour.
 '''
 
+
 def get_bot_result(message_content: str, config: Dict[str, str], sender_id: str) -> str:
     if message_content.strip() == '' or message_content.strip() == 'help':
         return config['bot_info']
@@ -24,7 +25,9 @@ def get_bot_result(message_content: str, config: Dict[str, str], sender_id: str)
         res_str = response.read().decode('utf8', 'ignore')
         res_json = json.loads(res_str)
         if res_json['status']['errorType'] != 'success' and 'result' not in res_json.keys():
-            return 'Error {}: {}.'.format(res_json['status']['code'], res_json['status']['errorDetails'])
+            return 'Error {}: {}.'.format(
+                res_json['status']['code'], res_json['status']['errorDetails']
+            )
         if res_json['result']['fulfillment']['speech'] == '':
             if 'alternateResult' in res_json.keys():
                 if res_json['alternateResult']['fulfillment']['speech'] != '':
@@ -34,6 +37,7 @@ def get_bot_result(message_content: str, config: Dict[str, str], sender_id: str)
     except Exception as e:
         logging.exception(str(e))
         return 'Error. {}.'.format(str(e))
+
 
 class DialogFlowHandler:
     '''
@@ -53,5 +57,6 @@ class DialogFlowHandler:
     def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
         result = get_bot_result(message['content'], self.config_info, message['sender_id'])
         bot_handler.send_reply(message, result)
+
 
 handler_class = DialogFlowHandler

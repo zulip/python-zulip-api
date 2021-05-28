@@ -27,7 +27,9 @@ session_path = "/home/zulip/zephyr_sessions/%s" % (program_name,)
 
 try:
     if "--forward-mail-zephyrs" in open(supervisor_path).read():
-        template_data = template_data.replace("--use-sessions", "--use-sessions --forward-mail-zephyrs")
+        template_data = template_data.replace(
+            "--use-sessions", "--use-sessions --forward-mail-zephyrs"
+        )
 except Exception:
     pass
 open(supervisor_path, "w").write(template_data.replace("USERNAME", short_user))

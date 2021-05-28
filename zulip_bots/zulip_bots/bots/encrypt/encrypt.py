@@ -20,6 +20,7 @@ def encrypt(text: str) -> str:
 
     return newtext
 
+
 class EncryptHandler:
     '''
     This bot allows users to quickly encrypt messages using ROT13 encryption.
@@ -42,5 +43,6 @@ class EncryptHandler:
         temp_content = encrypt(original_content)
         send_content = "Encrypted/Decrypted text: " + temp_content
         return send_content
+
 
 handler_class = EncryptHandler

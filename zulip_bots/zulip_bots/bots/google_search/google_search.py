@@ -32,10 +32,10 @@ def google_search(keywords: str) -> List[Dict[str, str]]:
         if a.text.strip() == 'Cached' and 'webcache.googleusercontent.com' in a['href']:
             continue
         # a.text: The name of the page
-        result = {'url': "https://www.google.com{}".format(link),
-                  'name': a.text}
+        result = {'url': "https://www.google.com{}".format(link), 'name': a.text}
         results.append(result)
     return results
+
 
 def get_google_result(search_keywords: str) -> str:
     help_message = "To use this bot, start messages with @mentioned-bot, \
@@ -56,12 +56,13 @@ def get_google_result(search_keywords: str) -> str:
     else:
         try:
             results = google_search(search_keywords)
-            if (len(results) == 0):
+            if len(results) == 0:
                 return "Found no results."
             return "Found Result: [{}]({})".format(results[0]['name'], results[0]['url'])
         except Exception as e:
             logging.exception(str(e))
             return 'Error: Search failed. {}.'.format(e)
+
 
 class GoogleSearchHandler:
     '''
@@ -86,5 +87,6 @@ class GoogleSearchHandler:
         original_content = message['content']
         result = get_google_result(original_content)
         bot_handler.send_reply(message, result)
+
 
 handler_class = GoogleSearchHandler

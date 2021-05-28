@@ -6,13 +6,9 @@ from zulip_bots.game_handler import BadMoveException, GameAdapter
 
 class GameOfFifteenModel:
 
-    final_board = [[0, 1, 2],
-                   [3, 4, 5],
-                   [6, 7, 8]]
+    final_board = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
 
-    initial_board = [[8, 7, 6],
-                     [5, 4, 3],
-                     [2, 1, 0]]
+    initial_board = [[8, 7, 6], [5, 4, 3], [2, 1, 0]]
 
     def __init__(self, board: Any = None) -> None:
         if board is not None:
@@ -41,7 +37,7 @@ class GameOfFifteenModel:
     def won(self, board: Any) -> bool:
         for i in range(3):
             for j in range(3):
-                if (board[i][j] != self.final_board[i][j]):
+                if board[i][j] != self.final_board[i][j]:
                     return False
         return True
 
@@ -67,22 +63,25 @@ class GameOfFifteenModel:
             if tile not in coordinates:
                 raise BadMoveException('You can only move tiles which exist in the board.')
             i, j = coordinates[tile]
-            if (j-1) > -1 and board[i][j-1] == 0:
-                board[i][j-1] = tile
+            if (j - 1) > -1 and board[i][j - 1] == 0:
+                board[i][j - 1] = tile
                 board[i][j] = 0
-            elif (i-1) > -1 and board[i-1][j] == 0:
-                board[i-1][j] = tile
+            elif (i - 1) > -1 and board[i - 1][j] == 0:
+                board[i - 1][j] = tile
                 board[i][j] = 0
-            elif (j+1) < 3 and board[i][j+1] == 0:
-                board[i][j+1] = tile
+            elif (j + 1) < 3 and board[i][j + 1] == 0:
+                board[i][j + 1] = tile
                 board[i][j] = 0
-            elif (i+1) < 3 and board[i+1][j] == 0:
-                board[i+1][j] = tile
+            elif (i + 1) < 3 and board[i + 1][j] == 0:
+                board[i + 1][j] = tile
                 board[i][j] = 0
             else:
-                raise BadMoveException('You can only move tiles which are adjacent to :grey_question:.')
+                raise BadMoveException(
+                    'You can only move tiles which are adjacent to :grey_question:.'
+                )
             if m == moves - 1:
                 return board
+
 
 class GameOfFifteenMessageHandler:
 
@@ -113,8 +112,11 @@ class GameOfFifteenMessageHandler:
         return original_player + ' moved ' + tile
 
     def game_start_message(self) -> str:
-        return ("Welcome to Game of Fifteen!"
-                "To make a move, type @-mention `move <tile1> <tile2> ...`")
+        return (
+            "Welcome to Game of Fifteen!"
+            "To make a move, type @-mention `move <tile1> <tile2> ...`"
+        )
+
 
 class GameOfFifteenBotHandler(GameAdapter):
     '''
@@ -125,7 +127,9 @@ class GameOfFifteenBotHandler(GameAdapter):
     def __init__(self) -> None:
         game_name = 'Game of Fifteen'
         bot_name = 'Game of Fifteen'
-        move_help_message = '* To make your move during a game, type\n```move <tile1> <tile2> ...```'
+        move_help_message = (
+            '* To make your move during a game, type\n```move <tile1> <tile2> ...```'
+        )
         move_regex = r'move [\d{1}\s]+$'
         model = GameOfFifteenModel
         gameMessageHandler = GameOfFifteenMessageHandler
@@ -144,5 +148,6 @@ class GameOfFifteenBotHandler(GameAdapter):
             min_players=1,
             max_players=1,
         )
+
 
 handler_class = GameOfFifteenBotHandler

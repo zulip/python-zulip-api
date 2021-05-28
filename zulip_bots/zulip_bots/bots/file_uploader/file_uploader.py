@@ -40,4 +40,5 @@ class FileUploaderHandler:
         uploaded_file_reply = '[{}]({})'.format(path.name, upload['uri'])
         bot_handler.send_reply(message, uploaded_file_reply)
 
+
 handler_class = FileUploaderHandler

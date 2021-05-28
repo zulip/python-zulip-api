@@ -52,17 +52,21 @@ from zulip import Client
 
 __version__ = "1.1"
 
+
 def room_to_stream(room: str) -> str:
     return room + "/xmpp"
 
+
 def stream_to_room(stream: str) -> str:
     return stream.lower().rpartition("/xmpp")[0]
+
 
 def jid_to_zulip(jid: JID) -> str:
     suffix = ''
     if not jid.username.endswith("-bot"):
         suffix = options.zulip_email_suffix
     return "%s%s@%s" % (jid.username, suffix, options.zulip_domain)
+
 
 def zulip_to_jid(email: str, jabber_domain: str) -> JID:
     jid = JID(email, domain=jabber_domain)
@@ -73,6 +77,7 @@ def zulip_to_jid(email: str, jabber_domain: str) -> JID:
     ):
         jid.username = jid.username.rpartition(options.zulip_email_suffix)[0]
     return jid
+
 
 class JabberToZulipBot(ClientXMPP):
     def __init__(self, jid: JID, password: str, rooms: List[str]) -> None:
@@ -153,10 +158,10 @@ class JabberToZulipBot(ClientXMPP):
         recipient = jid_to_zulip(msg["to"])
 
         zulip_message = dict(
-            sender = sender,
-            type = "private",
-            to = recipient,
-            content = msg["body"],
+            sender=sender,
+            type="private",
+            to=recipient,
+            content=msg["body"],
         )
         ret = self.zulipToJabber.client.send_message(zulip_message)
         if ret.get("result") != "success":
@@ -178,12 +183,12 @@ class JabberToZulipBot(ClientXMPP):
         jid = self.nickname_to_jid(msg.get_mucroom(), sender_nick)
         sender = jid_to_zulip(jid)
         zulip_message = dict(
-            forged = "yes",
-            sender = sender,
-            type = "stream",
-            subject = subject,
-            to = stream,
-            content = msg["body"],
+            forged="yes",
+            sender=sender,
+            type="stream",
+            subject=subject,
+            to=stream,
+            content=msg["body"],
         )
         ret = self.zulipToJabber.client.send_message(zulip_message)
         if ret.get("result") != "success":
@@ -191,10 +196,11 @@ class JabberToZulipBot(ClientXMPP):
 
     def nickname_to_jid(self, room: str, nick: str) -> JID:
         jid = self.plugin['xep_0045'].getJidProperty(room, nick, "jid")
-        if (jid is None or jid == ''):
+        if jid is None or jid == '':
             return JID(local=nick.replace(' ', ''), domain=self.boundjid.domain)
         else:
             return jid
+
 
 class ZulipToJabberBot:
     def __init__(self, zulip_client: Client) -> None:
@@ -221,7 +227,7 @@ class ZulipToJabberBot:
             self.process_subscription(event)
 
     def stream_message(self, msg: Dict[str, str]) -> None:
-        assert(self.jabber is not None)
+        assert self.jabber is not None
         stream = msg['display_recipient']
         if not stream.endswith("/xmpp"):
             return
@@ -229,14 +235,13 @@ class ZulipToJabberBot:
         room = stream_to_room(stream)
         jabber_recipient = JID(local=room, domain=options.conference_domain)
         outgoing = self.jabber.make_message(
-            mto   = jabber_recipient,
-            mbody = msg['content'],
-            mtype = 'groupchat')
+            mto=jabber_recipient, mbody=msg['content'], mtype='groupchat'
+        )
         outgoing['thread'] = '\u1FFFE'
         outgoing.send()
 
     def private_message(self, msg: Dict[str, Any]) -> None:
-        assert(self.jabber is not None)
+        assert self.jabber is not None
         for recipient in msg['display_recipient']:
             if recipient["email"] == self.client.email:
                 continue
@@ -245,14 +250,13 @@ class ZulipToJabberBot:
             recip_email = recipient['email']
             jabber_recipient = zulip_to_jid(recip_email, self.jabber.boundjid.domain)
             outgoing = self.jabber.make_message(
-                mto   = jabber_recipient,
-                mbody = msg['content'],
-                mtype = 'chat')
+                mto=jabber_recipient, mbody=msg['content'], mtype='chat'
+            )
             outgoing['thread'] = '\u1FFFE'
             outgoing.send()
 
     def process_subscription(self, event: Dict[str, Any]) -> None:
-        assert(self.jabber is not None)
+        assert self.jabber is not None
         if event['op'] == 'add':
             streams = [s['name'].lower() for s in event['subscriptions']]
             streams = [s for s in streams if s.endswith("/xmpp")]
@@ -263,6 +267,7 @@ class ZulipToJabberBot:
             streams = [s for s in streams if s.endswith("/xmpp")]
             for stream in streams:
                 self.jabber.leave_muc(stream_to_room(stream))
+
 
 def get_rooms(zulipToJabber: ZulipToJabberBot) -> List[str]:
     def get_stream_infos(key: str, method: Callable[[], Dict[str, Any]]) -> Any:
@@ -284,9 +289,11 @@ def get_rooms(zulipToJabber: ZulipToJabberBot) -> List[str]:
             rooms.append(stream_to_room(stream))
     return rooms
 
+
 def config_error(msg: str) -> None:
     sys.stderr.write("%s\n" % (msg,))
     sys.exit(2)
+
 
 if __name__ == '__main__':
     parser = optparse.OptionParser(
@@ -294,7 +301,9 @@ if __name__ == '__main__':
 zulip configuration file under the jabber_mirror section (exceptions are noted
 in their help sections).  Keys have the same name as options with hyphens
 replaced with underscores.  Zulip configuration options go in the api section,
-as normal.'''.replace("\n", " ")
+as normal.'''.replace(
+            "\n", " "
+        )
     )
     parser.add_option(
         '--mode',
@@ -305,7 +314,10 @@ as normal.'''.replace("\n", " ")
 all messages they send on Zulip to Jabber and all private Jabber messages to
 Zulip.  In "public" mode, the mirror uses the credentials for a dedicated mirror
 user and mirrors messages sent to Jabber rooms to Zulip.  Defaults to
-"personal"'''.replace("\n", " "))
+"personal"'''.replace(
+            "\n", " "
+        ),
+    )
     parser.add_option(
         '--zulip-email-suffix',
         default=None,
@@ -315,13 +327,19 @@ from JIDs and nicks before sending requests to the Zulip server, and remove the
 suffix before sending requests to the Jabber server.  For example, specifying
 "+foo" will cause messages that are sent to the "bar" room by nickname "qux" to
 be mirrored to the "bar/xmpp" stream in Zulip by user "qux+foo@example.com". This
-option does not affect login credentials.'''.replace("\n", " "))
-    parser.add_option('-d', '--debug',
-                      help='set logging to DEBUG.  Can not be set via config file.',
-                      action='store_const',
-                      dest='log_level',
-                      const=logging.DEBUG,
-                      default=logging.INFO)
+option does not affect login credentials.'''.replace(
+            "\n", " "
+        ),
+    )
+    parser.add_option(
+        '-d',
+        '--debug',
+        help='set logging to DEBUG.  Can not be set via config file.',
+        action='store_const',
+        dest='log_level',
+        const=logging.DEBUG,
+        default=logging.INFO,
+    )
 
     jabber_group = optparse.OptionGroup(parser, "Jabber configuration")
     jabber_group.add_option(
@@ -329,39 +347,42 @@ option does not affect login credentials.'''.replace("\n", " "))
         default=None,
         action='store',
         help="Your Jabber JID.  If a resource is specified, "
-             "it will be used as the nickname when joining MUCs.  "
-             "Specifying the nickname is mostly useful if you want "
-             "to run the public mirror from a regular user instead of "
-             "from a dedicated account.")
-    jabber_group.add_option('--jabber-password',
-                            default=None,
-                            action='store',
-                            help="Your Jabber password")
-    jabber_group.add_option('--conference-domain',
-                            default=None,
-                            action='store',
-                            help="Your Jabber conference domain (E.g. conference.jabber.example.com).  "
-                                 "If not specifed, \"conference.\" will be prepended to your JID's domain.")
-    jabber_group.add_option('--no-use-tls',
-                            default=None,
-                            action='store_true')
-    jabber_group.add_option('--jabber-server-address',
-                            default=None,
-                            action='store',
-                            help="The hostname of your Jabber server. This is only needed if "
-                            "your server is missing SRV records")
-    jabber_group.add_option('--jabber-server-port',
-                            default='5222',
-                            action='store',
-                            help="The port of your Jabber server. This is only needed if "
-                            "your server is missing SRV records")
+        "it will be used as the nickname when joining MUCs.  "
+        "Specifying the nickname is mostly useful if you want "
+        "to run the public mirror from a regular user instead of "
+        "from a dedicated account.",
+    )
+    jabber_group.add_option(
+        '--jabber-password', default=None, action='store', help="Your Jabber password"
+    )
+    jabber_group.add_option(
+        '--conference-domain',
+        default=None,
+        action='store',
+        help="Your Jabber conference domain (E.g. conference.jabber.example.com).  "
+        "If not specifed, \"conference.\" will be prepended to your JID's domain.",
+    )
+    jabber_group.add_option('--no-use-tls', default=None, action='store_true')
+    jabber_group.add_option(
+        '--jabber-server-address',
+        default=None,
+        action='store',
+        help="The hostname of your Jabber server. This is only needed if "
+        "your server is missing SRV records",
+    )
+    jabber_group.add_option(
+        '--jabber-server-port',
+        default='5222',
+        action='store',
+        help="The port of your Jabber server. This is only needed if "
+        "your server is missing SRV records",
+    )
 
     parser.add_option_group(jabber_group)
     parser.add_option_group(zulip.generate_option_group(parser, "zulip-"))
     (options, args) = parser.parse_args()
 
-    logging.basicConfig(level=options.log_level,
-                        format='%(levelname)-8s %(message)s')
+    logging.basicConfig(level=options.log_level, format='%(levelname)-8s %(message)s')
 
     if options.zulip_config_file is None:
         default_config_file = zulip.get_default_config_filename()
@@ -378,12 +399,16 @@ option does not affect login credentials.'''.replace("\n", " "))
             config.readfp(f, config_file)
     except OSError:
         pass
-    for option in ("jid", "jabber_password", "conference_domain", "mode", "zulip_email_suffix",
-                   "jabber_server_address", "jabber_server_port"):
-        if (
-            getattr(options, option) is None
-            and config.has_option("jabber_mirror", option)
-        ):
+    for option in (
+        "jid",
+        "jabber_password",
+        "conference_domain",
+        "mode",
+        "zulip_email_suffix",
+        "jabber_server_address",
+        "jabber_server_port",
+    ):
+        if getattr(options, option) is None and config.has_option("jabber_mirror", option):
             setattr(options, option, config.get("jabber_mirror", option))
 
     for option in ("no_use_tls",):
@@ -403,10 +428,14 @@ option does not affect login credentials.'''.replace("\n", " "))
         config_error("Bad value for --mode: must be one of 'public' or 'personal'")
 
     if None in (options.jid, options.jabber_password):
-        config_error("You must specify your Jabber JID and Jabber password either "
-                     "in the Zulip configuration file or on the commandline")
+        config_error(
+            "You must specify your Jabber JID and Jabber password either "
+            "in the Zulip configuration file or on the commandline"
+        )
 
-    zulipToJabber = ZulipToJabberBot(zulip.init_from_options(options, "JabberMirror/" + __version__))
+    zulipToJabber = ZulipToJabberBot(
+        zulip.init_from_options(options, "JabberMirror/" + __version__)
+    )
     # This won't work for open realms that don't have a consistent domain
     options.zulip_domain = zulipToJabber.client.email.partition('@')[-1]
 
@@ -438,8 +467,9 @@ option does not affect login credentials.'''.replace("\n", " "))
 
     try:
         logging.info("Connecting to Zulip.")
-        zulipToJabber.client.call_on_each_event(zulipToJabber.process_event,
-                                                event_types=event_types)
+        zulipToJabber.client.call_on_each_event(
+            zulipToJabber.process_event, event_types=event_types
+        )
     except BaseException:
         logging.exception("Exception in main loop")
         xmpp.abort()

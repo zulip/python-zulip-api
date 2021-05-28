@@ -20,5 +20,4 @@ options = parser.parse_args()
 
 client = zulip.init_from_options(options)
 
-print(client.add_subscriptions([{"name": stream_name} for stream_name in
-                                options.streams.split()]))
+print(client.add_subscriptions([{"name": stream_name} for stream_name in options.streams.split()]))

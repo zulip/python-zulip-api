@@ -19,6 +19,7 @@ class GiphyHandler:
     and responds with a message with the GIF based on provided keywords.
     It also responds to private messages.
     """
+
     def usage(self) -> str:
         return '''
             This plugin allows users to post GIFs provided by Giphy.
@@ -28,8 +29,7 @@ class GiphyHandler:
 
     @staticmethod
     def validate_config(config_info: Dict[str, str]) -> None:
-        query = {'s': 'Hello',
-                 'api_key': config_info['key']}
+        query = {'s': 'Hello', 'api_key': config_info['key']}
         try:
             data = requests.get(GIPHY_TRANSLATE_API, params=query)
             data.raise_for_status()
@@ -38,19 +38,17 @@ class GiphyHandler:
         except HTTPError as e:
             error_message = str(e)
             if data.status_code == 403:
-                error_message += ('This is likely due to an invalid key.\n'
-                                  'Follow the instructions in doc.md for setting an API key.')
+                error_message += (
+                    'This is likely due to an invalid key.\n'
+                    'Follow the instructions in doc.md for setting an API key.'
+                )
             raise ConfigValidationError(error_message)
 
     def initialize(self, bot_handler: BotHandler) -> None:
         self.config_info = bot_handler.get_config_info('giphy')
 
     def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
-        bot_response = get_bot_giphy_response(
-            message,
-            bot_handler,
-            self.config_info
-        )
+        bot_response = get_bot_giphy_response(message, bot_handler, self.config_info)
         bot_handler.send_reply(message, bot_response)
 
 
@@ -83,21 +81,26 @@ def get_url_gif_giphy(keyword: str, api_key: str) -> Union[int, str]:
     return gif_url
 
 
-def get_bot_giphy_response(message: Dict[str, str], bot_handler: BotHandler, config_info: Dict[str, str]) -> str:
+def get_bot_giphy_response(
+    message: Dict[str, str], bot_handler: BotHandler, config_info: Dict[str, str]
+) -> str:
     # Each exception has a specific reply should "gif_url" return a number.
     # The bot will post the appropriate message for the error.
     keyword = message['content']
     try:
         gif_url = get_url_gif_giphy(keyword, config_info['key'])
     except requests.exceptions.ConnectionError:
-        return ('Uh oh, sorry :slightly_frowning_face:, I '
-                'cannot process your request right now. But, '
-                'let\'s try again later! :grin:')
+        return (
+            'Uh oh, sorry :slightly_frowning_face:, I '
+            'cannot process your request right now. But, '
+            'let\'s try again later! :grin:'
+        )
     except GiphyNoResultException:
-        return ('Sorry, I don\'t have a GIF for "%s"! '
-                ':astonished:' % (keyword,))
-    return ('[Click to enlarge](%s)'
-            '[](/static/images/interactive-bot/giphy/powered-by-giphy.png)'
-            % (gif_url,))
+        return 'Sorry, I don\'t have a GIF for "%s"! ' ':astonished:' % (keyword,)
+    return (
+        '[Click to enlarge](%s)'
+        '[](/static/images/interactive-bot/giphy/powered-by-giphy.png)' % (gif_url,)
+    )
+
 
 handler_class = GiphyHandler
