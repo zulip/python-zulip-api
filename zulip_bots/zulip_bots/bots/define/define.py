@@ -51,7 +51,7 @@ class DefineHandler:
         if not to_define_lower:
             return self.EMPTY_WORD_REQUEST_ERROR_MESSAGE
         else:
-            response = "**{}**:\n".format(to_define)
+            response = f"**{to_define}**:\n"
 
             try:
                 # Use OwlBot API to fetch definition.

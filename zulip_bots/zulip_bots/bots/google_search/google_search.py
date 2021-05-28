@@ -32,7 +32,7 @@ def google_search(keywords: str) -> List[Dict[str, str]]:
         if a.text.strip() == "Cached" and "webcache.googleusercontent.com" in a["href"]:
             continue
         # a.text: The name of the page
-        result = {"url": "https://www.google.com{}".format(link), "name": a.text}
+        result = {"url": f"https://www.google.com{link}", "name": a.text}
         results.append(result)
     return results
 
@@ -61,7 +61,7 @@ def get_google_result(search_keywords: str) -> str:
             return "Found Result: [{}]({})".format(results[0]["name"], results[0]["url"])
         except Exception as e:
             logging.exception(str(e))
-            return "Error: Search failed. {}.".format(e)
+            return f"Error: Search failed. {e}."
 
 
 class GoogleSearchHandler:

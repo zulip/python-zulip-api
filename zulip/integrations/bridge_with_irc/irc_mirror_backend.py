@@ -46,7 +46,7 @@ class IRCBot(irc.bot.SingleServerIRCBot):
     def check_subscription_or_die(self) -> None:
         resp = self.zulip_client.get_subscriptions()
         if resp["result"] != "success":
-            print("ERROR: %s" % (resp["msg"],))
+            print("ERROR: {}".format(resp["msg"]))
             exit(1)
         subs = [s["name"] for s in resp["subscriptions"]]
         if self.stream not in subs:
@@ -61,7 +61,7 @@ class IRCBot(irc.bot.SingleServerIRCBot):
 
     def on_welcome(self, c: ServerConnection, e: Event) -> None:
         if len(self.nickserv_password) > 0:
-            msg = "identify %s" % (self.nickserv_password,)
+            msg = f"identify {self.nickserv_password}"
             c.privmsg("NickServ", msg)
         c.join(self.channel)
 
@@ -75,7 +75,7 @@ class IRCBot(irc.bot.SingleServerIRCBot):
                 in_the_specified_stream = msg["display_recipient"] == self.stream
                 at_the_specified_subject = msg["subject"].casefold() == self.topic.casefold()
                 if in_the_specified_stream and at_the_specified_subject:
-                    msg["content"] = ("@**%s**: " % (msg["sender_full_name"],)) + msg["content"]
+                    msg["content"] = ("@**{}**: ".format(msg["sender_full_name"])) + msg["content"]
                     send = lambda x: self.c.privmsg(self.channel, x)
                 else:
                     return
@@ -126,7 +126,7 @@ class IRCBot(irc.bot.SingleServerIRCBot):
                     "type": "stream",
                     "to": self.stream,
                     "subject": self.topic,
-                    "content": "**{}**: {}".format(sender, content),
+                    "content": f"**{sender}**: {content}",
                 }
             )
         )

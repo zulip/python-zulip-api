@@ -57,17 +57,17 @@ def format_result(
         output += "**[{}]({}{})**\n".format(record["Name"], login_url, record["Id"])
         for key, value in record.items():
             if key not in exclude_keys:
-                output += ">**{}**: {}\n".format(key, value)
+                output += f">**{key}**: {value}\n"
     else:
         for i, record in enumerate(result["records"]):
             if rank_output:
-                output += "{}) ".format(i + 1)
+                output += f"{i + 1}) "
             output += "**[{}]({}{})**\n".format(record["Name"], login_url, record["Id"])
             added_keys = False
             for key, value in record.items():
                 if key in force_keys or (show_all_keys and key not in exclude_keys):
                     added_keys = True
-                    output += ">**{}**: {}\n".format(key, value)
+                    output += f">**{key}**: {value}\n"
             if added_keys:
                 output += "\n"
     return output
@@ -88,7 +88,7 @@ def query_salesforce(
     limit = re_limit.search(raw_arg)
     if limit:
         limit_num = int(limit.group().rsplit(" ", 1)[1])
-        logging.info("Searching with limit {}".format(limit_num))
+        logging.info(f"Searching with limit {limit_num}")
     query = default_query
     if "query" in command.keys():
         query = command["query"]
@@ -170,14 +170,14 @@ class SalesforceHandler:
                 security_token=self.config_info["security_token"],
             )
         except simple_salesforce.exceptions.SalesforceAuthenticationFailed as err:
-            bot_handler.quit("Failed to log in to Salesforce. {} {}".format(err.code, err.message))
+            bot_handler.quit(f"Failed to log in to Salesforce. {err.code} {err.message}")
 
     def handle_message(self, message: Dict[str, Any], bot_handler: BotHandler) -> None:
         try:
             bot_response = self.get_salesforce_response(message["content"])
             bot_handler.send_reply(message, bot_response)
         except Exception as e:
-            bot_handler.send_reply(message, "Error. {}.".format(e), bot_response)
+            bot_handler.send_reply(message, f"Error. {e}.", bot_response)
 
 
 handler_class = SalesforceHandler

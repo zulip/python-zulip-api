@@ -130,7 +130,7 @@ def get_bot_response(
         ).strip()
 
     for title, id in video_list:
-        reply = reply + "\n * %s - [Watch now](https://www.youtube.com/watch/%s)" % (title, id)
+        reply = reply + f"\n * {title} - [Watch now](https://www.youtube.com/watch/{id})"
     # Using link https://www.youtube.com/watch/<id> to
     # prevent showing multiple previews
     return reply

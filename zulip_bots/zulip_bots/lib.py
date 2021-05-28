@@ -139,13 +139,13 @@ class StateHandler:
         self._client = client
         self.marshal = lambda obj: json.dumps(obj)
         self.demarshal = lambda obj: json.loads(obj)
-        self.state_ = dict()
+        self.state_: Dict[str, Any] = dict()
 
     def put(self, key: str, value: Any) -> None:
         self.state_[key] = self.marshal(value)
         response = self._client.update_storage({"storage": {key: self.state_[key]}})
         if response["result"] != "success":
-            raise StateHandlerError("Error updating state: {}".format(str(response)))
+            raise StateHandlerError(f"Error updating state: {str(response)}")
 
     def get(self, key: str) -> Any:
         if key in self.state_:
@@ -423,8 +423,8 @@ def is_private_message_but_not_group_pm(
 
 def display_config_file_errors(error_msg: str, config_file: str) -> None:
     file_contents = open(config_file).read()
-    print("\nERROR: {} seems to be broken:\n\n{}".format(config_file, file_contents))
-    print("\nMore details here:\n\n{}\n".format(error_msg))
+    print(f"\nERROR: {config_file} seems to be broken:\n\n{file_contents}")
+    print(f"\nMore details here:\n\n{error_msg}\n")
 
 
 def prepare_message_handler(bot: str, bot_handler: BotHandler, bot_lib_module: Any) -> Any:
@@ -459,7 +459,7 @@ def run_message_handler_for_bot(
     bot_details.update(getattr(lib_module.handler_class, "META", {}))
     # Make sure you set up your ~/.zuliprc
 
-    client_name = "Zulip{}Bot".format(bot_name.capitalize())
+    client_name = f"Zulip{bot_name.capitalize()}Bot"
 
     try:
         client = Client(config_file=config_file, client=client_name)
@@ -479,9 +479,7 @@ def run_message_handler_for_bot(
         if hasattr(message_handler, "usage"):
             print(message_handler.usage())
         else:
-            print(
-                "WARNING: {} is missing usage handler, please add one eventually".format(bot_name)
-            )
+            print(f"WARNING: {bot_name} is missing usage handler, please add one eventually")
 
     def handle_message(message: Dict[str, Any], flags: List[str]) -> None:
         logging.info("waiting for next message")

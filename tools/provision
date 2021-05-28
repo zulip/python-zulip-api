@@ -41,7 +41,7 @@ the Python version this command is executed with."""
     # The output has the format "Python 1.2.3"
     py_version_list = py_version_output.split()[1].split(".")
     py_version = tuple(int(num) for num in py_version_list[0:2])
-    venv_name = "zulip-api-py{}-venv".format(py_version[0])
+    venv_name = f"zulip-api-py{py_version[0]}-venv"
 
     if py_version <= (3, 1) and (not options.force):
         print(

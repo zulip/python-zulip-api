@@ -30,7 +30,7 @@ class TrelloHandler:
 
     def check_access_token(self, bot_handler: BotHandler) -> None:
         test_query_response = requests.get(
-            "https://api.trello.com/1/members/{}/".format(self.user_name), params=self.auth_params
+            f"https://api.trello.com/1/members/{self.user_name}/", params=self.auth_params
         )
 
         if test_query_response.text == "invalid key":
@@ -75,12 +75,12 @@ class TrelloHandler:
     def get_all_supported_commands(self) -> str:
         bot_response = "**Commands:** \n"
         for index, (command, desc) in enumerate(supported_commands):
-            bot_response += "{}. **{}**: {}\n".format(index + 1, command, desc)
+            bot_response += f"{index + 1}. **{command}**: {desc}\n"
 
         return bot_response
 
     def get_all_boards(self) -> str:
-        get_board_ids_url = "https://api.trello.com/1/members/{}/".format(self.user_name)
+        get_board_ids_url = f"https://api.trello.com/1/members/{self.user_name}/"
         board_ids_response = requests.get(get_board_ids_url, params=self.auth_params)
 
         try:
@@ -112,7 +112,7 @@ class TrelloHandler:
             return INVALID_ARGUMENTS_ERROR_MESSAGE
 
         board_id = content[1]
-        get_cards_url = "https://api.trello.com/1/boards/{}/cards".format(board_id)
+        get_cards_url = f"https://api.trello.com/1/boards/{board_id}/cards"
         cards_response = requests.get(get_cards_url, params=self.auth_params)
 
         try:
@@ -133,7 +133,7 @@ class TrelloHandler:
             return INVALID_ARGUMENTS_ERROR_MESSAGE
 
         card_id = content[1]
-        get_checklists_url = "https://api.trello.com/1/cards/{}/checklists/".format(card_id)
+        get_checklists_url = f"https://api.trello.com/1/cards/{card_id}/checklists/"
         checklists_response = requests.get(get_checklists_url, params=self.auth_params)
 
         try:
@@ -160,7 +160,7 @@ class TrelloHandler:
             return INVALID_ARGUMENTS_ERROR_MESSAGE
 
         board_id = content[1]
-        get_lists_url = "https://api.trello.com/1/boards/{}/lists".format(board_id)
+        get_lists_url = f"https://api.trello.com/1/boards/{board_id}/lists"
         lists_response = requests.get(get_lists_url, params=self.auth_params)
 
         try:

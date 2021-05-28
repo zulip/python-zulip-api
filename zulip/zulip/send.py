@@ -22,7 +22,7 @@ def do_send_message(client: zulip.Client, message_data: Dict[str, Any]) -> bool:
             % (message_data["to"], message_data["subject"])
         )
     else:
-        log.info("Sending message to %s... " % (message_data["to"],))
+        log.info("Sending message to {}... ".format(message_data["to"]))
     response = client.send_message(message_data)
     if response["result"] == "success":
         log.info("Message sent.")

@@ -31,14 +31,14 @@ def pack(options: argparse.Namespace) -> None:
         print("tools/deploy: No main bot file specified.")
         sys.exit(1)
     if not os.path.isfile(options.config):
-        print("pack: Config file not found at path: {}.".format(options.config))
+        print(f"pack: Config file not found at path: {options.config}.")
         sys.exit(1)
     if not os.path.isdir(options.path):
-        print("pack: Bot folder not found at path: {}.".format(options.path))
+        print(f"pack: Bot folder not found at path: {options.path}.")
         sys.exit(1)
     main_path = os.path.join(options.path, options.main)
     if not os.path.isfile(main_path):
-        print("pack: Bot main file not found at path: {}.".format(main_path))
+        print(f"pack: Bot main file not found at path: {main_path}.")
         sys.exit(1)
 
     # Main logic for packing the bot.
@@ -65,7 +65,7 @@ def pack(options: argparse.Namespace) -> None:
     )
     zip_file.writestr("config.ini", bot_config)
     zip_file.close()
-    print("pack: Created zip file at: {}.".format(zip_file_path))
+    print(f"pack: Created zip file at: {zip_file_path}.")
 
 
 def check_common_options(options: argparse.Namespace) -> None:
@@ -83,7 +83,7 @@ def handle_common_response_without_data(
     return handle_common_response(
         response=response,
         operation=operation,
-        success_handler=lambda r: print("{}: {}".format(operation, success_message)),
+        success_handler=lambda r: print(f"{operation}: {success_message}"),
     )
 
 
@@ -99,12 +99,12 @@ def handle_common_response(
             print("{}: {}".format(operation, response_data["message"]))
             return False
         else:
-            print("{}: Unexpected success response format".format(operation))
+            print(f"{operation}: Unexpected success response format")
             return False
     if response.status_code == requests.codes.unauthorized:
-        print("{}: Authentication error with the server. Aborting.".format(operation))
+        print(f"{operation}: Authentication error with the server. Aborting.")
     else:
-        print("{}: Error {}. Aborting.".format(operation, response.status_code))
+        print(f"{operation}: Error {response.status_code}. Aborting.")
     return False
 
 
@@ -112,7 +112,7 @@ def upload(options: argparse.Namespace) -> None:
     check_common_options(options)
     file_path = os.path.join(bots_dir, options.botname + ".zip")
     if not os.path.exists(file_path):
-        print("upload: Could not find bot package at {}.".format(file_path))
+        print(f"upload: Could not find bot package at {file_path}.")
         sys.exit(1)
     files = {"file": open(file_path, "rb")}
     headers = {"key": options.token}
@@ -129,9 +129,9 @@ def clean(options: argparse.Namespace) -> None:
     file_path = os.path.join(bots_dir, options.botname + ".zip")
     if os.path.exists(file_path):
         os.remove(file_path)
-        print("clean: Removed {}.".format(file_path))
+        print(f"clean: Removed {file_path}.")
     else:
-        print("clean: File '{}' not found.".format(file_path))
+        print(f"clean: File '{file_path}' not found.")
 
 
 def process(options: argparse.Namespace) -> None:
@@ -341,7 +341,7 @@ To list user's bots, use:
     if options.command in commands:
         commands[options.command](options)
     else:
-        print("tools/deploy: No command '{}' found.".format(options.command))
+        print(f"tools/deploy: No command '{options.command}' found.")
 
 
 if __name__ == "__main__":

@@ -25,7 +25,7 @@ class VirtualFsHandler:
 
         recipient = message["display_recipient"]
         if isinstance(recipient, list):  # If not a stream, then hash on list of emails
-            recipient = " ".join([x["email"] for x in recipient])
+            recipient = " ".join(x["email"] for x in recipient)
 
         storage = bot_handler.storage
         if not storage.contains(recipient):
@@ -34,7 +34,7 @@ class VirtualFsHandler:
         if sender not in fs["user_paths"]:
             fs["user_paths"][sender] = "/"
         fs, msg = fs_command(fs, sender, command)
-        prependix = "{}:\n".format(sender)
+        prependix = f"{sender}:\n"
         msg = prependix + msg
         storage.put(recipient, fs)
 
@@ -170,7 +170,7 @@ def syntax_help(cmd_name: str) -> str:
         cmd = cmd_name + " " + arg_syntax
     else:
         cmd = cmd_name
-    return "syntax: {}".format(cmd)
+    return f"syntax: {cmd}"
 
 
 def fs_new() -> Dict[str, Any]:
@@ -190,7 +190,7 @@ def fs_mkdir(fs: Dict[str, Any], user: str, fn: str) -> Tuple[Dict[str, Any], An
         return fs, "ERROR: file already exists"
     dir_path = os.path.dirname(path)
     if not is_directory(fs, dir_path):
-        msg = "ERROR: {} is not a directory".format(dir_path)
+        msg = f"ERROR: {dir_path} is not a directory"
         return fs, msg
     new_fs = fs.copy()
     new_dir = directory({path}.union(fs[dir_path]["fns"]))
@@ -211,7 +211,7 @@ def fs_ls(fs: Dict[str, Any], user: str, fn: str) -> Tuple[Dict[str, Any], Any]:
         msg = "ERROR: file does not exist"
         return fs, msg
     if not is_directory(fs, path):
-        return fs, "ERROR: {} is not a directory".format(path)
+        return fs, f"ERROR: {path} is not a directory"
     fns = fs[path]["fns"]
     if not fns:
         return fs, "WARNING: directory is empty"
@@ -233,7 +233,7 @@ def fs_rm(fs: Dict[str, Any], user: str, fn: str) -> Tuple[Dict[str, Any], Any]:
         msg = "ERROR: file does not exist"
         return fs, msg
     if fs[path]["kind"] == "dir":
-        msg = "ERROR: {} is a directory, file required".format(nice_path(fs, path))
+        msg = f"ERROR: {nice_path(fs, path)} is a directory, file required"
         return fs, msg
     new_fs = fs.copy()
     new_fs.pop(path)
@@ -251,7 +251,7 @@ def fs_rmdir(fs: Dict[str, Any], user: str, fn: str) -> Tuple[Dict[str, Any], An
         msg = "ERROR: directory does not exist"
         return fs, msg
     if fs[path]["kind"] == "text":
-        msg = "ERROR: {} is a file, directory required".format(nice_path(fs, path))
+        msg = f"ERROR: {nice_path(fs, path)} is a file, directory required"
         return fs, msg
     new_fs = fs.copy()
     new_fs.pop(path)
@@ -273,7 +273,7 @@ def fs_write(fs: Dict[str, Any], user: str, fn: str, content: str) -> Tuple[Dict
         return fs, msg
     dir_path = os.path.dirname(path)
     if not is_directory(fs, dir_path):
-        msg = "ERROR: {} is not a directory".format(dir_path)
+        msg = f"ERROR: {dir_path} is not a directory"
         return fs, msg
     new_fs = fs.copy()
     new_dir = directory({path}.union(fs[dir_path]["fns"]))
@@ -291,7 +291,7 @@ def fs_read(fs: Dict[str, Any], user: str, fn: str) -> Tuple[Dict[str, Any], Any
         msg = "ERROR: file does not exist"
         return fs, msg
     if fs[path]["kind"] == "dir":
-        msg = "ERROR: {} is a directory, file required".format(nice_path(fs, path))
+        msg = f"ERROR: {nice_path(fs, path)} is a directory, file required"
         return fs, msg
     val = fs[path]["content"]
     return fs, val
@@ -305,17 +305,17 @@ def fs_cd(fs: Dict[str, Any], user: str, fn: str) -> Tuple[Dict[str, Any], Any]:
         msg = "ERROR: invalid path"
         return fs, msg
     if fs[path]["kind"] == "text":
-        msg = "ERROR: {} is a file, directory required".format(nice_path(fs, path))
+        msg = f"ERROR: {nice_path(fs, path)} is a file, directory required"
         return fs, msg
     fs["user_paths"][user] = path
-    return fs, "Current path: {}".format(nice_path(fs, path))
+    return fs, f"Current path: {nice_path(fs, path)}"
 
 
 def make_path(fs: Dict[str, Any], user: str, leaf: str) -> List[str]:
     if leaf == "/":
         return ["/", ""]
     if leaf.endswith("/"):
-        return ["", "ERROR: {} is not a valid name".format(leaf)]
+        return ["", f"ERROR: {leaf} is not a valid name"]
     if leaf.startswith("/"):
         return [leaf, ""]
     path = fs["user_paths"][user]
@@ -331,9 +331,9 @@ def nice_path(fs: Dict[str, Any], path: str) -> str:
     if path not in fs:
         return "ERROR: the current directory does not exist"
     if fs[path]["kind"] == "text":
-        path_nice = "{}*{}*".format(path[: slash + 1], path[slash + 1 :])
+        path_nice = f"{path[: slash + 1]}*{path[slash + 1 :]}*"
     elif path != "/":
-        path_nice = "{}/".format(path)
+        path_nice = f"{path}/"
     return path_nice
 
 

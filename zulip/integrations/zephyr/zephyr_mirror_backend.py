@@ -54,7 +54,7 @@ def to_zephyr_username(zulip_username: str) -> str:
         return user.lower() + "@ATHENA.MIT.EDU"
     match_user = re.match(r"([a-zA-Z0-9_]+)\|(.+)", user)
     if not match_user:
-        raise Exception("Could not parse Zephyr realm for cross-realm user %s" % (zulip_username,))
+        raise Exception(f"Could not parse Zephyr realm for cross-realm user {zulip_username}")
     return match_user.group(1).lower() + "@" + match_user.group(2).upper()
 
 
@@ -134,10 +134,10 @@ def send_zulip(zeph: ZephyrDict) -> Dict[str, Any]:
         # Forward messages sent to -c foo -i bar to stream bar subject "instance"
         if zeph["stream"] == "message":
             message["to"] = zeph["subject"].lower()
-            message["subject"] = "instance %s" % (zeph["subject"],)
+            message["subject"] = "instance {}".format(zeph["subject"])
         elif zeph["stream"] == "tabbott-test5":
             message["to"] = zeph["subject"].lower()
-            message["subject"] = "test instance %s" % (zeph["subject"],)
+            message["subject"] = "test instance {}".format(zeph["subject"])
         else:
             message["to"] = zeph["stream"]
     else:
@@ -145,7 +145,7 @@ def send_zulip(zeph: ZephyrDict) -> Dict[str, Any]:
     message["content"] = unwrap_lines(zeph["content"])
 
     if options.test_mode and options.site == DEFAULT_SITE:
-        logger.debug("Message is: %s" % (str(message),))
+        logger.debug(f"Message is: {str(message)}")
         return {"result": "success"}
 
     return zulip_client.send_message(message)
@@ -174,7 +174,7 @@ def zephyr_bulk_subscribe(subs: List[Tuple[str, str, str]]) -> None:
         # retrying the next time the bot checks its subscriptions are
         # up to date.
         logger.exception("Error subscribing to streams (will retry automatically):")
-        logger.warning("Streams were: %s" % ([cls for cls, instance, recipient in subs],))
+        logger.warning(f"Streams were: {[cls for cls, instance, recipient in subs]}")
         return
     try:
         actual_zephyr_subs = [cls for (cls, _, _) in zephyr._z.getSubscriptions()]
@@ -186,7 +186,7 @@ def zephyr_bulk_subscribe(subs: List[Tuple[str, str, str]]) -> None:
         return
     for (cls, instance, recipient) in subs:
         if cls not in actual_zephyr_subs:
-            logger.error("Zephyr failed to subscribe us to %s; will retry" % (cls,))
+            logger.error(f"Zephyr failed to subscribe us to {cls}; will retry")
             try:
                 # We'll retry automatically when we next check for
                 # streams to subscribe to (within 15 seconds), but
@@ -317,7 +317,7 @@ def parse_zephyr_body(zephyr_data: str, notice_format: str) -> Tuple[str, str]:
             # Logic based off of owl_zephyr_get_message in barnowl
             fields = body.split("\x00")
             if len(fields) == 5:
-                body = "New transaction [%s] entered in %s\nFrom: %s (%s)\nSubject: %s" % (
+                body = "New transaction [{}] entered in {}\nFrom: {} ({})\nSubject: {}".format(
                     fields[0],
                     fields[1],
                     fields[2],
@@ -419,7 +419,7 @@ def process_notice(notice: "zephyr.ZNotice", log: Optional[IO[str]]) -> None:
     if is_personal and not options.forward_personals:
         return
     if (zephyr_class not in current_zephyr_subs) and not is_personal:
-        logger.debug("Skipping ... %s/%s/%s" % (zephyr_class, notice.instance, is_personal))
+        logger.debug(f"Skipping ... {zephyr_class}/{notice.instance}/{is_personal}")
         return
     if notice.format.startswith("Zephyr error: See") or notice.format.endswith("@(@color(blue))"):
         logger.debug("Skipping message we got from Zulip!")
@@ -471,23 +471,21 @@ def process_notice(notice: "zephyr.ZNotice", log: Optional[IO[str]]) -> None:
         if notice.instance.strip() != "":
             zeph["subject"] = notice.instance
         else:
-            zeph["subject"] = '(instance "%s")' % (notice.instance,)
+            zeph["subject"] = f'(instance "{notice.instance}")'
 
     # Add instances in for instanced personals
     if is_personal:
         if notice.cls.lower() != "message" and notice.instance.lower != "personal":
-            heading = "[-c %s -i %s]\n" % (notice.cls, notice.instance)
+            heading = f"[-c {notice.cls} -i {notice.instance}]\n"
         elif notice.cls.lower() != "message":
-            heading = "[-c %s]\n" % (notice.cls,)
+            heading = f"[-c {notice.cls}]\n"
         elif notice.instance.lower() != "personal":
-            heading = "[-i %s]\n" % (notice.instance,)
+            heading = f"[-i {notice.instance}]\n"
         else:
             heading = ""
         zeph["content"] = heading + zeph["content"]
 
-    logger.info(
-        "Received a message on %s/%s from %s..." % (zephyr_class, notice.instance, notice.sender)
-    )
+    logger.info(f"Received a message on {zephyr_class}/{notice.instance} from {notice.sender}...")
     if log is not None:
         log.write(json.dumps(zeph) + "\n")
         log.flush()
@@ -499,7 +497,7 @@ def process_notice(notice: "zephyr.ZNotice", log: Optional[IO[str]]) -> None:
         try:
             res = send_zulip(zeph)
             if res.get("result") != "success":
-                logger.error("Error relaying zephyr:\n%s\n%s" % (zeph, res))
+                logger.error(f"Error relaying zephyr:\n{zeph}\n{res}")
         except Exception:
             logger.exception("Error relaying zephyr:")
         finally:
@@ -630,7 +628,7 @@ def send_zephyr(zwrite_args: List[str], content: str) -> Tuple[int, str]:
             logger.info("stdout: " + stdout)
     elif stderr:
         logger.warning(
-            "zwrite command '%s' printed the following warning:" % (" ".join(zwrite_args),)
+            "zwrite command '{}' printed the following warning:".format(" ".join(zwrite_args))
         )
     if stderr:
         logger.warning("stderr: " + stderr)
@@ -712,7 +710,7 @@ Feedback button or at support@zulip.com."""
             # Forward messages sent to '(instance "WHITESPACE")' back to the
             # appropriate WHITESPACE instance for bidirectional mirroring
             instance = match_whitespace_instance.group(1)
-        elif instance == "instance %s" % (zephyr_class,) or instance == "test instance %s" % (
+        elif instance == f"instance {zephyr_class}" or instance == "test instance {}".format(
             zephyr_class,
         ):
             # Forward messages to e.g. -c -i white-magic back from the
@@ -724,7 +722,7 @@ Feedback button or at support@zulip.com."""
                 instance = zephyr_class
                 zephyr_class = "message"
         zwrite_args.extend(["-c", zephyr_class, "-i", instance])
-        logger.info("Forwarding message to class %s, instance %s" % (zephyr_class, instance))
+        logger.info(f"Forwarding message to class {zephyr_class}, instance {instance}")
     elif message["type"] == "private":
         if len(message["display_recipient"]) == 1:
             recipient = to_zephyr_username(message["display_recipient"][0]["email"])
@@ -744,7 +742,7 @@ Feedback button or at support@zulip.com."""
                 to_zephyr_username(user["email"]).replace("@ATHENA.MIT.EDU", "")
                 for user in message["display_recipient"]
             ]
-        logger.info("Forwarding message to %s" % (recipients,))
+        logger.info(f"Forwarding message to {recipients}")
         zwrite_args.extend(recipients)
 
     if message.get("invite_only_stream"):
@@ -769,7 +767,7 @@ Zulip users (like you) received it, Zephyr users did not.
         zwrite_args.extend(["-O", "crypt"])
 
     if options.test_mode:
-        logger.debug("Would have forwarded: %s\n%s" % (zwrite_args, wrapped_content))
+        logger.debug(f"Would have forwarded: {zwrite_args}\n{wrapped_content}")
         return
 
     (code, stderr) = send_authed_zephyr(zwrite_args, wrapped_content)
@@ -849,7 +847,7 @@ def maybe_forward_to_zephyr(message: Dict[str, Any]) -> None:
         timestamp_now = int(time.time())
         if float(message["timestamp"]) < timestamp_now - 15:
             logger.warning(
-                "Skipping out of order message: %s < %s" % (message["timestamp"], timestamp_now)
+                "Skipping out of order message: {} < {}".format(message["timestamp"], timestamp_now)
             )
             return
         try:
@@ -932,7 +930,7 @@ def add_zulip_subscriptions(verbose: bool) -> None:
             authorization_errors_fatal=False,
         )
         if res.get("result") != "success":
-            logger.error("Error subscribing to streams:\n%s" % (res["msg"],))
+            logger.error("Error subscribing to streams:\n{}".format(res["msg"]))
             return
 
         already = res.get("already_subscribed")
@@ -940,10 +938,12 @@ def add_zulip_subscriptions(verbose: bool) -> None:
         unauthorized = res.get("unauthorized")
         if verbose:
             if already is not None and len(already) > 0:
-                logger.info("\nAlready subscribed to: %s" % (", ".join(list(already.values())[0]),))
+                logger.info(
+                    "\nAlready subscribed to: {}".format(", ".join(list(already.values())[0]))
+                )
             if new is not None and len(new) > 0:
                 logger.info(
-                    "\nSuccessfully subscribed to: %s" % (", ".join(list(new.values())[0]),)
+                    "\nSuccessfully subscribed to: {}".format(", ".join(list(new.values())[0]))
                 )
             if unauthorized is not None and len(unauthorized) > 0:
                 logger.info(
@@ -962,7 +962,7 @@ on these streams and already use Zulip.  They can subscribe you to them via the
 """
                         )
                     )
-                    + "\n\n  %s" % (", ".join(unauthorized),)
+                    + "\n\n  {}".format(", ".join(unauthorized))
                 )
 
     if len(skipped) > 0:
@@ -989,9 +989,9 @@ Zulip subscription to these lines in ~/.zephyr.subs:
     for (cls, instance, recipient, reason) in skipped:
         if verbose:
             if reason != "":
-                logger.info("  [%s,%s,%s] (%s)" % (cls, instance, recipient, reason))
+                logger.info(f"  [{cls},{instance},{recipient}] ({reason})")
             else:
-                logger.info("  [%s,%s,%s]" % (cls, instance, recipient))
+                logger.info(f"  [{cls},{instance},{recipient}]")
     if len(skipped) > 0:
         if verbose:
             logger.info(
@@ -1032,11 +1032,11 @@ def parse_zephyr_subs(verbose: bool = False) -> Set[Tuple[str, str, str]]:
             recipient = recipient.replace("%me%", options.user)
             if not valid_stream_name(cls):
                 if verbose:
-                    logger.error("Skipping subscription to unsupported class name: [%s]" % (line,))
+                    logger.error(f"Skipping subscription to unsupported class name: [{line}]")
                 continue
         except Exception:
             if verbose:
-                logger.error("Couldn't parse ~/.zephyr.subs line: [%s]" % (line,))
+                logger.error(f"Couldn't parse ~/.zephyr.subs line: [{line}]")
             continue
         zephyr_subscriptions.add((cls.strip(), instance.strip(), recipient.strip()))
     return zephyr_subscriptions
@@ -1051,7 +1051,7 @@ def open_logger() -> logging.Logger:
         else:
             log_file = "/var/log/zulip/mirror-log"
     else:
-        f = tempfile.NamedTemporaryFile(prefix="zulip-log.%s." % (options.user,), delete=False)
+        f = tempfile.NamedTemporaryFile(prefix=f"zulip-log.{options.user}.", delete=False)
         log_file = f.name
         # Close the file descriptor, since the logging system will
         # reopen it anyway.
@@ -1230,10 +1230,10 @@ or specify the --api-key-file option."""
         pgrep_query = "python.*zephyr_mirror"
         if options.shard is not None:
             # sharded class mirror
-            pgrep_query = "%s.*--shard=%s" % (pgrep_query, options.shard)
+            pgrep_query = f"{pgrep_query}.*--shard={options.shard}"
         elif options.user is not None:
             # Personals mirror on behalf of another user.
-            pgrep_query = "%s.*--user=%s" % (pgrep_query, options.user)
+            pgrep_query = f"{pgrep_query}.*--user={options.user}"
         proc = subprocess.Popen(
             ["pgrep", "-U", os.environ["USER"], "-f", pgrep_query],
             stdout=subprocess.PIPE,
@@ -1245,7 +1245,7 @@ or specify the --api-key-file option."""
                 continue
 
             # Another copy of zephyr_mirror.py!  Kill it.
-            logger.info("Killing duplicate zephyr_mirror process %s" % (pid,))
+            logger.info(f"Killing duplicate zephyr_mirror process {pid}")
             try:
                 os.kill(pid, signal.SIGINT)
             except OSError:
@@ -1261,7 +1261,7 @@ or specify the --api-key-file option."""
         options.forward_mail_zephyrs = subscribed_to_mail_messages()
 
     if options.session_path is None:
-        options.session_path = "/var/tmp/%s" % (options.user,)
+        options.session_path = f"/var/tmp/{options.user}"
 
     if options.forward_from_zulip:
         child_pid = os.fork()  # type: Optional[int]
@@ -1278,7 +1278,7 @@ or specify the --api-key-file option."""
 
     logger_name = "zephyr=>zulip"
     if options.shard is not None:
-        logger_name += "(%s)" % (options.shard,)
+        logger_name += f"({options.shard})"
     configure_logger(logger, logger_name)
     # Have the kernel reap children for when we fork off processes to send Zulips
     signal.signal(signal.SIGCHLD, signal.SIG_IGN)

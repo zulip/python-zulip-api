@@ -11,7 +11,7 @@ os.chdir(os.path.dirname(TOOLS_DIR))
 
 
 def handle_input_and_run_tests_for_package(package_name, path_list):
-    parser = argparse.ArgumentParser(description="Run tests for {}.".format(package_name))
+    parser = argparse.ArgumentParser(description=f"Run tests for {package_name}.")
     parser.add_argument(
         "--coverage",
         nargs="?",
@@ -31,7 +31,7 @@ def handle_input_and_run_tests_for_package(package_name, path_list):
     )
     options = parser.parse_args()
 
-    test_session_title = " Running tests for {} ".format(package_name)
+    test_session_title = f" Running tests for {package_name} "
     header = test_session_title.center(shutil.get_terminal_size().columns, "#")
     print(header)
 

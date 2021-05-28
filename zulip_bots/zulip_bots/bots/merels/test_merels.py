@@ -60,8 +60,8 @@ class TestMerelsBot(BotTestCase, DefaultTests):
         if bot is None:
             bot, bot_handler = self._get_handlers()
         message = {
-            "sender_email": "{}@example.com".format(name),
-            "sender_full_name": "{}".format(name),
+            "sender_email": f"{name}@example.com",
+            "sender_full_name": f"{name}",
         }
         bot.add_user_to_cache(message)
         return bot

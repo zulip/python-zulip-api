@@ -6,8 +6,7 @@ from importlib import import_module
 from pathlib import Path
 from types import ModuleType
 from typing import Any, Dict
-
-import mock
+from unittest import mock
 
 from zulip_bots.lib import BotHandler
 from zulip_botserver import server

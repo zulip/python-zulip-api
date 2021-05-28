@@ -48,7 +48,7 @@ class TwitpostBot:
             status = self.post(" ".join(content[1:]))
             screen_name = status["user"]["screen_name"]
             id_str = status["id_str"]
-            bot_reply = "https://twitter.com/{}/status/{}".format(screen_name, id_str)
+            bot_reply = f"https://twitter.com/{screen_name}/status/{id_str}"
             bot_reply = "Tweet Posted\n" + bot_reply
             bot_handler.send_reply(message, bot_reply)
 

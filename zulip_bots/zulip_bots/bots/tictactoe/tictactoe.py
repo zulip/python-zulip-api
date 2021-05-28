@@ -241,14 +241,14 @@ class TicTacToeMessageHandler:
 
     def parse_board(self, board: Any) -> str:
         """Takes the board as a nested list and returns a nice version for the user."""
-        return "".join([self.parse_row(r, r_num) for r_num, r in enumerate(board)])
+        return "".join(self.parse_row(r, r_num) for r_num, r in enumerate(board))
 
     def get_player_color(self, turn: int) -> str:
         return self.tokens[turn]
 
     def alert_move_message(self, original_player: str, move_info: str) -> str:
         move_info = move_info.replace("move ", "")
-        return "{} put a token at {}".format(original_player, move_info)
+        return f"{original_player} put a token at {move_info}"
 
     def game_start_message(self) -> str:
         return (
@@ -299,7 +299,7 @@ def coords_from_command(cmd: str) -> str:
     """As there are various ways to input a coordinate (with/without parentheses, with/without spaces, etc.) the
     input is stripped to just the numbers before being used in the program."""
     cmd_num = int(cmd.replace("move ", "")) - 1
-    cmd = "{},{}".format((cmd_num % 3) + 1, (cmd_num // 3) + 1)
+    cmd = f"{(cmd_num % 3) + 1},{(cmd_num // 3) + 1}"
     return cmd
 
 

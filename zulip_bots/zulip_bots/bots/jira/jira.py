@@ -183,7 +183,7 @@ class JiraHandler:
         UNKNOWN_VAL = "*unknown*"
         jira_response = requests.get(
             self.domain_with_protocol
-            + "/rest/api/2/search?jql={}&fields=key,summary,status".format(jql_query),
+            + f"/rest/api/2/search?jql={jql_query}&fields=key,summary,status",
             headers={"Authorization": self.auth},
         ).json()
 
@@ -194,7 +194,7 @@ class JiraHandler:
         if errors:
             response = "Oh no! Jira raised an error:\n > " + ", ".join(errors)
         else:
-            response = "*Found {} results*\n\n".format(results)
+            response = f"*Found {results} results*\n\n"
             for issue in jira_response.get("issues", []):
                 fields = issue.get("fields", {})
                 summary = fields.get("summary", UNKNOWN_VAL)
@@ -314,12 +314,12 @@ class JiraHandler:
                 response = "Issue *" + key + "* was edited! " + url
         elif search_match:
             search_term = search_match.group("search_term")
-            search_results = self.jql_search("summary ~ {}".format(search_term))
-            response = '**Search results for "{}"**\n\n{}'.format(search_term, search_results)
+            search_results = self.jql_search(f"summary ~ {search_term}")
+            response = f'**Search results for "{search_term}"**\n\n{search_results}'
         elif jql_match:
             jql_query = jql_match.group("jql_query")
             search_results = self.jql_search(jql_query)
-            response = '**Search results for "{}"**\n\n{}'.format(jql_query, search_results)
+            response = f'**Search results for "{jql_query}"**\n\n{search_results}'
         elif help_match:
             response = HELP_RESPONSE
         else:

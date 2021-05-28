@@ -90,11 +90,11 @@ except ImportError:
         except (ImportError, AssertionError):
             if version is not None:
                 print(
-                    "{name}>={version} is not installed.".format(name=module_name, version=version),
+                    f"{module_name}>={version} is not installed.",
                     file=sys.stderr,
                 )
             else:
-                print("{name} is not installed.".format(name=module_name), file=sys.stderr)
+                print(f"{module_name} is not installed.", file=sys.stderr)
             sys.exit(1)
 
     check_dependency_manually("zulip")

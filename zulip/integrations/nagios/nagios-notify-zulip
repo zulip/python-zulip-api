@@ -31,16 +31,16 @@ msg = dict(type="stream", to=opts.stream)  # type: Dict[str, Any]
 if opts.service is None:
     # Host notification
     thing = "host"  # type: Text
-    msg["subject"] = "host %s" % (opts.host,)
+    msg["subject"] = f"host {opts.host}"
 else:
     # Service notification
     thing = "service"
-    msg["subject"] = "service %s on %s" % (opts.service, opts.host)
+    msg["subject"] = f"service {opts.service} on {opts.host}"
 
 if len(msg["subject"]) > 60:
     msg["subject"] = msg["subject"][0:57].rstrip() + "..."
 # e.g. **PROBLEM**: service is CRITICAL
-msg["content"] = "**%s**: %s is %s" % (opts.type, thing, opts.state)
+msg["content"] = f"**{opts.type}**: {thing} is {opts.state}"
 
 # The "long output" can contain newlines represented by "\n" escape sequences.
 # The Nagios mail command uses /usr/bin/printf "%b" to expand these.

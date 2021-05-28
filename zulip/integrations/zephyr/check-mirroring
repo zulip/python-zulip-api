@@ -143,7 +143,7 @@ for tries in range(10):
         missing = 0
         for elt in zephyr_subs_to_add:
             if elt not in zephyr_subs:
-                logging.error("Failed to subscribe to %s" % (elt,))
+                logging.error(f"Failed to subscribe to {elt}")
                 missing += 1
         if missing == 0:
             actually_subscribed = True
@@ -220,9 +220,7 @@ for key, (stream, test) in zhkeys.items():
             )
             print_status_and_exit(1)
         else:
-            logging.warning(
-                "Replaced key %s with %s due to Zephyr server failure." % (key, new_key)
-            )
+            logging.warning(f"Replaced key {key} with {new_key} due to Zephyr server failure.")
     receive_zephyrs()
 
 receive_zephyrs()

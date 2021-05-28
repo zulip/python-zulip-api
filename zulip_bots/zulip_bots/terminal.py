@@ -44,7 +44,7 @@ def main():
         if lib_module is None:
             raise OSError
     except OSError:
-        print("Could not find and import bot '{}'".format(bot_name))
+        print(f"Could not find and import bot '{bot_name}'")
         sys.exit(1)
 
     try:

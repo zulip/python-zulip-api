@@ -44,7 +44,7 @@ class MerelsModel:
         if self.storage.get(self.topic) == '["X", 0, 0, "NNNNNNNNNNNNNNNNNNNNNNNN", "", 0]':
             self.storage.put(
                 self.topic,
-                '["{}", 0, 0, "NNNNNNNNNNNNNNNNNNNNNNNN", "", 0]'.format(self.token[player_number]),
+                f'["{self.token[player_number]}", 0, 0, "NNNNNNNNNNNNNNNNNNNNNNNN", "", 0]',
             )
         self.current_board, same_player_move = game.beat(move, self.topic, self.storage)
         if same_player_move != "":

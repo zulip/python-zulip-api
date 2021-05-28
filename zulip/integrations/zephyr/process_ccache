@@ -9,19 +9,19 @@ api_key = sys.argv[2]
 ccache_data_encoded = sys.argv[3]
 
 # Update the Kerberos ticket cache file
-program_name = "zmirror-%s" % (short_user,)
-with open("/home/zulip/ccache/%s" % (program_name,), "wb") as f:
+program_name = f"zmirror-{short_user}"
+with open(f"/home/zulip/ccache/{program_name}", "wb") as f:
     f.write(base64.b64decode(ccache_data_encoded))
 
 # Setup API key
-api_key_path = "/home/zulip/api-keys/%s" % (program_name,)
+api_key_path = f"/home/zulip/api-keys/{program_name}"
 open(api_key_path, "w").write(api_key + "\n")
 
 # Setup supervisord configuration
-supervisor_path = "/etc/supervisor/conf.d/zulip/%s.conf" % (program_name,)
+supervisor_path = f"/etc/supervisor/conf.d/zulip/{program_name}.conf"
 template = os.path.join(os.path.dirname(__file__), "zmirror_private.conf.template")
 template_data = open(template).read()
-session_path = "/home/zulip/zephyr_sessions/%s" % (program_name,)
+session_path = f"/home/zulip/zephyr_sessions/{program_name}"
 
 # Preserve mail zephyrs forwarding setting across rewriting the config file
 

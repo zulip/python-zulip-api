@@ -42,7 +42,7 @@ if options.forward_class_messages and not options.noshard:
     jobs = list("0123456789abcdef")
 
     def run_job(shard: str) -> int:
-        subprocess.call(args + ["--shard=%s" % (shard,)])
+        subprocess.call(args + [f"--shard={shard}"])
         return 0
 
     for (status, job) in run_parallel(run_job, jobs, threads=16):

@@ -49,14 +49,14 @@ class MatrixBridgeScriptTests(TestCase):
         output_lines = self.output_from_script([])
         expected_lines = [
             "Options required: -c or --config to run, OR --write-sample-config.",
-            "usage: {} [-h]".format(script_file),
+            f"usage: {script_file} [-h]",
         ]
         for expected, output in zip(expected_lines, output_lines):
             self.assertIn(expected, output)
 
     def test_help_usage_and_description(self) -> None:
         output_lines = self.output_from_script(["-h"])
-        usage = "usage: {} [-h]".format(script_file)
+        usage = f"usage: {script_file} [-h]"
         description = "Script to bridge"
         self.assertIn(usage, output_lines[0])
         blank_lines = [num for num, line in enumerate(output_lines) if line == ""]
@@ -71,7 +71,7 @@ class MatrixBridgeScriptTests(TestCase):
         with new_temp_dir() as tempdir:
             path = os.path.join(tempdir, sample_config_path)
             output_lines = self.output_from_script(["--write-sample-config", path])
-            self.assertEqual(output_lines, ["Wrote sample configuration to '{}'".format(path)])
+            self.assertEqual(output_lines, [f"Wrote sample configuration to '{path}'"])
 
             with open(path) as sample_file:
                 self.assertEqual(sample_file.read(), sample_config_text)

@@ -62,11 +62,11 @@ def cleanup(package_dir):
     build_dir = os.path.join(package_dir, "build")
     temp_dir = os.path.join(package_dir, "temp")
     dist_dir = os.path.join(package_dir, "dist")
-    egg_info = os.path.join(package_dir, "{}.egg-info".format(os.path.basename(package_dir)))
+    egg_info = os.path.join(package_dir, f"{os.path.basename(package_dir)}.egg-info")
 
     def _rm_if_it_exists(directory):
         if os.path.isdir(directory):
-            print(crayons.green("Removing {}/*".format(directory), bold=True))
+            print(crayons.green(f"Removing {directory}/*", bold=True))
             shutil.rmtree(directory)
 
     _rm_if_it_exists(build_dir)
@@ -91,7 +91,7 @@ def set_variable(fp, variable, value):
     os.remove(fp)
     shutil.move(temp_abs_path, fp)
 
-    message = "Set {variable} in {fp} to {value}.".format(fp=fp, variable=variable, value=value)
+    message = f"Set {variable} in {fp} to {value}."
     print(crayons.white(message, bold=True))
 
 
@@ -122,8 +122,8 @@ def update_requirements_in_zulip_repo(zulip_repo_dir, version, hash_or_tag):
     _edit_reqs_file(prod, zulip_bots_line, zulip_line)
     _edit_reqs_file(dev, zulip_bots_line, zulip_line)
 
-    editable_zulip = '-e "{}"\n'.format(url_zulip.rstrip())
-    editable_zulip_bots = '-e "{}"\n'.format(url_zulip_bots.rstrip())
+    editable_zulip = f'-e "{url_zulip.rstrip()}"\n'
+    editable_zulip_bots = f'-e "{url_zulip_bots.rstrip()}"\n'
 
     _edit_reqs_file(
         common,

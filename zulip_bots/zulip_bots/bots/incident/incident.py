@@ -39,7 +39,7 @@ class IncidentHandler:
                 bot_response = "Invalid answer format"
                 bot_handler.send_reply(message, bot_response)
                 return
-            bot_response = "Incident %s\n status = %s" % (ticket_id, answer)
+            bot_response = f"Incident {ticket_id}\n status = {answer}"
             bot_handler.send_reply(message, bot_response)
         else:
             bot_response = 'type "new <description>" for a new incident'
@@ -125,15 +125,13 @@ def format_incident_for_widget(ticket_id: str, incident: Dict[str, Any]) -> str:
 
 def format_incident_for_markdown(ticket_id: str, incident: Dict[str, Any]) -> str:
     answer_list = "\n".join(
-        [
-            "* **{code}** {answer}".format(
-                code=code,
-                answer=ANSWERS[code],
-            )
-            for code in "1234"
-        ]
+        "* **{code}** {answer}".format(
+            code=code,
+            answer=ANSWERS[code],
+        )
+        for code in "1234"
     )
-    how_to_respond = """**reply**: answer {ticket_id} <code>""".format(ticket_id=ticket_id)
+    how_to_respond = f"""**reply**: answer {ticket_id} <code>"""
 
     content = """
 Incident: {incident}

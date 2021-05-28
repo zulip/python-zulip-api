@@ -33,15 +33,13 @@ class MockMessageServer:
         return message
 
     def add_reaction(self, reaction_data):
-        return dict(
-            result="success", msg="", uri="https://server/messages/{}/reactions".format(uuid4())
-        )
+        return dict(result="success", msg="", uri=f"https://server/messages/{uuid4()}/reactions")
 
     def update(self, message):
         self.messages[message["message_id"]] = message
 
     def upload_file(self, file):
-        return dict(result="success", msg="", uri="https://server/user_uploads/{}".format(uuid4()))
+        return dict(result="success", msg="", uri=f"https://server/user_uploads/{uuid4()}")
 
 
 class TerminalBotHandler:

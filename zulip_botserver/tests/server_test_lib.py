@@ -1,9 +1,7 @@
 import configparser
 import json
 from typing import Any, Dict, List, Optional
-from unittest import TestCase
-
-import mock
+from unittest import TestCase, mock
 
 from zulip_botserver import server
 

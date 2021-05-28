@@ -117,7 +117,7 @@ def syntax_help(cmd_name: str) -> str:
         cmd = cmd_name + " " + arg_syntax
     else:
         cmd = cmd_name
-    return "syntax: {}".format(cmd)
+    return f"syntax: {cmd}"
 
 
 def dbx_help(client: Any, cmd_name: str) -> str:
@@ -197,7 +197,7 @@ def dbx_read(client: Any, fn: str) -> str:
 
     try:
         result = client.files_download(fn)
-        msg = "**{}** :\n{}".format(result[0].name, result[1].text)
+        msg = f"**{result[0].name}** :\n{result[1].text}"
     except Exception:
         msg = (
             "Please provide a correct file path\nUsage: `read <filename>` to read content of a file"

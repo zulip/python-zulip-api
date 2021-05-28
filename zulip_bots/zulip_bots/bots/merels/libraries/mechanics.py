@@ -278,7 +278,7 @@ def create_room(topic_name, merels_storage):
 
     if merels.create_new_game(topic_name):
         response = ""
-        response += "A room has been created in {0}. Starting game now.\n".format(topic_name)
+        response += f"A room has been created in {topic_name}. Starting game now.\n"
         response += display_game(topic_name, merels_storage)
 
         return response
@@ -404,7 +404,7 @@ def put_man(topic_name, v, h, merels_storage):
             data.hill_uid,
             data.take_mode,
         )
-        return "Put a man to ({}, {}) for {}.".format(v, h, data.turn)
+        return f"Put a man to ({v}, {h}) for {data.turn}."
     else:
         raise BadMoveException("Failed: That's not a legal put. Please try again.")
 
@@ -448,7 +448,7 @@ def take_man(topic_name, v, h, merels_storage):
             data.hill_uid,
             data.take_mode,
         )
-        return "Taken a man from ({}, {}) for {}.".format(v, h, data.turn)
+        return f"Taken a man from ({v}, {h}) for {data.turn}."
     else:
         raise BadMoveException("Failed: That's not a legal take. Please try again.")
 

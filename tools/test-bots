@@ -97,7 +97,7 @@ def main():
 
     if options.pytest:
         excluded_bots = ["merels"]
-        pytest_bots_to_test = sorted([bot for bot in bots_to_test if bot not in excluded_bots])
+        pytest_bots_to_test = sorted(bot for bot in bots_to_test if bot not in excluded_bots)
         pytest_options = [
             "-s",  # show output from tests; this hides the progress bar though
             "-x",  # stop on first test failure

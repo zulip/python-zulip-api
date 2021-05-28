@@ -27,14 +27,14 @@ class FileUploaderHandler:
 
         path = Path(os.path.expanduser(content))
         if not path.is_file():
-            bot_handler.send_reply(message, "File `{}` not found".format(content))
+            bot_handler.send_reply(message, f"File `{content}` not found")
             return
 
         path = path.resolve()
         upload = bot_handler.upload_file_from_path(str(path))
         if upload["result"] != "success":
             msg = upload["msg"]
-            bot_handler.send_reply(message, "Failed to upload `{}` file: {}".format(path, msg))
+            bot_handler.send_reply(message, f"Failed to upload `{path}` file: {msg}")
             return
 
         uploaded_file_reply = "[{}]({})".format(path.name, upload["uri"])

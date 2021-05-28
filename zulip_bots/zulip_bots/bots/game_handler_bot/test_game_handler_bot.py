@@ -1,6 +1,5 @@
 from typing import Any, Dict, List
-
-from mock import patch
+from unittest.mock import patch
 
 from zulip_bots.game_handler import GameInstance
 from zulip_bots.test_lib import BotTestCase, DefaultTests
@@ -66,8 +65,8 @@ class TestGameHandlerBot(BotTestCase, DefaultTests):
         if bot is None:
             bot, bot_handler = self._get_handlers()
         message = {
-            "sender_email": "{}@example.com".format(name),
-            "sender_full_name": "{}".format(name),
+            "sender_email": f"{name}@example.com",
+            "sender_full_name": f"{name}",
         }
         bot.add_user_to_cache(message)
         return bot

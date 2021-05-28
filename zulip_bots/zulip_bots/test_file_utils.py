@@ -27,7 +27,7 @@ def read_bot_fixture_data(bot_name: str, test_name: str) -> Dict[str, Any]:
     base_path = os.path.realpath(
         os.path.join(os.path.dirname(os.path.abspath(__file__)), "bots", bot_name, "fixtures")
     )
-    http_data_path = os.path.join(base_path, "{}.json".format(test_name))
+    http_data_path = os.path.join(base_path, f"{test_name}.json")
     with open(http_data_path, encoding="utf-8") as f:
         content = f.read()
     http_data = json.loads(content)

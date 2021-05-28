@@ -102,7 +102,7 @@ class RandomExponentialBackoff(CountingBackoff):
         # between x and 2x where x is growing exponentially
         delay_scale = int(2 ** (self.number_of_retries / 2.0 - 1)) + 1
         delay = min(delay_scale + random.randint(1, delay_scale), self.delay_cap)
-        message = "Sleeping for %ss [max %s] before retrying." % (delay, delay_scale * 2)
+        message = f"Sleeping for {delay}s [max {delay_scale * 2}] before retrying."
         try:
             logger.warning(message)
         except NameError:
@@ -124,7 +124,7 @@ def add_default_arguments(
 
         def custom_error_handling(self: argparse.ArgumentParser, message: str) -> None:
             self.print_help(sys.stderr)
-            self.exit(2, "{}: error: {}\n".format(self.prog, message))
+            self.exit(2, f"{self.prog}: error: {message}\n")
 
         parser.error = types.MethodType(custom_error_handling, parser)  # type: ignore # patching function
 
@@ -200,22 +200,22 @@ def generate_option_group(parser: optparse.OptionParser, prefix: str = "") -> op
     )
 
     group = optparse.OptionGroup(parser, "Zulip API configuration")
+    group.add_option(f"--{prefix}site", dest="zulip_site", help="Zulip server URI", default=None)
+    group.add_option(f"--{prefix}api-key", dest="zulip_api_key", action="store")
     group.add_option(
-        "--%ssite" % (prefix,), dest="zulip_site", help="Zulip server URI", default=None
+        f"--{prefix}user",
+        dest="zulip_email",
+        help="Email address of the calling bot or user.",
     )
-    group.add_option("--%sapi-key" % (prefix,), dest="zulip_api_key", action="store")
     group.add_option(
-        "--%suser" % (prefix,), dest="zulip_email", help="Email address of the calling bot or user."
-    )
-    group.add_option(
-        "--%sconfig-file" % (prefix,),
+        f"--{prefix}config-file",
         action="store",
         dest="zulip_config_file",
         help="Location of an ini file containing the\nabove information. (default ~/.zuliprc)",
     )
     group.add_option("-v", "--verbose", action="store_true", help="Provide detailed output.")
     group.add_option(
-        "--%sclient" % (prefix,),
+        f"--{prefix}client",
         action="store",
         default=None,
         dest="zulip_client",
@@ -428,7 +428,7 @@ class Client:
 
         elif None in (api_key, email):
             raise ConfigNotFoundError(
-                "api_key or email not specified and file %s does not exist" % (config_file,)
+                f"api_key or email not specified and file {config_file} does not exist"
             )
 
         assert api_key is not None and email is not None
@@ -461,7 +461,7 @@ class Client:
             self.tls_verification = False  # type: Union[bool, str]
         elif cert_bundle is not None:
             if not os.path.isfile(cert_bundle):
-                raise ConfigNotFoundError("tls bundle '%s' does not exist" % (cert_bundle,))
+                raise ConfigNotFoundError(f"tls bundle '{cert_bundle}' does not exist")
             self.tls_verification = cert_bundle
         else:
             # Default behavior: verify against system CA certificates
@@ -475,12 +475,10 @@ class Client:
                 )
         else:  # we have a client cert
             if not os.path.isfile(client_cert):
-                raise ConfigNotFoundError("client cert '%s' does not exist" % (client_cert,))
+                raise ConfigNotFoundError(f"client cert '{client_cert}' does not exist")
             if client_cert_key is not None:
                 if not os.path.isfile(client_cert_key):
-                    raise ConfigNotFoundError(
-                        "client cert key '%s' does not exist" % (client_cert_key,)
-                    )
+                    raise ConfigNotFoundError(f"client cert key '{client_cert_key}' does not exist")
         self.client_cert = client_cert
         self.client_cert_key = client_cert_key
 
@@ -631,7 +629,7 @@ class Client:
 
                 # On 50x errors, try again after a short sleep
                 if str(res.status_code).startswith("5"):
-                    if error_retry(" (server %s)" % (res.status_code,)):
+                    if error_retry(f" (server {res.status_code})"):
                         continue
                     # Otherwise fall through and process the python-requests error normally
             except (requests.exceptions.Timeout, requests.exceptions.SSLError) as e:
@@ -650,7 +648,7 @@ class Client:
                 else:
                     end_error_retry(False)
                     return {
-                        "msg": "Connection error:\n%s" % (traceback.format_exc(),),
+                        "msg": f"Connection error:\n{traceback.format_exc()}",
                         "result": "connection-error",
                     }
             except requests.exceptions.ConnectionError:
@@ -665,13 +663,13 @@ class Client:
                     continue
                 end_error_retry(False)
                 return {
-                    "msg": "Connection error:\n%s" % (traceback.format_exc(),),
+                    "msg": f"Connection error:\n{traceback.format_exc()}",
                     "result": "connection-error",
                 }
             except Exception:
                 # We'll split this out into more cases as we encounter new bugs.
                 return {
-                    "msg": "Unexpected error:\n%s" % (traceback.format_exc(),),
+                    "msg": f"Unexpected error:\n{traceback.format_exc()}",
                     "result": "unexpected-error",
                 }
 
@@ -737,7 +735,7 @@ class Client:
                     res = self.register(event_types, narrow, **kwargs)
                 if "error" in res["result"]:
                     if self.verbose:
-                        print("Server returned error:\n%s" % (res["msg"],))
+                        print("Server returned error:\n{}".format(res["msg"]))
                     time.sleep(1)
                 else:
                     return (res["queue_id"], res["last_event_id"])
@@ -762,7 +760,7 @@ class Client:
                         )
                 else:
                     if self.verbose:
-                        print("Server returned error:\n%s" % (res["msg"],))
+                        print("Server returned error:\n{}".format(res["msg"]))
                     # Eventually, we'll only want the
                     # BAD_EVENT_QUEUE_ID check, but we check for the
                     # old string to support legacy Zulip servers.  We
@@ -821,7 +819,7 @@ class Client:
         """
         See examples/get-raw-message for example usage
         """
-        return self.call_endpoint(url="messages/{}".format(message_id), method="GET")
+        return self.call_endpoint(url=f"messages/{message_id}", method="GET")
 
     def send_message(self, message_data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -861,7 +859,7 @@ class Client:
         """
         See examples/delete-message for example usage.
         """
-        return self.call_endpoint(url="messages/{}".format(message_id), method="DELETE")
+        return self.call_endpoint(url=f"messages/{message_id}", method="DELETE")
 
     def update_message_flags(self, update_data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -914,7 +912,7 @@ class Client:
         """
         See examples/message-history for example usage.
         """
-        return self.call_endpoint(url="messages/{}/history".format(message_id), method="GET")
+        return self.call_endpoint(url=f"messages/{message_id}/history", method="GET")
 
     def add_reaction(self, reaction_data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -965,9 +963,7 @@ class Client:
         >>> client.upload_custom_emoji(emoji_name, file_obj)
         {'result': 'success', 'msg': ''}
         """
-        return self.call_endpoint(
-            "realm/emoji/{}".format(emoji_name), method="POST", files=[file_obj]
-        )
+        return self.call_endpoint(f"realm/emoji/{emoji_name}", method="POST", files=[file_obj])
 
     def delete_custom_emoji(self, emoji_name: str) -> Dict[str, Any]:
         """
@@ -977,7 +973,7 @@ class Client:
         {'result': 'success', 'msg': ''}
         """
         return self.call_endpoint(
-            url="realm/emoji/{}".format(emoji_name),
+            url=f"realm/emoji/{emoji_name}",
             method="DELETE",
         )
 
@@ -1027,7 +1023,7 @@ class Client:
         {'result': 'success', 'msg': ''}
         """
         return self.call_endpoint(
-            url="realm/filters/{}".format(filter_id),
+            url=f"realm/filters/{filter_id}",
             method="DELETE",
         )
 
@@ -1064,7 +1060,7 @@ class Client:
         {'result': 'success', 'msg': ''}
         """
         return self.call_endpoint(
-            url="realm/profile_fields/{}".format(field_id),
+            url=f"realm/profile_fields/{field_id}",
             method="DELETE",
         )
 
@@ -1089,7 +1085,7 @@ class Client:
         {'result': 'success', 'msg': ''}
         """
         return self.call_endpoint(
-            url="realm/profile_fields/{}".format(field_id),
+            url=f"realm/profile_fields/{field_id}",
             method="PATCH",
             request=request,
         )
@@ -1181,7 +1177,7 @@ class Client:
         {'presence': {'website': {'timestamp': 1486799122, 'status': 'active'}}, 'result': 'success', 'msg': ''}
         """
         return self.call_endpoint(
-            url="users/%s/presence" % (email,),
+            url=f"users/{email}/presence",
             method="GET",
         )
 
@@ -1240,7 +1236,7 @@ class Client:
         See examples/delete-stream for example usage.
         """
         return self.call_endpoint(
-            url="streams/{}".format(stream_id),
+            url=f"streams/{stream_id}",
             method="DELETE",
         )
 
@@ -1267,7 +1263,7 @@ class Client:
         {'result': 'success', 'msg': '', 'user': [{...}, {...}]}
         """
         return self.call_endpoint(
-            url="users/{}".format(user_id),
+            url=f"users/{user_id}",
             method="GET",
             request=request,
         )
@@ -1281,7 +1277,7 @@ class Client:
         {'result': 'success', 'msg': ''}
         """
         return self.call_endpoint(
-            url="users/{}".format(user_id),
+            url=f"users/{user_id}",
             method="DELETE",
         )
 
@@ -1294,7 +1290,7 @@ class Client:
         {'result': 'success', 'msg': ''}
         """
         return self.call_endpoint(
-            url="users/{}/reactivate".format(user_id),
+            url=f"users/{user_id}/reactivate",
             method="POST",
         )
 
@@ -1310,7 +1306,7 @@ class Client:
         for key, value in request.items():
             request[key] = json.dumps(value)
 
-        return self.call_endpoint(url="users/{}".format(user_id), method="PATCH", request=request)
+        return self.call_endpoint(url=f"users/{user_id}", method="PATCH", request=request)
 
     def get_users(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
@@ -1399,7 +1395,7 @@ class Client:
         {'result': 'success', 'msg': '', 'is_subscribed': False}
         """
         return self.call_endpoint(
-            url="users/{}/subscriptions/{}".format(user_id, stream_id),
+            url=f"users/{user_id}/subscriptions/{stream_id}",
             method="GET",
         )
 
@@ -1456,7 +1452,7 @@ class Client:
         Example usage: client.get_stream_id('devel')
         """
         stream_encoded = urllib.parse.quote(stream, safe="")
-        url = "get_stream_id?stream=%s" % (stream_encoded,)
+        url = f"get_stream_id?stream={stream_encoded}"
         return self.call_endpoint(
             url=url,
             method="GET",
@@ -1467,7 +1463,7 @@ class Client:
         """
         See examples/get-stream-topics for example usage.
         """
-        return self.call_endpoint(url="users/me/{}/topics".format(stream_id), method="GET")
+        return self.call_endpoint(url=f"users/me/{stream_id}/topics", method="GET")
 
     def get_user_groups(self) -> Dict[str, Any]:
         """
@@ -1521,7 +1517,7 @@ class Client:
         {'msg': '', 'result': 'success'}
         """
         return self.call_endpoint(
-            url="user_groups/{}".format(group_id),
+            url=f"user_groups/{group_id}",
             method="DELETE",
         )
 
@@ -1538,7 +1534,7 @@ class Client:
         {'msg': '', 'result': 'success'}
         """
         return self.call_endpoint(
-            url="user_groups/{}/members".format(user_group_id),
+            url=f"user_groups/{user_group_id}/members",
             method="POST",
             request=group_data,
         )
@@ -1683,7 +1679,7 @@ class Client:
                 return result
 
             if len(result["messages"]) <= 0:
-                return {"result": "error", "msg": 'No messages found in topic: "{}"'.format(topic)}
+                return {"result": "error", "msg": f'No messages found in topic: "{topic}"'}
 
             message_id = result["messages"][0]["id"]
 
@@ -1696,7 +1692,7 @@ class Client:
             "send_notification_to_new_thread": notify_new_topic,
         }
         return self.call_endpoint(
-            url="messages/{}".format(message_id),
+            url=f"messages/{message_id}",
             method="PATCH",
             request=request,
         )
