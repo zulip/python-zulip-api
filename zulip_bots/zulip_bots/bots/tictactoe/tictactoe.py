@@ -37,13 +37,13 @@ class TicTacToeModel:
 
     def determine_game_over(self, players: List[str]) -> str:
         if self.contains_winning_move(self.current_board):
-            return 'current turn'
+            return "current turn"
         if self.board_is_full(self.current_board):
-            return 'draw'
-        return ''
+            return "draw"
+        return ""
 
     def board_is_full(self, board: Any) -> bool:
-        '''Determines if the board is full or not.'''
+        """Determines if the board is full or not."""
         for row in board:
             for element in row:
                 if element == 0:
@@ -52,8 +52,8 @@ class TicTacToeModel:
 
     # Used for current board & trial computer board
     def contains_winning_move(self, board: Any) -> bool:
-        '''Returns true if all coordinates in a triplet have the same value in them (x or o) and no coordinates
-        in the triplet are blank.'''
+        """Returns true if all coordinates in a triplet have the same value in them (x or o) and no coordinates
+        in the triplet are blank."""
         for triplet in self.triplets:
             if (
                 self.get_value(board, triplet[0])
@@ -65,7 +65,7 @@ class TicTacToeModel:
         return False
 
     def get_locations_of_char(self, board: Any, char: int) -> List[List[int]]:
-        '''Gets the locations of the board that have char in them.'''
+        """Gets the locations of the board that have char in them."""
         locations = []
         for row in range(3):
             for col in range(3):
@@ -74,8 +74,8 @@ class TicTacToeModel:
         return locations
 
     def two_blanks(self, triplet: List[Tuple[int, int]], board: Any) -> List[Tuple[int, int]]:
-        '''Determines which rows/columns/diagonals have two blank spaces and an 2 already in them. It's more advantageous
-        for the computer to move there. This is used when the computer makes its move.'''
+        """Determines which rows/columns/diagonals have two blank spaces and an 2 already in them. It's more advantageous
+        for the computer to move there. This is used when the computer makes its move."""
 
         o_found = False
         for position in triplet:
@@ -94,7 +94,7 @@ class TicTacToeModel:
         return []
 
     def computer_move(self, board: Any, player_number: Any) -> Any:
-        '''The computer's logic for making its move.'''
+        """The computer's logic for making its move."""
         my_board = copy.deepcopy(board)  # First the board is copied; used later on
         blank_locations = self.get_locations_of_char(my_board, 0)
         # Gets the locations that already have x's
@@ -184,7 +184,7 @@ class TicTacToeModel:
             return board
 
     def is_valid_move(self, move: str) -> bool:
-        '''Checks the validity of the coordinate input passed in to make sure it's not out-of-bounds (ex. 5, 5)'''
+        """Checks the validity of the coordinate input passed in to make sure it's not out-of-bounds (ex. 5, 5)"""
         try:
             split_move = move.split(",")
             row = split_move[0].strip()
@@ -201,54 +201,54 @@ class TicTacToeModel:
             return self.computer_move(self.current_board, player_number + 1)
         move_coords_str = coords_from_command(move)
         if not self.is_valid_move(move_coords_str):
-            raise BadMoveException('Make sure your move is from 0-9')
+            raise BadMoveException("Make sure your move is from 0-9")
         board = self.current_board
-        move_coords = move_coords_str.split(',')
+        move_coords = move_coords_str.split(",")
         # Subtraction must be done to convert to the right indices,
         # since computers start numbering at 0.
         row = (int(move_coords[1])) - 1
         column = (int(move_coords[0])) - 1
         if board[row][column] != 0:
-            raise BadMoveException('Make sure your space hasn\'t already been filled.')
+            raise BadMoveException("Make sure your space hasn't already been filled.")
         board[row][column] = player_number + 1
         return board
 
 
 class TicTacToeMessageHandler:
-    tokens = [':x:', ':o:']
+    tokens = [":x:", ":o:"]
 
     def parse_row(self, row: Tuple[int, int], row_num: int) -> str:
-        '''Takes the row passed in as a list and returns it as a string.'''
+        """Takes the row passed in as a list and returns it as a string."""
         row_chars = []
         num_symbols = [
-            ':one:',
-            ':two:',
-            ':three:',
-            ':four:',
-            ':five:',
-            ':six:',
-            ':seven:',
-            ':eight:',
-            ':nine:',
+            ":one:",
+            ":two:",
+            ":three:",
+            ":four:",
+            ":five:",
+            ":six:",
+            ":seven:",
+            ":eight:",
+            ":nine:",
         ]
         for i, e in enumerate(row):
             if e == 0:
                 row_chars.append(num_symbols[row_num * 3 + i])
             else:
                 row_chars.append(self.get_player_color(e - 1))
-        row_string = ' '.join(row_chars)
-        return row_string + '\n\n'
+        row_string = " ".join(row_chars)
+        return row_string + "\n\n"
 
     def parse_board(self, board: Any) -> str:
-        '''Takes the board as a nested list and returns a nice version for the user.'''
+        """Takes the board as a nested list and returns a nice version for the user."""
         return "".join([self.parse_row(r, r_num) for r_num, r in enumerate(board)])
 
     def get_player_color(self, turn: int) -> str:
         return self.tokens[turn]
 
     def alert_move_message(self, original_player: str, move_info: str) -> str:
-        move_info = move_info.replace('move ', '')
-        return '{} put a token at {}'.format(original_player, move_info)
+        move_info = move_info.replace("move ", "")
+        return "{} put a token at {}".format(original_player, move_info)
 
     def game_start_message(self) -> str:
         return (
@@ -257,30 +257,30 @@ class TicTacToeMessageHandler:
 
 
 class ticTacToeHandler(GameAdapter):
-    '''
+    """
     You can play tic-tac-toe! Make sure your message starts with
     "@mention-bot".
-    '''
+    """
 
     META = {
-        'name': 'TicTacToe',
-        'description': 'Lets you play Tic-tac-toe against a computer.',
+        "name": "TicTacToe",
+        "description": "Lets you play Tic-tac-toe against a computer.",
     }
 
     def usage(self) -> str:
-        return '''
+        return """
             You can play tic-tac-toe now! Make sure your
             message starts with @mention-bot.
-            '''
+            """
 
     def __init__(self) -> None:
-        game_name = 'Tic Tac Toe'
-        bot_name = 'tictactoe'
-        move_help_message = '* To move during a game, type\n`move <number>` or `<number>`'
-        move_regex = r'(move (\d)$)|((\d)$)'
+        game_name = "Tic Tac Toe"
+        bot_name = "tictactoe"
+        move_help_message = "* To move during a game, type\n`move <number>` or `<number>`"
+        move_regex = r"(move (\d)$)|((\d)$)"
         model = TicTacToeModel
         gameMessageHandler = TicTacToeMessageHandler
-        rules = '''Try to get three in horizontal or vertical or diagonal row to win the game.'''
+        rules = """Try to get three in horizontal or vertical or diagonal row to win the game."""
         super().__init__(
             game_name,
             bot_name,
@@ -296,10 +296,10 @@ class ticTacToeHandler(GameAdapter):
 def coords_from_command(cmd: str) -> str:
     # This function translates the input command into a TicTacToeGame move.
     # It should return two indices, each one of (1,2,3), separated by a comma, eg. "3,2"
-    '''As there are various ways to input a coordinate (with/without parentheses, with/without spaces, etc.) the
-    input is stripped to just the numbers before being used in the program.'''
-    cmd_num = int(cmd.replace('move ', '')) - 1
-    cmd = '{},{}'.format((cmd_num % 3) + 1, (cmd_num // 3) + 1)
+    """As there are various ways to input a coordinate (with/without parentheses, with/without spaces, etc.) the
+    input is stripped to just the numbers before being used in the program."""
+    cmd_num = int(cmd.replace("move ", "")) - 1
+    cmd = "{},{}".format((cmd_num % 3) + 1, (cmd_num // 3) + 1)
     return cmd
 
 

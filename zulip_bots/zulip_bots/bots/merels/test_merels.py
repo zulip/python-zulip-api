@@ -7,15 +7,15 @@ from zulip_bots.test_lib import BotTestCase, DefaultTests
 
 
 class TestMerelsBot(BotTestCase, DefaultTests):
-    bot_name = 'merels'
+    bot_name = "merels"
 
     def test_no_command(self):
         message = dict(
-            content='magic', type='stream', sender_email="boo@email.com", sender_full_name="boo"
+            content="magic", type="stream", sender_email="boo@email.com", sender_full_name="boo"
         )
         res = self.get_response(message)
         self.assertEqual(
-            res['content'], 'You are not in a game at the moment.' ' Type `help` for help.'
+            res["content"], "You are not in a game at the moment." " Type `help` for help."
         )
 
     # FIXME: Add tests for computer moves
@@ -28,22 +28,22 @@ class TestMerelsBot(BotTestCase, DefaultTests):
         self.assertNotEqual(message_handler.get_player_color(0), None)
         self.assertNotEqual(message_handler.game_start_message(), None)
         self.assertEqual(
-            message_handler.alert_move_message('foo', 'moved right'), 'foo :moved right'
+            message_handler.alert_move_message("foo", "moved right"), "foo :moved right"
         )
 
     # Test to see if the attributes exist
     def test_has_attributes(self) -> None:
         model, message_handler = self._get_game_handlers()
         # Attributes from the Merels Handler
-        self.assertTrue(hasattr(message_handler, 'parse_board') is not None)
-        self.assertTrue(hasattr(message_handler, 'get_player_color') is not None)
-        self.assertTrue(hasattr(message_handler, 'alert_move_message') is not None)
-        self.assertTrue(hasattr(message_handler, 'game_start_message') is not None)
-        self.assertTrue(hasattr(message_handler, 'alert_move_message') is not None)
+        self.assertTrue(hasattr(message_handler, "parse_board") is not None)
+        self.assertTrue(hasattr(message_handler, "get_player_color") is not None)
+        self.assertTrue(hasattr(message_handler, "alert_move_message") is not None)
+        self.assertTrue(hasattr(message_handler, "game_start_message") is not None)
+        self.assertTrue(hasattr(message_handler, "alert_move_message") is not None)
         # Attributes from the Merels Model
-        self.assertTrue(hasattr(model, 'determine_game_over') is not None)
-        self.assertTrue(hasattr(model, 'contains_winning_move') is not None)
-        self.assertTrue(hasattr(model, 'make_move') is not None)
+        self.assertTrue(hasattr(model, "determine_game_over") is not None)
+        self.assertTrue(hasattr(model, "contains_winning_move") is not None)
+        self.assertTrue(hasattr(model, "make_move") is not None)
 
     def test_parse_board(self) -> None:
         board = EMPTY_BOARD
@@ -60,19 +60,19 @@ class TestMerelsBot(BotTestCase, DefaultTests):
         if bot is None:
             bot, bot_handler = self._get_handlers()
         message = {
-            'sender_email': '{}@example.com'.format(name),
-            'sender_full_name': '{}'.format(name),
+            "sender_email": "{}@example.com".format(name),
+            "sender_full_name": "{}".format(name),
         }
         bot.add_user_to_cache(message)
         return bot
 
     def setup_game(self) -> None:
-        bot = self.add_user_to_cache('foo')
-        self.add_user_to_cache('baz', bot)
+        bot = self.add_user_to_cache("foo")
+        self.add_user_to_cache("baz", bot)
         instance = GameInstance(
-            bot, False, 'test game', 'abc123', ['foo@example.com', 'baz@example.com'], 'test'
+            bot, False, "test game", "abc123", ["foo@example.com", "baz@example.com"], "test"
         )
-        bot.instances.update({'abc123': instance})
+        bot.instances.update({"abc123": instance})
         instance.start()
         return bot
 

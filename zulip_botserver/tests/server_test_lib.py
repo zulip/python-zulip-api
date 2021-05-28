@@ -13,7 +13,7 @@ class BotServerTestCase(TestCase):
         server.app.testing = True
         self.app = server.app.test_client()
 
-    @mock.patch('zulip_bots.lib.ExternalBotHandler')
+    @mock.patch("zulip_bots.lib.ExternalBotHandler")
     def assert_bot_server_response(
         self,
         mock_ExternalBotHandler: mock.Mock,

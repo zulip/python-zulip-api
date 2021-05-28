@@ -10,7 +10,7 @@ from .interface import construct_grid
 
 
 class GameData:
-    def __init__(self, game_data=('merels', 'X', 0, 0, 'NNNNNNNNNNNNNNNNNNNNNNNN', '', 0)):
+    def __init__(self, game_data=("merels", "X", 0, 0, "NNNNNNNNNNNNNNNNNNNNNNNN", "", 0)):
         self.topic_name = game_data[0]
         self.turn = game_data[1]
         self.x_taken = game_data[2]

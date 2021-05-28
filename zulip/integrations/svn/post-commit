@@ -43,7 +43,7 @@ entry = svn.log(path, revision_end=pysvn.Revision(pysvn.opt_revision_kind.number
     0
 ]  # type: Dict[Text, Any]
 message = "**{}** committed revision r{} to `{}`.\n\n> {}".format(
-    entry['author'], rev, path.split('/')[-1], entry['revprops']['svn:log']
+    entry["author"], rev, path.split("/")[-1], entry["revprops"]["svn:log"]
 )  # type: Text
 
 destination = config.commit_notice_destination(path, rev)  # type: Optional[Dict[Text, Text]]

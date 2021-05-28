@@ -94,7 +94,7 @@ def send_zulip(
 def get_config(ui: ui, item: str) -> str:
     try:
         # config returns configuration value.
-        return ui.config('zulip', item)
+        return ui.config("zulip", item)
     except IndexError:
         ui.warn("Zulip: Could not find required item {} in hg config.".format(item))
         sys.exit(1)

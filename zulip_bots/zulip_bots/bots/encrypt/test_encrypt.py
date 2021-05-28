@@ -7,7 +7,7 @@ class TestEncryptBot(BotTestCase, DefaultTests):
     def test_bot(self) -> None:
         dialog = [
             ("", "Encrypted/Decrypted text: "),
-            ("Let\'s Do It", "Encrypted/Decrypted text: Yrg\'f Qb Vg"),
+            ("Let's Do It", "Encrypted/Decrypted text: Yrg'f Qb Vg"),
             ("me&mom together..!!", "Encrypted/Decrypted text: zr&zbz gbtrgure..!!"),
             ("foo bar", "Encrypted/Decrypted text: sbb one"),
             ("Please encrypt this", "Encrypted/Decrypted text: Cyrnfr rapelcg guvf"),

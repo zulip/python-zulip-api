@@ -17,8 +17,8 @@ from requests.exceptions import MissingSchema
 
 import zulip
 
-GENERAL_NETWORK_USERNAME_REGEX = '@_?[a-zA-Z0-9]+_([a-zA-Z0-9-_]+):[a-zA-Z0-9.]+'
-MATRIX_USERNAME_REGEX = '@([a-zA-Z0-9-_]+):matrix.org'
+GENERAL_NETWORK_USERNAME_REGEX = "@_?[a-zA-Z0-9]+_([a-zA-Z0-9-_]+):[a-zA-Z0-9.]+"
+MATRIX_USERNAME_REGEX = "@([a-zA-Z0-9-_]+):matrix.org"
 
 # change these templates to change the format of displayed message
 ZULIP_MESSAGE_TEMPLATE = "**{username}**: {message}"
@@ -77,10 +77,10 @@ def matrix_to_zulip(
         """
         content = get_message_content_from_event(event, no_noise)
 
-        zulip_bot_user = '@%s:matrix.org' % (matrix_config['username'],)
+        zulip_bot_user = "@%s:matrix.org" % (matrix_config["username"],)
         # We do this to identify the messages generated from Zulip -> Matrix
         # and we make sure we don't forward it again to the Zulip stream.
-        not_from_zulip_bot = event['sender'] != zulip_bot_user
+        not_from_zulip_bot = event["sender"] != zulip_bot_user
 
         if not_from_zulip_bot and content:
             try:
@@ -95,31 +95,31 @@ def matrix_to_zulip(
             except Exception as exception:  # XXX This should be more specific
                 # Generally raised when user is forbidden
                 raise Bridge_ZulipFatalException(exception)
-            if result['result'] != 'success':
+            if result["result"] != "success":
                 # Generally raised when API key is invalid
-                raise Bridge_ZulipFatalException(result['msg'])
+                raise Bridge_ZulipFatalException(result["msg"])
 
     return _matrix_to_zulip
 
 
 def get_message_content_from_event(event: Dict[str, Any], no_noise: bool) -> Optional[str]:
-    irc_nick = shorten_irc_nick(event['sender'])
-    if event['type'] == "m.room.member":
+    irc_nick = shorten_irc_nick(event["sender"])
+    if event["type"] == "m.room.member":
         if no_noise:
             return None
         # Join and leave events can be noisy. They are ignored by default.
         # To enable these events pass `no_noise` as `False` as the script argument
-        if event['membership'] == "join":
+        if event["membership"] == "join":
             content = ZULIP_MESSAGE_TEMPLATE.format(username=irc_nick, message="joined")
-        elif event['membership'] == "leave":
+        elif event["membership"] == "leave":
             content = ZULIP_MESSAGE_TEMPLATE.format(username=irc_nick, message="quit")
-    elif event['type'] == "m.room.message":
-        if event['content']['msgtype'] == "m.text" or event['content']['msgtype'] == "m.emote":
+    elif event["type"] == "m.room.message":
+        if event["content"]["msgtype"] == "m.text" or event["content"]["msgtype"] == "m.emote":
             content = ZULIP_MESSAGE_TEMPLATE.format(
-                username=irc_nick, message=event['content']['body']
+                username=irc_nick, message=event["content"]["body"]
             )
     else:
-        content = event['type']
+        content = event["type"]
     return content
 
 
@@ -147,7 +147,7 @@ def zulip_to_matrix(config: Dict[str, Any], room: Any) -> Callable[[Dict[str, An
         """
         message_valid = check_zulip_message_validity(msg, config)
         if message_valid:
-            matrix_username = msg["sender_full_name"].replace(' ', '')
+            matrix_username = msg["sender_full_name"].replace(" ", "")
             matrix_text = MATRIX_MESSAGE_TEMPLATE.format(
                 username=matrix_username, message=msg["content"]
             )
@@ -186,25 +186,25 @@ def generate_parser() -> argparse.ArgumentParser:
         description=description, formatter_class=argparse.RawTextHelpFormatter
     )
     parser.add_argument(
-        '-c', '--config', required=False, help="Path to the config file for the bridge."
+        "-c", "--config", required=False, help="Path to the config file for the bridge."
     )
     parser.add_argument(
-        '--write-sample-config',
-        metavar='PATH',
-        dest='sample_config',
+        "--write-sample-config",
+        metavar="PATH",
+        dest="sample_config",
         help="Generate a configuration template at the specified location.",
     )
     parser.add_argument(
-        '--from-zuliprc',
-        metavar='ZULIPRC',
-        dest='zuliprc',
+        "--from-zuliprc",
+        metavar="ZULIPRC",
+        dest="zuliprc",
         help="Optional path to zuliprc file for bot, when using --write-sample-config",
     )
     parser.add_argument(
-        '--show-join-leave',
-        dest='no_noise',
+        "--show-join-leave",
+        dest="no_noise",
         default=True,
-        action='store_false',
+        action="store_false",
         help="Enable IRC join/leave events.",
     )
     return parser
@@ -218,7 +218,7 @@ def read_configuration(config_file: str) -> Dict[str, Dict[str, str]]:
     except configparser.Error as exception:
         raise Bridge_ConfigException(str(exception))
 
-    if set(config.sections()) != {'matrix', 'zulip'}:
+    if set(config.sections()) != {"matrix", "zulip"}:
         raise Bridge_ConfigException("Please ensure the configuration has zulip & matrix sections.")
 
     # TODO Could add more checks for configuration content here
@@ -235,25 +235,25 @@ def write_sample_config(target_path: str, zuliprc: Optional[str]) -> None:
     sample_dict = OrderedDict(
         (
             (
-                'matrix',
+                "matrix",
                 OrderedDict(
                     (
-                        ('host', 'https://matrix.org'),
-                        ('username', 'username'),
-                        ('password', 'password'),
-                        ('room_id', '#zulip:matrix.org'),
+                        ("host", "https://matrix.org"),
+                        ("username", "username"),
+                        ("password", "password"),
+                        ("room_id", "#zulip:matrix.org"),
                     )
                 ),
             ),
             (
-                'zulip',
+                "zulip",
                 OrderedDict(
                     (
-                        ('email', 'glitch-bot@chat.zulip.org'),
-                        ('api_key', 'aPiKeY'),
-                        ('site', 'https://chat.zulip.org'),
-                        ('stream', 'test here'),
-                        ('topic', 'matrix'),
+                        ("email", "glitch-bot@chat.zulip.org"),
+                        ("api_key", "aPiKeY"),
+                        ("site", "https://chat.zulip.org"),
+                        ("stream", "test here"),
+                        ("topic", "matrix"),
                     )
                 ),
             ),
@@ -272,13 +272,13 @@ def write_sample_config(target_path: str, zuliprc: Optional[str]) -> None:
 
         # Can add more checks for validity of zuliprc file here
 
-        sample_dict['zulip']['email'] = zuliprc_config['api']['email']
-        sample_dict['zulip']['site'] = zuliprc_config['api']['site']
-        sample_dict['zulip']['api_key'] = zuliprc_config['api']['key']
+        sample_dict["zulip"]["email"] = zuliprc_config["api"]["email"]
+        sample_dict["zulip"]["site"] = zuliprc_config["api"]["site"]
+        sample_dict["zulip"]["api_key"] = zuliprc_config["api"]["key"]
 
     sample = configparser.ConfigParser()
     sample.read_dict(sample_dict)
-    with open(target_path, 'w') as target:
+    with open(target_path, "w") as target:
         sample.write(target)
 
 
@@ -357,5 +357,5 @@ def main() -> None:
         backoff.fail()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

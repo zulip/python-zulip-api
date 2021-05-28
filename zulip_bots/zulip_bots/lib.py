@@ -28,7 +28,7 @@ def exit_gracefully(signum: int, frame: Optional[Any]) -> None:
 
 def get_bots_directory_path() -> str:
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    return os.path.join(current_dir, 'bots')
+    return os.path.join(current_dir, "bots")
 
 
 def zulip_env_vars_are_present() -> bool:
@@ -37,11 +37,11 @@ def zulip_env_vars_are_present() -> bool:
     # waive the requirement.  This can be helpful for
     # containers like Heroku that prefer env vars to config
     # files.
-    if os.environ.get('ZULIP_EMAIL') is None:
+    if os.environ.get("ZULIP_EMAIL") is None:
         return False
-    if os.environ.get('ZULIP_API_KEY') is None:
+    if os.environ.get("ZULIP_API_KEY") is None:
         return False
-    if os.environ.get('ZULIP_SITE') is None:
+    if os.environ.get("ZULIP_SITE") is None:
         return False
 
     # If none of the absolutely critical env vars are
@@ -54,8 +54,8 @@ class RateLimit:
         self.message_limit = message_limit
         self.interval_limit = interval_limit
         self.message_list = []  # type: List[float]
-        self.error_message = '-----> !*!*!*MESSAGE RATE LIMIT REACHED, EXITING*!*!*! <-----\n'
-        'Is your bot trapped in an infinite loop by reacting to its own messages?'
+        self.error_message = "-----> !*!*!*MESSAGE RATE LIMIT REACHED, EXITING*!*!*! <-----\n"
+        "Is your bot trapped in an infinite loop by reacting to its own messages?"
 
     def is_legal(self) -> bool:
         self.message_list.append(time.time())
@@ -75,7 +75,7 @@ class BotIdentity:
     def __init__(self, name: str, email: str) -> None:
         self.name = name
         self.email = email
-        self.mention = '@**' + name + '**'
+        self.mention = "@**" + name + "**"
 
 
 class BotStorage(Protocol):
@@ -143,19 +143,19 @@ class StateHandler:
 
     def put(self, key: Text, value: Any) -> None:
         self.state_[key] = self.marshal(value)
-        response = self._client.update_storage({'storage': {key: self.state_[key]}})
-        if response['result'] != 'success':
+        response = self._client.update_storage({"storage": {key: self.state_[key]}})
+        if response["result"] != "success":
             raise StateHandlerError("Error updating state: {}".format(str(response)))
 
     def get(self, key: Text) -> Any:
         if key in self.state_:
             return self.demarshal(self.state_[key])
 
-        response = self._client.get_storage({'keys': [key]})
-        if response['result'] != 'success':
-            raise KeyError('key not found: ' + key)
+        response = self._client.get_storage({"keys": [key]})
+        if response["result"] != "success":
+            raise KeyError("key not found: " + key)
 
-        marshalled_value = response['storage'][key]
+        marshalled_value = response["storage"][key]
         self.state_[key] = marshalled_value
         return self.demarshal(marshalled_value)
 
@@ -223,23 +223,23 @@ class ExternalBotHandler:
             user_profile = client.get_profile()
         except ZulipError as e:
             print(
-                '''
+                """
                 ERROR: {}
 
                 Have you not started the server?
                 Or did you mis-specify the URL?
-                '''.format(
+                """.format(
                     e
                 )
             )
             sys.exit(1)
 
-        if user_profile.get('result') == 'error':
-            msg = user_profile.get('msg', 'unknown')
+        if user_profile.get("result") == "error":
+            msg = user_profile.get("msg", "unknown")
             print(
-                '''
+                """
                 ERROR: {}
-                '''.format(
+                """.format(
                     msg
                 )
             )
@@ -253,13 +253,13 @@ class ExternalBotHandler:
         self._bot_config_parser = bot_config_parser
         self._storage = StateHandler(client)
         try:
-            self.user_id = user_profile['user_id']
-            self.full_name = user_profile['full_name']
-            self.email = user_profile['email']
+            self.user_id = user_profile["user_id"]
+            self.full_name = user_profile["full_name"]
+            self.email = user_profile["email"]
         except KeyError:
             logging.error(
-                'Cannot fetch user profile, make sure you have set'
-                ' up the zuliprc file correctly.'
+                "Cannot fetch user profile, make sure you have set"
+                " up the zuliprc file correctly."
             )
             sys.exit(1)
 
@@ -272,25 +272,25 @@ class ExternalBotHandler:
 
     def react(self, message: Dict[str, Any], emoji_name: str) -> Dict[str, Any]:
         return self._client.add_reaction(
-            dict(message_id=message['id'], emoji_name=emoji_name, reaction_type='unicode_emoji')
+            dict(message_id=message["id"], emoji_name=emoji_name, reaction_type="unicode_emoji")
         )
 
     def send_message(self, message: Dict[str, Any]) -> Dict[str, Any]:
         if not self._rate_limit.is_legal():
             self._rate_limit.show_error_and_exit()
         resp = self._client.send_message(message)
-        if resp.get('result') == 'error':
+        if resp.get("result") == "error":
             print("ERROR!: " + str(resp))
         return resp
 
     def send_reply(
         self, message: Dict[str, Any], response: str, widget_content: Optional[str] = None
     ) -> Dict[str, Any]:
-        if message['type'] == 'private':
+        if message["type"] == "private":
             return self.send_message(
                 dict(
-                    type='private',
-                    to=[x['id'] for x in message['display_recipient']],
+                    type="private",
+                    to=[x["id"] for x in message["display_recipient"]],
                     content=response,
                     widget_content=widget_content,
                 )
@@ -298,9 +298,9 @@ class ExternalBotHandler:
         else:
             return self.send_message(
                 dict(
-                    type='stream',
-                    to=message['display_recipient'],
-                    subject=message['subject'],
+                    type="stream",
+                    to=message["display_recipient"],
+                    subject=message["subject"],
                     content=response,
                     widget_content=widget_content,
                 )
@@ -328,7 +328,7 @@ class ExternalBotHandler:
 
             if bot_name not in self.bot_config_file:
                 print(
-                    '''
+                    """
                     WARNING!
 
                     {} does not adhere to the
@@ -339,7 +339,7 @@ class ExternalBotHandler:
                     The suggested name is {}.conf
 
                     We will proceed anyway.
-                    '''.format(
+                    """.format(
                         self.bot_config_file, bot_name
                     )
                 )
@@ -360,7 +360,7 @@ class ExternalBotHandler:
         return dict(config_parser.items(bot_name))
 
     def upload_file_from_path(self, file_path: str) -> Dict[str, Any]:
-        with open(file_path, 'rb') as file:
+        with open(file_path, "rb") as file:
             return self.upload_file(file)
 
     def upload_file(self, file: IO[Any]) -> Dict[str, Any]:
@@ -375,7 +375,7 @@ class ExternalBotHandler:
             return open(abs_filepath)
         else:
             raise PermissionError(
-                "Cannot open file \"{}\". Bots may only access "
+                'Cannot open file "{}". Bots may only access '
                 "files in their local directory.".format(abs_filepath)
             )
 
@@ -388,9 +388,9 @@ def extract_query_without_mention(message: Dict[str, Any], client: BotHandler) -
     If the bot is the first @mention in the message, then this function returns
     the stripped message with the bot's @mention removed.  Otherwise, it returns None.
     """
-    content = message['content']
-    mention = '@**' + client.full_name + '**'
-    extended_mention_regex = re.compile(r'^@\*\*.*\|' + str(client.user_id) + r'\*\*')
+    content = message["content"]
+    mention = "@**" + client.full_name + "**"
+    extended_mention_regex = re.compile(r"^@\*\*.*\|" + str(client.user_id) + r"\*\*")
     extended_mention_match = extended_mention_regex.match(content)
 
     if extended_mention_match:
@@ -412,27 +412,27 @@ def is_private_message_but_not_group_pm(
     zulip/zulip project, so refactor with care.  See the comments in
     extract_query_without_mention.
     """
-    if not message_dict['type'] == 'private':
+    if not message_dict["type"] == "private":
         return False
-    is_message_from_self = current_user.user_id == message_dict['sender_id']
+    is_message_from_self = current_user.user_id == message_dict["sender_id"]
     recipients = [
-        x['email'] for x in message_dict['display_recipient'] if current_user.email != x['email']
+        x["email"] for x in message_dict["display_recipient"] if current_user.email != x["email"]
     ]
     return len(recipients) == 1 and not is_message_from_self
 
 
 def display_config_file_errors(error_msg: str, config_file: str) -> None:
     file_contents = open(config_file).read()
-    print('\nERROR: {} seems to be broken:\n\n{}'.format(config_file, file_contents))
-    print('\nMore details here:\n\n{}\n'.format(error_msg))
+    print("\nERROR: {} seems to be broken:\n\n{}".format(config_file, file_contents))
+    print("\nMore details here:\n\n{}\n".format(error_msg))
 
 
 def prepare_message_handler(bot: str, bot_handler: BotHandler, bot_lib_module: Any) -> Any:
     message_handler = bot_lib_module.handler_class()
-    if hasattr(message_handler, 'validate_config'):
+    if hasattr(message_handler, "validate_config"):
         config_data = bot_handler.get_config_info(bot)
         bot_lib_module.handler_class.validate_config(config_data)
-    if hasattr(message_handler, 'initialize'):
+    if hasattr(message_handler, "initialize"):
         message_handler.initialize(bot_handler=bot_handler)
     return message_handler
 
@@ -453,10 +453,10 @@ def run_message_handler_for_bot(
     Set default bot_details, then override from class, if provided
     """
     bot_details = {
-        'name': bot_name.capitalize(),
-        'description': "",
+        "name": bot_name.capitalize(),
+        "description": "",
     }
-    bot_details.update(getattr(lib_module.handler_class, 'META', {}))
+    bot_details.update(getattr(lib_module.handler_class, "META", {}))
     # Make sure you set up your ~/.zuliprc
 
     client_name = "Zulip{}Bot".format(bot_name.capitalize())
@@ -473,33 +473,33 @@ def run_message_handler_for_bot(
     message_handler = prepare_message_handler(bot_name, restricted_client, lib_module)
 
     if not quiet:
-        print("Running {} Bot:".format(bot_details['name']))
-        if bot_details['description'] != "":
-            print("\n\t{}".format(bot_details['description']))
-        if hasattr(message_handler, 'usage'):
+        print("Running {} Bot:".format(bot_details["name"]))
+        if bot_details["description"] != "":
+            print("\n\t{}".format(bot_details["description"]))
+        if hasattr(message_handler, "usage"):
             print(message_handler.usage())
         else:
             print(
-                'WARNING: {} is missing usage handler, please add one eventually'.format(bot_name)
+                "WARNING: {} is missing usage handler, please add one eventually".format(bot_name)
             )
 
     def handle_message(message: Dict[str, Any], flags: List[str]) -> None:
-        logging.info('waiting for next message')
+        logging.info("waiting for next message")
         # `mentioned` will be in `flags` if the bot is mentioned at ANY position
         # (not necessarily the first @mention in the message).
-        is_mentioned = 'mentioned' in flags
+        is_mentioned = "mentioned" in flags
         is_private_message = is_private_message_but_not_group_pm(message, restricted_client)
 
         # Provide bots with a way to access the full, unstripped message
-        message['full_content'] = message['content']
+        message["full_content"] = message["content"]
         # Strip at-mention botname from the message
         if is_mentioned:
             # message['content'] will be None when the bot's @-mention is not at the beginning.
             # In that case, the message shall not be handled.
-            message['content'] = extract_query_without_mention(
+            message["content"] = extract_query_without_mention(
                 message=message, client=restricted_client
             )
-            if message['content'] is None:
+            if message["content"] is None:
                 return
 
         if is_private_message or is_mentioned:
@@ -507,10 +507,10 @@ def run_message_handler_for_bot(
 
     signal.signal(signal.SIGINT, exit_gracefully)
 
-    logging.info('starting message handling...')
+    logging.info("starting message handling...")
 
     def event_callback(event: Dict[str, Any]) -> None:
-        if event['type'] == 'message':
-            handle_message(event['message'], event['flags'])
+        if event["type"] == "message":
+            handle_message(event["message"], event["flags"])
 
-    client.call_on_each_event(event_callback, ['message'])
+    client.call_on_each_event(event_callback, ["message"])

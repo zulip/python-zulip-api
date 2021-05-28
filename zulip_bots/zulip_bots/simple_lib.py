@@ -28,20 +28,20 @@ class MockMessageServer:
 
     def send(self, message):
         self.message_id += 1
-        message['id'] = self.message_id
+        message["id"] = self.message_id
         self.messages[self.message_id] = message
         return message
 
     def add_reaction(self, reaction_data):
         return dict(
-            result='success', msg='', uri='https://server/messages/{}/reactions'.format(uuid4())
+            result="success", msg="", uri="https://server/messages/{}/reactions".format(uuid4())
         )
 
     def update(self, message):
-        self.messages[message['message_id']] = message
+        self.messages[message["message_id"]] = message
 
     def upload_file(self, file):
-        return dict(result='success', msg='', uri='https://server/user_uploads/{}'.format(uuid4()))
+        return dict(result="success", msg="", uri="https://server/user_uploads/{}".format(uuid4()))
 
 
 class TerminalBotHandler:
@@ -63,29 +63,29 @@ class TerminalBotHandler:
         """
         print("""The bot reacts to message #{}: {}""".format(message["id"], emoji_name))
         return self.message_server.add_reaction(
-            dict(message_id=message['id'], emoji_name=emoji_name, reaction_type='unicode_emoji')
+            dict(message_id=message["id"], emoji_name=emoji_name, reaction_type="unicode_emoji")
         )
 
     def send_message(self, message):
         """
         Print the message sent in the terminal and store it in a mock message server.
         """
-        if message['type'] == 'stream':
+        if message["type"] == "stream":
             print(
-                '''
+                """
                 stream: {} topic: {}
                 {}
-                '''.format(
-                    message['to'], message['subject'], message['content']
+                """.format(
+                    message["to"], message["subject"], message["content"]
                 )
             )
         else:
             print(
-                '''
+                """
                 PM response:
                 {}
-                '''.format(
-                    message['content']
+                """.format(
+                    message["content"]
                 )
             )
         # Note that message_server is only responsible for storing and assigning an
@@ -111,11 +111,11 @@ class TerminalBotHandler:
         """
         self.message_server.update(message)
         print(
-            '''
+            """
             update to message #{}:
             {}
-            '''.format(
-                message['message_id'], message['content']
+            """.format(
+                message["message_id"], message["content"]
             )
         )
 
@@ -131,7 +131,7 @@ class TerminalBotHandler:
             if optional:
                 return dict()
             else:
-                print('Please supply --bot-config-file argument.')
+                print("Please supply --bot-config-file argument.")
                 sys.exit(1)
 
         config = configparser.ConfigParser()

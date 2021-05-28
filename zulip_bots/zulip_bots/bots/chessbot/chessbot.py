@@ -7,38 +7,38 @@ import chess.uci
 
 from zulip_bots.lib import BotHandler
 
-START_REGEX = re.compile('start with other user$')
-START_COMPUTER_REGEX = re.compile('start as (?P<user_color>white|black) with computer')
-MOVE_REGEX = re.compile('do (?P<move_san>.+)$')
-RESIGN_REGEX = re.compile('resign$')
+START_REGEX = re.compile("start with other user$")
+START_COMPUTER_REGEX = re.compile("start as (?P<user_color>white|black) with computer")
+MOVE_REGEX = re.compile("do (?P<move_san>.+)$")
+RESIGN_REGEX = re.compile("resign$")
 
 
 class ChessHandler:
     def usage(self) -> str:
         return (
-            'Chess Bot is a bot that allows you to play chess against either '
-            'another user or the computer. Use `start with other user` or '
-            '`start as <color> with computer` to start a game.\n\n'
-            'In order to play against a computer, `chess.conf` must be set '
-            'with the key `stockfish_location` set to the location of the '
-            'Stockfish program on this computer.'
+            "Chess Bot is a bot that allows you to play chess against either "
+            "another user or the computer. Use `start with other user` or "
+            "`start as <color> with computer` to start a game.\n\n"
+            "In order to play against a computer, `chess.conf` must be set "
+            "with the key `stockfish_location` set to the location of the "
+            "Stockfish program on this computer."
         )
 
     def initialize(self, bot_handler: BotHandler) -> None:
-        self.config_info = bot_handler.get_config_info('chess')
+        self.config_info = bot_handler.get_config_info("chess")
 
         try:
-            self.engine = chess.uci.popen_engine(self.config_info['stockfish_location'])
+            self.engine = chess.uci.popen_engine(self.config_info["stockfish_location"])
             self.engine.uci()
         except FileNotFoundError:
             # It is helpful to allow for fake Stockfish locations if the bot
             # runner is testing or knows they won't be using an engine.
-            print('That Stockfish doesn\'t exist. Continuing.')
+            print("That Stockfish doesn't exist. Continuing.")
 
     def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
-        content = message['content']
+        content = message["content"]
 
-        if content == '':
+        if content == "":
             bot_handler.send_reply(message, self.usage())
             return
 
@@ -50,29 +50,29 @@ class ChessHandler:
         is_with_computer = False
         last_fen = chess.Board().fen()
 
-        if bot_handler.storage.contains('is_with_computer'):
+        if bot_handler.storage.contains("is_with_computer"):
             is_with_computer = (
                 # `bot_handler`'s `storage` only accepts `str` values.
-                bot_handler.storage.get('is_with_computer')
+                bot_handler.storage.get("is_with_computer")
                 == str(True)
             )
 
-        if bot_handler.storage.contains('last_fen'):
-            last_fen = bot_handler.storage.get('last_fen')
+        if bot_handler.storage.contains("last_fen"):
+            last_fen = bot_handler.storage.get("last_fen")
 
         if start_regex_match:
             self.start(message, bot_handler)
         elif start_computer_regex_match:
             self.start_computer(
-                message, bot_handler, start_computer_regex_match.group('user_color') == 'white'
+                message, bot_handler, start_computer_regex_match.group("user_color") == "white"
             )
         elif move_regex_match:
             if is_with_computer:
                 self.move_computer(
-                    message, bot_handler, last_fen, move_regex_match.group('move_san')
+                    message, bot_handler, last_fen, move_regex_match.group("move_san")
                 )
             else:
-                self.move(message, bot_handler, last_fen, move_regex_match.group('move_san'))
+                self.move(message, bot_handler, last_fen, move_regex_match.group("move_san"))
         elif resign_regex_match:
             self.resign(message, bot_handler, last_fen)
 
@@ -88,9 +88,9 @@ class ChessHandler:
         bot_handler.send_reply(message, make_start_reponse(new_board))
 
         # `bot_handler`'s `storage` only accepts `str` values.
-        bot_handler.storage.put('is_with_computer', str(False))
+        bot_handler.storage.put("is_with_computer", str(False))
 
-        bot_handler.storage.put('last_fen', new_board.fen())
+        bot_handler.storage.put("last_fen", new_board.fen())
 
     def start_computer(
         self, message: Dict[str, str], bot_handler: BotHandler, is_white_user: bool
@@ -112,9 +112,9 @@ class ChessHandler:
             bot_handler.send_reply(message, make_start_computer_reponse(new_board))
 
             # `bot_handler`'s `storage` only accepts `str` values.
-            bot_handler.storage.put('is_with_computer', str(True))
+            bot_handler.storage.put("is_with_computer", str(True))
 
-            bot_handler.storage.put('last_fen', new_board.fen())
+            bot_handler.storage.put("last_fen", new_board.fen())
         else:
             self.move_computer_first(
                 message,
@@ -204,18 +204,18 @@ class ChessHandler:
         # wants the game to be a draw, after 3 or 75 it a draw. For now,
         # just assume that the players would want the draw.
         if new_board.is_game_over(True):
-            game_over_output = ''
+            game_over_output = ""
 
             if new_board.is_checkmate():
-                game_over_output = make_loss_response(new_board, 'was checkmated')
+                game_over_output = make_loss_response(new_board, "was checkmated")
             elif new_board.is_stalemate():
-                game_over_output = make_draw_response('stalemate')
+                game_over_output = make_draw_response("stalemate")
             elif new_board.is_insufficient_material():
-                game_over_output = make_draw_response('insufficient material')
+                game_over_output = make_draw_response("insufficient material")
             elif new_board.can_claim_fifty_moves():
-                game_over_output = make_draw_response('50 moves without a capture or pawn move')
+                game_over_output = make_draw_response("50 moves without a capture or pawn move")
             elif new_board.can_claim_threefold_repetition():
-                game_over_output = make_draw_response('3-fold repetition')
+                game_over_output = make_draw_response("3-fold repetition")
 
             bot_handler.send_reply(message, game_over_output)
 
@@ -253,7 +253,7 @@ class ChessHandler:
 
         bot_handler.send_reply(message, make_move_reponse(last_board, new_board, move))
 
-        bot_handler.storage.put('last_fen', new_board.fen())
+        bot_handler.storage.put("last_fen", new_board.fen())
 
     def move_computer(
         self, message: Dict[str, str], bot_handler: BotHandler, last_fen: str, move_san: str
@@ -299,7 +299,7 @@ class ChessHandler:
             message, make_move_reponse(new_board, new_board_after_computer_move, computer_move)
         )
 
-        bot_handler.storage.put('last_fen', new_board_after_computer_move.fen())
+        bot_handler.storage.put("last_fen", new_board_after_computer_move.fen())
 
     def move_computer_first(
         self, message: Dict[str, str], bot_handler: BotHandler, last_fen: str
@@ -329,10 +329,10 @@ class ChessHandler:
             message, make_move_reponse(last_board, new_board_after_computer_move, computer_move)
         )
 
-        bot_handler.storage.put('last_fen', new_board_after_computer_move.fen())
+        bot_handler.storage.put("last_fen", new_board_after_computer_move.fen())
 
         # `bot_handler`'s `storage` only accepts `str` values.
-        bot_handler.storage.put('is_with_computer', str(True))
+        bot_handler.storage.put("is_with_computer", str(True))
 
     def resign(self, message: Dict[str, str], bot_handler: BotHandler, last_fen: str) -> None:
         """Resigns the game for the current player.
@@ -347,7 +347,7 @@ class ChessHandler:
         if not last_board:
             return
 
-        bot_handler.send_reply(message, make_loss_response(last_board, 'resigned'))
+        bot_handler.send_reply(message, make_loss_response(last_board, "resigned"))
 
 
 handler_class = ChessHandler
@@ -376,7 +376,7 @@ def make_draw_response(reason: str) -> str:
 
     Returns: The draw response string.
     """
-    return 'It\'s a draw because of {}!'.format(reason)
+    return "It's a draw because of {}!".format(reason)
 
 
 def make_loss_response(board: chess.Board, reason: str) -> str:
@@ -389,10 +389,10 @@ def make_loss_response(board: chess.Board, reason: str) -> str:
 
     Returns: The loss response string.
     """
-    return ('*{}* {}. **{}** wins!\n\n' '{}').format(
-        'White' if board.turn else 'Black',
+    return ("*{}* {}. **{}** wins!\n\n" "{}").format(
+        "White" if board.turn else "Black",
         reason,
-        'Black' if board.turn else 'White',
+        "Black" if board.turn else "White",
         make_str(board, board.turn),
     )
 
@@ -406,7 +406,7 @@ def make_not_legal_response(board: chess.Board, move_san: str) -> str:
 
     Returns: The not-legal-move response string.
     """
-    return ('Sorry, the move *{}* isn\'t legal.\n\n' '{}' '\n\n\n' '{}').format(
+    return ("Sorry, the move *{}* isn't legal.\n\n" "{}" "\n\n\n" "{}").format(
         move_san, make_str(board, board.turn), make_footer()
     )
 
@@ -417,8 +417,8 @@ def make_copied_wrong_response() -> str:
     Returns: The copied-wrong response string.
     """
     return (
-        'Sorry, it seems like you copied down the response wrong.\n\n'
-        'Please try to copy the response again from the last message!'
+        "Sorry, it seems like you copied down the response wrong.\n\n"
+        "Please try to copy the response again from the last message!"
     )
 
 
@@ -433,13 +433,13 @@ def make_start_reponse(board: chess.Board) -> str:
     Returns: The starting response string.
     """
     return (
-        'New game! The board looks like this:\n\n'
-        '{}'
-        '\n\n\n'
-        'Now it\'s **{}**\'s turn.'
-        '\n\n\n'
-        '{}'
-    ).format(make_str(board, True), 'white' if board.turn else 'black', make_footer())
+        "New game! The board looks like this:\n\n"
+        "{}"
+        "\n\n\n"
+        "Now it's **{}**'s turn."
+        "\n\n\n"
+        "{}"
+    ).format(make_str(board, True), "white" if board.turn else "black", make_footer())
 
 
 def make_start_computer_reponse(board: chess.Board) -> str:
@@ -454,13 +454,13 @@ def make_start_computer_reponse(board: chess.Board) -> str:
     Returns: The starting response string.
     """
     return (
-        'New game with computer! The board looks like this:\n\n'
-        '{}'
-        '\n\n\n'
-        'Now it\'s **{}**\'s turn.'
-        '\n\n\n'
-        '{}'
-    ).format(make_str(board, True), 'white' if board.turn else 'black', make_footer())
+        "New game with computer! The board looks like this:\n\n"
+        "{}"
+        "\n\n\n"
+        "Now it's **{}**'s turn."
+        "\n\n\n"
+        "{}"
+    ).format(make_str(board, True), "white" if board.turn else "black", make_footer())
 
 
 def make_move_reponse(last_board: chess.Board, new_board: chess.Board, move: chess.Move) -> str:
@@ -474,21 +474,21 @@ def make_move_reponse(last_board: chess.Board, new_board: chess.Board, move: che
     Returns: The move response string.
     """
     return (
-        'The board was like this:\n\n'
-        '{}'
-        '\n\n\n'
-        'Then *{}* moved *{}*:\n\n'
-        '{}'
-        '\n\n\n'
-        'Now it\'s **{}**\'s turn.'
-        '\n\n\n'
-        '{}'
+        "The board was like this:\n\n"
+        "{}"
+        "\n\n\n"
+        "Then *{}* moved *{}*:\n\n"
+        "{}"
+        "\n\n\n"
+        "Now it's **{}**'s turn."
+        "\n\n\n"
+        "{}"
     ).format(
         make_str(last_board, new_board.turn),
-        'white' if last_board.turn else 'black',
+        "white" if last_board.turn else "black",
         last_board.san(move),
         make_str(new_board, new_board.turn),
-        'white' if new_board.turn else 'black',
+        "white" if new_board.turn else "black",
         make_footer(),
     )
 
@@ -498,10 +498,10 @@ def make_footer() -> str:
     responses.
     """
     return (
-        'To make your next move, respond to Chess Bot with\n\n'
-        '```do <your move>```\n\n'
-        '*Remember to @-mention Chess Bot at the beginning of your '
-        'response.*'
+        "To make your next move, respond to Chess Bot with\n\n"
+        "```do <your move>```\n\n"
+        "*Remember to @-mention Chess Bot at the beginning of your "
+        "response.*"
     )
 
 
@@ -525,7 +525,7 @@ def make_str(board: chess.Board, is_white_on_bottom: bool) -> str:
         replaced_and_guided_str if is_white_on_bottom else replaced_and_guided_str[::-1]
     )
     trimmed_str = trim_whitespace_before_newline(properly_flipped_str)
-    monospaced_str = '```\n{}\n```'.format(trimmed_str)
+    monospaced_str = "```\n{}\n```".format(trimmed_str)
 
     return monospaced_str
 
@@ -542,11 +542,11 @@ def guide_with_numbers(board_str: str) -> str:
     # Spaces and newlines would mess up the loop because they add extra indexes
     # between pieces. Newlines are added later by the loop and spaces are added
     # back in at the end.
-    board_without_whitespace_str = board_str.replace(' ', '').replace('\n', '')
+    board_without_whitespace_str = board_str.replace(" ", "").replace("\n", "")
 
     # The first number, 8, needs to be added first because it comes before a
     # newline. From then on, numbers are inserted at newlines.
-    row_list = list('8' + board_without_whitespace_str)
+    row_list = list("8" + board_without_whitespace_str)
 
     for i, char in enumerate(row_list):
         # `(i + 1) % 10 == 0` if it is the end of a row, i.e., the 10th column
@@ -563,14 +563,14 @@ def guide_with_numbers(board_str: str) -> str:
             # the newline isn't counted by the loop. If they were split into 3,
             # or combined into just 1 string, the counter would become off
             # because it would be counting what is really 2 rows as 3 or 1.
-            row_list[i:i] = [str(row_num) + '\n', str(row_num - 1)]
+            row_list[i:i] = [str(row_num) + "\n", str(row_num - 1)]
 
     # 1 is appended to the end because it isn't created in the loop, and lines
     # that begin with spaces have their spaces removed for aesthetics.
-    row_str = (' '.join(row_list) + ' 1').replace('\n ', '\n')
+    row_str = (" ".join(row_list) + " 1").replace("\n ", "\n")
 
     # a, b, c, d, e, f, g, and h are easy to add in.
-    row_and_col_str = '  a b c d e f g h  \n' + row_str + '\n  a b c d e f g h  '
+    row_and_col_str = "  a b c d e f g h  \n" + row_str + "\n  a b c d e f g h  "
 
     return row_and_col_str
 
@@ -586,21 +586,21 @@ def replace_with_unicode(board_str: str) -> str:
     """
     replaced_str = board_str
 
-    replaced_str = replaced_str.replace('P', '♙')
-    replaced_str = replaced_str.replace('N', '♘')
-    replaced_str = replaced_str.replace('B', '♗')
-    replaced_str = replaced_str.replace('R', '♖')
-    replaced_str = replaced_str.replace('Q', '♕')
-    replaced_str = replaced_str.replace('K', '♔')
+    replaced_str = replaced_str.replace("P", "♙")
+    replaced_str = replaced_str.replace("N", "♘")
+    replaced_str = replaced_str.replace("B", "♗")
+    replaced_str = replaced_str.replace("R", "♖")
+    replaced_str = replaced_str.replace("Q", "♕")
+    replaced_str = replaced_str.replace("K", "♔")
 
-    replaced_str = replaced_str.replace('p', '♟')
-    replaced_str = replaced_str.replace('n', '♞')
-    replaced_str = replaced_str.replace('b', '♝')
-    replaced_str = replaced_str.replace('r', '♜')
-    replaced_str = replaced_str.replace('q', '♛')
-    replaced_str = replaced_str.replace('k', '♚')
+    replaced_str = replaced_str.replace("p", "♟")
+    replaced_str = replaced_str.replace("n", "♞")
+    replaced_str = replaced_str.replace("b", "♝")
+    replaced_str = replaced_str.replace("r", "♜")
+    replaced_str = replaced_str.replace("q", "♛")
+    replaced_str = replaced_str.replace("k", "♚")
 
-    replaced_str = replaced_str.replace('.', '·')
+    replaced_str = replaced_str.replace(".", "·")
 
     return replaced_str
 
@@ -613,4 +613,4 @@ def trim_whitespace_before_newline(str_to_trim: str) -> str:
 
     Returns: The trimmed string.
     """
-    return re.sub(r'\s+$', '', str_to_trim, flags=re.M)
+    return re.sub(r"\s+$", "", str_to_trim, flags=re.M)

@@ -21,7 +21,7 @@ import feedparser
 import zulip
 
 VERSION = "0.9"  # type: str
-RSS_DATA_DIR = os.path.expanduser(os.path.join('~', '.cache', 'zulip-rss'))  # type: str
+RSS_DATA_DIR = os.path.expanduser(os.path.join("~", ".cache", "zulip-rss"))  # type: str
 OLDNESS_THRESHOLD = 30  # type: int
 
 usage = """Usage: Send summaries of RSS entries for your favorite feeds to Zulip.
@@ -52,38 +52,38 @@ parser = zulip.add_default_arguments(
     argparse.ArgumentParser(usage)
 )  # type: argparse.ArgumentParser
 parser.add_argument(
-    '--stream',
-    dest='stream',
-    help='The stream to which to send RSS messages.',
+    "--stream",
+    dest="stream",
+    help="The stream to which to send RSS messages.",
     default="rss",
-    action='store',
+    action="store",
 )
 parser.add_argument(
-    '--data-dir',
-    dest='data_dir',
-    help='The directory where feed metadata is stored',
+    "--data-dir",
+    dest="data_dir",
+    help="The directory where feed metadata is stored",
     default=os.path.join(RSS_DATA_DIR),
-    action='store',
+    action="store",
 )
 parser.add_argument(
-    '--feed-file',
-    dest='feed_file',
-    help='The file containing a list of RSS feed URLs to follow, one URL per line',
+    "--feed-file",
+    dest="feed_file",
+    help="The file containing a list of RSS feed URLs to follow, one URL per line",
     default=os.path.join(RSS_DATA_DIR, "rss-feeds"),
-    action='store',
+    action="store",
 )
 parser.add_argument(
-    '--unwrap',
-    dest='unwrap',
-    action='store_true',
-    help='Convert word-wrapped paragraphs into single lines',
+    "--unwrap",
+    dest="unwrap",
+    action="store_true",
+    help="Convert word-wrapped paragraphs into single lines",
     default=False,
 )
 parser.add_argument(
-    '--math',
-    dest='math',
-    action='store_true',
-    help='Convert $ to $$ (for KaTeX processing)',
+    "--math",
+    dest="math",
+    action="store_true",
+    help="Convert $ to $$ (for KaTeX processing)",
     default=False,
 )
 
@@ -137,7 +137,7 @@ class MLStripper(HTMLParser):
         self.fed.append(data)
 
     def get_data(self) -> str:
-        return ''.join(self.fed)
+        return "".join(self.fed)
 
 
 def strip_tags(html: str) -> str:
@@ -155,13 +155,13 @@ def compute_entry_hash(entry: Dict[str, Any]) -> str:
 def unwrap_text(body: str) -> str:
     # Replace \n by space if it is preceded and followed by a non-\n.
     # Example: '\na\nb\nc\n\nd\n' -> '\na b c\n\nd\n'
-    return re.sub('(?<=[^\n])\n(?=[^\n])', ' ', body)
+    return re.sub("(?<=[^\n])\n(?=[^\n])", " ", body)
 
 
 def elide_subject(subject: str) -> str:
     MAX_TOPIC_LENGTH = 60
     if len(subject) > MAX_TOPIC_LENGTH:
-        subject = subject[: MAX_TOPIC_LENGTH - 3].rstrip() + '...'
+        subject = subject[: MAX_TOPIC_LENGTH - 3].rstrip() + "..."
     return subject
 
 
@@ -178,7 +178,7 @@ def send_zulip(entry: Any, feed_name: str) -> Dict[str, Any]:
     )  # type: str
 
     if opts.math:
-        content = content.replace('$', '$$')
+        content = content.replace("$", "$$")
 
     message = {
         "type": "stream",

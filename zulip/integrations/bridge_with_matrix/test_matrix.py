@@ -59,7 +59,7 @@ class MatrixBridgeScriptTests(TestCase):
         usage = "usage: {} [-h]".format(script_file)
         description = "Script to bridge"
         self.assertIn(usage, output_lines[0])
-        blank_lines = [num for num, line in enumerate(output_lines) if line == '']
+        blank_lines = [num for num, line in enumerate(output_lines) if line == ""]
         # There should be blank lines in the output
         self.assertTrue(blank_lines)
         # There should be finite output
@@ -79,9 +79,9 @@ class MatrixBridgeScriptTests(TestCase):
     def test_write_sample_config_from_zuliprc(self) -> None:
         zuliprc_template = ["[api]", "email={email}", "key={key}", "site={site}"]
         zulip_params = {
-            'email': 'foo@bar',
-            'key': 'some_api_key',
-            'site': 'https://some.chat.serverplace',
+            "email": "foo@bar",
+            "key": "some_api_key",
+            "site": "https://some.chat.serverplace",
         }
         with new_temp_dir() as tempdir:
             path = os.path.join(tempdir, sample_config_path)
@@ -103,9 +103,9 @@ class MatrixBridgeScriptTests(TestCase):
             with open(path) as sample_file:
                 sample_lines = [line.strip() for line in sample_file.readlines()]
                 expected_lines = sample_config_text.split("\n")
-                expected_lines[7] = 'email = {}'.format(zulip_params['email'])
-                expected_lines[8] = 'api_key = {}'.format(zulip_params['key'])
-                expected_lines[9] = 'site = {}'.format(zulip_params['site'])
+                expected_lines[7] = "email = {}".format(zulip_params["email"])
+                expected_lines[8] = "api_key = {}".format(zulip_params["key"])
+                expected_lines[9] = "site = {}".format(zulip_params["site"])
                 self.assertEqual(sample_lines, expected_lines[:-1])
 
     def test_detect_zuliprc_does_not_exist(self) -> None:
@@ -131,31 +131,31 @@ class MatrixBridgeZulipToMatrixTests(TestCase):
     valid_msg = dict(
         sender_email="John@Smith.smith",  # must not be equal to config:email
         type="stream",  # Can only mirror Zulip streams
-        display_recipient=valid_zulip_config['stream'],
-        subject=valid_zulip_config['topic'],
+        display_recipient=valid_zulip_config["stream"],
+        subject=valid_zulip_config["topic"],
     )
 
     def test_zulip_message_validity_success(self) -> None:
         zulip_config = self.valid_zulip_config
         msg = self.valid_msg
         # Ensure the test inputs are valid for success
-        assert msg['sender_email'] != zulip_config['email']
+        assert msg["sender_email"] != zulip_config["email"]
 
         self.assertTrue(check_zulip_message_validity(msg, zulip_config))
 
     def test_zulip_message_validity_failure(self) -> None:
         zulip_config = self.valid_zulip_config
 
-        msg_wrong_stream = dict(self.valid_msg, display_recipient='foo')
+        msg_wrong_stream = dict(self.valid_msg, display_recipient="foo")
         self.assertFalse(check_zulip_message_validity(msg_wrong_stream, zulip_config))
 
-        msg_wrong_topic = dict(self.valid_msg, subject='foo')
+        msg_wrong_topic = dict(self.valid_msg, subject="foo")
         self.assertFalse(check_zulip_message_validity(msg_wrong_topic, zulip_config))
 
         msg_not_stream = dict(self.valid_msg, type="private")
         self.assertFalse(check_zulip_message_validity(msg_not_stream, zulip_config))
 
-        msg_from_bot = dict(self.valid_msg, sender_email=zulip_config['email'])
+        msg_from_bot = dict(self.valid_msg, sender_email=zulip_config["email"])
         self.assertFalse(check_zulip_message_validity(msg_from_bot, zulip_config))
 
     def test_zulip_to_matrix(self) -> None:
@@ -166,14 +166,14 @@ class MatrixBridgeZulipToMatrixTests(TestCase):
         msg = dict(self.valid_msg, sender_full_name="John Smith")
 
         expected = {
-            'hi': '{} hi',
-            '*hi*': '{} *hi*',
-            '**hi**': '{} **hi**',
+            "hi": "{} hi",
+            "*hi*": "{} *hi*",
+            "**hi**": "{} **hi**",
         }
 
         for content in expected:
             send_msg(dict(msg, content=content))
 
         for (method, params, _), expect in zip(room.method_calls, expected.values()):
-            self.assertEqual(method, 'send_text')
-            self.assertEqual(params[0], expect.format('<JohnSmith>'))
+            self.assertEqual(method, "send_text")
+            self.assertEqual(params[0], expect.format("<JohnSmith>"))

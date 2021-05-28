@@ -22,12 +22,12 @@ class MerelsModel:
         self.topic = "merels"
         self.storage = Storage(self.topic)
         self.current_board = mechanics.display_game(self.topic, self.storage)
-        self.token = ['O', 'X']
+        self.token = ["O", "X"]
 
     def determine_game_over(self, players: List[str]) -> str:
         if self.contains_winning_move(self.current_board):
-            return 'current turn'
-        return ''
+            return "current turn"
+        return ""
 
     def contains_winning_move(self, board: Any) -> bool:
         merels = database.MerelsStorage(self.topic, self.storage)
@@ -53,7 +53,7 @@ class MerelsModel:
 
 
 class MerelsMessageHandler:
-    tokens = [':o_button:', ':cross_mark_button:']
+    tokens = [":o_button:", ":cross_mark_button:"]
 
     def parse_board(self, board: Any) -> str:
         return board
@@ -69,24 +69,24 @@ class MerelsMessageHandler:
 
 
 class MerelsHandler(GameAdapter):
-    '''
+    """
     You can play merels! Make sure your message starts with
     "@mention-bot".
-    '''
+    """
 
     META = {
-        'name': 'merels',
-        'description': 'Lets you play merels against any player.',
+        "name": "merels",
+        "description": "Lets you play merels against any player.",
     }
 
     def usage(self) -> str:
         return game.getInfo()
 
     def __init__(self) -> None:
-        game_name = 'Merels'
-        bot_name = 'merels'
+        game_name = "Merels"
+        bot_name = "merels"
         move_help_message = ""
-        move_regex = '.*'
+        move_regex = ".*"
         model = MerelsModel
         rules = game.getInfo()
         gameMessageHandler = MerelsMessageHandler

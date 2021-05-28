@@ -8,7 +8,7 @@ class BoardLayoutTest(unittest.TestCase):
         grid = interface.construct_grid("NNNNNNNNNNNNNNNNNNNNNNNN")
         self.assertEqual(
             interface.graph_grid(grid),
-            '''`      0     1     2     3     4     5     6
+            """`      0     1     2     3     4     5     6
     0 [ ]---------------[ ]---------------[ ]
        |                 |                 |
     1  |    [ ]---------[ ]---------[ ]    |
@@ -21,14 +21,14 @@ class BoardLayoutTest(unittest.TestCase):
        |     |           |           |     |
     5  |    [ ]---------[ ]---------[ ]    |
        |                 |                 |
-    6 [ ]---------------[ ]---------------[ ]`''',
+    6 [ ]---------------[ ]---------------[ ]`""",
         )
 
     def test_full_layout_arragement(self):
         grid = interface.construct_grid("NXONXONXONXONXONXONXONXO")
         self.assertEqual(
             interface.graph_grid(grid),
-            '''`      0     1     2     3     4     5     6
+            """`      0     1     2     3     4     5     6
     0 [ ]---------------[X]---------------[O]
        |                 |                 |
     1  |    [ ]---------[X]---------[O]    |
@@ -41,14 +41,14 @@ class BoardLayoutTest(unittest.TestCase):
        |     |           |           |     |
     5  |    [ ]---------[X]---------[O]    |
        |                 |                 |
-    6 [ ]---------------[X]---------------[O]`''',
+    6 [ ]---------------[X]---------------[O]`""",
         )
 
     def test_illegal_character_arrangement(self):
         grid = interface.construct_grid("ABCDABCDABCDABCDABCDXXOO")
         self.assertEqual(
             interface.graph_grid(grid),
-            '''`      0     1     2     3     4     5     6
+            """`      0     1     2     3     4     5     6
     0 [ ]---------------[ ]---------------[ ]
        |                 |                 |
     1  |    [ ]---------[ ]---------[ ]    |
@@ -61,7 +61,7 @@ class BoardLayoutTest(unittest.TestCase):
        |     |           |           |     |
     5  |    [ ]---------[ ]---------[X]    |
        |                 |                 |
-    6 [X]---------------[O]---------------[O]`''',
+    6 [X]---------------[O]---------------[O]`""",
         )
 
 

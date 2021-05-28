@@ -2,8 +2,8 @@
 from typing import Dict, Optional, Text
 
 # Change these values to configure authentication for the plugin
-ZULIP_USER = 'openshift-bot@example.com'
-ZULIP_API_KEY = '0123456789abcdef0123456789abcdef'
+ZULIP_USER = "openshift-bot@example.com"
+ZULIP_API_KEY = "0123456789abcdef0123456789abcdef"
 
 # deployment_notice_destination() lets you customize where deployment notices
 # are sent to with the full power of a Python function.
@@ -20,8 +20,8 @@ ZULIP_API_KEY = '0123456789abcdef0123456789abcdef'
 # * topic "master"
 # And similarly for branch "test-post-receive" (for use when testing).
 def deployment_notice_destination(branch: str) -> Optional[Dict[str, Text]]:
-    if branch in ['master', 'test-post-receive']:
-        return dict(stream='deployments', subject='%s' % (branch,))
+    if branch in ["master", "test-post-receive"]:
+        return dict(stream="deployments", subject="%s" % (branch,))
 
     # Return None for cases where you don't want a notice sent
     return None
@@ -39,14 +39,14 @@ def deployment_notice_destination(branch: str) -> Optional[Dict[str, Text]]:
 # * dep_id    = deployment id
 # * dep_time  = deployment timestamp
 def format_deployment_message(
-    app_name: str = '',
-    url: str = '',
-    branch: str = '',
-    commit_id: str = '',
-    dep_id: str = '',
-    dep_time: str = '',
+    app_name: str = "",
+    url: str = "",
+    branch: str = "",
+    commit_id: str = "",
+    dep_id: str = "",
+    dep_time: str = "",
 ) -> str:
-    return 'Deployed commit `%s` (%s) in [%s](%s)' % (commit_id, branch, app_name, url)
+    return "Deployed commit `%s` (%s) in [%s](%s)" % (commit_id, branch, app_name, url)
 
 
 ## If properly installed, the Zulip API should be in your import
@@ -54,4 +54,4 @@ def format_deployment_message(
 ZULIP_API_PATH = None  # type: Optional[str]
 
 # Set this to your Zulip server's API URI
-ZULIP_SITE = 'https://zulip.example.com'
+ZULIP_SITE = "https://zulip.example.com"

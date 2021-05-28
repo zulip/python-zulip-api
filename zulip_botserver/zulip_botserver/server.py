@@ -23,17 +23,17 @@ from zulip_botserver.input_parameters import parse_args
 
 def read_config_section(parser: configparser.ConfigParser, section: str) -> Dict[str, str]:
     section_info = {
-        "email": parser.get(section, 'email'),
-        "key": parser.get(section, 'key'),
-        "site": parser.get(section, 'site'),
-        "token": parser.get(section, 'token'),
+        "email": parser.get(section, "email"),
+        "key": parser.get(section, "key"),
+        "site": parser.get(section, "site"),
+        "token": parser.get(section, "token"),
     }
     return section_info
 
 
 def read_config_from_env_vars(bot_name: Optional[str] = None) -> Dict[str, Dict[str, str]]:
     bots_config = {}  # type: Dict[str, Dict[str, str]]
-    json_config = os.environ.get('ZULIP_BOTSERVER_CONFIG')
+    json_config = os.environ.get("ZULIP_BOTSERVER_CONFIG")
 
     if json_config is None:
         raise OSError(
@@ -126,15 +126,15 @@ def load_lib_modules(available_bots: List[str]) -> Dict[str, Any]:
     bots_lib_module = {}
     for bot in available_bots:
         try:
-            if bot.endswith('.py') and os.path.isfile(bot):
+            if bot.endswith(".py") and os.path.isfile(bot):
                 lib_module = load_module_from_file(bot)
             else:
-                module_name = 'zulip_bots.bots.{bot}.{bot}'.format(bot=bot)
+                module_name = "zulip_bots.bots.{bot}.{bot}".format(bot=bot)
                 lib_module = import_module(module_name)
             bots_lib_module[bot] = lib_module
         except ImportError:
             error_message = (
-                "Error: Bot \"{}\" doesn't exist. Please make sure "
+                'Error: Bot "{}" doesn\'t exist. Please make sure '
                 "you have set up the botserverrc file correctly.\n".format(bot)
             )
             if bot == "api":
@@ -157,7 +157,7 @@ def load_bot_handlers(
             api_key=bots_config[bot]["key"],
             site=bots_config[bot]["site"],
         )
-        bot_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'bots', bot)
+        bot_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "bots", bot)
         bot_handler = lib.ExternalBotHandler(
             client, bot_dir, bot_details={}, bot_config_parser=third_party_bot_conf
         )
@@ -184,12 +184,12 @@ app = Flask(__name__)
 bots_config = {}  # type: Dict[str, Dict[str, str]]
 
 
-@app.route('/', methods=['POST'])
+@app.route("/", methods=["POST"])
 def handle_bot() -> str:
     event = request.get_json(force=True)
     assert event is not None
     for bot_name, config in bots_config.items():
-        if config['email'] == event['bot_email']:
+        if config["email"] == event["bot_email"]:
             bot = bot_name
             bot_config = config
             break
@@ -197,27 +197,27 @@ def handle_bot() -> str:
         raise BadRequest(
             "Cannot find a bot with email {} in the Botserver "
             "configuration file. Do the emails in your botserverrc "
-            "match the bot emails on the server?".format(event['bot_email'])
+            "match the bot emails on the server?".format(event["bot_email"])
         )
-    if bot_config['token'] != event['token']:
+    if bot_config["token"] != event["token"]:
         raise Unauthorized(
             "Request token does not match token found for bot {} in the "
             "Botserver configuration file. Do the outgoing webhooks in "
-            "Zulip point to the right Botserver?".format(event['bot_email'])
+            "Zulip point to the right Botserver?".format(event["bot_email"])
         )
     app.config.get("BOTS_LIB_MODULES", {})[bot]
     bot_handler = app.config.get("BOT_HANDLERS", {})[bot]
     message_handler = app.config.get("MESSAGE_HANDLERS", {})[bot]
-    is_mentioned = event['trigger'] == "mention"
-    is_private_message = event['trigger'] == "private_message"
+    is_mentioned = event["trigger"] == "mention"
+    is_private_message = event["trigger"] == "private_message"
     message = event["message"]
-    message['full_content'] = message['content']
+    message["full_content"] = message["content"]
     # Strip at-mention botname from the message
     if is_mentioned:
         # message['content'] will be None when the bot's @-mention is not at the beginning.
         # In that case, the message shall not be handled.
-        message['content'] = lib.extract_query_without_mention(message=message, client=bot_handler)
-        if message['content'] is None:
+        message["content"] = lib.extract_query_without_mention(message=message, client=bot_handler)
+        if message["content"] is None:
             return json.dumps(dict(response_not_required=True))
 
     if is_private_message or is_mentioned:
@@ -261,5 +261,5 @@ def main() -> None:
     app.run(host=options.hostname, port=int(options.port), debug=True)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

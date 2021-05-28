@@ -71,10 +71,10 @@ if __name__ == "__main__":
     all topics within the stream are mirrored as-is without
     translation.
     """
-    sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+    sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
     parser = argparse.ArgumentParser(usage=usage)
-    parser.add_argument('--stream', action='store_true', help="", default=False)
+    parser.add_argument("--stream", action="store_true", help="", default=False)
     args = parser.parse_args()
 
     options = interrealm_bridge_config.config

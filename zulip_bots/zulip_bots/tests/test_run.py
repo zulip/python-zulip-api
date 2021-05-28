@@ -14,55 +14,55 @@ from zulip_bots.lib import extract_query_without_mention
 class TestDefaultArguments(TestCase):
 
     our_dir = os.path.dirname(__file__)
-    path_to_bot = os.path.abspath(os.path.join(our_dir, '../bots/giphy/giphy.py'))
+    path_to_bot = os.path.abspath(os.path.join(our_dir, "../bots/giphy/giphy.py"))
 
-    @patch('sys.argv', ['zulip-run-bot', 'giphy', '--config-file', '/foo/bar/baz.conf'])
-    @patch('zulip_bots.run.run_message_handler_for_bot')
+    @patch("sys.argv", ["zulip-run-bot", "giphy", "--config-file", "/foo/bar/baz.conf"])
+    @patch("zulip_bots.run.run_message_handler_for_bot")
     def test_argument_parsing_with_bot_name(
         self, mock_run_message_handler_for_bot: mock.Mock
     ) -> None:
-        with patch('zulip_bots.run.exit_gracefully_if_zulip_config_is_missing'):
+        with patch("zulip_bots.run.exit_gracefully_if_zulip_config_is_missing"):
             zulip_bots.run.main()
 
         mock_run_message_handler_for_bot.assert_called_with(
-            bot_name='giphy',
-            config_file='/foo/bar/baz.conf',
+            bot_name="giphy",
+            config_file="/foo/bar/baz.conf",
             bot_config_file=None,
             lib_module=mock.ANY,
             quiet=False,
         )
 
-    @patch('sys.argv', ['zulip-run-bot', path_to_bot, '--config-file', '/foo/bar/baz.conf'])
-    @patch('zulip_bots.run.run_message_handler_for_bot')
+    @patch("sys.argv", ["zulip-run-bot", path_to_bot, "--config-file", "/foo/bar/baz.conf"])
+    @patch("zulip_bots.run.run_message_handler_for_bot")
     def test_argument_parsing_with_bot_path(
         self, mock_run_message_handler_for_bot: mock.Mock
     ) -> None:
-        with patch('zulip_bots.run.exit_gracefully_if_zulip_config_is_missing'):
+        with patch("zulip_bots.run.exit_gracefully_if_zulip_config_is_missing"):
             zulip_bots.run.main()
 
         mock_run_message_handler_for_bot.assert_called_with(
-            bot_name='giphy',
-            config_file='/foo/bar/baz.conf',
+            bot_name="giphy",
+            config_file="/foo/bar/baz.conf",
             bot_config_file=None,
             lib_module=mock.ANY,
             quiet=False,
         )
 
     def test_adding_bot_parent_dir_to_sys_path_when_bot_name_specified(self) -> None:
-        bot_name = 'helloworld'  # existing bot's name
+        bot_name = "helloworld"  # existing bot's name
         expected_bot_dir_path = Path(
-            os.path.dirname(zulip_bots.run.__file__), 'bots', bot_name
+            os.path.dirname(zulip_bots.run.__file__), "bots", bot_name
         ).as_posix()
         self._test_adding_bot_parent_dir_to_sys_path(
             bot_qualifier=bot_name, bot_dir_path=expected_bot_dir_path
         )
 
-    @patch('os.path.isfile', return_value=True)
+    @patch("os.path.isfile", return_value=True)
     def test_adding_bot_parent_dir_to_sys_path_when_bot_path_specified(
         self, mock_os_path_isfile: mock.Mock
     ) -> None:
-        bot_path = '/path/to/bot'
-        expected_bot_dir_path = Path('/path/to').as_posix()
+        bot_path = "/path/to/bot"
+        expected_bot_dir_path = Path("/path/to").as_posix()
         self._test_adding_bot_parent_dir_to_sys_path(
             bot_qualifier=bot_path, bot_dir_path=expected_bot_dir_path
         )
@@ -71,29 +71,29 @@ class TestDefaultArguments(TestCase):
         self, bot_qualifier: str, bot_dir_path: str
     ) -> None:
         with patch(
-            'sys.argv', ['zulip-run-bot', bot_qualifier, '--config-file', '/path/to/config']
+            "sys.argv", ["zulip-run-bot", bot_qualifier, "--config-file", "/path/to/config"]
         ):
-            with patch('zulip_bots.finder.import_module_from_source', return_value=mock.Mock()):
-                with patch('zulip_bots.run.run_message_handler_for_bot'):
-                    with patch('zulip_bots.run.exit_gracefully_if_zulip_config_is_missing'):
+            with patch("zulip_bots.finder.import_module_from_source", return_value=mock.Mock()):
+                with patch("zulip_bots.run.run_message_handler_for_bot"):
+                    with patch("zulip_bots.run.exit_gracefully_if_zulip_config_is_missing"):
                         zulip_bots.run.main()
 
         sys_path = [Path(path).as_posix() for path in sys.path]
         self.assertIn(bot_dir_path, sys_path)
 
-    @patch('os.path.isfile', return_value=False)
+    @patch("os.path.isfile", return_value=False)
     def test_run_bot_by_module_name(self, mock_os_path_isfile: mock.Mock) -> None:
-        bot_module_name = 'bot.module.name'
+        bot_module_name = "bot.module.name"
         mock_bot_module = mock.Mock()
         mock_bot_module.__name__ = bot_module_name
         with patch(
-            'sys.argv', ['zulip-run-bot', 'bot.module.name', '--config-file', '/path/to/config']
+            "sys.argv", ["zulip-run-bot", "bot.module.name", "--config-file", "/path/to/config"]
         ):
             with patch(
-                'importlib.import_module', return_value=mock_bot_module
+                "importlib.import_module", return_value=mock_bot_module
             ) as mock_import_module:
-                with patch('zulip_bots.run.run_message_handler_for_bot'):
-                    with patch('zulip_bots.run.exit_gracefully_if_zulip_config_is_missing'):
+                with patch("zulip_bots.run.run_message_handler_for_bot"):
+                    with patch("zulip_bots.run.exit_gracefully_if_zulip_config_is_missing"):
                         zulip_bots.run.main()
                         mock_import_module.assert_called_once_with(bot_module_name)
 
@@ -103,7 +103,7 @@ class TestBotLib(TestCase):
         def test_message(name: str, message: str, expected_return: Optional[str]) -> None:
             mock_client = mock.MagicMock()
             mock_client.full_name = name
-            mock_message = {'content': message}
+            mock_message = {"content": message}
             self.assertEqual(
                 expected_return, extract_query_without_mention(mock_message, mock_client)
             )
@@ -119,5 +119,5 @@ class TestBotLib(TestCase):
         test_message(r"Max (Mustermann)#(*$&12]\]", r"@**Max (Mustermann)#(*$&12]\]** foo", "foo")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

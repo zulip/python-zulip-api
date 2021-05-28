@@ -29,7 +29,7 @@ P4_WEB: Optional[str] = None
 # * stream "depot_subdirectory-commits"
 # * subject "change_root"
 def commit_notice_destination(path: Text, changelist: int) -> Optional[Dict[Text, Text]]:
-    dirs = path.split('/')
+    dirs = path.split("/")
     if len(dirs) >= 4 and dirs[3] not in ("*", "..."):
         directory = dirs[3]
     else:

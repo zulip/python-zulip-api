@@ -17,29 +17,29 @@ class FakeClient:
 
     def get_profile(self):
         return dict(
-            user_id='alice',
-            full_name='Alice',
-            email='alice@example.com',
+            user_id="alice",
+            full_name="Alice",
+            email="alice@example.com",
             id=42,
         )
 
     def update_storage(self, payload):
-        new_data = payload['storage']
+        new_data = payload["storage"]
         self.storage.update(new_data)
 
         return dict(
-            result='success',
+            result="success",
         )
 
     def get_storage(self, request):
         return dict(
-            result='success',
+            result="success",
             storage=self.storage,
         )
 
     def send_message(self, message):
         return dict(
-            result='success',
+            result="success",
         )
 
     def upload_file(self, file):
@@ -48,10 +48,10 @@ class FakeClient:
 
 class FakeBotHandler:
     def usage(self):
-        return '''
+        return """
             This is a fake bot handler that is used
             to spec BotHandler mocks.
-            '''
+            """
 
     def handle_message(self, message, bot_handler):
         pass
@@ -72,13 +72,13 @@ class LibTest(TestCase):
         client = FakeClient()
 
         state_handler = StateHandler(client)
-        state_handler.put('key', [1, 2, 3])
-        val = state_handler.get('key')
+        state_handler.put("key", [1, 2, 3])
+        val = state_handler.get("key")
         self.assertEqual(val, [1, 2, 3])
 
         # force us to get non-cached values
         state_handler = StateHandler(client)
-        val = state_handler.get('key')
+        val = state_handler.get("key")
         self.assertEqual(val, [1, 2, 3])
 
     def test_state_handler_by_mock(self):
@@ -87,25 +87,25 @@ class LibTest(TestCase):
         state_handler = StateHandler(client)
         client.get_storage.assert_not_called()
 
-        client.update_storage = MagicMock(return_value=dict(result='success'))
-        state_handler.put('key', [1, 2, 3])
-        client.update_storage.assert_called_with(dict(storage=dict(key='[1, 2, 3]')))
+        client.update_storage = MagicMock(return_value=dict(result="success"))
+        state_handler.put("key", [1, 2, 3])
+        client.update_storage.assert_called_with(dict(storage=dict(key="[1, 2, 3]")))
 
-        val = state_handler.get('key')
+        val = state_handler.get("key")
         client.get_storage.assert_not_called()
         self.assertEqual(val, [1, 2, 3])
 
         # force us to get non-cached values
         client.get_storage = MagicMock(
-            return_value=dict(result='success', storage=dict(non_cached_key='[5]'))
+            return_value=dict(result="success", storage=dict(non_cached_key="[5]"))
         )
-        val = state_handler.get('non_cached_key')
-        client.get_storage.assert_called_with({'keys': ['non_cached_key']})
+        val = state_handler.get("non_cached_key")
+        client.get_storage.assert_called_with({"keys": ["non_cached_key"]})
         self.assertEqual(val, [5])
 
         # value must already be cached
         client.get_storage = MagicMock()
-        val = state_handler.get('non_cached_key')
+        val = state_handler.get("non_cached_key")
         client.get_storage.assert_not_called()
         self.assertEqual(val, [5])
 
@@ -114,12 +114,12 @@ class LibTest(TestCase):
         handler = ExternalBotHandler(
             client=client, root_dir=None, bot_details=None, bot_config_file=None
         )
-        emoji_name = 'wave'
-        message = {'id': 10}
+        emoji_name = "wave"
+        message = {"id": 10}
         expected = {
-            'message_id': message['id'],
-            'emoji_name': 'wave',
-            'reaction_type': 'unicode_emoji',
+            "message_id": message["id"],
+            "emoji_name": "wave",
+            "reaction_type": "unicode_emoji",
         }
         client.add_reaction = MagicMock()
         handler.react(message, emoji_name)
@@ -131,22 +131,22 @@ class LibTest(TestCase):
         handler = ExternalBotHandler(
             client=client, root_dir=None, bot_details=None, bot_config_file=None
         )
-        to = {'id': 43}
+        to = {"id": 43}
         expected = [
             (
-                {'type': 'private', 'display_recipient': [to]},
-                {'type': 'private', 'to': [to['id']]},
+                {"type": "private", "display_recipient": [to]},
+                {"type": "private", "to": [to["id"]]},
                 None,
             ),
             (
-                {'type': 'private', 'display_recipient': [to, profile]},
-                {'type': 'private', 'to': [to['id'], profile['id']]},
-                'widget_content',
+                {"type": "private", "display_recipient": [to, profile]},
+                {"type": "private", "to": [to["id"], profile["id"]]},
+                "widget_content",
             ),
             (
-                {'type': 'stream', 'display_recipient': 'Stream name', 'subject': 'Topic'},
-                {'type': 'stream', 'to': 'Stream name', 'subject': 'Topic'},
-                'test widget',
+                {"type": "stream", "display_recipient": "Stream name", "subject": "Topic"},
+                {"type": "stream", "to": "Stream name", "subject": "Topic"},
+                "test widget",
             ),
         ]
         response_text = "Response"
@@ -163,7 +163,7 @@ class LibTest(TestCase):
         ExternalBotHandler(client=client, root_dir=None, bot_details=None, bot_config_file=None)
 
     def test_run_message_handler_for_bot(self):
-        with patch('zulip_bots.lib.Client', new=FakeClient) as fake_client:
+        with patch("zulip_bots.lib.Client", new=FakeClient) as fake_client:
             mock_lib_module = MagicMock()
             # __file__ is not mocked by MagicMock(), so we assign a mock value manually.
             mock_lib_module.__file__ = "foo"
@@ -172,18 +172,18 @@ class LibTest(TestCase):
 
             def call_on_each_event_mock(self, callback, event_types=None, narrow=None):
                 def test_message(message, flags):
-                    event = {'message': message, 'flags': flags, 'type': 'message'}
+                    event = {"message": message, "flags": flags, "type": "message"}
                     callback(event)
 
                 # In the following test, expected_message is the dict that we expect
                 # to be passed to the bot's handle_message function.
-                original_message = {'content': '@**Alice** bar', 'type': 'stream'}
+                original_message = {"content": "@**Alice** bar", "type": "stream"}
                 expected_message = {
-                    'type': 'stream',
-                    'content': 'bar',
-                    'full_content': '@**Alice** bar',
+                    "type": "stream",
+                    "content": "bar",
+                    "full_content": "@**Alice** bar",
                 }
-                test_message(original_message, {'mentioned'})
+                test_message(original_message, {"mentioned"})
                 mock_bot_handler.handle_message.assert_called_with(
                     message=expected_message, bot_handler=ANY
                 )
@@ -196,12 +196,12 @@ class LibTest(TestCase):
                 quiet=True,
                 config_file=None,
                 bot_config_file=None,
-                bot_name='testbot',
+                bot_name="testbot",
             )
 
     def test_upload_file(self):
         client, handler = self._create_client_and_handler_for_file_upload()
-        file = io.BytesIO(b'binary')
+        file = io.BytesIO(b"binary")
 
         handler.upload_file(file)
 
@@ -209,10 +209,10 @@ class LibTest(TestCase):
 
     def test_upload_file_from_path(self):
         client, handler = self._create_client_and_handler_for_file_upload()
-        file = io.BytesIO(b'binary')
+        file = io.BytesIO(b"binary")
 
-        with patch('builtins.open', return_value=file):
-            handler.upload_file_from_path('file.txt')
+        with patch("builtins.open", return_value=file):
+            handler.upload_file_from_path("file.txt")
 
         client.upload_file.assert_called_once_with(file)
 
@@ -221,13 +221,13 @@ class LibTest(TestCase):
         handler = ExternalBotHandler(
             client=client, root_dir=None, bot_details=None, bot_config_file=None
         )
-        message = {'content': "@**Alice** Hello World"}
+        message = {"content": "@**Alice** Hello World"}
         self.assertEqual(extract_query_without_mention(message, handler), "Hello World")
-        message = {'content': "@**Alice|alice** Hello World"}
+        message = {"content": "@**Alice|alice** Hello World"}
         self.assertEqual(extract_query_without_mention(message, handler), "Hello World")
-        message = {'content': "@**Alice Renamed|alice** Hello World"}
+        message = {"content": "@**Alice Renamed|alice** Hello World"}
         self.assertEqual(extract_query_without_mention(message, handler), "Hello World")
-        message = {'content': "Not at start @**Alice|alice** Hello World"}
+        message = {"content": "Not at start @**Alice|alice** Hello World"}
         self.assertEqual(extract_query_without_mention(message, handler), None)
 
     def test_is_private_message_but_not_group_pm(self):
@@ -236,16 +236,16 @@ class LibTest(TestCase):
             client=client, root_dir=None, bot_details=None, bot_config_file=None
         )
         message = {}
-        message['display_recipient'] = 'some stream'
-        message['type'] = 'stream'
+        message["display_recipient"] = "some stream"
+        message["type"] = "stream"
         self.assertFalse(is_private_message_but_not_group_pm(message, handler))
-        message['type'] = 'private'
-        message['display_recipient'] = [{'email': 'a1@b.com'}]
-        message['sender_id'] = handler.user_id
+        message["type"] = "private"
+        message["display_recipient"] = [{"email": "a1@b.com"}]
+        message["sender_id"] = handler.user_id
         self.assertFalse(is_private_message_but_not_group_pm(message, handler))
-        message['sender_id'] = 0  # someone else
+        message["sender_id"] = 0  # someone else
         self.assertTrue(is_private_message_but_not_group_pm(message, handler))
-        message['display_recipient'] = [{'email': 'a1@b.com'}, {'email': 'a2@b.com'}]
+        message["display_recipient"] = [{"email": "a1@b.com"}, {"email": "a2@b.com"}]
         self.assertFalse(is_private_message_but_not_group_pm(message, handler))
 
     def _create_client_and_handler_for_file_upload(self):

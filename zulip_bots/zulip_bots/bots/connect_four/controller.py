@@ -5,10 +5,10 @@ from zulip_bots.game_handler import BadMoveException
 
 
 class ConnectFourModel:
-    '''
+    """
     Object that manages running the Connect
     Four logic for the Connect Four Bot
-    '''
+    """
 
     def __init__(self):
         self.blank_board = [
@@ -54,11 +54,11 @@ class ConnectFourModel:
             token_number = 1
         finding_move = True
         row = 5
-        column = int(move.replace('move ', '')) - 1
+        column = int(move.replace("move ", "")) - 1
 
         while finding_move:
             if row < 0:
-                raise BadMoveException('Make sure your move is in a column with free space.')
+                raise BadMoveException("Make sure your move is in a column with free space.")
             if self.current_board[row][column] == 0:
                 self.current_board[row][column] = token_number
                 finding_move = False
@@ -143,7 +143,7 @@ class ConnectFourModel:
         top_row_multiple = reduce(lambda x, y: x * y, self.current_board[0])
 
         if top_row_multiple != 0:
-            return 'draw'
+            return "draw"
 
         winner = (
             get_horizontal_wins(self.current_board)
@@ -156,4 +156,4 @@ class ConnectFourModel:
         elif winner == -1:
             return second_player
 
-        return ''
+        return ""

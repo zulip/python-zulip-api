@@ -11,69 +11,69 @@ from typing import Any, Callable, Dict, List
 import requests
 from requests import Response
 
-red = '\033[91m'  # type: str
-green = '\033[92m'  # type: str
-end_format = '\033[0m'  # type: str
-bold = '\033[1m'  # type: str
+red = "\033[91m"  # type: str
+green = "\033[92m"  # type: str
+end_format = "\033[0m"  # type: str
+bold = "\033[1m"  # type: str
 
-bots_dir = '.bots'  # type: str
+bots_dir = ".bots"  # type: str
 
 
 def pack(options: argparse.Namespace) -> None:
     # Basic sanity checks for input.
     if not options.path:
-        print('tools/deploy: Path to bot folder not specified.')
+        print("tools/deploy: Path to bot folder not specified.")
         sys.exit(1)
     if not options.config:
-        print('tools/deploy: Path to zuliprc not specified.')
+        print("tools/deploy: Path to zuliprc not specified.")
         sys.exit(1)
     if not options.main:
-        print('tools/deploy: No main bot file specified.')
+        print("tools/deploy: No main bot file specified.")
         sys.exit(1)
     if not os.path.isfile(options.config):
-        print('pack: Config file not found at path: {}.'.format(options.config))
+        print("pack: Config file not found at path: {}.".format(options.config))
         sys.exit(1)
     if not os.path.isdir(options.path):
-        print('pack: Bot folder not found at path: {}.'.format(options.path))
+        print("pack: Bot folder not found at path: {}.".format(options.path))
         sys.exit(1)
     main_path = os.path.join(options.path, options.main)
     if not os.path.isfile(main_path):
-        print('pack: Bot main file not found at path: {}.'.format(main_path))
+        print("pack: Bot main file not found at path: {}.".format(main_path))
         sys.exit(1)
 
     # Main logic for packing the bot.
     if not os.path.exists(bots_dir):
         os.makedirs(bots_dir)
     zip_file_path = os.path.join(bots_dir, options.botname + ".zip")
-    zip_file = zipfile.ZipFile(zip_file_path, 'w', zipfile.ZIP_DEFLATED)
+    zip_file = zipfile.ZipFile(zip_file_path, "w", zipfile.ZIP_DEFLATED)
     # Pack the complete bot folder
     for root, dirs, files in os.walk(options.path):
         for file in files:
             file_path = os.path.join(root, file)
             zip_file.write(file_path, os.path.relpath(file_path, options.path))
     # Pack the zuliprc
-    zip_file.write(options.config, 'zuliprc')
+    zip_file.write(options.config, "zuliprc")
     # Pack the config file for the botfarm.
     bot_config = textwrap.dedent(
-        '''\
+        """\
         [deploy]
         bot={}
         zuliprc=zuliprc
-        '''.format(
+        """.format(
             options.main
         )
     )
-    zip_file.writestr('config.ini', bot_config)
+    zip_file.writestr("config.ini", bot_config)
     zip_file.close()
-    print('pack: Created zip file at: {}.'.format(zip_file_path))
+    print("pack: Created zip file at: {}.".format(zip_file_path))
 
 
 def check_common_options(options: argparse.Namespace) -> None:
     if not options.server:
-        print('tools/deploy: URL to Botfarm server not specified.')
+        print("tools/deploy: URL to Botfarm server not specified.")
         sys.exit(1)
     if not options.token:
-        print('tools/deploy: Botfarm deploy token not specified.')
+        print("tools/deploy: Botfarm deploy token not specified.")
         sys.exit(1)
 
 
@@ -83,7 +83,7 @@ def handle_common_response_without_data(
     return handle_common_response(
         response=response,
         operation=operation,
-        success_handler=lambda r: print('{}: {}'.format(operation, success_message)),
+        success_handler=lambda r: print("{}: {}".format(operation, success_message)),
     )
 
 
@@ -92,56 +92,56 @@ def handle_common_response(
 ) -> bool:
     if response.status_code == requests.codes.ok:
         response_data = response.json()
-        if response_data['status'] == 'success':
+        if response_data["status"] == "success":
             success_handler(response_data)
             return True
-        elif response_data['status'] == 'error':
-            print('{}: {}'.format(operation, response_data['message']))
+        elif response_data["status"] == "error":
+            print("{}: {}".format(operation, response_data["message"]))
             return False
         else:
-            print('{}: Unexpected success response format'.format(operation))
+            print("{}: Unexpected success response format".format(operation))
             return False
     if response.status_code == requests.codes.unauthorized:
-        print('{}: Authentication error with the server. Aborting.'.format(operation))
+        print("{}: Authentication error with the server. Aborting.".format(operation))
     else:
-        print('{}: Error {}. Aborting.'.format(operation, response.status_code))
+        print("{}: Error {}. Aborting.".format(operation, response.status_code))
     return False
 
 
 def upload(options: argparse.Namespace) -> None:
     check_common_options(options)
-    file_path = os.path.join(bots_dir, options.botname + '.zip')
+    file_path = os.path.join(bots_dir, options.botname + ".zip")
     if not os.path.exists(file_path):
-        print('upload: Could not find bot package at {}.'.format(file_path))
+        print("upload: Could not find bot package at {}.".format(file_path))
         sys.exit(1)
-    files = {'file': open(file_path, 'rb')}
-    headers = {'key': options.token}
-    url = urllib.parse.urljoin(options.server, 'bots/upload')
+    files = {"file": open(file_path, "rb")}
+    headers = {"key": options.token}
+    url = urllib.parse.urljoin(options.server, "bots/upload")
     response = requests.post(url, files=files, headers=headers)
     result = handle_common_response_without_data(
-        response, 'upload', 'Uploaded the bot package to botfarm.'
+        response, "upload", "Uploaded the bot package to botfarm."
     )
     if result is False:
         sys.exit(1)
 
 
 def clean(options: argparse.Namespace) -> None:
-    file_path = os.path.join(bots_dir, options.botname + '.zip')
+    file_path = os.path.join(bots_dir, options.botname + ".zip")
     if os.path.exists(file_path):
         os.remove(file_path)
-        print('clean: Removed {}.'.format(file_path))
+        print("clean: Removed {}.".format(file_path))
     else:
-        print('clean: File \'{}\' not found.'.format(file_path))
+        print("clean: File '{}' not found.".format(file_path))
 
 
 def process(options: argparse.Namespace) -> None:
     check_common_options(options)
-    headers = {'key': options.token}
-    url = urllib.parse.urljoin(options.server, 'bots/process')
-    payload = {'name': options.botname}
+    headers = {"key": options.token}
+    url = urllib.parse.urljoin(options.server, "bots/process")
+    payload = {"name": options.botname}
     response = requests.post(url, headers=headers, json=payload)
     result = handle_common_response_without_data(
-        response, 'process', 'The bot has been processed by the botfarm.'
+        response, "process", "The bot has been processed by the botfarm."
     )
     if result is False:
         sys.exit(1)
@@ -149,12 +149,12 @@ def process(options: argparse.Namespace) -> None:
 
 def start(options: argparse.Namespace) -> None:
     check_common_options(options)
-    headers = {'key': options.token}
-    url = urllib.parse.urljoin(options.server, 'bots/start')
-    payload = {'name': options.botname}
+    headers = {"key": options.token}
+    url = urllib.parse.urljoin(options.server, "bots/start")
+    payload = {"name": options.botname}
     response = requests.post(url, headers=headers, json=payload)
     result = handle_common_response_without_data(
-        response, 'start', 'The bot has been started by the botfarm.'
+        response, "start", "The bot has been started by the botfarm."
     )
     if result is False:
         sys.exit(1)
@@ -162,12 +162,12 @@ def start(options: argparse.Namespace) -> None:
 
 def stop(options: argparse.Namespace) -> None:
     check_common_options(options)
-    headers = {'key': options.token}
-    url = urllib.parse.urljoin(options.server, 'bots/stop')
-    payload = {'name': options.botname}
+    headers = {"key": options.token}
+    url = urllib.parse.urljoin(options.server, "bots/stop")
+    payload = {"name": options.botname}
     response = requests.post(url, headers=headers, json=payload)
     result = handle_common_response_without_data(
-        response, 'stop', 'The bot has been stopped by the botfarm.'
+        response, "stop", "The bot has been stopped by the botfarm."
     )
     if result is False:
         sys.exit(1)
@@ -182,27 +182,27 @@ def prepare(options: argparse.Namespace) -> None:
 
 def log(options: argparse.Namespace) -> None:
     check_common_options(options)
-    headers = {'key': options.token}
+    headers = {"key": options.token}
     if options.lines:
         lines = options.lines
     else:
         lines = None
-    payload = {'name': options.botname, 'lines': lines}
-    url = urllib.parse.urljoin(options.server, 'bots/logs/' + options.botname)
+    payload = {"name": options.botname, "lines": lines}
+    url = urllib.parse.urljoin(options.server, "bots/logs/" + options.botname)
     response = requests.get(url, json=payload, headers=headers)
-    result = handle_common_response(response, 'log', lambda r: print(r['logs']['content']))
+    result = handle_common_response(response, "log", lambda r: print(r["logs"]["content"]))
     if result is False:
         sys.exit(1)
 
 
 def delete(options: argparse.Namespace) -> None:
     check_common_options(options)
-    headers = {'key': options.token}
-    url = urllib.parse.urljoin(options.server, 'bots/delete')
-    payload = {'name': options.botname}
+    headers = {"key": options.token}
+    url = urllib.parse.urljoin(options.server, "bots/delete")
+    payload = {"name": options.botname}
     response = requests.post(url, headers=headers, json=payload)
     result = handle_common_response_without_data(
-        response, 'delete', 'The bot has been removed from the botfarm.'
+        response, "delete", "The bot has been removed from the botfarm."
     )
     if result is False:
         sys.exit(1)
@@ -210,15 +210,15 @@ def delete(options: argparse.Namespace) -> None:
 
 def list_bots(options: argparse.Namespace) -> None:
     check_common_options(options)
-    headers = {'key': options.token}
+    headers = {"key": options.token}
     if options.format:
         pretty_print = True
     else:
         pretty_print = False
-    url = urllib.parse.urljoin(options.server, 'bots/list')
+    url = urllib.parse.urljoin(options.server, "bots/list")
     response = requests.get(url, headers=headers)
     result = handle_common_response(
-        response, 'ls', lambda r: print_bots(r['bots']['list'], pretty_print)
+        response, "ls", lambda r: print_bots(r["bots"]["list"], pretty_print)
     )
     if result is False:
         sys.exit(1)
@@ -229,36 +229,36 @@ def print_bots(bots: List[Any], pretty_print: bool) -> None:
         print_bots_pretty(bots)
     else:
         for bot in bots:
-            print('{}\t{}\t{}\t{}'.format(bot['name'], bot['status'], bot['email'], bot['site']))
+            print("{}\t{}\t{}\t{}".format(bot["name"], bot["status"], bot["email"], bot["site"]))
 
 
 def print_bots_pretty(bots: List[Any]) -> None:
     if len(bots) == 0:
-        print('ls: No bots found on the botfarm')
+        print("ls: No bots found on the botfarm")
     else:
-        print('ls: There are the following bots on the botfarm:')
+        print("ls: There are the following bots on the botfarm:")
         name_col_len, status_col_len, email_col_len, site_col_len = 25, 15, 35, 35
-        row_format = '{0} {1} {2} {3}'
+        row_format = "{0} {1} {2} {3}"
         header = row_format.format(
-            'NAME'.rjust(name_col_len),
-            'STATUS'.rjust(status_col_len),
-            'EMAIL'.rjust(email_col_len),
-            'SITE'.rjust(site_col_len),
+            "NAME".rjust(name_col_len),
+            "STATUS".rjust(status_col_len),
+            "EMAIL".rjust(email_col_len),
+            "SITE".rjust(site_col_len),
         )
         header_bottom = row_format.format(
-            '-' * name_col_len,
-            '-' * status_col_len,
-            '-' * email_col_len,
-            '-' * site_col_len,
+            "-" * name_col_len,
+            "-" * status_col_len,
+            "-" * email_col_len,
+            "-" * site_col_len,
         )
         print(header)
         print(header_bottom)
         for bot in bots:
             row = row_format.format(
-                bot['name'].rjust(name_col_len),
-                bot['status'].rjust(status_col_len),
-                bot['email'].rjust(email_col_len),
-                bot['site'].rjust(site_col_len),
+                bot["name"].rjust(name_col_len),
+                bot["status"].rjust(status_col_len),
+                bot["email"].rjust(email_col_len),
+                bot["site"].rjust(site_col_len),
             )
             print(row)
 
@@ -297,52 +297,52 @@ To list user's bots, use:
 
 """
     parser = argparse.ArgumentParser(usage=usage)
-    parser.add_argument('command', help='Command to run.')
-    parser.add_argument('botname', nargs='?', help='Name of bot to operate on.')
+    parser.add_argument("command", help="Command to run.")
+    parser.add_argument("botname", nargs="?", help="Name of bot to operate on.")
     parser.add_argument(
-        '--server',
-        '-s',
-        metavar='SERVERURL',
-        default=os.environ.get('SERVER', ''),
-        help='Url of the Zulip Botfarm server.',
+        "--server",
+        "-s",
+        metavar="SERVERURL",
+        default=os.environ.get("SERVER", ""),
+        help="Url of the Zulip Botfarm server.",
     )
     parser.add_argument(
-        '--token', '-t', default=os.environ.get('TOKEN', ''), help='Deploy Token for the Botfarm.'
+        "--token", "-t", default=os.environ.get("TOKEN", ""), help="Deploy Token for the Botfarm."
     )
-    parser.add_argument('--path', '-p', help='Path to the bot directory.')
-    parser.add_argument('--config', '-c', help='Path to the zuliprc file.')
+    parser.add_argument("--path", "-p", help="Path to the bot directory.")
+    parser.add_argument("--config", "-c", help="Path to the zuliprc file.")
     parser.add_argument(
-        '--main', '-m', help='Path to the bot\'s main file, relative to the bot\'s directory.'
+        "--main", "-m", help="Path to the bot's main file, relative to the bot's directory."
     )
-    parser.add_argument('--lines', '-l', help='Number of lines in log required.')
+    parser.add_argument("--lines", "-l", help="Number of lines in log required.")
     parser.add_argument(
-        '--format', '-f', action='store_true', help='Print user\'s bots in human readable format'
+        "--format", "-f", action="store_true", help="Print user's bots in human readable format"
     )
     options = parser.parse_args()
     if not options.command:
-        print('tools/deploy: No command specified.')
+        print("tools/deploy: No command specified.")
         sys.exit(1)
-    if not options.botname and options.command not in ['ls']:
-        print('tools/deploy: No bot name specified. Please specify a name like \'my-custom-bot\'')
+    if not options.botname and options.command not in ["ls"]:
+        print("tools/deploy: No bot name specified. Please specify a name like 'my-custom-bot'")
         sys.exit(1)
 
     commands = {
-        'pack': pack,
-        'upload': upload,
-        'clean': clean,
-        'prepare': prepare,
-        'process': process,
-        'start': start,
-        'stop': stop,
-        'log': log,
-        'delete': delete,
-        'ls': list_bots,
+        "pack": pack,
+        "upload": upload,
+        "clean": clean,
+        "prepare": prepare,
+        "process": process,
+        "start": start,
+        "stop": stop,
+        "log": log,
+        "delete": delete,
+        "ls": list_bots,
     }
     if options.command in commands:
         commands[options.command](options)
     else:
-        print('tools/deploy: No command \'{}\' found.'.format(options.command))
+        print("tools/deploy: No command '{}' found.".format(options.command))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -6,10 +6,10 @@ from zulip_bots.test_lib import BotTestCase, DefaultTests
 
 
 class TestConnectFourBot(BotTestCase, DefaultTests):
-    bot_name = 'connect_four'
+    bot_name = "connect_four"
 
     def make_request_message(
-        self, content: str, user: str = 'foo@example.com', user_name: str = 'foo'
+        self, content: str, user: str = "foo@example.com", user_name: str = "foo"
     ) -> Dict[str, str]:
         message = dict(sender_email=user, content=content, sender_full_name=user_name)
         return message
@@ -20,14 +20,14 @@ class TestConnectFourBot(BotTestCase, DefaultTests):
         request: str,
         expected_response: str,
         response_number: int,
-        user: str = 'foo@example.com',
+        user: str = "foo@example.com",
     ) -> None:
-        '''
+        """
         This function serves a similar purpose
         to BotTestCase.verify_dialog, but allows
         for multiple responses to be validated,
         and for mocking of the bot's internal data
-        '''
+        """
 
         bot, bot_handler = self._get_handlers()
         message = self.make_request_message(request, user)
@@ -38,10 +38,10 @@ class TestConnectFourBot(BotTestCase, DefaultTests):
         responses = [message for (method, message) in bot_handler.transcript]
 
         first_response = responses[response_number]
-        self.assertEqual(expected_response, first_response['content'])
+        self.assertEqual(expected_response, first_response["content"])
 
     def help_message(self) -> str:
-        return '''** Connect Four Bot Help:**
+        return """** Connect Four Bot Help:**
 *Preface all commands with @**test-bot***
 * To start a game in a stream (*recommended*), type
 `start game`
@@ -62,15 +62,15 @@ class TestConnectFourBot(BotTestCase, DefaultTests):
 * To see rules of this game, type
 `rules`
 * To make your move during a game, type
-```move <column-number>``` or ```<column-number>```'''
+```move <column-number>``` or ```<column-number>```"""
 
     def test_static_responses(self) -> None:
-        self.verify_response('help', self.help_message(), 0)
+        self.verify_response("help", self.help_message(), 0)
 
     def test_game_message_handler_responses(self) -> None:
         board = (
-            ':one: :two: :three: :four: :five: :six: :seven:\n\n'
-            + '\
+            ":one: :two: :three: :four: :five: :six: :seven:\n\n"
+            + "\
 :white_circle: :white_circle: :white_circle: :white_circle: \
 :white_circle: :white_circle: :white_circle: \n\n\
 :white_circle: :white_circle: :white_circle: :white_circle: \
@@ -82,18 +82,18 @@ class TestConnectFourBot(BotTestCase, DefaultTests):
 :blue_circle: :red_circle: :white_circle: :white_circle: :white_circle: \
 :white_circle: :white_circle: \n\n\
 :blue_circle: :red_circle: :white_circle: :white_circle: :white_circle: \
-:white_circle: :white_circle: '
+:white_circle: :white_circle: "
         )
         bot, bot_handler = self._get_handlers()
         self.assertEqual(bot.gameMessageHandler.parse_board(self.almost_win_board), board)
-        self.assertEqual(bot.gameMessageHandler.get_player_color(1), ':red_circle:')
+        self.assertEqual(bot.gameMessageHandler.get_player_color(1), ":red_circle:")
         self.assertEqual(
-            bot.gameMessageHandler.alert_move_message('foo', 'move 6'), 'foo moved in column 6'
+            bot.gameMessageHandler.alert_move_message("foo", "move 6"), "foo moved in column 6"
         )
         self.assertEqual(
             bot.gameMessageHandler.game_start_message(),
-            'Type `move <column-number>` or `<column-number>` to place a token.\n\
-The first player to get 4 in a row wins!\n Good Luck!',
+            "Type `move <column-number>` or `<column-number>` to place a token.\n\
+The first player to get 4 in a row wins!\n Good Luck!",
         )
 
     blank_board = [
@@ -142,22 +142,22 @@ The first player to get 4 in a row wins!\n Good Luck!',
             final_board: List[List[int]],
         ) -> None:
             connectFourModel.update_board(initial_board)
-            test_board = connectFourModel.make_move('move ' + str(column_number), token_number)
+            test_board = connectFourModel.make_move("move " + str(column_number), token_number)
 
             self.assertEqual(test_board, final_board)
 
         def confirmGameOver(board: List[List[int]], result: str) -> None:
             connectFourModel.update_board(board)
-            game_over = connectFourModel.determine_game_over(['first_player', 'second_player'])
+            game_over = connectFourModel.determine_game_over(["first_player", "second_player"])
 
             self.assertEqual(game_over, result)
 
         def confirmWinStates(array: List[List[List[List[int]]]]) -> None:
             for board in array[0]:
-                confirmGameOver(board, 'first_player')
+                confirmGameOver(board, "first_player")
 
             for board in array[1]:
-                confirmGameOver(board, 'second_player')
+                confirmGameOver(board, "second_player")
 
         connectFourModel = ConnectFourModel()
 
@@ -553,8 +553,8 @@ The first player to get 4 in a row wins!\n Good Luck!',
         )
 
         # Test Game Over Logic:
-        confirmGameOver(blank_board, '')
-        confirmGameOver(full_board, 'draw')
+        confirmGameOver(blank_board, "")
+        confirmGameOver(full_board, "draw")
 
         # Test Win States:
         confirmWinStates(horizontal_win_boards)
@@ -564,7 +564,7 @@ The first player to get 4 in a row wins!\n Good Luck!',
 
     def test_more_logic(self) -> None:
         model = ConnectFourModel()
-        move = 'move 4'
+        move = "move 4"
         col = 3  # zero-indexed
 
         self.assertEqual(model.get_column(col), [0, 0, 0, 0, 0, 0])

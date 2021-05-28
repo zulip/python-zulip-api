@@ -29,13 +29,13 @@ if __name__ == "__main__":
     parser = zulip.add_default_arguments(
         argparse.ArgumentParser(usage=usage), allow_provisioning=True
     )
-    parser.add_argument('--irc-server', default=None)
-    parser.add_argument('--port', default=6667)
-    parser.add_argument('--nick-prefix', default=None)
-    parser.add_argument('--channel', default=None)
-    parser.add_argument('--stream', default="general")
-    parser.add_argument('--topic', default="IRC")
-    parser.add_argument('--nickserv-pw', default='')
+    parser.add_argument("--irc-server", default=None)
+    parser.add_argument("--port", default=6667)
+    parser.add_argument("--nick-prefix", default=None)
+    parser.add_argument("--channel", default=None)
+    parser.add_argument("--stream", default="general")
+    parser.add_argument("--topic", default="IRC")
+    parser.add_argument("--nickserv-pw", default="")
 
     options = parser.parse_args()
     # Setting the client to irc_mirror is critical for this to work

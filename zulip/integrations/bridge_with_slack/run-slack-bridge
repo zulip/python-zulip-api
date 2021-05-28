@@ -55,17 +55,17 @@ class SlackBridge:
         self.slack_webclient = slack_sdk.WebClient(token=self.slack_config["token"])
 
     def wrap_slack_mention_with_bracket(self, zulip_msg: Dict[str, Any]) -> None:
-        words = zulip_msg["content"].split(' ')
+        words = zulip_msg["content"].split(" ")
         for w in words:
-            if w.startswith('@'):
-                zulip_msg["content"] = zulip_msg["content"].replace(w, '<' + w + '>')
+            if w.startswith("@"):
+                zulip_msg["content"] = zulip_msg["content"].replace(w, "<" + w + ">")
 
     def replace_slack_id_with_name(self, msg: Dict[str, Any]) -> None:
-        words = msg['text'].split(' ')
+        words = msg["text"].split(" ")
         for w in words:
-            if w.startswith('<@') and w.endswith('>'):
+            if w.startswith("<@") and w.endswith(">"):
                 _id = w[2:-1]
-                msg['text'] = msg['text'].replace(_id, self.slack_id_to_name[_id])
+                msg["text"] = msg["text"].replace(_id, self.slack_id_to_name[_id])
 
     def zulip_to_slack(self) -> Callable[[Dict[str, Any]], None]:
         def _zulip_to_slack(msg: Dict[str, Any]) -> None:
@@ -83,25 +83,25 @@ class SlackBridge:
         return _zulip_to_slack
 
     def run_slack_listener(self) -> None:
-        members = self.slack_webclient.users_list()['members']
+        members = self.slack_webclient.users_list()["members"]
         # See also https://api.slack.com/changelog/2017-09-the-one-about-usernames
         self.slack_id_to_name = {
             u["id"]: u["profile"].get("display_name", u["profile"]["real_name"]) for u in members
         }
         self.slack_name_to_id = {v: k for k, v in self.slack_id_to_name.items()}
 
-        @RTMClient.run_on(event='message')
+        @RTMClient.run_on(event="message")
         def slack_to_zulip(**payload: Any) -> None:
-            msg = payload['data']
-            if msg['channel'] != self.channel:
+            msg = payload["data"]
+            if msg["channel"] != self.channel:
                 return
-            user_id = msg['user']
+            user_id = msg["user"]
             user = self.slack_id_to_name[user_id]
-            from_bot = user == self.slack_config['username']
+            from_bot = user == self.slack_config["username"]
             if from_bot:
                 return
             self.replace_slack_id_with_name(msg)
-            content = ZULIP_MESSAGE_TEMPLATE.format(username=user, message=msg['text'])
+            content = ZULIP_MESSAGE_TEMPLATE.format(username=user, message=msg["text"])
             msg_data = dict(
                 type="stream", to=self.zulip_stream, subject=self.zulip_subject, content=content
             )
@@ -117,7 +117,7 @@ if __name__ == "__main__":
     the first realm to a channel in a Slack workspace.
     """
 
-    sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+    sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
     parser = argparse.ArgumentParser(usage=usage)
 
     print("Starting slack mirroring bot")

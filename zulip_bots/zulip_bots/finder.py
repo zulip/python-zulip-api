@@ -32,7 +32,7 @@ def resolve_bot_path(name: Text) -> Optional[Tuple[Path, Text]]:
         return (bot_path, bot_name)
     else:
         bot_name = name
-        bot_path = Path(current_dir, 'bots', bot_name, bot_name + '.py')
+        bot_path = Path(current_dir, "bots", bot_name, bot_name + ".py")
         if os.path.isfile(bot_path):
             return (bot_path, bot_name)
 

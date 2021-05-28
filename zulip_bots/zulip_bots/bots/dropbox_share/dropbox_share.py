@@ -9,21 +9,21 @@ URL = "[{name}](https://www.dropbox.com/home{path})"
 
 
 class DropboxHandler:
-    '''
+    """
     This bot allows you to easily share, search and upload files
     between zulip and your dropbox account.
-    '''
+    """
 
     def initialize(self, bot_handler: BotHandler) -> None:
-        self.config_info = bot_handler.get_config_info('dropbox_share')
-        self.ACCESS_TOKEN = self.config_info.get('access_token')
+        self.config_info = bot_handler.get_config_info("dropbox_share")
+        self.ACCESS_TOKEN = self.config_info.get("access_token")
         self.client = Dropbox(self.ACCESS_TOKEN)
 
     def usage(self) -> str:
         return get_help()
 
     def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
-        command = message['content']
+        command = message["content"]
         if command == "":
             command = "help"
         msg = dbx_command(self.client, command)
@@ -31,7 +31,7 @@ class DropboxHandler:
 
 
 def get_help() -> str:
-    return '''
+    return """
     Example commands:
 
     ```
@@ -44,11 +44,11 @@ def get_help() -> str:
     @mention-bot search: search a file/folder
     @mention-bot share: get a shareable link for the file/folder
     ```
-    '''
+    """
 
 
 def get_usage_examples() -> str:
-    return '''
+    return """
     Usage:
     ```
     @dropbox ls - Shows files/folders in the root folder.
@@ -62,62 +62,62 @@ def get_usage_examples() -> str:
     @dropbox search boo --mr 10 - Search for boo and get at max 10 results.
     @dropbox search boo --fd foo - Search for boo in folder foo.
     ```
-    '''
+    """
 
 
 REGEXES = dict(
-    command='(ls|mkdir|read|rm|write|search|usage|help)',
-    path=r'(\S+)',
-    optional_path=r'(\S*)',
-    some_text='(.+?)',
-    folder=r'?(?:--fd (\S+))?',
-    max_results=r'?(?:--mr (\d+))?',
+    command="(ls|mkdir|read|rm|write|search|usage|help)",
+    path=r"(\S+)",
+    optional_path=r"(\S*)",
+    some_text="(.+?)",
+    folder=r"?(?:--fd (\S+))?",
+    max_results=r"?(?:--mr (\d+))?",
 )
 
 
 def get_commands() -> Dict[str, Tuple[Any, List[str]]]:
     return {
-        'help': (dbx_help, ['command']),
-        'ls': (dbx_ls, ['optional_path']),
-        'mkdir': (dbx_mkdir, ['path']),
-        'rm': (dbx_rm, ['path']),
-        'write': (dbx_write, ['path', 'some_text']),
-        'read': (dbx_read, ['path']),
-        'search': (dbx_search, ['some_text', 'folder', 'max_results']),
-        'share': (dbx_share, ['path']),
-        'usage': (dbx_usage, []),
+        "help": (dbx_help, ["command"]),
+        "ls": (dbx_ls, ["optional_path"]),
+        "mkdir": (dbx_mkdir, ["path"]),
+        "rm": (dbx_rm, ["path"]),
+        "write": (dbx_write, ["path", "some_text"]),
+        "read": (dbx_read, ["path"]),
+        "search": (dbx_search, ["some_text", "folder", "max_results"]),
+        "share": (dbx_share, ["path"]),
+        "usage": (dbx_usage, []),
     }
 
 
 def dbx_command(client: Any, cmd: str) -> str:
     cmd = cmd.strip()
-    if cmd == 'help':
+    if cmd == "help":
         return get_help()
     cmd_name = cmd.split()[0]
     cmd_args = cmd[len(cmd_name) :].strip()
     commands = get_commands()
     if cmd_name not in commands:
-        return 'ERROR: unrecognized command\n' + get_help()
+        return "ERROR: unrecognized command\n" + get_help()
     f, arg_names = commands[cmd_name]
     partial_regexes = [REGEXES[a] for a in arg_names]
-    regex = ' '.join(partial_regexes)
-    regex += '$'
+    regex = " ".join(partial_regexes)
+    regex += "$"
     m = re.match(regex, cmd_args)
     if m:
         return f(client, *m.groups())
     else:
-        return 'ERROR: ' + syntax_help(cmd_name)
+        return "ERROR: " + syntax_help(cmd_name)
 
 
 def syntax_help(cmd_name: str) -> str:
     commands = get_commands()
     f, arg_names = commands[cmd_name]
-    arg_syntax = ' '.join('<' + a + '>' for a in arg_names)
+    arg_syntax = " ".join("<" + a + ">" for a in arg_names)
     if arg_syntax:
-        cmd = cmd_name + ' ' + arg_syntax
+        cmd = cmd_name + " " + arg_syntax
     else:
         cmd = cmd_name
-    return 'syntax: {}'.format(cmd)
+    return "syntax: {}".format(cmd)
 
 
 def dbx_help(client: Any, cmd_name: str) -> str:
@@ -129,7 +129,7 @@ def dbx_usage(client: Any) -> str:
 
 
 def dbx_mkdir(client: Any, fn: str) -> str:
-    fn = '/' + fn  # foo/boo -> /foo/boo
+    fn = "/" + fn  # foo/boo -> /foo/boo
     try:
         result = client.files_create_folder(fn)
         msg = "CREATED FOLDER: " + URL.format(name=result.name, path=result.path_lower)
@@ -143,8 +143,8 @@ def dbx_mkdir(client: Any, fn: str) -> str:
 
 
 def dbx_ls(client: Any, fn: str) -> str:
-    if fn != '':
-        fn = '/' + fn
+    if fn != "":
+        fn = "/" + fn
 
     try:
         result = client.files_list_folder(fn)
@@ -152,9 +152,9 @@ def dbx_ls(client: Any, fn: str) -> str:
         for meta in result.entries:
             files_list += [" - " + URL.format(name=meta.name, path=meta.path_lower)]
 
-        msg = '\n'.join(files_list)
-        if msg == '':
-            msg = '`No files available`'
+        msg = "\n".join(files_list)
+        if msg == "":
+            msg = "`No files available`"
 
     except Exception:
         msg = (
@@ -167,7 +167,7 @@ def dbx_ls(client: Any, fn: str) -> str:
 
 
 def dbx_rm(client: Any, fn: str) -> str:
-    fn = '/' + fn
+    fn = "/" + fn
 
     try:
         result = client.files_delete(fn)
@@ -181,7 +181,7 @@ def dbx_rm(client: Any, fn: str) -> str:
 
 
 def dbx_write(client: Any, fn: str, content: str) -> str:
-    fn = '/' + fn
+    fn = "/" + fn
 
     try:
         result = client.files_upload(content.encode(), fn)
@@ -193,7 +193,7 @@ def dbx_write(client: Any, fn: str, content: str) -> str:
 
 
 def dbx_read(client: Any, fn: str) -> str:
-    fn = '/' + fn
+    fn = "/" + fn
 
     try:
         result = client.files_download(fn)
@@ -208,11 +208,11 @@ def dbx_read(client: Any, fn: str) -> str:
 
 def dbx_search(client: Any, query: str, folder: str, max_results: str) -> str:
     if folder is None:
-        folder = ''
+        folder = ""
     else:
-        folder = '/' + folder
+        folder = "/" + folder
     if max_results is None:
-        max_results = '20'
+        max_results = "20"
     try:
         result = client.files_search(folder, query, max_results=int(max_results))
         msg_list = []
@@ -221,7 +221,7 @@ def dbx_search(client: Any, query: str, folder: str, max_results: str) -> str:
             file_info = entry.metadata
             count += 1
             msg_list += [" - " + URL.format(name=file_info.name, path=file_info.path_lower)]
-        msg = '\n'.join(msg_list)
+        msg = "\n".join(msg_list)
 
     except Exception:
         msg = (
@@ -230,7 +230,7 @@ def dbx_search(client: Any, query: str, folder: str, max_results: str) -> str:
             "     `--fd <folderName>` to search in specific folder."
         )
 
-    if msg == '':
+    if msg == "":
         msg = (
             "No files/folders found matching your query.\n"
             "For file name searching, the last token is used for prefix matching"
@@ -241,7 +241,7 @@ def dbx_search(client: Any, query: str, folder: str, max_results: str) -> str:
 
 
 def dbx_share(client: Any, fn: str):
-    fn = '/' + fn
+    fn = "/" + fn
     try:
         result = client.sharing_create_shared_link(fn)
         msg = result.url

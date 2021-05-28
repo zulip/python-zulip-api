@@ -6,7 +6,7 @@ import os
 import sys
 import unicodedata
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'api'))
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "api"))
 import zulip
 
 
@@ -18,20 +18,20 @@ def write_public_streams() -> None:
         # normalization and then lower-casing server-side
         canonical_cls = unicodedata.normalize("NFKC", stream_name).lower()
         if canonical_cls in [
-            'security',
-            'login',
-            'network',
-            'ops',
-            'user_locate',
-            'mit',
-            'moof',
-            'wsmonitor',
-            'wg_ctl',
-            'winlogger',
-            'hm_ctl',
-            'hm_stat',
-            'zephyr_admin',
-            'zephyr_ctl',
+            "security",
+            "login",
+            "network",
+            "ops",
+            "user_locate",
+            "mit",
+            "moof",
+            "wsmonitor",
+            "wg_ctl",
+            "winlogger",
+            "hm_ctl",
+            "hm_stat",
+            "zephyr_admin",
+            "zephyr_ctl",
         ]:
             # These zephyr classes cannot be subscribed to by us, due
             # to MIT's Zephyr access control settings
