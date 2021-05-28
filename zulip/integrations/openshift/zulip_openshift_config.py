@@ -1,5 +1,5 @@
 # https://github.com/python/mypy/issues/1141
-from typing import Dict, Optional, Text
+from typing import Dict, Optional
 
 # Change these values to configure authentication for the plugin
 ZULIP_USER = "openshift-bot@example.com"
@@ -19,7 +19,7 @@ ZULIP_API_KEY = "0123456789abcdef0123456789abcdef"
 # * stream "deployments"
 # * topic "master"
 # And similarly for branch "test-post-receive" (for use when testing).
-def deployment_notice_destination(branch: str) -> Optional[Dict[str, Text]]:
+def deployment_notice_destination(branch: str) -> Optional[Dict[str, str]]:
     if branch in ["master", "test-post-receive"]:
         return dict(stream="deployments", subject="%s" % (branch,))
 

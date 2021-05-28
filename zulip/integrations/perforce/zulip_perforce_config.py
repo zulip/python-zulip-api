@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Text
+from typing import Dict, Optional
 
 # Change these values to configure authentication for the plugin
 ZULIP_USER = "p4-bot@example.com"
@@ -28,7 +28,7 @@ P4_WEB: Optional[str] = None
 # "master-plan" and "secret" subdirectories of //depot/ to:
 # * stream "depot_subdirectory-commits"
 # * subject "change_root"
-def commit_notice_destination(path: Text, changelist: int) -> Optional[Dict[Text, Text]]:
+def commit_notice_destination(path: str, changelist: int) -> Optional[Dict[str, str]]:
     dirs = path.split("/")
     if len(dirs) >= 4 and dirs[3] not in ("*", "..."):
         directory = dirs[3]

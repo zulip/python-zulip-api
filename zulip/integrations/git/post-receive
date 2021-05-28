@@ -13,7 +13,6 @@ import os
 import os.path
 import subprocess
 import sys
-from typing import Text
 
 sys.path.insert(0, os.path.dirname(__file__))
 import zulip_git_config as config
@@ -33,7 +32,7 @@ client = zulip.Client(
 )
 
 
-def git_repository_name() -> Text:
+def git_repository_name() -> str:
     output = subprocess.check_output(["git", "rev-parse", "--is-bare-repository"])
     if output.strip() == "true":
         return os.path.basename(os.getcwd())[: -len(".git")]
