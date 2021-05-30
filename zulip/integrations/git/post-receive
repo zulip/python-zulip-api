@@ -17,7 +17,10 @@ import os.path
 
 sys.path.insert(0, os.path.dirname(__file__))
 import zulip_git_config as config
+
 VERSION = "0.9"
+EMPTY_SHA = "0000000000000000000000000000000000000000"
+COMMIT_ROW_TEMPLATE = '* {author_name} commited {subject} ([{commit_short_hash}]({commit_url}))\n'
 
 if config.ZULIP_API_PATH is not None:
     sys.path.append(config.ZULIP_API_PATH)
@@ -37,15 +40,26 @@ def git_repository_name() -> Text:
         return os.path.basename(os.path.dirname(os.getcwd()))
 
 def git_commit_range(oldrev: str, newrev: str) -> str:
+    remote_repo_cmd = ["git", "config", "--get", "remote.origin.url"]
+    remote_repo_url = subprocess.check_output(remote_repo_cmd).strip().decode("utf-8")
+
     log_cmd = ["git", "log", "--reverse",
-               "--pretty=%aE %H %s", "%s..%s" % (oldrev, newrev)]
+               "--pretty=%aN%n%H%n%h%n%s", "%s..%s" % (oldrev, newrev)]
     commits = ''
-    for ln in subprocess.check_output(log_cmd, universal_newlines=True).splitlines():
-        author_email, commit_id, subject  = ln.split(None, 2)
-        if hasattr(config, "format_commit_message"):
-            commits += config.format_commit_message(author_email, subject, commit_id)
-        else:
-            commits += '!avatar(%s) %s\n' % (author_email, subject)
+    output = subprocess.check_output(log_cmd, universal_newlines=True).splitlines()
+    it = iter(output)
+    for _ in range(len(output)//4):
+        author_name = next(iter(it))
+        commit_hash = next(iter(it))
+        commit_short_hash = next(iter(it))
+        subject = next(iter(it))
+        commits += COMMIT_ROW_TEMPLATE.format(
+            author_name=author_name,
+            commit_short_hash=commit_short_hash,
+            subject=subject,
+            commit_url="{}/commit/{}".format(remote_repo_url, commit_hash)
+        )
+
     return commits
 
 def send_bot_message(oldrev: str, newrev: str, refname: str) -> None:
@@ -59,10 +73,7 @@ def send_bot_message(oldrev: str, newrev: str, refname: str) -> None:
     new_head = newrev[:12]
     old_head = oldrev[:12]
 
-    if (
-        oldrev == '0000000000000000000000000000000000000000'
-        or newrev == '0000000000000000000000000000000000000000'
-    ):
+    if oldrev == EMPTY_SHA or newrev == EMPTY_SHA:
         # New branch pushed or old branch removed
         added = ''
         removed = ''
@@ -70,9 +81,9 @@ def send_bot_message(oldrev: str, newrev: str, refname: str) -> None:
         added   = git_commit_range(oldrev, newrev)
         removed = git_commit_range(newrev, oldrev)
 
-    if oldrev == '0000000000000000000000000000000000000000':
+    if oldrev == EMPTY_SHA:
         message = '`%s` was pushed to new branch `%s`' % (new_head, branch)
-    elif newrev == '0000000000000000000000000000000000000000':
+    elif newrev == EMPTY_SHA:
         message = 'branch `%s` was removed (was `%s`)' % (branch, old_head)
     elif removed:
         message = '`%s` was pushed to `%s`, **REMOVING**:\n\n%s' % (new_head, branch, removed)
