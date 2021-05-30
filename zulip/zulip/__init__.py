@@ -31,6 +31,7 @@ assert(LooseVersion(requests.__version__) >= LooseVersion('0.12.1'))
 requests_json_is_function = callable(requests.Response.json)
 
 API_VERSTRING = "v1/"
+API_STRING = "/api"
 
 class CountingBackoff:
     def __init__(
@@ -381,9 +382,6 @@ class Client:
         else:
             raise MissingURLError("Missing Zulip server URL; specify via --site or ~/.zuliprc.")
 
-        if not self.base_url.endswith("/api"):
-            self.base_url += "/api"
-        self.base_url += "/"
         self.retry_on_errors = retry_on_errors
         self.client_name = client
 
@@ -467,7 +465,8 @@ class Client:
         )
 
     def do_api_query(self, orig_request: Mapping[str, Any], url: str, method: str = "POST",
-                     longpolling: bool = False, files: Optional[List[IO[Any]]] = None, timeout: Optional[float] = None) -> Dict[str, Any]:
+                     longpolling: bool = False, files: Optional[List[IO[Any]]] = None, timeout: Optional[float] = None,
+                     accesswithAPI: bool = True) -> Dict[str, Any]:
         if files is None:
             files = []
 
@@ -524,6 +523,14 @@ class Client:
                 else:
                     print("Failed!")
 
+        api_url = self.base_url
+        if accesswithAPI:
+            if not api_url.endswith(API_STRING):
+                api_url += API_STRING
+            api_url += "/"
+        else:
+            if api_url.endswith(API_STRING):
+                api_url = api_url[:-len(API_STRING)]
         while True:
             try:
                 if method == "GET":
@@ -539,7 +546,7 @@ class Client:
                 # Actually make the request!
                 res = self.session.request(
                     method,
-                    urllib.parse.urljoin(self.base_url, url),
+                    urllib.parse.urljoin(api_url, url),
                     timeout=request_timeout,
                     **kwargs)
 
@@ -573,7 +580,7 @@ class Client:
                     # go into retry logic, because the most likely scenario here is
                     # that somebody just hasn't started their server, or they passed
                     # in an invalid site.
-                    raise UnrecoverableNetworkError('cannot connect to server ' + self.base_url)
+                    raise UnrecoverableNetworkError('cannot connect to server ' + api_url)
 
                 if error_retry(""):
                     continue
@@ -601,16 +608,21 @@ class Client:
                     "status_code": res.status_code}
 
     def call_endpoint(self, url: Optional[str] = None, method: str = "POST", request: Optional[Dict[str, Any]] = None,
-                      longpolling: bool = False, files: Optional[List[IO[Any]]] = None, timeout: Optional[float] = None) -> Dict[str, Any]:
+                      longpolling: bool = False, files: Optional[List[IO[Any]]] = None, timeout: Optional[float] = None,
+                      accessVersionedAPI: bool = True) -> Dict[str, Any]:
         if request is None:
             request = dict()
         marshalled_request = {}
         for (k, v) in request.items():
             if v is not None:
                 marshalled_request[k] = v
-        versioned_url = API_VERSTRING + (url if url is not None else "")
-        return self.do_api_query(marshalled_request, versioned_url, method=method,
-                                 longpolling=longpolling, files=files, timeout=timeout)
+        effective_url = (url if url is not None else "")
+        accesswithAPI = False
+        if accessVersionedAPI:
+            effective_url = API_VERSTRING + effective_url
+            accesswithAPI = True
+        return self.do_api_query(marshalled_request, effective_url, method=method,
+                                 longpolling=longpolling, files=files, timeout=timeout, accesswithAPI = accesswithAPI)
 
     def call_on_each_event(
         self,
@@ -737,6 +749,16 @@ class Client:
         return self.call_endpoint(
             url='user_uploads',
             files=[file]
+        )
+
+    def fetch_upload(self) -> Dict[str, Any]:
+        '''
+            See examples/upload-file for example usage.
+        '''
+        return self.call_endpoint(
+            url='user_uploads',
+            method = 'GET',
+            accessVersionedAPI = False
         )
 
     def get_attachments(self) -> Dict[str, Any]:
