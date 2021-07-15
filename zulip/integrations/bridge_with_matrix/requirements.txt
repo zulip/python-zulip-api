@@ -1,1 +1,3 @@
-matrix-client==0.4.0
+matrix-nio
+python-magic
+python-magic-bin; platform_system == "Windows"
