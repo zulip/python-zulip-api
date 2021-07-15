@@ -6,13 +6,13 @@ from subprocess import PIPE, Popen
 from tempfile import mkdtemp
 from unittest import TestCase, mock
 
-from .matrix_bridge import check_zulip_message_validity, zulip_to_matrix
-
 script_file = "matrix_bridge.py"
 script_dir = os.path.dirname(__file__)
 script = os.path.join(script_dir, script_file)
 
 from typing import Iterator, List
+
+from .matrix_bridge import ZulipToMatrix, read_configuration
 
 sample_config_path = "matrix_test.conf"
 
@@ -27,6 +27,11 @@ email = glitch-bot@chat.zulip.org
 api_key = aPiKeY
 site = https://chat.zulip.org
 stream = test here
+topic = matrix
+
+[additional_bridge1]
+room_id = #example:matrix.org
+stream = new test
 topic = matrix
 
 """
@@ -58,7 +63,7 @@ class MatrixBridgeScriptTests(TestCase):
     def test_help_usage_and_description(self) -> None:
         output_lines = self.output_from_script(["-h"])
         usage = f"usage: {script_file} [-h]"
-        description = "Script to bridge"
+        description = "Bridge between Zulip topics and Matrix channels."
         self.assertIn(usage, output_lines[0])
         blank_lines = [num for num, line in enumerate(output_lines) if line == ""]
         # There should be blank lines in the output
@@ -126,55 +131,80 @@ class MatrixBridgeScriptTests(TestCase):
                 ],
             )
 
+    def test_parse_multiple_bridges(self) -> None:
+        with new_temp_dir() as tempdir:
+            path = os.path.join(tempdir, sample_config_path)
+            output_lines = self.output_from_script(["--write-sample-config", path])
+            self.assertEqual(output_lines, [f"Wrote sample configuration to '{path}'"])
+
+            config = read_configuration(path)
+
+            self.assertIn("zulip", config)
+            self.assertIn("matrix", config)
+            self.assertIn("bridges", config["zulip"])
+            self.assertIn("bridges", config["matrix"])
+            self.assertEqual(
+                {
+                    ("test here", "matrix"): "#zulip:matrix.org",
+                    ("new test", "matrix"): "#example:matrix.org",
+                },
+                config["zulip"]["bridges"],
+            )
+            self.assertEqual(
+                {
+                    "#zulip:matrix.org": ("test here", "matrix"),
+                    "#example:matrix.org": ("new test", "matrix"),
+                },
+                config["matrix"]["bridges"],
+            )
+
 
 class MatrixBridgeZulipToMatrixTests(TestCase):
-    valid_zulip_config = dict(stream="some stream", topic="some topic", email="some@email")
+    room = mock.MagicMock()
+    valid_zulip_config = dict(
+        stream="some stream",
+        topic="some topic",
+        email="some@email",
+        bridges={("some stream", "some topic"): room},
+    )
     valid_msg = dict(
         sender_email="John@Smith.smith",  # must not be equal to config:email
+        sender_id=42,
         type="stream",  # Can only mirror Zulip streams
         display_recipient=valid_zulip_config["stream"],
         subject=valid_zulip_config["topic"],
     )
 
-    def test_zulip_message_validity_success(self) -> None:
-        zulip_config = self.valid_zulip_config
-        msg = self.valid_msg
-        # Ensure the test inputs are valid for success
-        assert msg["sender_email"] != zulip_config["email"]
+    def setUp(self) -> None:
+        self.zulip_to_matrix = mock.MagicMock()
+        self.zulip_to_matrix.zulip_config = self.valid_zulip_config
+        self.zulip_to_matrix.get_matrix_room_for_zulip_message = (
+            lambda msg: ZulipToMatrix.get_matrix_room_for_zulip_message(self.zulip_to_matrix, msg)
+        )
 
-        self.assertTrue(check_zulip_message_validity(msg, zulip_config))
+    def test_get_matrix_room_for_zulip_message_success(self) -> None:
+        self.assertEqual(
+            self.zulip_to_matrix.get_matrix_room_for_zulip_message(self.valid_msg), self.room
+        )
 
-    def test_zulip_message_validity_failure(self) -> None:
-        zulip_config = self.valid_zulip_config
-
-        msg_wrong_stream = dict(self.valid_msg, display_recipient="foo")
-        self.assertFalse(check_zulip_message_validity(msg_wrong_stream, zulip_config))
-
-        msg_wrong_topic = dict(self.valid_msg, subject="foo")
-        self.assertFalse(check_zulip_message_validity(msg_wrong_topic, zulip_config))
-
-        msg_not_stream = dict(self.valid_msg, type="private")
-        self.assertFalse(check_zulip_message_validity(msg_not_stream, zulip_config))
-
-        msg_from_bot = dict(self.valid_msg, sender_email=zulip_config["email"])
-        self.assertFalse(check_zulip_message_validity(msg_from_bot, zulip_config))
-
-    def test_zulip_to_matrix(self) -> None:
-        room = mock.MagicMock()
-        zulip_config = self.valid_zulip_config
-        send_msg = zulip_to_matrix(zulip_config, room)
-
-        msg = dict(self.valid_msg, sender_full_name="John Smith")
-
-        expected = {
-            "hi": "{} hi",
-            "*hi*": "{} *hi*",
-            "**hi**": "{} **hi**",
-        }
-
-        for content in expected:
-            send_msg(dict(msg, content=content))
-
-        for (method, params, _), expect in zip(room.method_calls, expected.values()):
-            self.assertEqual(method, "send_text")
-            self.assertEqual(params[0], expect.format("<JohnSmith>"))
+    def test_get_matrix_room_for_zulip_message_failure(self) -> None:
+        self.assertIsNone(
+            self.zulip_to_matrix.get_matrix_room_for_zulip_message(
+                dict(self.valid_msg, type="private")
+            )
+        )
+        self.assertIsNone(
+            self.zulip_to_matrix.get_matrix_room_for_zulip_message(
+                dict(self.valid_msg, sender_email="some@email")
+            )
+        )
+        self.assertIsNone(
+            self.zulip_to_matrix.get_matrix_room_for_zulip_message(
+                dict(self.valid_msg, display_recipient="other stream")
+            )
+        )
+        self.assertIsNone(
+            self.zulip_to_matrix.get_matrix_room_for_zulip_message(
+                dict(self.valid_msg, subject="other topic")
+            )
+        )
