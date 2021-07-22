@@ -8,6 +8,7 @@ from types import ModuleType
 from typing import Any, Dict
 from unittest import mock
 
+from zulip_bots.finder import metadata
 from zulip_bots.lib import BotHandler
 from zulip_botserver import server
 from zulip_botserver.input_parameters import parse_args
@@ -272,6 +273,37 @@ class BotServerTests(BotServerTestCase):
                 root_dir, "zulip_bots/zulip_bots/bots/{bot}.py".format(bot="helloworld")
             ).as_posix()
             module = server.load_lib_modules([path])[path]
+
+    @mock.patch("zulip_botserver.server.app")
+    @mock.patch("sys.argv", ["zulip-botserver", "--config-file", "/foo/bar/baz.conf"])
+    def test_load_from_registry(self, mock_app: mock.Mock) -> None:
+        packaged_bot_module = mock.MagicMock(__version__="1.0.0", __file__="asd")
+        packaged_bot_entrypoint = metadata.EntryPoint(
+            "packaged_bot", "module_name", "zulip_bots.registry"
+        )
+        bots_config = {
+            "packaged_bot": {
+                "email": "packaged-bot@zulip.com",
+                "key": "value",
+                "site": "http://localhost",
+                "token": "abcd1234",
+            }
+        }
+
+        with mock.patch(
+            "zulip_botserver.server.read_config_file", return_value=bots_config
+        ), mock.patch("zulip_botserver.server.lib.ExternalBotHandler", new=mock.Mock()), mock.patch(
+            "zulip_bots.finder.metadata.EntryPoint.load",
+            return_value=packaged_bot_module,
+        ), mock.patch(
+            "zulip_bots.finder.metadata.entry_points",
+            return_value=(packaged_bot_entrypoint,),
+        ):
+            server.main()
+
+        mock_app.config.__setitem__.assert_any_call(
+            "BOTS_LIB_MODULES", {"packaged_bot": packaged_bot_module}
+        )
 
 
 if __name__ == "__main__":

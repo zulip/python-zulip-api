@@ -16,7 +16,7 @@ from werkzeug.exceptions import BadRequest, Unauthorized
 
 from zulip import Client
 from zulip_bots import lib
-from zulip_bots.finder import import_module_from_source
+from zulip_bots.finder import import_module_from_source, import_module_from_zulip_bot_registry
 from zulip_botserver.input_parameters import parse_args
 
 
@@ -122,15 +122,17 @@ def load_lib_modules(available_bots: List[str]) -> Dict[str, ModuleType]:
                 lib_module = import_module(module_name)
             bots_lib_module[bot] = lib_module
         except ImportError:
-            error_message = (
-                'Error: Bot "{}" doesn\'t exist. Please make sure '
-                "you have set up the botserverrc file correctly.\n".format(bot)
-            )
-            if bot == "api":
-                error_message += (
-                    "Did you forget to specify the bot you want to run with -b <botname> ?"
+            _, bots_lib_module[bot] = import_module_from_zulip_bot_registry(bot)
+            if bots_lib_module[bot] is None:
+                error_message = (
+                    f'Error: Bot "{bot}" doesn\'t exist. Please make sure '
+                    "you have set up the botserverrc file correctly.\n"
                 )
-            sys.exit(error_message)
+                if bot == "api":
+                    error_message += (
+                        "Did you forget to specify the bot you want to run with -b <botname> ?"
+                    )
+                sys.exit(error_message)
     return bots_lib_module
 
 
