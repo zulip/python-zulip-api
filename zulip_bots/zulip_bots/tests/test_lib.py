@@ -197,6 +197,7 @@ class LibTest(TestCase):
                 config_file=None,
                 bot_config_file=None,
                 bot_name="testbot",
+                bot_source="bot code location",
             )
 
     def test_upload_file(self):

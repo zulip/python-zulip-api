@@ -118,7 +118,7 @@ def main() -> None:
 
     if args.registry:
         try:
-            lib_module = finder.import_module_from_zulip_bot_registry(args.bot)
+            bot_source, lib_module = finder.import_module_from_zulip_bot_registry(args.bot)
         except finder.DuplicateRegisteredBotName as error:
             print(
                 f'ERROR: Found duplicate entries for "{error}" in zulip bots registry.\n'
@@ -151,10 +151,12 @@ def main() -> None:
                 )
                 print(dep_err_msg.format(bot_name=bot_name, deps_list=deps_list))
                 sys.exit(1)
+            bot_source = "source"
         else:
             lib_module = finder.import_module_by_name(args.bot)
             if lib_module:
                 bot_name = lib_module.__name__
+                bot_source = "named module"
                 if args.provision:
                     print("ERROR: Could not load bot's module for '{}'. Exiting now.")
                     sys.exit(1)
@@ -179,6 +181,7 @@ def main() -> None:
             bot_config_file=args.bot_config_file,
             quiet=args.quiet,
             bot_name=bot_name,
+            bot_source=bot_source,
         )
     except NoBotConfigException:
         print(
