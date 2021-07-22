@@ -2,6 +2,7 @@
 import os
 import sys
 import unittest
+from importlib.metadata import EntryPoint
 from pathlib import Path
 from typing import Optional
 from unittest import TestCase, mock
@@ -15,6 +16,7 @@ class TestDefaultArguments(TestCase):
 
     our_dir = os.path.dirname(__file__)
     path_to_bot = os.path.abspath(os.path.join(our_dir, "../bots/giphy/giphy.py"))
+    packaged_bot_entrypoint = EntryPoint("packaged_bot", "module_name", "zulip_bots.registry")
 
     @patch("sys.argv", ["zulip-run-bot", "giphy", "--config-file", "/foo/bar/baz.conf"])
     @patch("zulip_bots.run.run_message_handler_for_bot")
@@ -42,6 +44,29 @@ class TestDefaultArguments(TestCase):
 
         mock_run_message_handler_for_bot.assert_called_with(
             bot_name="giphy",
+            config_file="/foo/bar/baz.conf",
+            bot_config_file=None,
+            lib_module=mock.ANY,
+            quiet=False,
+        )
+
+    @patch(
+        "sys.argv", ["zulip-run-bot", "packaged_bot", "--config-file", "/foo/bar/baz.conf", "-r"]
+    )
+    @patch("zulip_bots.run.run_message_handler_for_bot")
+    def test_argument_parsing_with_zulip_bot_registry(
+        self, mock_run_message_handler_for_bot: mock.Mock
+    ) -> None:
+        with patch("zulip_bots.run.exit_gracefully_if_zulip_config_is_missing"), patch(
+            "zulip_bots.finder.metadata.EntryPoint.load"
+        ), patch(
+            "zulip_bots.finder.metadata.entry_points",
+            return_value=(self.packaged_bot_entrypoint,),
+        ):
+            zulip_bots.run.main()
+
+        mock_run_message_handler_for_bot.assert_called_with(
+            bot_name="packaged_bot",
             config_file="/foo/bar/baz.conf",
             bot_config_file=None,
             lib_module=mock.ANY,
