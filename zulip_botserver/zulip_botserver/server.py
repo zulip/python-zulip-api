@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
 import configparser
-import importlib.abc
-import importlib.util
 import json
 import logging
 import os
@@ -18,6 +16,7 @@ from werkzeug.exceptions import BadRequest, Unauthorized
 
 from zulip import Client
 from zulip_bots import lib
+from zulip_bots.finder import import_module_from_source
 from zulip_botserver.input_parameters import parse_args
 
 
@@ -112,22 +111,12 @@ def parse_config_file(config_file_path: str) -> configparser.ConfigParser:
     return parser
 
 
-# TODO: Could we use the function from the bots library for this instead?
-def load_module_from_file(file_path: str) -> ModuleType:
-    # Wrapper around importutil; see https://stackoverflow.com/a/67692/3909240.
-    spec = importlib.util.spec_from_file_location("custom_bot_module", file_path)
-    lib_module = importlib.util.module_from_spec(spec)
-    assert isinstance(spec.loader, importlib.abc.Loader)
-    spec.loader.exec_module(lib_module)
-    return lib_module
-
-
 def load_lib_modules(available_bots: List[str]) -> Dict[str, ModuleType]:
     bots_lib_module = {}
     for bot in available_bots:
         try:
             if bot.endswith(".py") and os.path.isfile(bot):
-                lib_module = load_module_from_file(bot)
+                lib_module = import_module_from_source(bot, "custom_bot_module")
             else:
                 module_name = "zulip_bots.bots.{bot}.{bot}".format(bot=bot)
                 lib_module = import_module(module_name)
