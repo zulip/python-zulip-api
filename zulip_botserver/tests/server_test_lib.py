@@ -29,7 +29,7 @@ class BotServerTestCase(TestCase):
             server.app.config["BOTS_LIB_MODULES"] = bots_lib_modules
             if bot_handlers is None:
                 bot_handlers = server.load_bot_handlers(
-                    available_bots, bots_config, third_party_bot_conf
+                    available_bots, bots_lib_modules, bots_config, third_party_bot_conf
                 )
             message_handlers = server.init_message_handlers(
                 available_bots, bots_lib_modules, bot_handlers

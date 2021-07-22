@@ -122,7 +122,7 @@ def load_module_from_file(file_path: str) -> ModuleType:
     return lib_module
 
 
-def load_lib_modules(available_bots: List[str]) -> Dict[str, Any]:
+def load_lib_modules(available_bots: List[str]) -> Dict[str, ModuleType]:
     bots_lib_module = {}
     for bot in available_bots:
         try:
@@ -147,6 +147,7 @@ def load_lib_modules(available_bots: List[str]) -> Dict[str, Any]:
 
 def load_bot_handlers(
     available_bots: List[str],
+    bot_lib_modules: Dict[str, ModuleType],
     bots_config: Dict[str, Dict[str, str]],
     third_party_bot_conf: Optional[configparser.ConfigParser] = None,
 ) -> Dict[str, lib.ExternalBotHandler]:
@@ -157,7 +158,7 @@ def load_bot_handlers(
             api_key=bots_config[bot]["key"],
             site=bots_config[bot]["site"],
         )
-        bot_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "bots", bot)
+        bot_dir = os.path.join(os.path.dirname(os.path.abspath(bot_lib_modules[bot].__file__)))
         bot_handler = lib.ExternalBotHandler(
             client, bot_dir, bot_details={}, bot_config_parser=third_party_bot_conf
         )
@@ -253,7 +254,9 @@ def main() -> None:
     third_party_bot_conf = (
         parse_config_file(options.bot_config_file) if options.bot_config_file is not None else None
     )
-    bot_handlers = load_bot_handlers(available_bots, bots_config, third_party_bot_conf)
+    bot_handlers = load_bot_handlers(
+        available_bots, bots_lib_modules, bots_config, third_party_bot_conf
+    )
     message_handlers = init_message_handlers(available_bots, bots_lib_modules, bot_handlers)
     app.config["BOTS_LIB_MODULES"] = bots_lib_modules
     app.config["BOT_HANDLERS"] = bot_handlers
