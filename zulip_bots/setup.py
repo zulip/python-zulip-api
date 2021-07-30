@@ -53,6 +53,7 @@ package_info = dict(
         "console_scripts": [
             "zulip-run-bot=zulip_bots.run:main",
             "zulip-terminal=zulip_bots.terminal:main",
+            "zulip-create-bot=zulip_bots.create_bot:main",
         ],
     },
     include_package_data=True,
