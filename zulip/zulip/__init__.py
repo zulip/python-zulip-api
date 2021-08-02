@@ -1308,8 +1308,11 @@ class Client:
         {'result': 'success', 'msg': ''}
         """
 
-        for key, value in request.items():
-            request[key] = json.dumps(value)
+        if "full_name" in request and self.feature_level < 106:
+            # As noted in https://github.com/zulip/zulip/issues/18409,
+            # before feature level 106, the server expected a
+            # buggy double JSON encoding of the `full_name` parameter.
+            request["full_name"] = json.dumps(request["full_name"])
 
         return self.call_endpoint(url=f"users/{user_id}", method="PATCH", request=request)
 
