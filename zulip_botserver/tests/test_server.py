@@ -25,6 +25,13 @@ class BotServerTests(BotServerTestCase):
         def handler_class(self) -> Any:
             return BotServerTests.MockMessageHandler()
 
+    def setUp(self) -> None:
+        # Since initializing Client invokes `get_server_settings` that fails in the test
+        # environment, we need to mock it to pretend that there exists a backend.
+        super().setUp()
+        self.patch = mock.patch("zulip.Client.get_server_settings", return_value=mock.Mock())
+        self.patch.start()
+
     def test_successful_request(self) -> None:
         available_bots = ["helloworld"]
         bots_config = {
