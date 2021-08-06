@@ -1,0 +1,127 @@
+# This file is largely copied from the Zulip server's continuous
+# integration.  The intent is to run the Zulip server's API
+# documentation test suite using the current version of this project,
+# to verify that the API client is generally compatible with the old
+# server release.
+name: Zulip server CI
+
+on: [push, pull_request]
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Base images are built using `tools/ci/Dockerfile.prod.template`.
+          # The comments at the top explain how to build and upload these images.
+          # Bionic ships with Python 3.6.
+          - docker_image: zulip/ci:bionic
+            name: Ubuntu 18.04 Bionic (Python 3.6, backend)
+            os: bionic
+            is_bionic: true
+            include_frontend_tests: false
+            # Configure this test to run with the Zulip 3.2 release.
+            legacy_client_interface: 3
+            server_version: refs/tags/3.2
+          # Focal ships with Python 3.8.2.
+          - docker_image: zulip/ci:focal
+            name: Ubuntu 20.04 Focal (Python 3.8, backend)
+            os: focal
+            is_focal: true
+            include_frontend_tests: false
+            legacy_client_interface: 4
+            server_version: refs/tags/4.0
+          # Bullseye ships with Python 3.9.2.
+          - docker_image: zulip/ci:bullseye
+            name: Debian 11 Bullseye (Python 3.9, backend)
+            os: bullseye
+            is_bullseye: true
+            include_frontend_tests: false
+            legacy_client_interface: 4
+            server_version: refs/tags/4.0
+
+    runs-on: ubuntu-latest
+    name: ${{ matrix.name }} (Zulip ${{matrix.server_version}})
+    container: ${{ matrix.docker_image }}
+    env:
+      # GitHub Actions sets HOME to /github/home which causes
+      # problem later in provison and frontend test that runs
+      # tools/setup/postgresql-init-dev-db because of the .pgpass
+      # location. PostgreSQL (psql) expects .pgpass to be at
+      # /home/github/.pgpass and setting home to `/home/github/`
+      # ensures it written there because we write it to ~/.pgpass.
+      HOME: /home/github/
+
+    steps:
+      - name: Add required permissions
+        run: |
+          # The checkout actions doesn't clone to ~/zulip or allow
+          # us to use the path option to clone outside the current
+          # /__w/zulip/zulip directory. Since this directory is owned
+          # by root we need to change it's ownership to allow the
+          # github user to clone the code here.
+          # Note: /__w/ is a docker volume mounted to $GITHUB_WORKSPACE
+          # which is /home/runner/work/.
+          sudo chown -R github .
+
+          # This is the GitHub Actions specific cache directory the
+          # the current github user must be able to access for the
+          # cache action to work. It is owned by root currently.
+          sudo chmod -R 0777 /__w/_temp/
+
+      - name: 'Checkout python-zulip-api'
+        uses: actions/checkout@v2
+        with:
+          path: api
+
+      - name: 'Checkout Zulip server ${{ matrix.server_version }}'
+        uses: actions/checkout@v2
+        with:
+          repository: zulip/zulip
+          ref: ${{ matrix.server_version }}
+          path: server
+
+      - name: Do Bionic hack
+        if: ${{ matrix.is_bionic }}
+        run: |
+          # Temporary hack till `sudo service redis-server start` gets fixes in Bionic. See
+          # https://chat.zulip.org/#narrow/stream/3-backend/topic/Ubuntu.20bionic.20CircleCI
+          sudo sed -i '/^bind/s/bind.*/bind 0.0.0.0/' /etc/redis/redis.conf
+
+      - name: Install dependencies
+        run: |
+          cd server
+          # This is the main setup job for the test suite
+          ./tools/ci/setup-backend --skip-dev-db-build
+
+          # Cleaning caches is mostly unnecessary in GitHub Actions, because
+          # most builds don't get to write to the cache.
+          # scripts/lib/clean_unused_caches.py --verbose --threshold 0
+
+      - name: Replace dependency with the latest python-zulip-api
+        run: |
+          cd server
+          source tools/ci/activate-venv
+          pip install ../api/zulip
+          pip install ../api/zulip_bots
+
+      - name: Run documentation and api tests
+        run: |
+          cd server
+          source tools/ci/activate-venv
+          ./tools/test-api
+        env:
+          LEGACY_CLIENT_INTERFACE_FROM_SERVER_DOCS_VERSION: ${{ matrix.legacy_client_interface }}
+
+      - name: Run backend tests
+        run: |
+          cd server
+          source tools/ci/activate-venv
+          ./tools/test-backend zerver.tests.test_bots zerver.tests.test_embedded_bot_system
+        env:
+          LEGACY_CLIENT_INTERFACE_FROM_SERVER_DOCS_VERSION: ${{ matrix.legacy_client_interface }}
