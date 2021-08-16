@@ -10,6 +10,7 @@ import time
 import traceback
 import types
 import urllib.parse
+import warnings
 from configparser import SafeConfigParser
 from distutils.version import LooseVersion
 from typing import (
@@ -901,7 +902,7 @@ class Client:
         """
         Example usage:
 
-        >>> client.mark_all_as_read(42, 'new coffee machine')
+        >>> client.mark_topic_as_read(42, 'new coffee machine')
         {'result': 'success', 'msg': ''}
         """
         return self.call_endpoint(
@@ -956,6 +957,14 @@ class Client:
         )
 
     def get_realm_emoji(self) -> Dict[str, Any]:
+        warnings.warn(
+            "get_realm_emoji() is deprecated. Please use get_custom_emoji() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.get_custom_emoji()
+
+    def get_custom_emoji(self) -> Dict[str, Any]:
         """
         See examples/realm-emoji for example usage.
         """
@@ -983,10 +992,18 @@ class Client:
         )
 
     def get_realm_linkifiers(self) -> Dict[str, Any]:
+        warnings.warn(
+            "get_realm_linkifiers() is deprecated. Please use get_linkifiers() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.get_linkifiers()
+
+    def get_linkifiers(self) -> Dict[str, Any]:
         """
         Example usage:
 
-        >>> client.get_realm_linkifiers()
+        >>> client.get_linkifiers()
         {
             'result': 'success',
             'msg': '',
@@ -1005,10 +1022,18 @@ class Client:
         )
 
     def add_realm_filter(self, pattern: str, url_format_string: str) -> Dict[str, Any]:
+        warnings.warn(
+            "add_realm_filter() is deprecated. Please use add_linkifier() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.add_linkifier(pattern, url_format_string)
+
+    def add_linkifier(self, pattern: str, url_format_string: str) -> Dict[str, Any]:
         """
         Example usage:
 
-        >>> client.add_realm_filter('#(?P<id>[0-9]+)', 'https://github.com/zulip/zulip/issues/%(id)s')
+        >>> client.add_linkifier('#(?P<id>[0-9]+)', 'https://github.com/zulip/zulip/issues/%(id)s')
         {'result': 'success', 'msg': '', 'id': 42}
         """
         return self.call_endpoint(
@@ -1021,10 +1046,18 @@ class Client:
         )
 
     def remove_realm_filter(self, filter_id: int) -> Dict[str, Any]:
+        warnings.warn(
+            "remove_realm_filter() is deprecated. Please use remove_linkifier() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.remove_linkifier(filter_id)
+
+    def remove_linkifier(self, filter_id: int) -> Dict[str, Any]:
         """
         Example usage:
 
-        >>> client.remove_realm_filter(42)
+        >>> client.remove_linkifier(42)
         {'result': 'success', 'msg': ''}
         """
         return self.call_endpoint(
@@ -1033,10 +1066,18 @@ class Client:
         )
 
     def get_realm_profile_fields(self) -> Dict[str, Any]:
+        warnings.warn(
+            "get_realm_profile_fields() is deprecated. Please use get_custom_profile_fields() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.get_custom_profile_fields()
+
+    def get_custom_profile_fields(self) -> Dict[str, Any]:
         """
         Example usage:
 
-        >>> client.get_realm_profile_fields()
+        >>> client.get_custom_profile_fields()
         {'result': 'success', 'msg': '', 'custom_fields': [{...}, {...}, {...}, {...}]}
         """
         return self.call_endpoint(
@@ -1045,10 +1086,18 @@ class Client:
         )
 
     def create_realm_profile_field(self, **request: Any) -> Dict[str, Any]:
+        warnings.warn(
+            "create_realm_profile_field() is deprecated. Please use create_custom_profile_field() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.create_custom_profile_field(**request)
+
+    def create_custom_profile_field(self, **request: Any) -> Dict[str, Any]:
         """
         Example usage:
 
-        >>> client.create_realm_profile_field(name='Phone', hint='Contact No.', field_type=1)
+        >>> client.create_custom_profile_field(name='Phone', hint='Contact No.', field_type=1)
         {'result': 'success', 'msg': '', 'id': 9}
         """
         return self.call_endpoint(
@@ -1070,10 +1119,18 @@ class Client:
         )
 
     def reorder_realm_profile_fields(self, **request: Any) -> Dict[str, Any]:
+        warnings.warn(
+            "reorder_realm_profile_fields() is deprecated. Please use reorder_custom_profile_fields() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.reorder_custom_profile_fields(**request)
+
+    def reorder_custom_profile_fields(self, **request: Any) -> Dict[str, Any]:
         """
         Example usage:
 
-        >>> client.reorder_realm_profile_fields(order=[8, 7, 6, 5, 4, 3, 2, 1])
+        >>> client.reorder_custom_profile_fields(order=[8, 7, 6, 5, 4, 3, 2, 1])
         {'result': 'success', 'msg': ''}
         """
         return self.call_endpoint(
@@ -1083,10 +1140,18 @@ class Client:
         )
 
     def update_realm_profile_field(self, field_id: int, **request: Any) -> Dict[str, Any]:
+        warnings.warn(
+            "update_realm_profile_field() is deprecated. Please use update_custom_profile_field() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.update_custom_profile_field(field_id, **request)
+
+    def update_custom_profile_field(self, field_id: int, **request: Any) -> Dict[str, Any]:
         """
         Example usage:
 
-        >>> client.update_realm_profile_field(field_id=1, name='Email')
+        >>> client.update_custom_profile_field(field_id=1, name='Email')
         {'result': 'success', 'msg': ''}
         """
         return self.call_endpoint(
@@ -1124,10 +1189,23 @@ class Client:
         narrow: Optional[List[List[str]]] = None,
         **kwargs: object,
     ) -> Dict[str, Any]:
+        warnings.warn(
+            "register() is deprecated. Please use register_queue() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.register_queue(event_types, narrow, **kwargs)
+
+    def register_queue(
+        self,
+        event_types: Optional[Iterable[str]] = None,
+        narrow: Optional[List[List[str]]] = None,
+        **kwargs: object,
+    ) -> Dict[str, Any]:
         """
         Example usage:
 
-        >>> client.register(['message'])
+        >>> client.register_queue(['message'])
         {u'msg': u'', u'max_message_id': 112, u'last_event_id': -1, u'result': u'success', u'queue_id': u'1482093786:2'}
         >>> client.get_events(queue_id='1482093786:2', last_event_id=0)
         {...}
@@ -1144,12 +1222,20 @@ class Client:
         )
 
     def deregister(self, queue_id: str, timeout: Optional[float] = None) -> Dict[str, Any]:
+        warnings.warn(
+            "deregister() is deprecated. Please use delete_queue() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.delete_queue(queue_id, timeout)
+
+    def delete_queue(self, queue_id: str, timeout: Optional[float] = None) -> Dict[str, Any]:
         """
         Example usage:
 
-        >>> client.register(['message'])
+        >>> client.register_queue(['message'])
         {u'msg': u'', u'max_message_id': 113, u'last_event_id': -1, u'result': u'success', u'queue_id': u'1482093786:3'}
-        >>> client.deregister('1482093786:3')
+        >>> client.delete_queue('1482093786:3')
         {u'msg': u'', u'result': u'success'}
         """
         request = dict(queue_id=queue_id)
@@ -1162,10 +1248,18 @@ class Client:
         )
 
     def get_profile(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        warnings.warn(
+            "get_profile() is deprecated. Please use get_own_user() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.get_own_user(request)
+
+    def get_own_user(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
         Example usage:
 
-        >>> client.get_profile()
+        >>> client.get_own_user()
         {u'user_id': 5, u'full_name': u'Iago', u'short_name': u'iago', ...}
         """
         return self.call_endpoint(
@@ -1237,6 +1331,14 @@ class Client:
         )
 
     def delete_stream(self, stream_id: int) -> Dict[str, Any]:
+        warnings.warn(
+            "delete_stream() is deprecated. Please use archive_stream() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.archive_stream(stream_id)
+
+    def archive_stream(self, stream_id: int) -> Dict[str, Any]:
         """
         See examples/delete-stream for example usage.
         """
@@ -1260,11 +1362,19 @@ class Client:
         )
 
     def get_user_by_id(self, user_id: int, **request: Any) -> Dict[str, Any]:
+        warnings.warn(
+            "get_user_by_id() is deprecated. Please use get_user() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.get_user(user_id, **request)
+
+    def get_user(self, user_id: int, **request: Any) -> Dict[str, Any]:
 
         """
         Example usage:
 
-        >>> client.get_user_by_id(8, include_custom_profile_fields=True)
+        >>> client.get_user(8, include_custom_profile_fields=True)
         {'result': 'success', 'msg': '', 'user': [{...}, {...}]}
         """
         return self.call_endpoint(
@@ -1274,11 +1384,19 @@ class Client:
         )
 
     def deactivate_user_by_id(self, user_id: int) -> Dict[str, Any]:
+        warnings.warn(
+            "deactivate_user_by_id() is deprecated. Please use deactivate_user() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.deactivate_user(user_id)
+
+    def deactivate_user(self, user_id: int) -> Dict[str, Any]:
 
         """
         Example usage:
 
-        >>> client.deactivate_user_by_id(8)
+        >>> client.deactivate_user(8)
         {'result': 'success', 'msg': ''}
         """
         return self.call_endpoint(
@@ -1287,11 +1405,19 @@ class Client:
         )
 
     def reactivate_user_by_id(self, user_id: int) -> Dict[str, Any]:
+        warnings.warn(
+            "reactivate_user_by_id() is deprecated. Please use reactivate_user() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.reactivate_user(user_id)
+
+    def reactivate_user(self, user_id: int) -> Dict[str, Any]:
 
         """
         Example usage:
 
-        >>> client.reactivate_user_by_id(8)
+        >>> client.reactivate_user(8)
         {'result': 'success', 'msg': ''}
         """
         return self.call_endpoint(
@@ -1300,11 +1426,19 @@ class Client:
         )
 
     def update_user_by_id(self, user_id: int, **request: Any) -> Dict[str, Any]:
+        warnings.warn(
+            "update_user_by_id() is deprecated. Please use update_user() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.update_user(user_id, **request)
+
+    def update_user(self, user_id: int, **request: Any) -> Dict[str, Any]:
 
         """
         Example usage:
 
-        >>> client.update_user_by_id(8, full_name="New Name")
+        >>> client.update_user(8, full_name="New Name")
         {'result': 'success', 'msg': ''}
         """
 
@@ -1329,8 +1463,11 @@ class Client:
     def get_members(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         # This exists for backwards-compatibility; we renamed this
         # function get_users for consistency with the rest of the API.
-        # Later, we may want to add a warning for clients using this
-        # legacy name.
+        warnings.warn(
+            "get_members() is deprecated. Please use get_users() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return self.get_users(request=request)
 
     def get_alert_words(self) -> Dict[str, Any]:
@@ -1366,12 +1503,22 @@ class Client:
         )
 
     def list_subscriptions(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
-        logger.warning(
-            "list_subscriptions() is deprecated." " Please use get_subscriptions() instead."
+        warnings.warn(
+            "list_subscriptions() is deprecated. Please use get_subscriptions() instead.",
+            DeprecationWarning,
+            stacklevel=2,
         )
         return self.get_subscriptions(request)
 
     def add_subscriptions(self, streams: Iterable[Dict[str, Any]], **kwargs: Any) -> Dict[str, Any]:
+        warnings.warn(
+            "add_subscriptions() is deprecated. Please use subscribe() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.subscribe(streams, **kwargs)
+
+    def subscribe(self, streams: Iterable[Dict[str, Any]], **kwargs: Any) -> Dict[str, Any]:
         """
         See examples/subscribe for example usage.
         """
@@ -1383,6 +1530,16 @@ class Client:
         )
 
     def remove_subscriptions(
+        self, streams: Iterable[str], principals: Union[Sequence[str], Sequence[int]] = []
+    ) -> Dict[str, Any]:
+        warnings.warn(
+            "remove_subscriptions() is deprecated. Please use unsubscribe() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.unsubscribe(streams, principals)
+
+    def unsubscribe(
         self, streams: Iterable[str], principals: Union[Sequence[str], Sequence[int]] = []
     ) -> Dict[str, Any]:
         """
