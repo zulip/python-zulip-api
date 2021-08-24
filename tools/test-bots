@@ -96,8 +96,6 @@ def main():
     bots_to_test = {bot for bot in specified_bots if bot not in options.exclude}
 
     if options.pytest:
-        excluded_bots = ["merels"]
-        pytest_bots_to_test = sorted(bot for bot in bots_to_test if bot not in excluded_bots)
         pytest_options = [
             "-s",  # show output from tests; this hides the progress bar though
             "-x",  # stop on first test failure
@@ -105,7 +103,7 @@ def main():
         ]
         pytest_options += ["-v"] if options.verbose else []
         os.chdir(bots_dir)
-        result = pytest.main(pytest_bots_to_test + pytest_options)
+        result = pytest.main(sorted(bots_to_test) + pytest_options)
         if result != 0:
             sys.exit(1)
         failures = False
