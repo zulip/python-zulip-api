@@ -1,8 +1,8 @@
 import unittest
 
-from libraries import database, game_data, interface, mechanics
-
 from zulip_bots.simple_lib import SimpleStorage
+
+from ..libraries import database, game_data, interface, mechanics
 
 
 class GridTest(unittest.TestCase):

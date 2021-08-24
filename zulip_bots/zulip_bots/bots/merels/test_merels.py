@@ -1,9 +1,9 @@
 from typing import Any, List, Tuple
 
-from libraries.constants import EMPTY_BOARD
-
 from zulip_bots.game_handler import GameInstance
 from zulip_bots.test_lib import BotTestCase, DefaultTests
+
+from .libraries.constants import EMPTY_BOARD
 
 
 class TestMerelsBot(BotTestCase, DefaultTests):

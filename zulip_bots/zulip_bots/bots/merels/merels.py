@@ -1,7 +1,8 @@
 from typing import Any, List
 
-from zulip_bots.bots.merels.libraries import database, game, game_data, mechanics
 from zulip_bots.game_handler import GameAdapter, SamePlayerMove
+
+from .libraries import database, game, game_data, mechanics
 
 
 class Storage:
