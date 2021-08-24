@@ -17,7 +17,7 @@ branch_ref=$(git rev-list --max-count=1 "$branch")
 [ $? -ne 0 ] && error_out "Unknown branch: $branch"
 
 if [ "$old_ref" == "$branch_ref" ]; then
-    new_ref=master
+    new_ref=main
 else
     ref_name=$(git describe --all --exact "$old_ref")
     if [ $? -eq 0 ]; then
@@ -31,12 +31,12 @@ fi
 
 git fetch -p
 
-git rebase origin/master "$branch"
-[ $? -ne 0 ] && error_out "Rebase onto origin/master failed"
+git rebase origin/main "$branch"
+[ $? -ne 0 ] && error_out "Rebase onto origin/main failed"
 
-git push . HEAD:master
-git push origin master
-[ $? -ne 0 ] && error_out "Push of master to origin/master failed"
+git push . HEAD:main
+git push origin main
+[ $? -ne 0 ] && error_out "Push of main to origin/main failed"
 
 git checkout "$new_ref"
 git branch -D "$branch"

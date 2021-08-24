@@ -28,7 +28,7 @@ client = zulip.Client(
 def get_deployment_details() -> Dict[str, str]:
     # "gear deployments" output example:
     #   Activation time - Deployment ID - Git Ref - Git SHA1
-    #   2017-01-07 15:40:30 -0500 - 9e2b7143 - master - b9ce57c - ACTIVE
+    #   2017-01-07 15:40:30 -0500 - 9e2b7143 - main - b9ce57c - ACTIVE
     dep = subprocess.check_output(["gear", "deployments"], universal_newlines=True).splitlines()[1]
     splits = dep.split(" - ")
 

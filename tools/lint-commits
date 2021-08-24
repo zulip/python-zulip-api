@@ -4,7 +4,7 @@
 # Edited at Line 14 Col 97 (zulip -> python-zulip-api)
 # Please don't edit here; instead update the zulip/zulip copy and then resync this file.
 
-# Lint all commit messages that are newer than upstream/master if running
+# Lint all commit messages that are newer than upstream/main if running
 # locally or the commits in the push or PR Gh-Actions.
 
 # The rules can be found in /.gitlint
@@ -16,9 +16,9 @@ $(git remote -v)
 " =~ '
 '([^[:space:]]*)[[:space:]]*(https://github\.com/|ssh://git@github\.com/|git@github\.com:)"$repository"(\.git|/)?\ \(fetch\)'
 ' ]]; then
-    range="${BASH_REMATCH[1]}/master..HEAD"
+    range="${BASH_REMATCH[1]}/main..HEAD"
 else
-    range="upstream/master..HEAD"
+    range="upstream/main..HEAD"
 fi
 
 commits=$(git log "$range" | wc -l)

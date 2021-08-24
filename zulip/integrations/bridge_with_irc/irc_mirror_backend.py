@@ -38,7 +38,7 @@ class IRCBot(irc.bot.SingleServerIRCBot):
 
     def connect(self, *args: Any, **kwargs: Any) -> None:
         # Taken from
-        # https://github.com/jaraco/irc/blob/master/irc/client_aio.py,
+        # https://github.com/jaraco/irc/blob/main/irc/client_aio.py,
         # in particular the method of AioSimpleIRCClient
         self.c = self.reactor.loop.run_until_complete(self.connection.connect(*args, **kwargs))
         print("Listening now. Please send an IRC message to verify operation")

@@ -2,7 +2,7 @@
 
 # Zulip hook for Mercurial changeset pushes.
 #
-# This hook is called when changesets are pushed to the master repository (ie
+# This hook is called when changesets are pushed to the default repository (ie
 # `hg push`). See https://zulip.com/integrations for installation instructions.
 
 import sys
@@ -23,7 +23,7 @@ def format_summary_line(
     information about the changeset and links to the changelog if a
     web URL has been configured:
 
-    Jane Doe <jane@example.com> pushed 1 commit to master (170:e494a5be3393):
+    Jane Doe <jane@example.com> pushed 1 commit to default (170:e494a5be3393):
     """
     revcount = tip - base
     plural = "s" if revcount > 1 else ""

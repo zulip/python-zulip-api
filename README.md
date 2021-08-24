@@ -1,8 +1,8 @@
 # Zulip API
 
-[![Build status](https://github.com/zulip/python-zulip-api/workflows/build/badge.svg?branch=master)](
-https://github.com/zulip/python-zulip-api/actions?query=branch%3Amaster+workflow%3Abuild)
-[![Coverage status](https://img.shields.io/codecov/c/github/zulip/python-zulip-api/master.svg)](
+[![Build status](https://github.com/zulip/python-zulip-api/workflows/build/badge.svg)](
+https://github.com/zulip/python-zulip-api/actions?query=branch%3Amain+workflow%3Abuild)
+[![Coverage status](https://img.shields.io/codecov/c/github/zulip/python-zulip-api)](
 https://codecov.io/gh/zulip/python-zulip-api)
 
 This repository contains the source code for Zulip's PyPI packages:

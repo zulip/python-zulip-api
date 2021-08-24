@@ -15,12 +15,12 @@ ZULIP_API_KEY = "0123456789abcdef0123456789abcdef"
 # Returns a dictionary encoding the stream and subject to send the
 # notification to (or None to send no notification).
 #
-# The default code below will send every commit pushed to "master" to
+# The default code below will send every commit pushed to "main" to
 # * stream "deployments"
-# * topic "master"
+# * topic "main"
 # And similarly for branch "test-post-receive" (for use when testing).
 def deployment_notice_destination(branch: str) -> Optional[Dict[str, str]]:
-    if branch in ["master", "test-post-receive"]:
+    if branch in ["main", "master", "test-post-receive"]:
         return dict(stream="deployments", subject=f"{branch}")
 
     # Return None for cases where you don't want a notice sent
