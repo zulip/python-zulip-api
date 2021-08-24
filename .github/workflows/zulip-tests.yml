@@ -52,13 +52,14 @@ jobs:
         name: Running Test-Suite on Linux
         run: |
           source zulip-api-py3-venv/bin/activate
-          tools/test-main
+          pytest --cov --cov-config=tools/.coveragerc --cov-report=xml
 
       - if: runner.os == 'Windows'
         name: Running Test-Suite on Windows
         run: |
           zulip-api-py3-venv\Scripts\Activate.ps1
-          tools\test-main.ps1
+          pytest --cov --cov-config=tools\.coveragerc --cov-report=xml
 
-      - name: Codecov
-        uses: codecov/codecov-action@v1.2.1
+      - uses: codecov/codecov-action@v2
+        with:
+          files: coverage.xml

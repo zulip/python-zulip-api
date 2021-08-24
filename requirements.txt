@@ -1,11 +1,11 @@
 crayons
 twine
-coverage>=4.4.1
 black
 isort
 flake8
 mock
 pytest
+pytest-cov
 -e ./zulip
 -e ./zulip_bots
 -e ./zulip_botserver

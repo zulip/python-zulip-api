@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-set -ev
-
-tools/test-bots "$@" --coverage
-tools/test-botserver "$@" --coverage combine
-tools/test-zulip "$@" --coverage combine
-tools/test-lib "$@" --coverage combine

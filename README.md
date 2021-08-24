@@ -59,13 +59,14 @@ and [commit guidelines](https://zulip.readthedocs.io/en/latest/contributing/vers
 
 ### Running tests
 
-To run the tests for
+You can run all the tests with:
 
-* *zulip*: run `./tools/test-zulip`
+`pytest`
 
-* *zulip_bots*: run `./tools/test-lib && ./tools/test-bots`
-
-* *zulip_botserver*: run `./tools/test-botserver`
+or test individual packages with `pytest zulip`, `pytest zulip_bots`,
+or `pytest zulip_botserver` (see the [pytest
+documentation](https://docs.pytest.org/en/latest/how-to/usage.html)
+for more options).
 
 To run the linter, type:
 
