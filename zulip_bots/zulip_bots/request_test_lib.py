@@ -4,6 +4,7 @@ from typing import Any, Dict, List
 from unittest.mock import patch
 
 import requests
+from requests.utils import get_encoding_from_headers
 
 
 @contextmanager
@@ -25,11 +26,13 @@ def mock_http_conversation(http_data: Dict[str, Any]) -> Any:
         response headers.
         """
         mock_result = requests.Response()
+        mock_result.status_code = http_headers.pop("status", 200)
+        mock_result.headers.update(http_headers)
+        mock_result.encoding = get_encoding_from_headers(mock_result.headers)
         if is_raw_response:
             mock_result._content = http_response.encode()  # type: ignore # This modifies a "hidden" attribute.
         else:
             mock_result._content = json.dumps(http_response).encode()
-        mock_result.status_code = http_headers.get("status", 200)
         return mock_result
 
     def assert_called_with_fields(
