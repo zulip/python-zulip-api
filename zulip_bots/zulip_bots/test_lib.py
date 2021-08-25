@@ -154,7 +154,7 @@ class BotTestCase(unittest.TestCase):
 
     def validate_invalid_config(self, config_data: Dict[str, str], error_regexp: str) -> None:
         bot_class = type(get_bot_message_handler(self.bot_name))
-        with self.assertRaisesRegexp(ConfigValidationError, error_regexp):
+        with self.assertRaisesRegex(ConfigValidationError, error_regexp):
             bot_class.validate_config(config_data)
 
     def validate_valid_config(self, config_data: Dict[str, str]) -> None:

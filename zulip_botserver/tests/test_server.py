@@ -129,10 +129,7 @@ class BotServerTests(BotServerTestCase):
                 "token": "abcd1234",
             }
         }
-        # This works, but mypy still complains:
-        # error: No overload variant of "assertRaisesRegexp" of "TestCase" matches argument types
-        # [def (*args: builtins.object, **kwargs: builtins.object) -> builtins.SystemExit, builtins.str]
-        with self.assertRaisesRegexp(
+        with self.assertRaisesRegex(
             SystemExit,
             'Error: Bot "nonexistent-bot" doesn\'t exist. Please make '
             "sure you have set up the botserverrc file correctly.",
@@ -254,7 +251,7 @@ class BotServerTests(BotServerTestCase):
         assert isinstance(module, ModuleType)
 
         # load invalid module name
-        with self.assertRaisesRegexp(
+        with self.assertRaisesRegex(
             SystemExit,
             'Error: Bot "botserver-test-case-random-bot" doesn\'t exist. '
             "Please make sure you have set up the botserverrc file correctly.",
@@ -264,7 +261,7 @@ class BotServerTests(BotServerTestCase):
             ]
 
         # load invalid file path
-        with self.assertRaisesRegexp(
+        with self.assertRaisesRegex(
             SystemExit,
             'Error: Bot "{}/zulip_bots/zulip_bots/bots/helloworld.py" doesn\'t exist. '
             "Please make sure you have set up the botserverrc file correctly.".format(root_dir),
