@@ -1,9 +1,9 @@
 import copy
 import re
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 
 import chess
-import chess.uci
+import chess.engine
 
 from zulip_bots.lib import BotHandler
 
@@ -28,8 +28,9 @@ class ChessHandler:
         self.config_info = bot_handler.get_config_info("chess")
 
         try:
-            self.engine = chess.uci.popen_engine(self.config_info["stockfish_location"])
-            self.engine.uci()
+            self.engine = chess.engine.SimpleEngine.popen_uci(
+                self.config_info["stockfish_location"]
+            )
         except FileNotFoundError:
             # It is helpful to allow for fake Stockfish locations if the bot
             # runner is testing or knows they won't be using an engine.
@@ -203,7 +204,7 @@ class ChessHandler:
         # be over if it's  *5*-fold or *75* moves, but if either player
         # wants the game to be a draw, after 3 or 75 it a draw. For now,
         # just assume that the players would want the draw.
-        if new_board.is_game_over(True):
+        if new_board.is_game_over(claim_draw=True):
             game_over_output = ""
 
             if new_board.is_checkmate():
@@ -289,6 +290,10 @@ class ChessHandler:
 
         computer_move = calculate_computer_move(new_board, self.engine)
 
+        if not computer_move:
+            bot_handler.send_reply(message, make_engine_failed_response())
+            return
+
         new_board_after_computer_move = copy.copy(new_board)
         new_board_after_computer_move.push(computer_move)
 
@@ -317,9 +322,16 @@ class ChessHandler:
         """
         last_board = self.validate_board(message, bot_handler, last_fen)
 
+        if not last_board:
+            return
+
         computer_move = calculate_computer_move(last_board, self.engine)
 
-        new_board_after_computer_move = copy.copy(last_board)  # type: chess.Board
+        if not computer_move:
+            bot_handler.send_reply(message, make_engine_failed_response())
+            return
+
+        new_board_after_computer_move = copy.copy(last_board)
         new_board_after_computer_move.push(computer_move)
 
         if self.check_game_over(message, bot_handler, new_board_after_computer_move):
@@ -353,7 +365,9 @@ class ChessHandler:
 handler_class = ChessHandler
 
 
-def calculate_computer_move(board: chess.Board, engine: Any) -> chess.Move:
+def calculate_computer_move(
+    board: chess.Board, engine: chess.engine.SimpleEngine
+) -> Optional[chess.Move]:
     """Calculates the computer's move.
 
     Parameters:
@@ -362,9 +376,8 @@ def calculate_computer_move(board: chess.Board, engine: Any) -> chess.Move:
 
     Returns: The computer's move object.
     """
-    engine.position(board)
-    best_move_and_ponder_move = engine.go(movetime=(3000))
-    return best_move_and_ponder_move[0]
+    result = engine.play(board, chess.engine.Limit(time=3.0))
+    return result.move
 
 
 def make_draw_response(reason: str) -> str:
@@ -491,6 +504,14 @@ def make_move_reponse(last_board: chess.Board, new_board: chess.Board, move: che
         "white" if new_board.turn else "black",
         make_footer(),
     )
+
+
+def make_engine_failed_response() -> str:
+    """Makes a response string for engine failure.
+
+    Returns: The engine failure response string.
+    """
+    return "The computer failed to make a move."
 
 
 def make_footer() -> str:
