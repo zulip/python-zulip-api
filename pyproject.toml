@@ -13,6 +13,38 @@ src_paths = [
 profile = "black"
 line_length = 100
 
+[tool.mypy]
+mypy_path = [
+    "$MYPY_CONFIG_FILE_DIR/stubs",
+    "$MYPY_CONFIG_FILE_DIR/zulip",
+    "$MYPY_CONFIG_FILE_DIR/zulip_bots",
+    "$MYPY_CONFIG_FILE_DIR/zulip_botserver",
+]
+explicit_package_bases = true
+
+incremental = true
+scripts_are_modules = true
+show_traceback = true
+
+# Enable strict mode, with some exceptions.
+strict = true
+disallow_subclassing_any = false
+disallow_untyped_calls = false
+disallow_untyped_decorators = false
+warn_return_any = false
+no_implicit_reexport = false
+
+# Enable optional errors.
+enable_error_code = [
+    "redundant-self",
+    "truthy-bool",
+    "truthy-iterable",
+    "unused-awaitable",
+]
+
+# Other options.
+warn_unreachable = true
+
 [tool.pytest.ini_options]
 pythonpath = [
     "zulip",
