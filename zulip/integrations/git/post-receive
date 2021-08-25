@@ -33,11 +33,10 @@ client = zulip.Client(
 
 
 def git_repository_name() -> str:
-    output = subprocess.check_output(["git", "rev-parse", "--is-bare-repository"])
-    if output.strip() == "true":
-        return os.path.basename(os.getcwd())[: -len(".git")]
-    else:
-        return os.path.basename(os.path.dirname(os.getcwd()))
+    path, name = os.path.split(os.getcwd())
+    if name == ".git":
+        name = os.path.basename(path)
+    return name[: -len(".git")] if name.endswith(".git") else name
 
 
 def git_commit_range(oldrev: str, newrev: str) -> str:
