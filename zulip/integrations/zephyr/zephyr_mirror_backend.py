@@ -475,7 +475,7 @@ def process_notice(notice: "zephyr.ZNotice", log: Optional[IO[str]]) -> None:
 
     # Add instances in for instanced personals
     if is_personal:
-        if notice.cls.lower() != "message" and notice.instance.lower != "personal":
+        if notice.cls.lower() != "message" and notice.instance.lower() != "personal":
             heading = f"[-c {notice.cls} -i {notice.instance}]\n"
         elif notice.cls.lower() != "message":
             heading = f"[-c {notice.cls}]\n"
