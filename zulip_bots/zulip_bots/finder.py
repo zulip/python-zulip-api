@@ -13,6 +13,8 @@ import importlib_metadata as metadata
 
 def import_module_from_source(path: str, name: str) -> Any:
     spec = importlib.util.spec_from_file_location(name, path)
+    if spec is None:
+        return None
     module = importlib.util.module_from_spec(spec)
     loader = spec.loader
     if not isinstance(loader, importlib.abc.Loader):

@@ -80,6 +80,8 @@ def get_handle(location: str) -> Optional[Callable[[Dict[str, Any]], Optional[st
     """
     try:
         spec = importlib.util.spec_from_file_location("module.name", location)
+        if spec is None:
+            return None
         handler = importlib.util.module_from_spec(spec)
         loader = spec.loader
         if not isinstance(loader, importlib.abc.Loader):
