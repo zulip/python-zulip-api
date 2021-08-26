@@ -19,17 +19,16 @@ class TestDefaultArguments(TestCase):
                 parser.parse_args(["invalid argument"])
         self.assertEqual(cm.exception.code, 2)
         # Assert that invalid arguments exit with printing the full usage (non-standard behavior)
-        self.assertTrue(
-            mock_stderr.getvalue().startswith(
-                """usage: lorem ipsum
+        self.assertRegex(
+            mock_stderr.getvalue(),
+            r"""^usage: lorem ipsum
 
-optional arguments:
+(optional arguments|options):
   -h, --help            show this help message and exit
 
 Zulip API configuration:
   --site ZULIP_SITE     Zulip server URI
-"""
-            )
+""",
         )
 
     @patch("os.path.exists", return_value=False)
