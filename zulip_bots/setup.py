@@ -66,7 +66,7 @@ setuptools_info = dict(
         "lxml",
         "BeautifulSoup4",
         "typing_extensions",
-        'importlib-metadata >= 3.6; python_version  < "3.10"',
+        'importlib-metadata >= 3.6 ; python_version < "3.8"',
     ],
 )
 

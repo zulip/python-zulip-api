@@ -2,13 +2,17 @@ import importlib
 import importlib.abc
 import importlib.util
 import os
+import sys
 from pathlib import Path
 from types import ModuleType
 from typing import Any, Optional, Tuple
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
-import importlib_metadata as metadata
+if sys.version_info >= (3, 8):
+    from importlib.metadata import entry_points
+else:
+    from importlib_metadata import entry_points
 
 
 def import_module_from_source(path: str, name: str) -> Any:
@@ -35,13 +39,17 @@ class DuplicateRegisteredBotName(Exception):
 
 
 def import_module_from_zulip_bot_registry(name: str) -> Tuple[str, Optional[ModuleType]]:
-    # Prior to Python 3.10, calling importlib.metadata.entry_points returns a
-    # SelectableGroups object when no parameters is given. Currently we use
-    # the importlib_metadata library for compatibility, but we need to migrate
-    # to the built-in library when we start to adapt Python 3.10.
-    # https://importlib-metadata.readthedocs.io/en/latest/using.html#entry-points
-    registered_bots = metadata.entry_points(group="zulip_bots.registry")
-    matching_bots = [bot for bot in registered_bots if bot.name == name]
+    eps = entry_points()
+    if sys.version_info >= (3, 10):
+        matching_bots = eps.select(group="zulip_bots.registry", name=name)  # type: ignore[attr-defined]
+    elif sys.version_info >= (3, 8):
+        try:
+            registered_bots = eps["zulip_bots.registry"]
+        except KeyError:
+            return "", None
+        matching_bots = [bot for bot in registered_bots if bot.name == name]
+    else:
+        matching_bots = eps.select(group="zulip_bots.registry", name=name)
 
     if len(matching_bots) == 1:  # Unique matching entrypoint
         """We expect external bots to be registered using entry_points in the

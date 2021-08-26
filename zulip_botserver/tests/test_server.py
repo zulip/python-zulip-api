@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 import unittest
 from collections import OrderedDict
 from importlib import import_module
@@ -8,12 +9,16 @@ from types import ModuleType
 from typing import Any, Dict
 from unittest import mock
 
-from zulip_bots.finder import metadata
 from zulip_bots.lib import BotHandler
 from zulip_botserver import server
 from zulip_botserver.input_parameters import parse_args
 
 from .server_test_lib import BotServerTestCase
+
+if sys.version_info >= (3, 8):
+    from importlib.metadata import EntryPoint
+else:
+    from importlib_metadata import EntryPoint
 
 
 class BotServerTests(BotServerTestCase):
@@ -275,9 +280,7 @@ class BotServerTests(BotServerTestCase):
     @mock.patch("sys.argv", ["zulip-botserver", "--config-file", "/foo/bar/baz.conf"])
     def test_load_from_registry(self, mock_app: mock.Mock) -> None:
         packaged_bot_module = mock.MagicMock(__version__="1.0.0", __file__="asd")
-        packaged_bot_entrypoint = metadata.EntryPoint(
-            "packaged_bot", "module_name", "zulip_bots.registry"
-        )
+        packaged_bot_entrypoint = EntryPoint("packaged_bot", "module_name", "zulip_bots.registry")
         bots_config = {
             "packaged_bot": {
                 "email": "packaged-bot@zulip.com",
@@ -289,12 +292,13 @@ class BotServerTests(BotServerTestCase):
 
         with mock.patch(
             "zulip_botserver.server.read_config_file", return_value=bots_config
-        ), mock.patch("zulip_botserver.server.lib.ExternalBotHandler", new=mock.Mock()), mock.patch(
-            "zulip_bots.finder.metadata.EntryPoint.load",
-            return_value=packaged_bot_module,
         ), mock.patch(
-            "zulip_bots.finder.metadata.entry_points",
-            return_value=(packaged_bot_entrypoint,),
+            "zulip_botserver.server.lib.ExternalBotHandler", new=mock.Mock()
+        ), mock.patch.object(
+            EntryPoint, "load", return_value=packaged_bot_module
+        ), mock.patch(
+            "zulip_bots.finder.entry_points",
+            return_value={"zulip_bots.registry": [packaged_bot_entrypoint]},
         ):
             server.main()
 
