@@ -1,13 +1,11 @@
-from zulip_bots.test_lib import (
-    BotTestCase,
-    DefaultTests,
-)
+from zulip_bots.test_lib import BotTestCase, DefaultTests
+
 
 class TestSusiBot(BotTestCase, DefaultTests):
     bot_name = "susi"
 
     def test_help(self) -> None:
-        bot_response = '''
+        bot_response = """
     Hi, I am Susi, people generally ask me these questions:
     ```
     What is the exchange rate of USD to BTC
@@ -31,14 +29,14 @@ class TestSusiBot(BotTestCase, DefaultTests):
     distance between india and singapore
     tell me latest phone by LG
     ```
-        '''
+        """
 
-        self.verify_reply('', bot_response)
-        self.verify_reply('help', bot_response)
+        self.verify_reply("", bot_response)
+        self.verify_reply("help", bot_response)
 
     def test_issue(self) -> None:
-        request = 'hi'
-        bot_response = 'Hello!'
+        request = "hi"
+        bot_response = "Hello!"
 
-        with self.mock_http_conversation('test_reply'):
+        with self.mock_http_conversation("test_reply"):
             self.verify_reply(request, bot_response)

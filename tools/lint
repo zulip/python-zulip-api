@@ -1,15 +1,18 @@
 #! /usr/bin/env python3
 
 import argparse
+import re
+import sys
 
-from zulint.command import add_default_linter_arguments, LinterConfig
+from zulint.command import LinterConfig, add_default_linter_arguments
 
-from custom_check import python_rules, non_py_rules
+from custom_check import non_py_rules, python_rules
 
 EXCLUDED_FILES = [
     # This is an external file that doesn't comply with our codestyle
-    'zulip/integrations/perforce/git_p4.py',
+    "zulip/integrations/perforce/git_p4.py",
 ]
+
 
 def run() -> None:
     parser = argparse.ArgumentParser()
@@ -18,13 +21,39 @@ def run() -> None:
 
     linter_config = LinterConfig(args)
 
-    by_lang = linter_config.list_files(file_types=['py', 'sh', 'json', 'md', 'txt'],
-                                       exclude=EXCLUDED_FILES)
+    by_lang = linter_config.list_files(
+        file_types=["py", "sh", "json", "md", "txt"], exclude=EXCLUDED_FILES
+    )
 
-    linter_config.external_linter('mypy', ['tools/run-mypy'], ['py'], pass_targets=False,
-                                  description="Static type checker for Python (config: mypy.ini)")
-    linter_config.external_linter('flake8', ['flake8'], ['py'],
-                                  description="Standard Python linter (config: .flake8)")
+    linter_config.external_linter(
+        "mypy",
+        [sys.executable, "tools/run-mypy"],
+        ["py"],
+        pass_targets=False,
+        description="Static type checker for Python (config: mypy.ini)",
+    )
+    linter_config.external_linter(
+        "flake8", ["flake8"], ["py"], description="Standard Python linter (config: .flake8)"
+    )
+    linter_config.external_linter(
+        "gitlint", ["tools/lint-commits"], description="Git Lint for commit messages"
+    )
+    linter_config.external_linter(
+        "isort",
+        ["isort"],
+        ["py"],
+        description="Sorts Python import statements",
+        check_arg=["--check-only", "--diff"],
+    )
+    linter_config.external_linter(
+        "black",
+        ["black"],
+        ["py"],
+        description="Reformats Python code",
+        check_arg=["--check"],
+        suppress_line=lambda line: line == "All done! ✨ 🍰 ✨\n"
+        or re.fullmatch(r"\d+ files? would be left unchanged\.\n", line) is not None,
+    )
 
     @linter_config.lint
     def custom_py() -> int:
@@ -42,5 +71,6 @@ def run() -> None:
 
     linter_config.do_lint()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     run()

@@ -15,25 +15,29 @@ Example: edit-stream --stream-id=3 --history-public-to-subscribers
 
 
 def quote(string: str) -> str:
-    return '"{}"'.format(string)
+    return f'"{string}"'
 
 
 parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage))
-parser.add_argument('--stream-id', type=int, required=True)
-parser.add_argument('--description')
-parser.add_argument('--new-name')
-parser.add_argument('--private', action='store_true')
-parser.add_argument('--announcement-only', action='store_true')
-parser.add_argument('--history-public-to-subscribers', action='store_true')
+parser.add_argument("--stream-id", type=int, required=True)
+parser.add_argument("--description")
+parser.add_argument("--new-name")
+parser.add_argument("--private", action="store_true")
+parser.add_argument("--announcement-only", action="store_true")
+parser.add_argument("--history-public-to-subscribers", action="store_true")
 options = parser.parse_args()
 
 client = zulip.init_from_options(options)
 
-print(client.update_stream({
-    'stream_id': options.stream_id,
-    'description': quote(options.description),
-    'new_name': quote(options.new_name),
-    'is_private': options.private,
-    'is_announcement_only': options.announcement_only,
-    'history_public_to_subscribers': options.history_public_to_subscribers
-}))
+print(
+    client.update_stream(
+        {
+            "stream_id": options.stream_id,
+            "description": quote(options.description),
+            "new_name": quote(options.new_name),
+            "is_private": options.private,
+            "is_announcement_only": options.announcement_only,
+            "history_public_to_subscribers": options.history_public_to_subscribers,
+        }
+    )
+)

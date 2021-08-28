@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Text
+from typing import Dict, Optional
 
 # Change these values to configure authentication for the plugin
 ZULIP_USER = "p4-bot@example.com"
@@ -12,7 +12,7 @@ ZULIP_IGNORE_MISSING_STREAM = False
 
 # Set this to point at a p4web installation to get changelist IDs as links
 # P4_WEB = "https://p4web.example.com"
-P4_WEB = None
+P4_WEB: Optional[str] = None
 
 # commit_notice_destination() lets you customize where commit notices
 # are sent to with the full power of a Python function.
@@ -28,8 +28,8 @@ P4_WEB = None
 # "master-plan" and "secret" subdirectories of //depot/ to:
 # * stream "depot_subdirectory-commits"
 # * subject "change_root"
-def commit_notice_destination(path: Text, changelist: int) -> Optional[Dict[Text, Text]]:
-    dirs = path.split('/')
+def commit_notice_destination(path: str, changelist: int) -> Optional[Dict[str, str]]:
+    dirs = path.split("/")
     if len(dirs) >= 4 and dirs[3] not in ("*", "..."):
         directory = dirs[3]
     else:
@@ -37,12 +37,12 @@ def commit_notice_destination(path: Text, changelist: int) -> Optional[Dict[Text
         directory = dirs[2]
 
     if directory not in ["evil-master-plan", "my-super-secret-repository"]:
-        return dict(stream  = "%s-commits" % (directory,),
-                    subject = path)
+        return dict(stream=f"{directory}-commits", subject=path)
 
     # Return None for cases where you don't want a notice sent
     return None
 
+
 ## If properly installed, the Zulip API should be in your import
 ## path, but if not, set a custom path below
-ZULIP_API_PATH = None
+ZULIP_API_PATH: Optional[str] = None

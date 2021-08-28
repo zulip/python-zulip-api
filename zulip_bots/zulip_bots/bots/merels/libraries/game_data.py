@@ -9,9 +9,8 @@ from . import mechanics
 from .interface import construct_grid
 
 
-class GameData():
-    def __init__(self, game_data=(
-            'merels', 'X', 0, 0, 'NNNNNNNNNNNNNNNNNNNNNNNN', '', 0)):
+class GameData:
+    def __init__(self, game_data=("merels", "X", 0, 0, "NNNNNNNNNNNNNNNNNNNNNNNN", "", 0)):
         self.topic_name = game_data[0]
         self.turn = game_data[1]
         self.x_taken = game_data[2]
@@ -30,8 +29,14 @@ class GameData():
         """
 
         res = (
-            self.topic_name, self.turn, self.x_taken, self.o_taken, self.board,
-            self.hill_uid, self.take_mode)
+            self.topic_name,
+            self.turn,
+            self.x_taken,
+            self.o_taken,
+            self.board,
+            self.hill_uid,
+            self.take_mode,
+        )
         return res
 
     def grid(self):
@@ -63,9 +68,12 @@ class GameData():
 
         :return: A phase number (1, 2, or 3)
         """
-        return mechanics.get_phase_number(self.grid(), self.turn,
-                                          self.get_x_piece_possessed_not_on_grid(),
-                                          self.get_o_piece_possessed_not_on_grid())
+        return mechanics.get_phase_number(
+            self.grid(),
+            self.turn,
+            self.get_x_piece_possessed_not_on_grid(),
+            self.get_o_piece_possessed_not_on_grid(),
+        )
 
     def switch_turn(self):
         """Switches turn between X and O

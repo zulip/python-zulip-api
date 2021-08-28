@@ -2,12 +2,13 @@
 
 # Twitter integration for Zulip
 
+import argparse
 import os
 import sys
-import argparse
-from configparser import ConfigParser, NoSectionError, NoOptionError
+from configparser import ConfigParser, NoOptionError, NoSectionError
 
 import zulip
+
 VERSION = "0.9"
 CONFIGFILE = os.path.expanduser("~/.zulip_twitterrc")
 INSTRUCTIONS = r"""
@@ -66,37 +67,34 @@ Make sure to go the application you created and click "create my
 access token" as well. Fill in the values displayed.
 """
 
+
 def write_config(config: ConfigParser, configfile_path: str) -> None:
-    with open(configfile_path, 'w') as configfile:
+    with open(configfile_path, "w") as configfile:
         config.write(configfile)
 
+
 parser = zulip.add_default_arguments(argparse.ArgumentParser("Fetch tweets from Twitter."))
-parser.add_argument('--instructions',
-                    action='store_true',
-                    help='Show instructions for the twitter bot setup and exit'
-                    )
-parser.add_argument('--limit-tweets',
-                    default=15,
-                    type=int,
-                    help='Maximum number of tweets to send at once')
-parser.add_argument('--search',
-                    dest='search_terms',
-                    help='Terms to search on',
-                    action='store')
-parser.add_argument('--stream',
-                    dest='stream',
-                    help='The stream to which to send tweets',
-                    default="twitter",
-                    action='store')
-parser.add_argument('--twitter-name',
-                    dest='twitter_name',
-                    help='Twitter username to poll new tweets from"')
-parser.add_argument('--excluded-terms',
-                    dest='excluded_terms',
-                    help='Terms to exclude tweets on')
-parser.add_argument('--excluded-users',
-                    dest='excluded_users',
-                    help='Users to exclude tweets on')
+parser.add_argument(
+    "--instructions",
+    action="store_true",
+    help="Show instructions for the twitter bot setup and exit",
+)
+parser.add_argument(
+    "--limit-tweets", default=15, type=int, help="Maximum number of tweets to send at once"
+)
+parser.add_argument("--search", dest="search_terms", help="Terms to search on", action="store")
+parser.add_argument(
+    "--stream",
+    dest="stream",
+    help="The stream to which to send tweets",
+    default="twitter",
+    action="store",
+)
+parser.add_argument(
+    "--twitter-name", dest="twitter_name", help='Twitter username to poll new tweets from"'
+)
+parser.add_argument("--excluded-terms", dest="excluded_terms", help="Terms to exclude tweets on")
+parser.add_argument("--excluded-users", dest="excluded_users", help="Users to exclude tweets on")
 
 opts = parser.parse_args()
 
@@ -105,15 +103,15 @@ if opts.instructions:
     sys.exit()
 
 if all([opts.search_terms, opts.twitter_name]):
-    parser.error('You must only specify either a search term or a username.')
+    parser.error("You must only specify either a search term or a username.")
 if opts.search_terms:
-    client_type = 'ZulipTwitterSearch/'
+    client_type = "ZulipTwitterSearch/"
     CONFIGFILE_INTERNAL = os.path.expanduser("~/.zulip_twitterrc_fetchsearch")
 elif opts.twitter_name:
-    client_type = 'ZulipTwitter/'
+    client_type = "ZulipTwitter/"
     CONFIGFILE_INTERNAL = os.path.expanduser("~/.zulip_twitteruserrc_fetchuser")
 else:
-    parser.error('You must either specify a search term or a username.')
+    parser.error("You must either specify a search term or a username.")
 
 try:
     config = ConfigParser()
@@ -121,10 +119,10 @@ try:
     config_internal = ConfigParser()
     config_internal.read(CONFIGFILE_INTERNAL)
 
-    consumer_key = config.get('twitter', 'consumer_key')
-    consumer_secret = config.get('twitter', 'consumer_secret')
-    access_token_key = config.get('twitter', 'access_token_key')
-    access_token_secret = config.get('twitter', 'access_token_secret')
+    consumer_key = config.get("twitter", "consumer_key")
+    consumer_secret = config.get("twitter", "consumer_secret")
+    access_token_key = config.get("twitter", "access_token_key")
+    access_token_secret = config.get("twitter", "access_token_secret")
 except (NoSectionError, NoOptionError):
     parser.error("Please provide a ~/.zulip_twitterrc")
 
@@ -132,35 +130,39 @@ if not all([consumer_key, consumer_secret, access_token_key, access_token_secret
     parser.error("Please provide a ~/.zulip_twitterrc")
 
 try:
-    since_id = config_internal.getint('twitter', 'since_id')
+    since_id = config_internal.getint("twitter", "since_id")
 except (NoOptionError, NoSectionError):
     since_id = 0
 try:
-    previous_twitter_name = config_internal.get('twitter', 'twitter_name')
+    previous_twitter_name = config_internal.get("twitter", "twitter_name")
 except (NoOptionError, NoSectionError):
-    previous_twitter_name = ''
+    previous_twitter_name = ""
 try:
-    previous_search_terms = config_internal.get('twitter', 'search_terms')
+    previous_search_terms = config_internal.get("twitter", "search_terms")
 except (NoOptionError, NoSectionError):
-    previous_search_terms = ''
+    previous_search_terms = ""
 
 try:
     import twitter
 except ImportError:
     parser.error("Please install python-twitter")
 
-api = twitter.Api(consumer_key=consumer_key,
-                  consumer_secret=consumer_secret,
-                  access_token_key=access_token_key,
-                  access_token_secret=access_token_secret)
+api = twitter.Api(
+    consumer_key=consumer_key,
+    consumer_secret=consumer_secret,
+    access_token_key=access_token_key,
+    access_token_secret=access_token_secret,
+)
 
 user = api.VerifyCredentials()
 
 if not user.id:
-    print("Unable to log in to twitter with supplied credentials. Please double-check and try again")
+    print(
+        "Unable to log in to twitter with supplied credentials. Please double-check and try again"
+    )
     sys.exit(1)
 
-client = zulip.init_from_options(opts, client=client_type+VERSION)
+client = zulip.init_from_options(opts, client=client_type + VERSION)
 
 if opts.search_terms:
     search_query = " OR ".join(opts.search_terms.split(","))
@@ -189,7 +191,7 @@ if opts.excluded_users:
 else:
     excluded_users = []
 
-for status in statuses[::-1][:opts.limit_tweets]:
+for status in statuses[::-1][: opts.limit_tweets]:
     # Check if the tweet is from an excluded user
     exclude = False
     for user in excluded_users:
@@ -200,8 +202,8 @@ for status in statuses[::-1][:opts.limit_tweets]:
         continue  # Continue with the loop for the next tweet
 
     # https://twitter.com/eatevilpenguins/status/309995853408530432
-    composed = "%s (%s)" % (status.user.name, status.user.screen_name)
-    url = "https://twitter.com/%s/status/%s" % (status.user.screen_name, status.id)
+    composed = f"{status.user.name} ({status.user.screen_name})"
+    url = f"https://twitter.com/{status.user.screen_name}/status/{status.id}"
     # This contains all strings that could have caused the tweet to match our query.
     text_to_check = [status.text, status.user.screen_name]
     text_to_check.extend(url.expanded_url for url in status.urls)
@@ -236,26 +238,21 @@ for status in statuses[::-1][:opts.limit_tweets]:
     elif opts.twitter_name:
         subject = composed
 
-    message = {
-        "type": "stream",
-        "to": [opts.stream],
-        "subject": subject,
-        "content": url
-    }
+    message = {"type": "stream", "to": [opts.stream], "subject": subject, "content": url}
 
     ret = client.send_message(message)
 
-    if ret['result'] == 'error':
+    if ret["result"] == "error":
         # If sending failed (e.g. no such stream), abort and retry next time
-        print("Error sending message to zulip: %s" % ret['msg'])
+        print("Error sending message to zulip: %s" % ret["msg"])
         break
     else:
         since_id = status.id
 
-if 'twitter' not in config_internal.sections():
-    config_internal.add_section('twitter')
-config_internal.set('twitter', 'since_id', str(since_id))
-config_internal.set('twitter', 'search_terms', str(opts.search_terms))
-config_internal.set('twitter', 'twitter_name', str(opts.twitter_name))
+if "twitter" not in config_internal.sections():
+    config_internal.add_section("twitter")
+config_internal.set("twitter", "since_id", str(since_id))
+config_internal.set("twitter", "search_terms", str(opts.search_terms))
+config_internal.set("twitter", "twitter_name", str(opts.twitter_name))
 
 write_config(config_internal, CONFIGFILE_INTERNAL)

@@ -2,22 +2,26 @@
 
 from typing import Any, Dict
 
+from zulip_bots.lib import BotHandler
+
+
 class HelloWorldHandler:
     def usage(self) -> str:
-        return '''
+        return """
         This is a boilerplate bot that responds to a user query with
         "beep boop", which is robot for "Hello World".
 
         This bot can be used as a template for other, more
         sophisticated, bots.
-        '''
+        """
 
-    def handle_message(self, message: Dict[str, Any], bot_handler: Any) -> None:
-        content = 'beep boop'  # type: str
+    def handle_message(self, message: Dict[str, Any], bot_handler: BotHandler) -> None:
+        content = "beep boop"  # type: str
         bot_handler.send_reply(message, content)
 
-        emoji_name = 'wave'    # type: str
+        emoji_name = "wave"  # type: str
         bot_handler.react(message, emoji_name)
         return
+
 
 handler_class = HelloWorldHandler

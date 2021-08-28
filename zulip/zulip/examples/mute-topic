@@ -11,20 +11,17 @@ Example: mute-topic unmute Denmark party
 """
 
 parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage))
-parser.add_argument('op', choices=['mute', 'unmute'])
-parser.add_argument('stream')
-parser.add_argument('topic')
+parser.add_argument("op", choices=["mute", "unmute"])
+parser.add_argument("stream")
+parser.add_argument("topic")
 options = parser.parse_args()
 
 client = zulip.init_from_options(options)
 
-OPERATIONS = {
-    'mute': 'add',
-    'unmute': 'remove'
-}
+OPERATIONS = {"mute": "add", "unmute": "remove"}
 
-print(client.mute_topic({
-    'op': OPERATIONS[options.op],
-    'stream': options.stream,
-    'topic': options.topic
-}))
+print(
+    client.mute_topic(
+        {"op": OPERATIONS[options.op], "stream": options.stream, "topic": options.topic}
+    )
+)

@@ -3,57 +3,65 @@
 import subprocess
 import sys
 
+
 def exit(message: str) -> None:
-    print('PROBLEM!')
+    print("PROBLEM!")
     print(message)
     sys.exit(1)
 
+
 def run(command: str) -> None:
-    print('\n>>> ' + command)
+    print("\n>>> " + command)
     subprocess.check_call(command.split())
 
+
 def check_output(command: str) -> str:
-    return subprocess.check_output(command.split()).decode('ascii')
+    return subprocess.check_output(command.split()).decode("ascii")
+
 
 def get_git_branch() -> str:
-    command = 'git rev-parse --abbrev-ref HEAD'
+    command = "git rev-parse --abbrev-ref HEAD"
     output = check_output(command)
     return output.strip()
 
+
 def check_git_pristine() -> None:
-    command = 'git status --porcelain'
+    command = "git status --porcelain"
     output = check_output(command)
     if output.strip():
-        exit('Git is not pristine:\n' + output)
+        exit("Git is not pristine:\n" + output)
 
-def ensure_on_clean_master() -> None:
+
+def ensure_on_clean_main() -> None:
     branch = get_git_branch()
-    if branch != 'master':
-        exit('You are still on a feature branch: %s' % (branch,))
+    if branch != "main":
+        exit(f"You are still on a feature branch: {branch}")
     check_git_pristine()
-    run('git fetch upstream master')
-    run('git rebase upstream/master')
+    run("git fetch upstream main")
+    run("git rebase upstream/main")
+
 
 def create_pull_branch(pull_id: int) -> None:
-    run('git fetch upstream pull/%d/head' % (pull_id,))
-    run('git checkout -B review-%s FETCH_HEAD' % (pull_id,))
-    run('git rebase upstream/master')
-    run('git log upstream/master.. --oneline')
-    run('git diff upstream/master.. --name-status')
+    run("git fetch upstream pull/%d/head" % (pull_id,))
+    run(f"git checkout -B review-{pull_id} FETCH_HEAD")
+    run("git rebase upstream/main")
+    run("git log upstream/main.. --oneline")
+    run("git diff upstream/main.. --name-status")
 
     print()
-    print('PR: %d' % (pull_id,))
-    print(subprocess.check_output(['git', 'log', 'HEAD~..',
-                                   '--pretty=format:Author: %an']))
+    print("PR: %d" % (pull_id,))
+    print(subprocess.check_output(["git", "log", "HEAD~..", "--pretty=format:Author: %an"]))
+
 
 def review_pr() -> None:
     try:
         pull_id = int(sys.argv[1])
     except Exception:
-        exit('please provide an integer pull request id')
+        exit("please provide an integer pull request id")
 
-    ensure_on_clean_master()
+    ensure_on_clean_main()
     create_pull_branch(pull_id)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     review_pr()

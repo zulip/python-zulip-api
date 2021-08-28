@@ -1,0 +1,65 @@
+name: build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  static-analysis:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Python 3.6
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.6
+
+      - name: Install dependencies
+        run: tools/provision --force
+
+      - name: Running Test-Suite
+        run: |
+          source zulip-api-py3-venv/bin/activate
+          tools/lint --skip=gitlint
+
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: [3.6, 3.7, 3.8, 3.9]
+        exclude:
+          - os: windows-latest
+            python-version: 3.6 # cryptography install fails on Windows with python 3.6 since pip is quite old.
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: python tools/provision --force
+
+      - if: runner.os == 'Linux'
+        name: Running Test-Suite on Linux
+        run: |
+          source zulip-api-py3-venv/bin/activate
+          pytest --cov --cov-config=tools/.coveragerc --cov-report=xml
+
+      - if: runner.os == 'Windows'
+        name: Running Test-Suite on Windows
+        run: |
+          zulip-api-py3-venv\Scripts\Activate.ps1
+          pytest --cov --cov-config=tools\.coveragerc --cov-report=xml
+
+      - uses: codecov/codecov-action@v2
+        with:
+          files: coverage.xml

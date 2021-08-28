@@ -2,32 +2,33 @@
 #
 # This script depends on python-dateutil and python-pytz for properly handling
 # times and time zones of calendar events.
+import argparse
 import datetime
-import dateutil.parser
-import httplib2
 import itertools
 import logging
-import argparse
 import os
-import pytz
 import sys
 import time
 from typing import List, Optional, Set, Tuple
 
+import dateutil.parser
+import httplib2
+import pytz
 from oauth2client import client
 from oauth2client.file import Storage
+
 try:
     from googleapiclient import discovery
 except ImportError:
-    logging.exception('Install google-api-python-client')
+    logging.exception("Install google-api-python-client")
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../'))
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../"))
 import zulip
 
-SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
-CLIENT_SECRET_FILE = 'client_secret.json'
-APPLICATION_NAME = 'Zulip'
-HOME_DIR = os.path.expanduser('~')
+SCOPES = "https://www.googleapis.com/auth/calendar.readonly"
+CLIENT_SECRET_FILE = "client_secret.json"
+APPLICATION_NAME = "Zulip"
+HOME_DIR = os.path.expanduser("~")
 
 # Our cached view of the calendar, updated periodically.
 events = []  # type: List[Tuple[int, datetime.datetime, str]]
@@ -37,7 +38,9 @@ sent = set()  # type: Set[Tuple[int, datetime.datetime]]
 
 sys.path.append(os.path.dirname(__file__))
 
-parser = zulip.add_default_arguments(argparse.ArgumentParser(r"""
+parser = zulip.add_default_arguments(
+    argparse.ArgumentParser(
+        r"""
 
 google-calendar --calendar calendarID@example.calendar.google.com
 
@@ -52,30 +55,37 @@ google-calendar --calendar calendarID@example.calendar.google.com
     revealed to local users through the command line.
 
     Depends on: google-api-python-client
-"""))
+"""
+    )
+)
 
 
-parser.add_argument('--interval',
-                    dest='interval',
-                    default=30,
-                    type=int,
-                    action='store',
-                    help='Minutes before event for reminder [default: 30]',
-                    metavar='MINUTES')
+parser.add_argument(
+    "--interval",
+    dest="interval",
+    default=30,
+    type=int,
+    action="store",
+    help="Minutes before event for reminder [default: 30]",
+    metavar="MINUTES",
+)
 
-parser.add_argument('--calendar',
-                    dest = 'calendarID',
-                    default = 'primary',
-                    type = str,
-                    action = 'store',
-                    help = 'Calendar ID for the calendar you want to receive reminders from.')
+parser.add_argument(
+    "--calendar",
+    dest="calendarID",
+    default="primary",
+    type=str,
+    action="store",
+    help="Calendar ID for the calendar you want to receive reminders from.",
+)
 
 options = parser.parse_args()
 
 if not (options.zulip_email):
-    parser.error('You must specify --user')
+    parser.error("You must specify --user")
 
 zulip_client = zulip.init_from_options(options)
+
 
 def get_credentials() -> client.Credentials:
     """Gets valid user credentials from storage.
@@ -88,15 +98,14 @@ def get_credentials() -> client.Credentials:
         Credentials, the obtained credential.
     """
     try:
-        credential_path = os.path.join(HOME_DIR,
-                                       'google-credentials.json')
+        credential_path = os.path.join(HOME_DIR, "google-credentials.json")
 
         store = Storage(credential_path)
         credentials = store.get()
 
         return credentials
     except client.Error:
-        logging.exception('Error while trying to open the `google-credentials.json` file.')
+        logging.exception("Error while trying to open the `google-credentials.json` file.")
     except OSError:
         logging.error("Run the get-google-credentials script from this directory first.")
 
@@ -106,11 +115,20 @@ def populate_events() -> Optional[None]:
 
     credentials = get_credentials()
     creds = credentials.authorize(httplib2.Http())
-    service = discovery.build('calendar', 'v3', http=creds)
+    service = discovery.build("calendar", "v3", http=creds)
 
     now = datetime.datetime.now(pytz.utc).isoformat()
-    feed = service.events().list(calendarId=options.calendarID, timeMin=now, maxResults=5,
-                                 singleEvents=True, orderBy='startTime').execute()
+    feed = (
+        service.events()
+        .list(
+            calendarId=options.calendarID,
+            timeMin=now,
+            maxResults=5,
+            singleEvents=True,
+            orderBy="startTime",
+        )
+        .execute()
+    )
 
     events = []
     for event in feed["items"]:
@@ -156,10 +174,10 @@ def send_reminders() -> Optional[None]:
             key = (id, start)
             if key not in sent:
                 if start.hour == 0 and start.minute == 0:
-                    line = '%s is today.' % (summary,)
+                    line = f"{summary} is today."
                 else:
-                    line = '%s starts at %s' % (summary, start.strftime('%H:%M'))
-                print('Sending reminder:', line)
+                    line = "{} starts at {}".format(summary, start.strftime("%H:%M"))
+                print("Sending reminder:", line)
                 messages.append(line)
                 keys.add(key)
 
@@ -167,17 +185,16 @@ def send_reminders() -> Optional[None]:
         return
 
     if len(messages) == 1:
-        message = 'Reminder: ' + messages[0]
+        message = "Reminder: " + messages[0]
     else:
-        message = 'Reminder:\n\n' + '\n'.join('* ' + m for m in messages)
+        message = "Reminder:\n\n" + "\n".join("* " + m for m in messages)
 
-    zulip_client.send_message(dict(
-        type    = 'private',
-        to      = options.zulip_email,
-        sender  = options.zulip_email,
-        content = message))
+    zulip_client.send_message(
+        dict(type="private", to=options.zulip_email, sender=options.zulip_email, content=message)
+    )
 
     sent.update(keys)
+
 
 # Loop forever
 for i in itertools.count():

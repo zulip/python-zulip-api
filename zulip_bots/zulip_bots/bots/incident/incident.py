@@ -2,51 +2,56 @@ import json
 import re
 from typing import Any, Dict, Tuple
 
-QUESTION = 'How should we handle this?'
+from zulip_bots.lib import BotHandler
+
+QUESTION = "How should we handle this?"
 
 ANSWERS = {
-    '1': 'known issue',
-    '2': 'ignore',
-    '3': 'in process',
-    '4': 'escalate',
+    "1": "known issue",
+    "2": "ignore",
+    "3": "in process",
+    "4": "escalate",
 }
+
 
 class InvalidAnswerException(Exception):
     pass
 
+
 class IncidentHandler:
     def usage(self) -> str:
-        return '''
+        return """
             This plugin lets folks reports incidents and
             triage them.  It is intended to be sample code.
             In the real world you'd modify this code to talk
             to some kind of issue tracking system.  But the
             glue code here should be pretty portable.
-            '''
+            """
 
-    def handle_message(self, message: Dict[str, Any], bot_handler: Any) -> None:
-        query = message['content']
-        if query.startswith('new '):
+    def handle_message(self, message: Dict[str, Any], bot_handler: BotHandler) -> None:
+        query = message["content"]
+        if query.startswith("new "):
             start_new_incident(query, message, bot_handler)
-        elif query.startswith('answer '):
+        elif query.startswith("answer "):
             try:
                 (ticket_id, answer) = parse_answer(query)
             except InvalidAnswerException:
-                bot_response = 'Invalid answer format'
+                bot_response = "Invalid answer format"
                 bot_handler.send_reply(message, bot_response)
                 return
-            bot_response = 'Incident %s\n status = %s' % (ticket_id, answer)
+            bot_response = f"Incident {ticket_id}\n status = {answer}"
             bot_handler.send_reply(message, bot_response)
         else:
             bot_response = 'type "new <description>" for a new incident'
             bot_handler.send_reply(message, bot_response)
 
-def start_new_incident(query: str, message: Dict[str, Any], bot_handler: Any) -> None:
+
+def start_new_incident(query: str, message: Dict[str, Any], bot_handler: BotHandler) -> None:
     # Here is where we would enter the incident in some sort of backend
     # system.  We just simulate everything by having an incident id that
     # we generate here.
 
-    incident = query[len('new '):]
+    incident = query[len("new ") :]
 
     ticket_id = generate_ticket_id(bot_handler.storage)
     bot_response = format_incident_for_markdown(ticket_id, incident)
@@ -54,8 +59,9 @@ def start_new_incident(query: str, message: Dict[str, Any], bot_handler: Any) ->
 
     bot_handler.send_reply(message, bot_response, widget_content)
 
+
 def parse_answer(query: str) -> Tuple[str, str]:
-    m = re.match(r'answer\s+(TICKET....)\s+(.)', query)
+    m = re.match(r"answer\s+(TICKET....)\s+(.)", query)
     if not m:
         raise InvalidAnswerException()
 
@@ -67,42 +73,44 @@ def parse_answer(query: str) -> Tuple[str, str]:
     # of systems that specialize in incident management.)
 
     answer = m.group(2).upper()
-    if answer not in '1234':
+    if answer not in "1234":
         raise InvalidAnswerException()
 
     return (ticket_id, ANSWERS[answer])
 
+
 def generate_ticket_id(storage: Any) -> str:
     try:
-        incident_num = storage.get('ticket_id')
+        incident_num = storage.get("ticket_id")
     except (KeyError):
         incident_num = 0
     incident_num += 1
     incident_num = incident_num % (1000)
-    storage.put('ticket_id', incident_num)
-    ticket_id = 'TICKET%04d' % (incident_num,)
+    storage.put("ticket_id", incident_num)
+    ticket_id = "TICKET%04d" % (incident_num,)
     return ticket_id
 
-def format_incident_for_widget(ticket_id: str, incident: Dict[str, Any]) -> str:
-    widget_type = 'zform'
 
-    heading = ticket_id + ': ' + incident
+def format_incident_for_widget(ticket_id: str, incident: Dict[str, Any]) -> str:
+    widget_type = "zform"
+
+    heading = ticket_id + ": " + incident
 
     def get_choice(code: str) -> Dict[str, str]:
         answer = ANSWERS[code]
-        reply = 'answer ' + ticket_id + ' ' + code
+        reply = "answer " + ticket_id + " " + code
 
         return dict(
-            type='multiple_choice',
+            type="multiple_choice",
             short_name=code,
             long_name=answer,
             reply=reply,
         )
 
-    choices = [get_choice(code) for code in '1234']
+    choices = [get_choice(code) for code in "1234"]
 
     extra_data = dict(
-        type='choices',
+        type="choices",
         heading=heading,
         choices=choices,
     )
@@ -114,27 +122,29 @@ def format_incident_for_widget(ticket_id: str, incident: Dict[str, Any]) -> str:
     payload = json.dumps(widget_content)
     return payload
 
+
 def format_incident_for_markdown(ticket_id: str, incident: Dict[str, Any]) -> str:
-    answer_list = '\n'.join([
-        '* **{code}** {answer}'.format(
+    answer_list = "\n".join(
+        "* **{code}** {answer}".format(
             code=code,
             answer=ANSWERS[code],
         )
-        for code in '1234'
-    ])
-    how_to_respond = '''**reply**: answer {ticket_id} <code>'''.format(ticket_id=ticket_id)
+        for code in "1234"
+    )
+    how_to_respond = f"""**reply**: answer {ticket_id} <code>"""
 
-    content = '''
+    content = """
 Incident: {incident}
 Q: {question}
 
 {answer_list}
-{how_to_respond}'''.format(
+{how_to_respond}""".format(
         question=QUESTION,
         answer_list=answer_list,
         how_to_respond=how_to_respond,
         incident=incident,
     )
     return content
+
 
 handler_class = IncidentHandler

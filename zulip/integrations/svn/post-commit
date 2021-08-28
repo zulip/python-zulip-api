@@ -10,39 +10,43 @@
 # /srv/svn/carols 1843
 
 import os
-import sys
 import os.path
+import sys
+from typing import Any, Dict
+
 import pysvn
-from typing import Any, Dict, Optional, Text, Tuple
 
 sys.path.insert(0, os.path.dirname(__file__))
 import zulip_svn_config as config
+
 VERSION = "0.9"
 
 if config.ZULIP_API_PATH is not None:
     sys.path.append(config.ZULIP_API_PATH)
 
 import zulip
+
 client = zulip.Client(
     email=config.ZULIP_USER,
     site=config.ZULIP_SITE,
     api_key=config.ZULIP_API_KEY,
-    client="ZulipSVN/" + VERSION)  # type: zulip.Client
+    client="ZulipSVN/" + VERSION,
+)  # type: zulip.Client
 svn = pysvn.Client()  # type: pysvn.Client
 
-path, rev = sys.argv[1:]  # type: Tuple[Text, Text]
+path, rev = sys.argv[1:]
 
 # since its a local path, prepend "file://"
 path = "file://" + path
 
-entry = svn.log(path, revision_end=pysvn.Revision(pysvn.opt_revision_kind.number, rev))[0]  # type: Dict[Text, Any]
+entry = svn.log(path, revision_end=pysvn.Revision(pysvn.opt_revision_kind.number, rev))[
+    0
+]  # type: Dict[str, Any]
 message = "**{}** committed revision r{} to `{}`.\n\n> {}".format(
-    entry['author'],
-    rev,
-    path.split('/')[-1],
-    entry['revprops']['svn:log'])  # type: Text
+    entry["author"], rev, path.split("/")[-1], entry["revprops"]["svn:log"]
+)
 
-destination = config.commit_notice_destination(path, rev)  # type: Optional[Dict[Text, Text]]
+destination = config.commit_notice_destination(path, rev)
 
 if destination is not None:
     message_data = {

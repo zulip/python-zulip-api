@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-import sys
-import subprocess
 import os
-import traceback
 import signal
+import subprocess
+import sys
+import traceback
 
 sys.path[:0] = [os.path.dirname(__file__)]
 from zephyr_mirror_backend import parse_args
@@ -13,10 +13,12 @@ from zephyr_mirror_backend import parse_args
 
 from types import FrameType
 
+
 def die(signal: int, frame: FrameType) -> None:
 
     # We actually want to exit, so run os._exit (so as not to be caught and restarted)
     os._exit(1)
+
 
 signal.signal(signal.SIGINT, die)
 
@@ -35,12 +37,14 @@ if options.forward_class_messages and not options.noshard:
     if options.on_startup_command is not None:
         subprocess.call([options.on_startup_command])
     from zerver.lib.parallel import run_parallel
+
     print("Starting parallel zephyr class mirroring bot")
     jobs = list("0123456789abcdef")
 
     def run_job(shard: str) -> int:
-        subprocess.call(args + ["--shard=%s" % (shard,)])
+        subprocess.call(args + [f"--shard={shard}"])
         return 0
+
     for (status, job) in run_parallel(run_job, jobs, threads=16):
         print("A mirroring shard died!")
     sys.exit(0)

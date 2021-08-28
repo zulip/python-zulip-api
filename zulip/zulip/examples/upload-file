@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 
 import argparse
-
 from io import StringIO as _StringIO
 from typing import IO, Any
+
 import zulip
 
+
 class StringIO(_StringIO):
-    name = ''  # https://github.com/python/typeshed/issues/598
+    name = ""  # https://github.com/python/typeshed/issues/598
+
 
 usage = """upload-file [options]
 
@@ -20,20 +22,20 @@ If no --file-path is specified, a placeholder text file will be used instead.
 """
 
 parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage))
-parser.add_argument('--file-path', required=True)
+parser.add_argument("--file-path", required=True)
 options = parser.parse_args()
 
 client = zulip.init_from_options(options)
 
 if options.file_path:
-    file = open(options.file_path, 'rb')  # type: IO[Any]
+    file = open(options.file_path, "rb")  # type: IO[Any]
 else:
-    file = StringIO('This is a test file.')
-    file.name = 'test.txt'
+    file = StringIO("This is a test file.")
+    file.name = "test.txt"
 
 response = client.upload_file(file)
 
 try:
-    print('File URI: {}'.format(response['uri']))
+    print("File URI: {}".format(response["uri"]))
 except KeyError:
-    print('Error! API response was: {}'.format(response))
+    print(f"Error! API response was: {response}")

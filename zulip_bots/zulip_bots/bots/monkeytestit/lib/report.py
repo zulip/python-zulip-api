@@ -1,10 +1,10 @@
 """Used to mainly compose a decorated report for the user
 """
 
-from typing import Dict, Text, List
+from typing import Dict, List
 
 
-def compose(results: Dict) -> Text:
+def compose(results: Dict) -> str:
     """Composes a report based on test results
 
     An example would be:
@@ -21,24 +21,24 @@ def compose(results: Dict) -> Text:
     :return: A response string containing the full report
     """
     if "error" in results:
-        return "Error: {}".format(results['error'])
+        return "Error: {}".format(results["error"])
 
     response = ""
 
-    response += "{}\n".format(print_status(results))
+    response += f"{print_status(results)}\n"
 
     if "success" in response.lower():
-        response += "{}".format(print_test_id(results))
+        response += f"{print_test_id(results)}"
         return response
 
-    response += "{}\n".format(print_enabled_checkers(results))
-    response += "{}\n".format(print_failures_checkers(results))
-    response += "{}".format(print_more_info_url(results))
+    response += f"{print_enabled_checkers(results)}\n"
+    response += f"{print_failures_checkers(results)}\n"
+    response += f"{print_more_info_url(results)}"
 
     return response
 
 
-def print_more_info_url(results: Dict) -> Text:
+def print_more_info_url(results: Dict) -> str:
     """Creates info for the test URL from monkeytest.it
 
     Example:
@@ -48,19 +48,19 @@ def print_more_info_url(results: Dict) -> Text:
     :param results: A dictionary containing the results of a check
     :return: A response string containing the url info
     """
-    return "More info: {}".format(results['results_url'])
+    return "More info: {}".format(results["results_url"])
 
 
-def print_test_id(results: Dict) -> Text:
+def print_test_id(results: Dict) -> str:
     """Prints the test-id with attached to the url
 
     :param results: A dictionary containing the results of a check
     :return: A response string containing the test id
     """
-    return "Test: https://monkeytest.it/test/{}".format(results['test_id'])
+    return "Test: https://monkeytest.it/test/{}".format(results["test_id"])
 
 
-def print_failures_checkers(results: Dict) -> Text:
+def print_failures_checkers(results: Dict) -> str:
     """Creates info for failures in enabled checkers
 
     Example:
@@ -74,16 +74,18 @@ def print_failures_checkers(results: Dict) -> Text:
     :return: A response string containing number of failures in each enabled
              checkers
     """
-    failures_checkers = [(checker, len(results['failures'][checker]))
-                         for checker in get_enabled_checkers(results)
-                         if checker in results['failures']]  # [('seo', 3), ..]
+    failures_checkers = [
+        (checker, len(results["failures"][checker]))
+        for checker in get_enabled_checkers(results)
+        if checker in results["failures"]
+    ]  # [('seo', 3), ..]
 
-    failures_checkers_messages = ["{} ({})".format(fail_checker[0],
-                                  fail_checker[1]) for fail_checker in
-                                  failures_checkers]
+    failures_checkers_messages = [
+        f"{fail_checker[0]} ({fail_checker[1]})" for fail_checker in failures_checkers
+    ]
 
     failures_checkers_message = ", ".join(failures_checkers_messages)
-    return "Failures from checkers: {}".format(failures_checkers_message)
+    return f"Failures from checkers: {failures_checkers_message}"
 
 
 def get_enabled_checkers(results: Dict) -> List:
@@ -95,7 +97,7 @@ def get_enabled_checkers(results: Dict) -> List:
     :param results: A dictionary containing the results of a check
     :return: A list containing enabled checkers
     """
-    checkers = results['enabled_checkers']
+    checkers = results["enabled_checkers"]
     enabled_checkers = []
     for checker in checkers.keys():
         if checkers[checker]:  # == True/False
@@ -103,7 +105,7 @@ def get_enabled_checkers(results: Dict) -> List:
     return enabled_checkers
 
 
-def print_enabled_checkers(results: Dict) -> Text:
+def print_enabled_checkers(results: Dict) -> str:
     """Creates info for enabled checkers. This joins the list of enabled
     checkers and format it with the current string response
 
@@ -113,11 +115,10 @@ def print_enabled_checkers(results: Dict) -> Text:
     :param results: A dictionary containing the results of a check
     :return: A response string containing enabled checkers
     """
-    return "Enabled checkers: {}".format(", "
-                                         .join(get_enabled_checkers(results)))
+    return "Enabled checkers: {}".format(", ".join(get_enabled_checkers(results)))
 
 
-def print_status(results: Dict) -> Text:
+def print_status(results: Dict) -> str:
     """Creates info for the check status.
 
     Example: Status: tests_failed
@@ -125,4 +126,4 @@ def print_status(results: Dict) -> Text:
     :param results: A dictionary containing the results of a check
     :return: A response string containing check status
     """
-    return "Status: {}".format(results['status'])
+    return "Status: {}".format(results["status"])

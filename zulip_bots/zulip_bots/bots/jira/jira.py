@@ -1,7 +1,10 @@
 import base64
 import re
-import requests
 from typing import Any, Dict, Optional
+
+import requests
+
+from zulip_bots.lib import BotHandler
 
 GET_REGEX = re.compile('get "(?P<issue_key>.+)"$')
 CREATE_REGEX = re.compile(
@@ -13,7 +16,7 @@ CREATE_REGEX = re.compile(
     '( with priority "(?P<priority_name>.+?)")?'
     '( labeled "(?P<labels>.+?)")?'
     '( due "(?P<due_date>.+?)")?'
-    '$'
+    "$"
 )
 EDIT_REGEX = re.compile(
     'edit issue "(?P<issue_key>.+?)"'
@@ -25,13 +28,13 @@ EDIT_REGEX = re.compile(
     '( to use priority "(?P<priority_name>.+?)")?'
     '( by labeling "(?P<labels>.+?)")?'
     '( by making due "(?P<due_date>.+?)")?'
-    '$'
+    "$"
 )
 SEARCH_REGEX = re.compile('search "(?P<search_term>.+)"$')
 JQL_REGEX = re.compile('jql "(?P<jql_query>.+)"$')
-HELP_REGEX = re.compile('help$')
+HELP_REGEX = re.compile("help$")
 
-HELP_RESPONSE = '''
+HELP_RESPONSE = """
 **get**
 
 `get` takes in an issue key and sends back information about that issue. For example,
@@ -140,67 +143,71 @@ labeling "new, labels" by making due "2018-12-5"
 Jira Bot:
 
  > Issue *BOTS-16* was edited! https://example.atlassian.net/browse/BOTS-16
-'''
+"""
+
 
 class JiraHandler:
     def usage(self) -> str:
-        return '''
+        return """
         Jira Bot uses the Jira REST API to interact with Jira. In order to use
         Jira Bot, `jira.conf` must be set up. See `doc.md` for more details.
-        '''
+        """
 
-    def initialize(self, bot_handler: Any) -> None:
-        config = bot_handler.get_config_info('jira')
+    def initialize(self, bot_handler: BotHandler) -> None:
+        config = bot_handler.get_config_info("jira")
 
-        username = config.get('username')
-        password = config.get('password')
-        domain = config.get('domain')
+        username = config.get("username")
+        password = config.get("password")
+        domain = config.get("domain")
         if not username:
-            raise KeyError('No `username` was specified')
+            raise KeyError("No `username` was specified")
         if not password:
-            raise KeyError('No `password` was specified')
+            raise KeyError("No `password` was specified")
         if not domain:
-            raise KeyError('No `domain` was specified')
+            raise KeyError("No `domain` was specified")
 
         self.auth = make_jira_auth(username, password)
 
         # Allow users to override the HTTP scheme
-        if re.match(r'^https?://', domain, re.IGNORECASE):
+        if re.match(r"^https?://", domain, re.IGNORECASE):
             self.domain_with_protocol = domain
         else:
-            self.domain_with_protocol = 'https://' + domain
+            self.domain_with_protocol = "https://" + domain
 
         # Use the front facing URL in output
-        self.display_url = config.get('display_url')
+        self.display_url = config.get("display_url")
         if not self.display_url:
             self.display_url = self.domain_with_protocol
 
     def jql_search(self, jql_query: str) -> str:
-        UNKNOWN_VAL = '*unknown*'
+        UNKNOWN_VAL = "*unknown*"
         jira_response = requests.get(
-            self.domain_with_protocol + '/rest/api/2/search?jql={}&fields=key,summary,status'.format(jql_query),
-            headers={'Authorization': self.auth},
+            self.domain_with_protocol
+            + f"/rest/api/2/search?jql={jql_query}&fields=key,summary,status",
+            headers={"Authorization": self.auth},
         ).json()
 
-        url = self.display_url + '/browse/'
-        errors = jira_response.get('errorMessages', [])
-        results = jira_response.get('total', 0)
+        url = self.display_url + "/browse/"
+        errors = jira_response.get("errorMessages", [])
+        results = jira_response.get("total", 0)
 
         if errors:
-            response = 'Oh no! Jira raised an error:\n > ' + ', '.join(errors)
+            response = "Oh no! Jira raised an error:\n > " + ", ".join(errors)
         else:
-            response = '*Found {} results*\n\n'.format(results)
-            for issue in jira_response.get('issues', []):
-                fields = issue.get('fields', {})
-                summary = fields.get('summary', UNKNOWN_VAL)
-                status_name = fields.get('status', {}).get('name', UNKNOWN_VAL)
-                response += "\n - {}: [{}]({}) **[{}]**".format(issue['key'], summary, url + issue['key'], status_name)
+            response = f"*Found {results} results*\n\n"
+            for issue in jira_response.get("issues", []):
+                fields = issue.get("fields", {})
+                summary = fields.get("summary", UNKNOWN_VAL)
+                status_name = fields.get("status", {}).get("name", UNKNOWN_VAL)
+                response += "\n - {}: [{}]({}) **[{}]**".format(
+                    issue["key"], summary, url + issue["key"], status_name
+                )
 
         return response
 
-    def handle_message(self, message: Dict[str, str], bot_handler: Any) -> None:
-        content = message.get('content')
-        response = ''
+    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
+        content = message.get("content")
+        response = ""
 
         get_match = GET_REGEX.match(content)
         create_match = CREATE_REGEX.match(content)
@@ -210,119 +217,140 @@ class JiraHandler:
         help_match = HELP_REGEX.match(content)
 
         if get_match:
-            UNKNOWN_VAL = '*unknown*'
+            UNKNOWN_VAL = "*unknown*"
 
-            key = get_match.group('issue_key')
+            key = get_match.group("issue_key")
 
             jira_response = requests.get(
-                self.domain_with_protocol + '/rest/api/2/issue/' + key,
-                headers={'Authorization': self.auth},
+                self.domain_with_protocol + "/rest/api/2/issue/" + key,
+                headers={"Authorization": self.auth},
             ).json()
 
-            url = self.display_url + '/browse/' + key
-            errors = jira_response.get('errorMessages', [])
-            fields = jira_response.get('fields', {})
+            url = self.display_url + "/browse/" + key
+            errors = jira_response.get("errorMessages", [])
+            fields = jira_response.get("fields", {})
 
-            creator_name = fields.get('creator', {}).get('name', UNKNOWN_VAL)
-            description = fields.get('description', UNKNOWN_VAL)
-            priority_name = fields.get('priority', {}).get('name', UNKNOWN_VAL)
-            project_name = fields.get('project', {}).get('name', UNKNOWN_VAL)
-            type_name = fields.get('issuetype', {}).get('name', UNKNOWN_VAL)
-            status_name = fields.get('status', {}).get('name', UNKNOWN_VAL)
-            summary = fields.get('summary', UNKNOWN_VAL)
+            creator_name = fields.get("creator", {}).get("name", UNKNOWN_VAL)
+            description = fields.get("description", UNKNOWN_VAL)
+            priority_name = fields.get("priority", {}).get("name", UNKNOWN_VAL)
+            project_name = fields.get("project", {}).get("name", UNKNOWN_VAL)
+            type_name = fields.get("issuetype", {}).get("name", UNKNOWN_VAL)
+            status_name = fields.get("status", {}).get("name", UNKNOWN_VAL)
+            summary = fields.get("summary", UNKNOWN_VAL)
 
             if errors:
-                response = 'Oh no! Jira raised an error:\n > ' + ', '.join(errors)
+                response = "Oh no! Jira raised an error:\n > " + ", ".join(errors)
             else:
                 response = (
-                    '**Issue *[{}]({})*: {}**\n\n'
-                    ' - Type: *{}*\n'
-                    ' - Description:\n'
-                    ' > {}\n'
-                    ' - Creator: *{}*\n'
-                    ' - Project: *{}*\n'
-                    ' - Priority: *{}*\n'
-                    ' - Status: *{}*\n'
-                ).format(key, url, summary, type_name, description, creator_name, project_name,
-                         priority_name, status_name)
+                    "**Issue *[{}]({})*: {}**\n\n"
+                    " - Type: *{}*\n"
+                    " - Description:\n"
+                    " > {}\n"
+                    " - Creator: *{}*\n"
+                    " - Project: *{}*\n"
+                    " - Priority: *{}*\n"
+                    " - Status: *{}*\n"
+                ).format(
+                    key,
+                    url,
+                    summary,
+                    type_name,
+                    description,
+                    creator_name,
+                    project_name,
+                    priority_name,
+                    status_name,
+                )
         elif create_match:
             jira_response = requests.post(
-                self.domain_with_protocol + '/rest/api/2/issue',
-                headers={'Authorization': self.auth},
-                json=make_create_json(create_match.group('summary'),
-                                      create_match.group('project_key'),
-                                      create_match.group('type_name'),
-                                      create_match.group('description'),
-                                      create_match.group('assignee'),
-                                      create_match.group('priority_name'),
-                                      create_match.group('labels'),
-                                      create_match.group('due_date'))
+                self.domain_with_protocol + "/rest/api/2/issue",
+                headers={"Authorization": self.auth},
+                json=make_create_json(
+                    create_match.group("summary"),
+                    create_match.group("project_key"),
+                    create_match.group("type_name"),
+                    create_match.group("description"),
+                    create_match.group("assignee"),
+                    create_match.group("priority_name"),
+                    create_match.group("labels"),
+                    create_match.group("due_date"),
+                ),
             )
 
             jira_response_json = jira_response.json() if jira_response.text else {}
 
-            key = jira_response_json.get('key', '')
-            url = self.display_url + '/browse/' + key
-            errors = list(jira_response_json.get('errors', {}).values())
+            key = jira_response_json.get("key", "")
+            url = self.display_url + "/browse/" + key
+            errors = list(jira_response_json.get("errors", {}).values())
             if errors:
-                response = 'Oh no! Jira raised an error:\n > ' + ', '.join(errors)
+                response = "Oh no! Jira raised an error:\n > " + ", ".join(errors)
             else:
-                response = 'Issue *' + key + '* is up! ' + url
+                response = "Issue *" + key + "* is up! " + url
         elif edit_match and check_is_editing_something(edit_match):
-            key = edit_match.group('issue_key')
+            key = edit_match.group("issue_key")
 
             jira_response = requests.put(
-                self.domain_with_protocol + '/rest/api/2/issue/' + key,
-                headers={'Authorization': self.auth},
-                json=make_edit_json(edit_match.group('summary'),
-                                    edit_match.group('project_key'),
-                                    edit_match.group('type_name'),
-                                    edit_match.group('description'),
-                                    edit_match.group('assignee'),
-                                    edit_match.group('priority_name'),
-                                    edit_match.group('labels'),
-                                    edit_match.group('due_date'))
+                self.domain_with_protocol + "/rest/api/2/issue/" + key,
+                headers={"Authorization": self.auth},
+                json=make_edit_json(
+                    edit_match.group("summary"),
+                    edit_match.group("project_key"),
+                    edit_match.group("type_name"),
+                    edit_match.group("description"),
+                    edit_match.group("assignee"),
+                    edit_match.group("priority_name"),
+                    edit_match.group("labels"),
+                    edit_match.group("due_date"),
+                ),
             )
 
             jira_response_json = jira_response.json() if jira_response.text else {}
 
-            url = self.display_url + '/browse/' + key
-            errors = list(jira_response_json.get('errors', {}).values())
+            url = self.display_url + "/browse/" + key
+            errors = list(jira_response_json.get("errors", {}).values())
             if errors:
-                response = 'Oh no! Jira raised an error:\n > ' + ', '.join(errors)
+                response = "Oh no! Jira raised an error:\n > " + ", ".join(errors)
             else:
-                response = 'Issue *' + key + '* was edited! ' + url
+                response = "Issue *" + key + "* was edited! " + url
         elif search_match:
-            search_term = search_match.group('search_term')
-            search_results = self.jql_search("summary ~ {}".format(search_term))
-            response = '**Search results for "{}"**\n\n{}'.format(search_term, search_results)
+            search_term = search_match.group("search_term")
+            search_results = self.jql_search(f"summary ~ {search_term}")
+            response = f'**Search results for "{search_term}"**\n\n{search_results}'
         elif jql_match:
-            jql_query = jql_match.group('jql_query')
+            jql_query = jql_match.group("jql_query")
             search_results = self.jql_search(jql_query)
-            response = '**Search results for "{}"**\n\n{}'.format(jql_query, search_results)
+            response = f'**Search results for "{jql_query}"**\n\n{search_results}'
         elif help_match:
             response = HELP_RESPONSE
         else:
-            response = 'Sorry, I don\'t understand that! Send me `help` for instructions.'
+            response = "Sorry, I don't understand that! Send me `help` for instructions."
 
         bot_handler.send_reply(message, response)
 
+
 def make_jira_auth(username: str, password: str) -> str:
-    '''Makes an auth header for Jira in the form 'Basic: <encoded credentials>'.
+    """Makes an auth header for Jira in the form 'Basic: <encoded credentials>'.
 
     Parameters:
      - username: The Jira email address.
      - password: The Jira password.
-    '''
-    combo = username + ':' + password
-    encoded = base64.b64encode(combo.encode('utf-8')).decode('utf-8')
-    return 'Basic ' + encoded
+    """
+    combo = username + ":" + password
+    encoded = base64.b64encode(combo.encode("utf-8")).decode("utf-8")
+    return "Basic " + encoded
 
-def make_create_json(summary: str, project_key: str, type_name: str,
-                     description: Optional[str], assignee: Optional[str],
-                     priority_name: Optional[str], labels: Optional[str],
-                     due_date: Optional[str]) -> Any:
-    '''Makes a JSON string for the Jira REST API editing endpoint based on
+
+def make_create_json(
+    summary: str,
+    project_key: str,
+    type_name: str,
+    description: Optional[str],
+    assignee: Optional[str],
+    priority_name: Optional[str],
+    labels: Optional[str],
+    due_date: Optional[str],
+) -> Any:
+    """Makes a JSON string for the Jira REST API editing endpoint based on
     fields that could be edited.
 
     Parameters:
@@ -335,36 +363,39 @@ def make_create_json(summary: str, project_key: str, type_name: str,
      - labels (optional): The Jira labels property, as a string of labels separated by
                           comma-spaces.
      - due_date (optional): The Jira due date property.
-    '''
+    """
     json_fields = {
-        'summary': summary,
-        'project': {
-            'key': project_key
-        },
-        'issuetype': {
-            'name': type_name
-        }
+        "summary": summary,
+        "project": {"key": project_key},
+        "issuetype": {"name": type_name},
     }
     if description:
-        json_fields['description'] = description
+        json_fields["description"] = description
     if assignee:
-        json_fields['assignee'] = {'name': assignee}
+        json_fields["assignee"] = {"name": assignee}
     if priority_name:
-        json_fields['priority'] = {'name': priority_name}
+        json_fields["priority"] = {"name": priority_name}
     if labels:
-        json_fields['labels'] = labels.split(', ')
+        json_fields["labels"] = labels.split(", ")
     if due_date:
-        json_fields['duedate'] = due_date
+        json_fields["duedate"] = due_date
 
-    json = {'fields': json_fields}
+    json = {"fields": json_fields}
 
     return json
 
-def make_edit_json(summary: Optional[str], project_key: Optional[str],
-                   type_name: Optional[str], description: Optional[str],
-                   assignee: Optional[str], priority_name: Optional[str],
-                   labels: Optional[str], due_date: Optional[str]) -> Any:
-    '''Makes a JSON string for the Jira REST API editing endpoint based on
+
+def make_edit_json(
+    summary: Optional[str],
+    project_key: Optional[str],
+    type_name: Optional[str],
+    description: Optional[str],
+    assignee: Optional[str],
+    priority_name: Optional[str],
+    labels: Optional[str],
+    due_date: Optional[str],
+) -> Any:
+    """Makes a JSON string for the Jira REST API editing endpoint based on
     fields that could be edited.
 
     Parameters:
@@ -377,48 +408,50 @@ def make_edit_json(summary: Optional[str], project_key: Optional[str],
      - labels (optional): The Jira labels property, as a string of labels separated by
                           comma-spaces.
      - due_date (optional): The Jira due date property.
-    '''
+    """
     json_fields = {}
 
     if summary:
-        json_fields['summary'] = summary
+        json_fields["summary"] = summary
     if project_key:
-        json_fields['project'] = {'key': project_key}
+        json_fields["project"] = {"key": project_key}
     if type_name:
-        json_fields['issuetype'] = {'name': type_name}
+        json_fields["issuetype"] = {"name": type_name}
     if description:
-        json_fields['description'] = description
+        json_fields["description"] = description
     if assignee:
-        json_fields['assignee'] = {'name': assignee}
+        json_fields["assignee"] = {"name": assignee}
     if priority_name:
-        json_fields['priority'] = {'name': priority_name}
+        json_fields["priority"] = {"name": priority_name}
     if labels:
-        json_fields['labels'] = labels.split(', ')
+        json_fields["labels"] = labels.split(", ")
     if due_date:
-        json_fields['duedate'] = due_date
+        json_fields["duedate"] = due_date
 
-    json = {'fields': json_fields}
+    json = {"fields": json_fields}
 
     return json
 
+
 def check_is_editing_something(match: Any) -> bool:
-    '''Checks if an editing match is actually going to do editing. It is
+    """Checks if an editing match is actually going to do editing. It is
     possible for an edit regex to match without doing any editing because each
     editing field is optional. For example, 'edit issue "BOTS-13"' would pass
     but wouldn't preform any actions.
 
     Parameters:
      - match: The regex match object.
-    '''
+    """
     return bool(
-        match.group('summary')
-        or match.group('project_key')
-        or match.group('type_name')
-        or match.group('description')
-        or match.group('assignee')
-        or match.group('priority_name')
-        or match.group('labels')
-        or match.group('due_date')
+        match.group("summary")
+        or match.group("project_key")
+        or match.group("type_name")
+        or match.group("description")
+        or match.group("assignee")
+        or match.group("priority_name")
+        or match.group("labels")
+        or match.group("due_date")
     )
+
 
 handler_class = JiraHandler

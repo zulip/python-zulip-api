@@ -12,15 +12,15 @@ Example: update-message-flags remove starred 16 23 42
 """
 
 parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage))
-parser.add_argument('op', choices=['add', 'remove'])
-parser.add_argument('flag')
-parser.add_argument('messages', type=int, nargs='+')
+parser.add_argument("op", choices=["add", "remove"])
+parser.add_argument("flag")
+parser.add_argument("messages", type=int, nargs="+")
 options = parser.parse_args()
 
 client = zulip.init_from_options(options)
 
-print(client.update_message_flags({
-    'op': options.op,
-    'flag': options.flag,
-    'messages': options.messages
-}))
+print(
+    client.update_message_flags(
+        {"op": options.op, "flag": options.flag, "messages": options.messages}
+    )
+)

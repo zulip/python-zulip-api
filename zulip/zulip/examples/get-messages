@@ -17,23 +17,27 @@ Example: get-messages --use-first-unread-anchor --num-before=5 \\
 
 
 parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage))
-parser.add_argument('--anchor', type=int)
-parser.add_argument('--use-first-unread-anchor', action='store_true')
-parser.add_argument('--num-before', type=int, required=True)
-parser.add_argument('--num-after', type=int, required=True)
-parser.add_argument('--client-gravatar', action='store_true')
-parser.add_argument('--apply-markdown', action='store_true')
-parser.add_argument('--narrow')
+parser.add_argument("--anchor", type=int)
+parser.add_argument("--use-first-unread-anchor", action="store_true")
+parser.add_argument("--num-before", type=int, required=True)
+parser.add_argument("--num-after", type=int, required=True)
+parser.add_argument("--client-gravatar", action="store_true")
+parser.add_argument("--apply-markdown", action="store_true")
+parser.add_argument("--narrow")
 options = parser.parse_args()
 
 client = zulip.init_from_options(options)
 
-print(client.get_messages({
-    'anchor': options.anchor,
-    'use_first_unread_anchor': options.use_first_unread_anchor,
-    'num_before': options.num_before,
-    'num_after': options.num_after,
-    'narrow': options.narrow,
-    'client_gravatar': options.client_gravatar,
-    'apply_markdown': options.apply_markdown
-}))
+print(
+    client.get_messages(
+        {
+            "anchor": options.anchor,
+            "use_first_unread_anchor": options.use_first_unread_anchor,
+            "num_before": options.num_before,
+            "num_after": options.num_after,
+            "narrow": options.narrow,
+            "client_gravatar": options.client_gravatar,
+            "apply_markdown": options.apply_markdown,
+        }
+    )
+)

@@ -11,7 +11,7 @@ finished yet so any matches that are finished will be removed.
 import json
 
 
-class MerelsStorage():
+class MerelsStorage:
     def __init__(self, topic_name, storage):
         """Instantiate storage field.
 
@@ -28,9 +28,8 @@ class MerelsStorage():
         """
         self.storage = storage
 
-    def update_game(self, topic_name, turn, x_taken, o_taken, board, hill_uid,
-                    take_mode):
-        """ Updates the current status of the game to the database.
+    def update_game(self, topic_name, turn, x_taken, o_taken, board, hill_uid, take_mode):
+        """Updates the current status of the game to the database.
 
         :param topic_name: The name of the topic
         :param turn: "X" or "O"
@@ -45,13 +44,12 @@ class MerelsStorage():
         :return: None
         """
 
-        parameters = (
-            turn, x_taken, o_taken, board, hill_uid, take_mode)
+        parameters = (turn, x_taken, o_taken, board, hill_uid, take_mode)
 
         self.storage.put(topic_name, json.dumps(parameters))
 
     def remove_game(self, topic_name):
-        """ Removes the game from the database by setting it to an empty
+        """Removes the game from the database by setting it to an empty
         string. An empty string marks an empty match.
 
         :param topic_name: The name of the topic
@@ -75,7 +73,6 @@ class MerelsStorage():
         if select == "":
             return None
         else:
-            res = (topic_name, select[0], select[1], select[2], select[3],
-                   select[4], select[5])
+            res = (topic_name, select[0], select[1], select[2], select[3], select[4], select[5])
 
             return res

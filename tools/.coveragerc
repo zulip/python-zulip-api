@@ -14,9 +14,3 @@ exclude_lines =
 
 [run]
 source = zulip, zulip_bots, zulip_botserver
-omit =
-    # Parts of the test runner infrastructure
-    tools/test-main
-    tools/test-bots
-    tools/test-botserver
-    tools/test-zulip

@@ -12,7 +12,7 @@ Example: get-raw-message 42
 
 
 parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage))
-parser.add_argument('message_id', type=int)
+parser.add_argument("message_id", type=int)
 options = parser.parse_args()
 
 client = zulip.init_from_options(options)

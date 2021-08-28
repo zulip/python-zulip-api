@@ -1,32 +1,36 @@
 #!/usr/bin/env python3
+import argparse
 import os
 import sys
-import argparse
 
 from zulip_bots.finder import import_module_from_source, resolve_bot_path
-from zulip_bots.simple_lib import TerminalBotHandler
+from zulip_bots.simple_lib import MockMessageServer, TerminalBotHandler
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
+
 def parse_args():
-    description = '''
+    description = """
         This tool allows you to test a bot using the terminal (and no Zulip server).
 
         Examples:   %(prog)s followup
-        '''
+        """
 
-    parser = argparse.ArgumentParser(description=description,
-                                     formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('bot',
-                        action='store',
-                        help='the name or path an existing bot to run')
+    parser = argparse.ArgumentParser(
+        description=description, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument("bot", action="store", help="the name or path an existing bot to run")
 
-    parser.add_argument('--bot-config-file', '-b',
-                        action='store',
-                        help='optional third party config file (e.g. ~/giphy.conf)')
+    parser.add_argument(
+        "--bot-config-file",
+        "-b",
+        action="store",
+        help="optional third party config file (e.g. ~/giphy.conf)",
+    )
 
     args = parser.parse_args()
     return args
+
 
 def main():
     args = parse_args()
@@ -40,7 +44,7 @@ def main():
         if lib_module is None:
             raise OSError
     except OSError:
-        print("Could not find and import bot '{}'".format(bot_name))
+        print(f"Could not find and import bot '{bot_name}'")
         sys.exit(1)
 
     try:
@@ -49,29 +53,36 @@ def main():
         print("This module does not appear to have a bot handler_class specified.")
         sys.exit(1)
 
-    bot_handler = TerminalBotHandler(args.bot_config_file)
-    if hasattr(message_handler, 'initialize') and callable(message_handler.initialize):
+    message_server = MockMessageServer()
+    bot_handler = TerminalBotHandler(args.bot_config_file, message_server)
+    if hasattr(message_handler, "initialize") and callable(message_handler.initialize):
         message_handler.initialize(bot_handler)
 
-    sender_email = 'foo_sender@zulip.com'
+    sender_email = "foo_sender@zulip.com"
 
     try:
         while True:
-            content = input('Enter your message: ')
+            content = input("Enter your message: ")
 
-            message = dict(
-                content=content,
-                sender_email=sender_email,
-                display_recipient=sender_email,
+            message = message_server.send(
+                dict(
+                    content=content,
+                    sender_email=sender_email,
+                    display_recipient=sender_email,
+                )
             )
+
             message_handler.handle_message(
                 message=message,
                 bot_handler=bot_handler,
             )
     except KeyboardInterrupt:
-        print("\n\nOk, if you're happy with your terminal-based testing, try it out with a Zulip server.",
-              "\nYou can refer to https://zulip.com/api/running-bots#running-a-bot.")
+        print(
+            "\n\nOk, if you're happy with your terminal-based testing, try it out with a Zulip server.",
+            "\nYou can refer to https://zulip.com/api/running-bots#running-a-bot.",
+        )
         sys.exit(1)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

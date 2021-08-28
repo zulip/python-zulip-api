@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
 
-from contextlib import contextmanager
-import os
 import argparse
 import glob
+import os
 import shutil
 import tempfile
+from contextlib import contextmanager
 
 import crayons
-import twine.commands.upload
 import setuptools.sandbox
+import twine.commands.upload
 
 REPO_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 
 @contextmanager
 def cd(newdir):
@@ -22,8 +23,9 @@ def cd(newdir):
     finally:
         os.chdir(prevdir)
 
+
 def _generate_dist(dist_type, setup_file, package_name, setup_args):
-    message = 'Generating {dist_type} for {package_name}.'.format(
+    message = "Generating {dist_type} for {package_name}.".format(
         dist_type=dist_type,
         package_name=package_name,
     )
@@ -33,40 +35,38 @@ def _generate_dist(dist_type, setup_file, package_name, setup_args):
     with cd(setup_dir):
         setuptools.sandbox.run_setup(setup_file, setup_args)
 
-    message = '{dist_type} for {package_name} generated under {dir}.\n'.format(
+    message = "{dist_type} for {package_name} generated under {dir}.\n".format(
         dist_type=dist_type,
         package_name=package_name,
         dir=setup_dir,
     )
     print(crayons.green(message, bold=True))
 
+
 def generate_bdist_wheel(setup_file, package_name, universal=False):
     if universal:
-        _generate_dist('bdist_wheel', setup_file, package_name,
-                       ['bdist_wheel', '--universal'])
+        _generate_dist("bdist_wheel", setup_file, package_name, ["bdist_wheel", "--universal"])
     else:
-        _generate_dist('bdist_wheel', setup_file, package_name,
-                       ['bdist_wheel'])
+        _generate_dist("bdist_wheel", setup_file, package_name, ["bdist_wheel"])
+
 
 def twine_upload(dist_dirs):
-    message = 'Uploading distributions under the following directories:'
+    message = "Uploading distributions under the following directories:"
     print(crayons.green(message, bold=True))
     for dist_dir in dist_dirs:
         print(crayons.yellow(dist_dir))
     twine.commands.upload.main(dist_dirs)
 
+
 def cleanup(package_dir):
-    build_dir = os.path.join(package_dir, 'build')
-    temp_dir = os.path.join(package_dir, 'temp')
-    dist_dir = os.path.join(package_dir, 'dist')
-    egg_info = os.path.join(
-        package_dir,
-        '{}.egg-info'.format(os.path.basename(package_dir))
-    )
+    build_dir = os.path.join(package_dir, "build")
+    temp_dir = os.path.join(package_dir, "temp")
+    dist_dir = os.path.join(package_dir, "dist")
+    egg_info = os.path.join(package_dir, f"{os.path.basename(package_dir)}.egg-info")
 
     def _rm_if_it_exists(directory):
         if os.path.isdir(directory):
-            print(crayons.green('Removing {}/*'.format(directory), bold=True))
+            print(crayons.green(f"Removing {directory}/*", bold=True))
             shutil.rmtree(directory)
 
     _rm_if_it_exists(build_dir)
@@ -74,13 +74,14 @@ def cleanup(package_dir):
     _rm_if_it_exists(dist_dir)
     _rm_if_it_exists(egg_info)
 
+
 def set_variable(fp, variable, value):
     fh, temp_abs_path = tempfile.mkstemp()
-    with os.fdopen(fh, 'w') as new_file, open(fp) as old_file:
+    with os.fdopen(fh, "w") as new_file, open(fp) as old_file:
         for line in old_file:
             if line.startswith(variable):
                 if isinstance(value, bool):
-                    template = '{variable} = {value}\n'
+                    template = "{variable} = {value}\n"
                 else:
                     template = '{variable} = "{value}"\n'
                 new_file.write(template.format(variable=variable, value=value))
@@ -90,22 +91,22 @@ def set_variable(fp, variable, value):
     os.remove(fp)
     shutil.move(temp_abs_path, fp)
 
-    message = 'Set {variable} in {fp} to {value}.'.format(
-        fp=fp, variable=variable, value=value)
+    message = f"Set {variable} in {fp} to {value}."
     print(crayons.white(message, bold=True))
 
+
 def update_requirements_in_zulip_repo(zulip_repo_dir, version, hash_or_tag):
-    common = os.path.join(zulip_repo_dir, 'requirements', 'common.in')
-    prod = os.path.join(zulip_repo_dir, 'requirements', 'prod.txt')
-    dev = os.path.join(zulip_repo_dir, 'requirements', 'dev.txt')
+    common = os.path.join(zulip_repo_dir, "requirements", "common.in")
+    prod = os.path.join(zulip_repo_dir, "requirements", "prod.txt")
+    dev = os.path.join(zulip_repo_dir, "requirements", "dev.txt")
 
     def _edit_reqs_file(reqs, zulip_bots_line, zulip_line):
         fh, temp_abs_path = tempfile.mkstemp()
-        with os.fdopen(fh, 'w') as new_file, open(reqs) as old_file:
+        with os.fdopen(fh, "w") as new_file, open(reqs) as old_file:
             for line in old_file:
-                if 'python-zulip-api' in line and 'zulip==' in line:
+                if "python-zulip-api" in line and "zulip==" in line:
                     new_file.write(zulip_line)
-                elif 'python-zulip-api' in line and 'zulip_bots' in line:
+                elif "python-zulip-api" in line and "zulip_bots" in line:
                     new_file.write(zulip_bots_line)
                 else:
                     new_file.write(line)
@@ -113,27 +114,26 @@ def update_requirements_in_zulip_repo(zulip_repo_dir, version, hash_or_tag):
         os.remove(reqs)
         shutil.move(temp_abs_path, reqs)
 
-    url_zulip = 'git+https://github.com/zulip/python-zulip-api.git@{tag}#egg={name}=={version}_git&subdirectory={name}\n'
-    url_zulip_bots = 'git+https://github.com/zulip/python-zulip-api.git@{tag}#egg={name}=={version}+git&subdirectory={name}\n'
-    zulip_bots_line = url_zulip_bots.format(tag=hash_or_tag, name='zulip_bots',
-                                            version=version)
-    zulip_line = url_zulip.format(tag=hash_or_tag, name='zulip',
-                                  version=version)
+    url_zulip = "git+https://github.com/zulip/python-zulip-api.git@{tag}#egg={name}=={version}_git&subdirectory={name}\n"
+    url_zulip_bots = "git+https://github.com/zulip/python-zulip-api.git@{tag}#egg={name}=={version}+git&subdirectory={name}\n"
+    zulip_bots_line = url_zulip_bots.format(tag=hash_or_tag, name="zulip_bots", version=version)
+    zulip_line = url_zulip.format(tag=hash_or_tag, name="zulip", version=version)
 
     _edit_reqs_file(prod, zulip_bots_line, zulip_line)
     _edit_reqs_file(dev, zulip_bots_line, zulip_line)
 
-    editable_zulip = '-e "{}"\n'.format(url_zulip.rstrip())
-    editable_zulip_bots = '-e "{}"\n'.format(url_zulip_bots.rstrip())
+    editable_zulip = f'-e "{url_zulip.rstrip()}"\n'
+    editable_zulip_bots = f'-e "{url_zulip_bots.rstrip()}"\n'
 
     _edit_reqs_file(
         common,
-        editable_zulip_bots.format(tag=hash_or_tag, name='zulip_bots', version=version),
-        editable_zulip.format(tag=hash_or_tag, name='zulip', version=version),
+        editable_zulip_bots.format(tag=hash_or_tag, name="zulip_bots", version=version),
+        editable_zulip.format(tag=hash_or_tag, name="zulip", version=version),
     )
 
-    message = 'Updated zulip API package requirements in the main repo.'
+    message = "Updated zulip API package requirements in the main repo."
     print(crayons.white(message, bold=True))
+
 
 def parse_args():
     usage = """
@@ -176,37 +176,48 @@ And you're done! Congrats!
 """
     parser = argparse.ArgumentParser(usage=usage)
 
-    parser.add_argument('--cleanup', '-c',
-                        action='store_true',
-                        default=False,
-                        help='Remove build directories (dist/, build/, egg-info/, etc).')
-
-    parser.add_argument('--build', '-b',
-                        metavar='VERSION_NUM',
-                        help=('Build sdists and wheels for all packages with the'
-                              'specified version number.'
-                              ' sdists and wheels are stored in <package_name>/dist/*.'))
-
-    parser.add_argument('--release', '-r',
-                        action='store_true',
-                        default=False,
-                        help='Upload the packages to PyPA using twine.')
-
-    subparsers = parser.add_subparsers(dest='subcommand')
-    parser_main_repo = subparsers.add_parser(
-        'update-main-repo',
-        help='Update the zulip/requirements/* in the main zulip repo.'
+    parser.add_argument(
+        "--cleanup",
+        "-c",
+        action="store_true",
+        default=False,
+        help="Remove build directories (dist/, build/, egg-info/, etc).",
     )
-    parser_main_repo.add_argument('repo', metavar='PATH_TO_ZULIP_DIR')
-    parser_main_repo.add_argument('version', metavar='version number of the packages')
-    parser_main_repo.add_argument('--hash', metavar='COMMIT_HASH')
+
+    parser.add_argument(
+        "--build",
+        "-b",
+        metavar="VERSION_NUM",
+        help=(
+            "Build sdists and wheels for all packages with the"
+            "specified version number."
+            " sdists and wheels are stored in <package_name>/dist/*."
+        ),
+    )
+
+    parser.add_argument(
+        "--release",
+        "-r",
+        action="store_true",
+        default=False,
+        help="Upload the packages to PyPA using twine.",
+    )
+
+    subparsers = parser.add_subparsers(dest="subcommand")
+    parser_main_repo = subparsers.add_parser(
+        "update-main-repo", help="Update the zulip/requirements/* in the main zulip repo."
+    )
+    parser_main_repo.add_argument("repo", metavar="PATH_TO_ZULIP_DIR")
+    parser_main_repo.add_argument("version", metavar="version number of the packages")
+    parser_main_repo.add_argument("--hash", metavar="COMMIT_HASH")
 
     return parser.parse_args()
+
 
 def main():
     options = parse_args()
 
-    glob_pattern = os.path.join(REPO_DIR, '*', 'setup.py')
+    glob_pattern = os.path.join(REPO_DIR, "*", "setup.py")
     setup_py_files = glob.glob(glob_pattern)
 
     if options.cleanup:
@@ -219,31 +230,30 @@ def main():
         for package_dir in package_dirs:
             cleanup(package_dir)
 
-        zulip_init = os.path.join(REPO_DIR, 'zulip', 'zulip', '__init__.py')
-        set_variable(zulip_init, '__version__', options.build)
-        bots_setup = os.path.join(REPO_DIR, 'zulip_bots', 'setup.py')
-        set_variable(bots_setup, 'ZULIP_BOTS_VERSION', options.build)
-        set_variable(bots_setup, 'IS_PYPA_PACKAGE', True)
-        botserver_setup = os.path.join(REPO_DIR, 'zulip_botserver', 'setup.py')
-        set_variable(botserver_setup, 'ZULIP_BOTSERVER_VERSION', options.build)
+        zulip_init = os.path.join(REPO_DIR, "zulip", "zulip", "__init__.py")
+        set_variable(zulip_init, "__version__", options.build)
+        bots_setup = os.path.join(REPO_DIR, "zulip_bots", "setup.py")
+        set_variable(bots_setup, "ZULIP_BOTS_VERSION", options.build)
+        set_variable(bots_setup, "IS_PYPA_PACKAGE", True)
+        botserver_setup = os.path.join(REPO_DIR, "zulip_botserver", "setup.py")
+        set_variable(botserver_setup, "ZULIP_BOTSERVER_VERSION", options.build)
 
         for setup_file in setup_py_files:
             package_name = os.path.basename(os.path.dirname(setup_file))
             generate_bdist_wheel(setup_file, package_name)
 
-        set_variable(bots_setup, 'IS_PYPA_PACKAGE', False)
+        set_variable(bots_setup, "IS_PYPA_PACKAGE", False)
 
     if options.release:
-        dist_dirs = glob.glob(os.path.join(REPO_DIR, '*', 'dist', '*'))
+        dist_dirs = glob.glob(os.path.join(REPO_DIR, "*", "dist", "*"))
         twine_upload(dist_dirs)
 
-    if options.subcommand == 'update-main-repo':
+    if options.subcommand == "update-main-repo":
         if options.hash:
-            update_requirements_in_zulip_repo(options.repo, options.version,
-                                              options.hash)
+            update_requirements_in_zulip_repo(options.repo, options.version, options.hash)
         else:
-            update_requirements_in_zulip_repo(options.repo, options.version,
-                                              options.version)
+            update_requirements_in_zulip_repo(options.repo, options.version, options.version)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

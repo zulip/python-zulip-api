@@ -1,19 +1,17 @@
 import configparser
 import json
-import mock
+from typing import Any, Dict, List, Optional
+from unittest import TestCase, mock
 
-from typing import Any, List, Dict, Optional
-from unittest import TestCase
 from zulip_botserver import server
 
 
 class BotServerTestCase(TestCase):
-
     def setUp(self) -> None:
         server.app.testing = True
         self.app = server.app.test_client()
 
-    @mock.patch('zulip_bots.lib.ExternalBotHandler')
+    @mock.patch("zulip_bots.lib.ExternalBotHandler")
     def assert_bot_server_response(
         self,
         mock_ExternalBotHandler: mock.Mock,
@@ -30,8 +28,12 @@ class BotServerTestCase(TestCase):
             bots_lib_modules = server.load_lib_modules(available_bots)
             server.app.config["BOTS_LIB_MODULES"] = bots_lib_modules
             if bot_handlers is None:
-                bot_handlers = server.load_bot_handlers(available_bots, bots_config, third_party_bot_conf)
-            message_handlers = server.init_message_handlers(available_bots, bots_lib_modules, bot_handlers)
+                bot_handlers = server.load_bot_handlers(
+                    available_bots, bots_lib_modules, bots_config, third_party_bot_conf
+                )
+            message_handlers = server.init_message_handlers(
+                available_bots, bots_lib_modules, bot_handlers
+            )
             server.app.config["BOT_HANDLERS"] = bot_handlers
             server.app.config["MESSAGE_HANDLERS"] = message_handlers
 
