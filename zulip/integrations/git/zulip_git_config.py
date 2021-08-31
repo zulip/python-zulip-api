@@ -24,7 +24,7 @@ ZULIP_API_KEY = "0123456789abcdef0123456789abcdef"
 # * topic "main"
 # And similarly for branch "test-post-receive" (for use when testing).
 def commit_notice_destination(repo: str, branch: str, commit: str) -> Optional[Dict[str, str]]:
-    if branch in ["main", "test-post-receive"]:
+    if branch in ["main", "master", "test-post-receive"]:
         return dict(stream=STREAM_NAME, subject=f"{branch}")
 
     # Return None for cases where you don't want a notice sent
