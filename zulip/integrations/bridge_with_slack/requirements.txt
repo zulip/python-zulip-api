@@ -1,1 +1,2 @@
 slack-sdk==3.5.1
+aiohttp
