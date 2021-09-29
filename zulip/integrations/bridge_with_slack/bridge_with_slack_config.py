@@ -7,8 +7,8 @@ config = {
         "topic": "<- slack-bridge",
     },
     "slack": {
-        "username": "slack username",
-        "token": "slack token",
+        "username": "slack_username",
+        "token": "xoxb-your-slack-token",
         "channel": "C5Z5N7R8A -- must be channel id",
     },
 }
