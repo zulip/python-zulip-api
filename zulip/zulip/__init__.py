@@ -1733,3 +1733,50 @@ def hash_util_decode(string: str) -> str:
     # Acknowledge custom string replacements in zulip/zulip's zerver/lib/url_encoding.py before unquoting.
     # NOTE: urllib.parse.unquote already does .replace('%2E', '.').
     return urllib.parse.unquote(string.replace(".", "%"))
+
+
+########################################################################
+# The below hackery is designed to allow running the Zulip's automated
+# tests for its API documentation from old server versions against
+# python-zulip-api.  Generally, we expect those tests to be a way to
+# validate that the Python bindings work correctly against old server
+# versions.
+#
+# However, in cases where we've changed the interface of the Python
+# bindings since the release of the relevant server version, such
+# tests will fail, which is an artifact of the fact that the
+# documentation that comes with that old server release is
+# inconsistent with this library.
+#
+# The following logic is designed to work around that problem so that
+# we can verify that you can use the latest version of the Python
+# bindings with any server version (even if you have to read the
+# current API documentation).
+LEGACY_CLIENT_INTERFACE_FROM_SERVER_DOCS_VERSION = os.environ.get(
+    "LEGACY_CLIENT_INTERFACE_FROM_SERVER_DOCS_VERSION"
+)
+
+if LEGACY_CLIENT_INTERFACE_FROM_SERVER_DOCS_VERSION == "3":
+    # This block is support for testing Zulip 3.x, which documents old
+    # interfaces for the following functions:
+    class LegacyInterfaceClient(Client):
+        def update_user_group_members(self, group_data: Dict[str, Any]) -> Dict[str, Any]:  # type: ignore # Intentional override; see comments above.
+            modern_group_data = group_data.copy()
+            group_id = group_data["group_id"]
+            del modern_group_data["group_id"]
+            return super().update_user_group_members(group_id, modern_group_data)
+
+        def get_realm_filters(self) -> Dict[str, Any]:
+            """
+            Example usage:
+
+            >>> client.get_realm_filters()
+            {'result': 'success', 'msg': '', 'filters': [['#(?P<id>[0-9]+)', 'https://github.com/zulip/zulip/issues/%(id)s', 1]]}
+            """
+            # This interface was removed in 4d482e0ef30297f716885fd8246f4638a856ba3b
+            return self.call_endpoint(
+                url="realm/filters",
+                method="GET",
+            )
+
+    Client = LegacyInterfaceClient  # type: ignore # Intentional override; see comments above.
