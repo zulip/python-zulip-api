@@ -18,7 +18,7 @@ sample_config_path = "matrix_test.conf"
 
 sample_config_text = """[matrix]
 host = https://matrix.org
-username = @username@matrix.org
+username = @username:matrix.org
 password = password
 room_id = #zulip:matrix.org
 
