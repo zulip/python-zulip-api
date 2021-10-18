@@ -9,7 +9,7 @@ from typing import Any, Callable, Dict
 
 import bridge_with_slack_config
 import slack_sdk
-from slack_sdk.rtm import RTMClient
+from slack_sdk.rtm_v2 import RTMClient
 
 import zulip
 
@@ -48,7 +48,7 @@ class SlackBridge:
 
         # slack-specific
         self.channel = self.slack_config["channel"]
-        self.slack_client = RTMClient(token=self.slack_config["token"], auto_reconnect=True)
+        self.slack_client = rtm
         # Spawn a non-websocket client for getting the users
         # list and for posting messages in Slack.
         self.slack_webclient = slack_sdk.WebClient(token=self.slack_config["token"])
@@ -84,23 +84,22 @@ class SlackBridge:
     def run_slack_listener(self) -> None:
         members = self.slack_webclient.users_list()["members"]
         # See also https://api.slack.com/changelog/2017-09-the-one-about-usernames
-        self.slack_id_to_name = {
+        self.slack_id_to_name: Dict[str, str] = {
             u["id"]: u["profile"].get("display_name", u["profile"]["real_name"]) for u in members
         }
         self.slack_name_to_id = {v: k for k, v in self.slack_id_to_name.items()}
 
-        @RTMClient.run_on(event="message")
-        def slack_to_zulip(**payload: Any) -> None:
-            msg = payload["data"]
-            if msg["channel"] != self.channel:
+        @rtm.on("message")
+        def slack_to_zulip(client: RTMClient, event: Dict[str, Any]) -> None:
+            if event["channel"] != self.channel:
                 return
-            user_id = msg["user"]
+            user_id = event["user"]
             user = self.slack_id_to_name[user_id]
             from_bot = user == self.slack_config["username"]
             if from_bot:
                 return
-            self.replace_slack_id_with_name(msg)
-            content = ZULIP_MESSAGE_TEMPLATE.format(username=user, message=msg["text"])
+            self.replace_slack_id_with_name(event)
+            content = ZULIP_MESSAGE_TEMPLATE.format(username=user, message=event["text"])
             msg_data = dict(
                 type="stream", to=self.zulip_stream, subject=self.zulip_subject, content=content
             )
@@ -123,6 +122,9 @@ if __name__ == "__main__":
     print("MAKE SURE THE BOT IS SUBSCRIBED TO THE RELEVANT ZULIP STREAM")
 
     config = bridge_with_slack_config.config
+
+    # We have to define rtm outside of SlackBridge because the rtm variable is used as a method decorator.
+    rtm = RTMClient(token=config["slack"]["token"])
 
     backoff = zulip.RandomExponentialBackoff(timeout_success_equivalent=300)
     while backoff.keep_going():
