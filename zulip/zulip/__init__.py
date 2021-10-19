@@ -29,7 +29,7 @@ from typing import (
 import distro
 import requests
 
-__version__ = "0.8.0"
+__version__ = "0.8.1"
 
 # Ensure the Python version is supported
 assert sys.version_info >= (3, 6)
