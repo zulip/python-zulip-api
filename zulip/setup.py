@@ -63,7 +63,6 @@ package_info = dict(
             "zulip-api=zulip.cli:cli",
         ],
     },
-    package_data={"zulip": ["py.typed"]},
 )  # type: Dict[str, Any]
 
 setuptools_info = dict(
