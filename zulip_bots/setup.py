@@ -55,7 +55,6 @@ package_info = dict(
             "zulip-terminal=zulip_bots.terminal:main",
         ],
     },
-    include_package_data=True,
 )  # type: Dict[str, Any]
 
 setuptools_info = dict(
