@@ -320,7 +320,7 @@ def main() -> None:
     # Initiate clients
     backoff = zulip.RandomExponentialBackoff(timeout_success_equivalent=300)
     while backoff.keep_going():
-        print("Starting matrix mirroring bot")
+        print("Starting matrix mirroring bot (this may take a minute)")
         try:
             zulip_client = zulip.Client(
                 email=zulip_config["email"],
