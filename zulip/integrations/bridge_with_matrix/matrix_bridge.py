@@ -39,10 +39,10 @@ class Bridge_ZulipFatalException(Exception):
 
 def matrix_login(matrix_client: Any, matrix_config: Dict[str, Any]) -> None:
     try:
-        matrix_client.login_with_password(matrix_config["username"], matrix_config["password"])
+        matrix_client.login_with_password(matrix_config["mxid"], matrix_config["password"])
     except MatrixRequestError as exception:
         if exception.code == 403:
-            raise Bridge_FatalMatrixException("Bad username or password.")
+            raise Bridge_FatalMatrixException("Bad mxid or password.")
         else:
             raise Bridge_FatalMatrixException("Check if your server details are correct.")
     except MissingSchema:
@@ -77,7 +77,7 @@ def matrix_to_zulip(
         """
         content = get_message_content_from_event(event, no_noise)
 
-        zulip_bot_user = matrix_config["username"]
+        zulip_bot_user = matrix_config["mxid"]
         # We do this to identify the messages generated from Zulip -> Matrix
         # and we make sure we don't forward it again to the Zulip stream.
         not_from_zulip_bot = event["sender"] != zulip_bot_user
@@ -237,7 +237,7 @@ def write_sample_config(target_path: str, zuliprc: Optional[str]) -> None:
                 OrderedDict(
                     (
                         ("host", "https://matrix.org"),
-                        ("username", "@username:matrix.org"),
+                        ("mxid", "@username:matrix.org"),
                         ("password", "password"),
                         ("room_id", "#zulip:matrix.org"),
                     )
