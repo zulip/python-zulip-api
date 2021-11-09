@@ -55,14 +55,14 @@ class TestDefaultArguments(TestCase):
             quiet=False,
         )
 
-    @patch(
-        "sys.argv", ["zulip-run-bot", "packaged_bot", "--config-file", "/foo/bar/baz.conf", "-r"]
-    )
+    @patch("sys.argv", ["zulip-run-bot", "packaged_bot", "--config-file", "/foo/bar/baz.conf"])
     @patch("zulip_bots.run.run_message_handler_for_bot")
     def test_argument_parsing_with_zulip_bot_registry(
         self, mock_run_message_handler_for_bot: mock.Mock
     ) -> None:
-        with patch("zulip_bots.run.exit_gracefully_if_zulip_config_is_missing"), patch(
+        with patch("importlib.import_module", return_value={}), patch(
+            "zulip_bots.run.exit_gracefully_if_zulip_config_is_missing"
+        ), patch(
             "zulip_bots.finder.metadata.EntryPoint.load",
             return_value=self.packaged_bot_module,
         ), patch(

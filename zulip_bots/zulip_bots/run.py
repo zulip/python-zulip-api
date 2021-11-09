@@ -48,13 +48,6 @@ def parse_args() -> argparse.Namespace:
         help="try running the bot even if dependencies install fails",
     )
 
-    parser.add_argument(
-        "--registry",
-        "-r",
-        action="store_true",
-        help="run the bot via zulip_bots registry",
-    )
-
     parser.add_argument("--provision", action="store_true", help="install dependencies for the bot")
 
     args = parser.parse_args()
@@ -116,50 +109,49 @@ def exit_gracefully_if_bot_config_file_does_not_exist(bot_config_file: Optional[
 def main() -> None:
     args = parse_args()
 
-    if args.registry:
+    result = finder.resolve_bot_path(args.bot)
+    if result:
+        bot_path, bot_name = result
+        sys.path.insert(0, os.path.dirname(bot_path))
+
+        if args.provision:
+            provision_bot(os.path.dirname(bot_path), args.force)
+
         try:
-            bot_source, lib_module = finder.import_module_from_zulip_bot_registry(args.bot)
-        except finder.DuplicateRegisteredBotName as error:
-            print(
-                f'ERROR: Found duplicate entries for "{error}" in zulip bots registry.\n'
-                "Make sure that you don't install bots using the same entry point. Exiting now."
+            lib_module = finder.import_module_from_source(bot_path.as_posix(), bot_name)
+        except ImportError:
+            req_path = os.path.join(os.path.dirname(bot_path), "requirements.txt")
+            with open(req_path) as fp:
+                deps_list = fp.read()
+
+            dep_err_msg = (
+                "ERROR: The following dependencies for the {bot_name} bot are not installed:\n\n"
+                "{deps_list}\n"
+                "If you'd like us to install these dependencies, run:\n"
+                "    zulip-run-bot {bot_name} --provision"
             )
+            print(dep_err_msg.format(bot_name=bot_name, deps_list=deps_list))
             sys.exit(1)
-        if lib_module:
-            bot_name = args.bot
+        bot_source = "source"
     else:
-        result = finder.resolve_bot_path(args.bot)
-        if result:
-            bot_path, bot_name = result
-            sys.path.insert(0, os.path.dirname(bot_path))
-
+        lib_module = finder.import_module_by_name(args.bot)
+        if lib_module and hasattr(lib_module, "handler_class"):
+            bot_name = lib_module.__name__
+            bot_source = "named module"
             if args.provision:
-                provision_bot(os.path.dirname(bot_path), args.force)
-
-            try:
-                lib_module = finder.import_module_from_source(bot_path.as_posix(), bot_name)
-            except ImportError:
-                req_path = os.path.join(os.path.dirname(bot_path), "requirements.txt")
-                with open(req_path) as fp:
-                    deps_list = fp.read()
-
-                dep_err_msg = (
-                    "ERROR: The following dependencies for the {bot_name} bot are not installed:\n\n"
-                    "{deps_list}\n"
-                    "If you'd like us to install these dependencies, run:\n"
-                    "    zulip-run-bot {bot_name} --provision"
-                )
-                print(dep_err_msg.format(bot_name=bot_name, deps_list=deps_list))
+                print("ERROR: Could not load bot's module for '{}'. Exiting now.")
                 sys.exit(1)
-            bot_source = "source"
         else:
-            lib_module = finder.import_module_by_name(args.bot)
+            try:
+                bot_source, lib_module = finder.import_module_from_zulip_bot_registry(args.bot)
+            except finder.DuplicateRegisteredBotName as error:
+                print(
+                    f'ERROR: Found duplicate entries for "{error}" in zulip bots registry.\n'
+                    "Make sure that you don't install bots using the same entry point. Exiting now."
+                )
+                sys.exit(1)
             if lib_module:
-                bot_name = lib_module.__name__
-                bot_source = "named module"
-                if args.provision:
-                    print("ERROR: Could not load bot's module for '{}'. Exiting now.")
-                    sys.exit(1)
+                bot_name = args.bot
 
     if lib_module is None:
         print("ERROR: Could not load bot module. Exiting now.")
