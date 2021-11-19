@@ -52,7 +52,7 @@ package_info = dict(
     entry_points={
         "console_scripts": [
             "zulip-run-bot=zulip_bots.run:main",
-            "zulip-terminal=zulip_bots.terminal:main",
+            "zulip-bot-shell=zulip_bots.terminal:main",
         ],
     },
 )  # type: Dict[str, Any]
