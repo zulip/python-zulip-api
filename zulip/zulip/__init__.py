@@ -28,6 +28,7 @@ from typing import (
 
 import distro
 import requests
+from typing_extensions import Literal
 
 __version__ = "0.8.1"
 
@@ -43,6 +44,38 @@ assert LooseVersion(requests.__version__) >= LooseVersion("0.12.1")
 requests_json_is_function = callable(requests.Response.json)
 
 API_VERSTRING = "v1/"
+
+# An optional parameter to `move_topic` and `update_message` actions
+# See eg. https://zulip.com/api/update-message#parameter-propagate_mode
+EditPropagateMode = Literal["change_one", "change_all", "change_later"]
+
+# Generally a `reaction_type` is present whenever an emoji is specified:
+# - Optional parameters to actions: `add_reaction`, `remove_reaction`
+# - Events: "user_status", "reaction", "message", "update_message"
+# - Inside each reaction in the `reactions` field of returned message objects.
+EmojiType = Literal["realm_emoji", "unicode_emoji", "zulip_extra_emoji"]
+
+# Message flags which may be directly modified by the current user:
+# - Updated by `update_message_flags` (and for the `read` flag, also
+#   the `mark_all_as_read`, `mark_stream_as_read`, and
+#   `mark_topic_as_read` actions.
+# - User is notified of changes via `update_message_flags` events.
+# See subset of https://zulip.com/api/update-message-flags#available-flags
+ModifiableMessageFlag = Literal["read", "starred", "collapsed"]
+
+# All possible message flags.
+# - Generally present in `flags` object of returned message objects.
+# - User is notified of changes via "update_message_flags" and `update_message`
+#   events. The latter is important for clients to learn when a message is
+#   edited to mention the current user or contain an alert word.
+# See https://zulip.com/api/update-message-flags#available-flags
+MessageFlag = Literal[
+    ModifiableMessageFlag,
+    "mentioned",
+    "wildcard_mentioned",
+    "has_alert_word",
+    "historical",
+]
 
 
 class CountingBackoff:
@@ -1638,7 +1671,7 @@ class Client:
         topic: str,
         new_topic: Optional[str] = None,
         message_id: Optional[int] = None,
-        propagate_mode: str = "change_all",
+        propagate_mode: EditPropagateMode = "change_all",
         notify_old_topic: bool = True,
         notify_new_topic: bool = True,
     ) -> Dict[str, Any]:

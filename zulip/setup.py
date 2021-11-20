@@ -71,6 +71,7 @@ setuptools_info = dict(
         "matrix_client",
         "distro",
         "click",
+        "typing_extensions>=3.7",
     ],
 )
 
