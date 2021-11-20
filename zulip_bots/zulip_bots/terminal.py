@@ -9,7 +9,7 @@ from zulip_bots.simple_lib import MockMessageServer, TerminalBotHandler
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     description = """
         This tool allows you to test a bot using the terminal (and no Zulip server).
 
@@ -32,15 +32,21 @@ def parse_args():
     return args
 
 
-def main():
+def main() -> None:
     args = parse_args()
 
-    bot_path, bot_name = resolve_bot_path(args.bot)
+    # NOTE: Use of only this implies bots from eg. registry cannot be explored in this way
+    result = resolve_bot_path(args.bot)
+    if result is None:
+        print(f"Cannot find find and import bot '{args.bot}'")
+        sys.exit(1)
+
+    bot_path, bot_name = result
     bot_dir = os.path.dirname(bot_path)
     sys.path.insert(0, bot_dir)
 
     try:
-        lib_module = import_module_from_source(bot_path, bot_name)
+        lib_module = import_module_from_source(bot_path.as_posix(), bot_name)
         if lib_module is None:
             raise OSError
     except OSError:
