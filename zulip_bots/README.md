@@ -21,6 +21,6 @@ zulip_bots  # This directory
 │   ├───simple_lib.py  # Used for terminal testing.
 │   ├───test_lib.py  # Backbone for bot unit tests.
 │   ├───test_run.py  # Unit tests for run.py
-│   └───terminal.py  # Used to test bots in the command line.
+│   └───bot_shell.py  # Used to test bots in the command line.
 └───setup.py  # Script for packaging.
 ```
