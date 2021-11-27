@@ -319,6 +319,14 @@ class AsyncClient:
         async for event in self.event_iter(event_types, narrow, **kwargs):
             await callback(event)
 
+    async def call_on_each_message(
+        self, callback: Callable[[Dict[str, Any]], None], **kwargs: object
+    ) -> None:
+        async def event_callback(event: Dict[str, Any]) -> None:
+            if event["type"] == "message":
+                await callback(event["message"])
+
+        await self.call_on_each_event(event_callback, ["message"], None, **kwargs)
 
     async def get_messages(self, message_filters: Dict[str, Any]) -> Dict[str, Any]:
         """
