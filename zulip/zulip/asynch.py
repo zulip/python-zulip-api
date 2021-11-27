@@ -237,9 +237,8 @@ class AsyncClient:
         )
 
 
-    async def call_on_each_event(
+    async def event_iter(
         self,
-        callback: Callable[[Dict[str, Any]], None],
         event_types: Optional[List[str]] = None,
         narrow: Optional[List[List[str]]] = None,
         **kwargs: object,
@@ -307,8 +306,18 @@ class AsyncClient:
 
             for event in res["events"]:
                 last_event_id = max(last_event_id, int(event["id"]))
-                await callback(event)
+                yield event
 
+
+    async def call_on_each_event(
+        self,
+        callback: Callable[[Dict[str, Any]], None],
+        event_types: Optional[List[str]] = None,
+        narrow: Optional[List[List[str]]] = None,
+        **kwargs: object,
+    ) -> None:
+        async for event in self.event_iter(event_types, narrow, **kwargs):
+            await callback(event)
 
 
     async def get_messages(self, message_filters: Dict[str, Any]) -> Dict[str, Any]:
