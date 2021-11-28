@@ -5,7 +5,7 @@ import os
 import sys
 import threading
 import traceback
-from typing import Any, Callable, Dict
+from typing import Any, Callable, Dict, Optional, Tuple
 
 import bridge_with_slack_config
 import slack_sdk
@@ -17,18 +17,28 @@ import zulip
 ZULIP_MESSAGE_TEMPLATE = "**{username}**: {message}"
 SLACK_MESSAGE_TEMPLATE = "<{username}> {message}"
 
+StreamTopicT = Tuple[str, str]
 
-def check_zulip_message_validity(msg: Dict[str, Any], config: Dict[str, Any]) -> bool:
+
+def get_slack_channel_for_zulip_message(
+    msg: Dict[str, Any], zulip_to_slack_map: Dict[StreamTopicT, Any], bot_email: str
+) -> Optional[str]:
     is_a_stream = msg["type"] == "stream"
-    in_the_specified_stream = msg["display_recipient"] == config["stream"]
-    at_the_specified_subject = msg["subject"] == config["topic"]
+    if not is_a_stream:
+        return None
 
-    # We do this to identify the messages generated from Matrix -> Zulip
-    # and we make sure we don't forward it again to the Matrix.
-    not_from_zulip_bot = msg["sender_email"] != config["email"]
-    if is_a_stream and not_from_zulip_bot and in_the_specified_stream and at_the_specified_subject:
-        return True
-    return False
+    stream_name = msg["display_recipient"]
+    topic_name = msg["subject"]
+    stream_topic: StreamTopicT = (stream_name, topic_name)
+    if stream_topic not in zulip_to_slack_map:
+        return None
+
+    # We do this to identify the messages generated from Slack -> Zulip
+    # and we make sure we don't forward it again to the Slack.
+    from_zulip_bot = msg["sender_email"] == bot_email
+    if from_zulip_bot:
+        return None
+    return zulip_to_slack_map[stream_topic]
 
 
 class SlackBridge:
@@ -37,14 +47,17 @@ class SlackBridge:
         self.zulip_config = config["zulip"]
         self.slack_config = config["slack"]
 
+        self.slack_to_zulip_map: Dict[str, Dict[str, str]] = config["channel_mapping"]
+        self.zulip_to_slack_map: Dict[StreamTopicT, str] = {
+            (z["stream"], z["topic"]): s for s, z in config["channel_mapping"].items()
+        }
+
         # zulip-specific
         self.zulip_client = zulip.Client(
             email=self.zulip_config["email"],
             api_key=self.zulip_config["api_key"],
             site=self.zulip_config["site"],
         )
-        self.zulip_stream = self.zulip_config["stream"]
-        self.zulip_subject = self.zulip_config["topic"]
 
         # slack-specific
         self.channel = self.slack_config["channel"]
@@ -68,14 +81,16 @@ class SlackBridge:
 
     def zulip_to_slack(self) -> Callable[[Dict[str, Any]], None]:
         def _zulip_to_slack(msg: Dict[str, Any]) -> None:
-            message_valid = check_zulip_message_validity(msg, self.zulip_config)
-            if message_valid:
+            slack_channel = get_slack_channel_for_zulip_message(
+                msg, self.zulip_to_slack_map, self.zulip_config["email"]
+            )
+            if slack_channel is not None:
                 self.wrap_slack_mention_with_bracket(msg)
                 slack_text = SLACK_MESSAGE_TEMPLATE.format(
                     username=msg["sender_full_name"], message=msg["content"]
                 )
                 self.slack_webclient.chat_postMessage(
-                    channel=self.channel,
+                    channel=slack_channel,
                     text=slack_text,
                 )
 
@@ -91,7 +106,7 @@ class SlackBridge:
 
         @rtm.on("message")
         def slack_to_zulip(client: RTMClient, event: Dict[str, Any]) -> None:
-            if event["channel"] != self.channel:
+            if event["channel"] not in self.slack_to_zulip_map:
                 return
             user_id = event["user"]
             user = self.slack_id_to_name[user_id]
@@ -100,8 +115,12 @@ class SlackBridge:
                 return
             self.replace_slack_id_with_name(event)
             content = ZULIP_MESSAGE_TEMPLATE.format(username=user, message=event["text"])
+            zulip_endpoint = self.slack_to_zulip_map[event["channel"]]
             msg_data = dict(
-                type="stream", to=self.zulip_stream, subject=self.zulip_subject, content=content
+                type="stream",
+                to=zulip_endpoint["stream"],
+                subject=zulip_endpoint["topic"],
+                content=content,
             )
             self.zulip_client.send_message(msg_data)
 
@@ -118,10 +137,16 @@ if __name__ == "__main__":
     sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
     parser = argparse.ArgumentParser(usage=usage)
 
+    config: Dict[str, Any] = bridge_with_slack_config.config
+    if "channel_mapping" not in config:
+        print(
+            'The key "channel_mapping" is not found in bridge_with_slack_config.py.\n'
+            "Your config file may be outdated."
+        )
+        exit(1)
+
     print("Starting slack mirroring bot")
     print("MAKE SURE THE BOT IS SUBSCRIBED TO THE RELEVANT ZULIP STREAM")
-
-    config = bridge_with_slack_config.config
 
     # We have to define rtm outside of SlackBridge because the rtm variable is used as a method decorator.
     rtm = RTMClient(token=config["slack"]["token"])
