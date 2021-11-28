@@ -23,6 +23,22 @@ import zulip
 
 API_VERSTRING = "v1/"
 
+
+class RandomExponentialBackoff(zulip.CountingBackoff):
+    async def fail(self) -> None:
+        super().fail()
+        # Exponential growth with ratio sqrt(2); compute random delay
+        # between x and 2x where x is growing exponentially
+        delay_scale = int(2 ** (self.number_of_retries / 2.0 - 1)) + 1
+        delay = min(delay_scale + random.randint(1, delay_scale), self.delay_cap)
+        message = f"Sleeping for {delay}s [max {delay_scale * 2}] before retrying."
+        try:
+            logger.warning(message)
+        except NameError:
+            print(message)
+        await asyncio.sleep(delay)
+
+
 class AsyncClient:
     def __init__(self, client: zulip.Client):
         self.sync_client = client
@@ -400,4 +416,3 @@ class AsyncClient:
             url="messages",
             request=message_data,
         )
-
