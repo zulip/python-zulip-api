@@ -146,7 +146,7 @@ if __name__ == "__main__":
         exit(1)
 
     print("Starting slack mirroring bot")
-    print("MAKE SURE THE BOT IS SUBSCRIBED TO THE RELEVANT ZULIP STREAM")
+    print("MAKE SURE THE BOT IS SUBSCRIBED TO THE RELEVANT ZULIP STREAM(S) & SLACK CHANNEL(S)!")
 
     # We have to define rtm outside of SlackBridge because the rtm variable is used as a method decorator.
     rtm = RTMClient(token=config["slack"]["token"])
