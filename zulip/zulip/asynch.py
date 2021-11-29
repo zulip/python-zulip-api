@@ -1,7 +1,8 @@
+import asyncio
 import json
+import sys
 import traceback
 import urllib.parse
-
 from typing import (
     IO,
     Any,
@@ -17,7 +18,6 @@ from typing import (
 )
 
 import aiohttp
-import asyncio
 
 import zulip
 
@@ -54,7 +54,9 @@ class AsyncClient:
 
         # Build a client cert object for requests
         if self.sync_client.client_cert_key is not None:
-            assert self.sync_client.client_cert is not None  # Otherwise ZulipError near end of __init__
+            assert (
+                self.sync_client.client_cert is not None
+            )  # Otherwise ZulipError near end of __init__
             client_cert = (
                 self.sync_client.client_cert,
                 self.sync_client.client_cert_key,
@@ -64,11 +66,11 @@ class AsyncClient:
 
         # Actually construct the session
         session = aiohttp.ClientSession(
-            auth = aiohttp.BasicAuth(self.sync_client.email, self.sync_client.api_key),
+            auth=aiohttp.BasicAuth(self.sync_client.email, self.sync_client.api_key),
             # TODO: Support overriding TLS verification
-            #verify = self.tls_verification,
-            #cert = client_cert,
-            headers = {"User-agent": self.sync_client.get_user_agent()},
+            # verify = self.tls_verification,
+            # cert = client_cert,
+            headers={"User-agent": self.sync_client.get_user_agent()},
         )
         self.session = session
 
@@ -195,7 +197,9 @@ class AsyncClient:
                     # go into retry logic, because the most likely scenario here is
                     # that somebody just hasn't started their server, or they passed
                     # in an invalid site.
-                    raise zulip.UnrecoverableNetworkError("cannot connect to server " + self.sync_client.base_url)
+                    raise zulip.UnrecoverableNetworkError(
+                        "cannot connect to server " + self.sync_client.base_url
+                    )
 
                 if await error_retry(""):
                     continue
@@ -229,7 +233,6 @@ class AsyncClient:
                 "status_code": status_code,
             }
 
-
     async def call_endpoint(
         self,
         url: Optional[str] = None,
@@ -254,7 +257,6 @@ class AsyncClient:
             files=files,
             timeout=timeout,
         )
-
 
     async def event_iter(
         self,
@@ -352,7 +354,6 @@ class AsyncClient:
         See examples/get-messages for example usage
         """
         return await self.call_endpoint(url="messages", method="GET", request=message_filters)
-
 
     async def get_events(self, **request: Any) -> Dict[str, Any]:
         """
