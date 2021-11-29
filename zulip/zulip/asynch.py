@@ -1,5 +1,7 @@
 import asyncio
 import json
+import logging
+import random
 import sys
 import traceback
 import urllib.parse
@@ -20,6 +22,8 @@ from typing import (
 import aiohttp
 
 import zulip
+
+logger = logging.getLogger(__name__)
 
 API_VERSTRING = "v1/"
 
