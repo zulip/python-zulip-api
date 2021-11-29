@@ -8,13 +8,13 @@ import urllib.parse
 from typing import (
     IO,
     Any,
+    Awaitable,
     Callable,
     Dict,
     Iterable,
     List,
     Mapping,
     Optional,
-    Sequence,
     Tuple,
     Union,
 )
@@ -46,7 +46,7 @@ class RandomExponentialBackoff(zulip.CountingBackoff):
 class AsyncClient:
     def __init__(self, client: zulip.Client):
         self.sync_client = client
-        self.session = None
+        self.session: Optional[aiohttp.ClientSession] = None
         self.retry_on_errors = client.retry_on_errors
         self.verbose = client.verbose
 
@@ -222,7 +222,7 @@ class AsyncClient:
             status_code = -1
             try:
                 async with res:
-                    status = res.status
+                    status_code = res.status
                     json_result = await res.json()
             except Exception:
                 json_result = None
@@ -245,7 +245,7 @@ class AsyncClient:
         longpolling: bool = False,
         files: Optional[List[IO[Any]]] = None,
         timeout: Optional[float] = None,
-    ) -> Dict[str, Any]:
+    ) -> Awaitable[Dict[str, Any]]:
         if request is None:
             request = dict()
         marshalled_request = {}
