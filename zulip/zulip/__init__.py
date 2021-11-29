@@ -681,10 +681,7 @@ class Client:
                     continue
                 else:
                     end_error_retry(False)
-                    return {
-                        "msg": f"Connection error:\n{traceback.format_exc()}",
-                        "result": "connection-error",
-                    }
+                    raise
             except requests.exceptions.ConnectionError:
                 if not self.has_connected:
                     # If we have never successfully connected to the server, don't
@@ -696,16 +693,10 @@ class Client:
                 if error_retry(""):
                     continue
                 end_error_retry(False)
-                return {
-                    "msg": f"Connection error:\n{traceback.format_exc()}",
-                    "result": "connection-error",
-                }
+                raise
             except Exception:
                 # We'll split this out into more cases as we encounter new bugs.
-                return {
-                    "msg": f"Unexpected error:\n{traceback.format_exc()}",
-                    "result": "unexpected-error",
-                }
+                raise
 
             try:
                 if requests_json_is_function:
@@ -782,16 +773,28 @@ class Client:
             if queue_id is None:
                 (queue_id, last_event_id) = do_register()
 
-            res = self.get_events(queue_id=queue_id, last_event_id=last_event_id)
+            try:
+                res = self.get_events(queue_id=queue_id, last_event_id=last_event_id)
+            except (
+                requests.exceptions.Timeout,
+                requests.exceptions.SSLError,
+                requests.exceptions.ConnectionError,
+            ):
+                if self.verbose:
+                    print(f"Connection error fetching events:\n{traceback.format_exc()}")
+                # TODO: Make this use our backoff library
+                time.sleep(1)
+                continue
+            except Exception:
+                print(f"Unexpected error:\n{traceback.format_exc()}")
+                # TODO: Make this use our backoff library
+                time.sleep(1)
+                continue
+
             if "error" in res["result"]:
                 if res["result"] == "http-error":
                     if self.verbose:
                         print("HTTP error fetching events -- probably a server restart")
-                elif res["result"] == "connection-error":
-                    if self.verbose:
-                        print(
-                            "Connection error fetching events -- probably server is temporarily down?"
-                        )
                 else:
                     if self.verbose:
                         print("Server returned error:\n{}".format(res["msg"]))
