@@ -8,6 +8,7 @@ import urllib.parse
 from typing import (
     IO,
     Any,
+    AsyncGenerator,
     Awaitable,
     Callable,
     Dict,
@@ -267,7 +268,7 @@ class AsyncClient:
         event_types: Optional[List[str]] = None,
         narrow: Optional[List[List[str]]] = None,
         **kwargs: object,
-    ) -> None:
+    ) -> AsyncGenerator[Dict[str, Any], None]:
         if narrow is None:
             narrow = []
 
@@ -335,7 +336,7 @@ class AsyncClient:
 
     async def call_on_each_event(
         self,
-        callback: Callable[[Dict[str, Any]], None],
+        callback: Callable[[Dict[str, Any]], Awaitable[None]],
         event_types: Optional[List[str]] = None,
         narrow: Optional[List[List[str]]] = None,
         **kwargs: object,
@@ -344,7 +345,7 @@ class AsyncClient:
             await callback(event)
 
     async def call_on_each_message(
-        self, callback: Callable[[Dict[str, Any]], None], **kwargs: object
+        self, callback: Callable[[Dict[str, Any]], Awaitable[None]], **kwargs: object
     ) -> None:
         async def event_callback(event: Dict[str, Any]) -> None:
             if event["type"] == "message":
