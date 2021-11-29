@@ -59,8 +59,6 @@ in the `discord` section to false.
 
 ## Zulip
 
-On the Zulip side, you can choose whether or not to forge senders.
-
 For Zulip setup, create a bot user (gear -> personal settings -> Bots -> Add a
 new bot) and download a `zuliprc`. Then, you can run `bridge.py
 --write-sample-config --from-zuliprc=zuliprc` to create a sample config based
