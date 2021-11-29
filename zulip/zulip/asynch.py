@@ -333,7 +333,6 @@ class AsyncClient:
                 last_event_id = max(last_event_id, int(event["id"]))
                 yield event
 
-
     async def call_on_each_event(
         self,
         callback: Callable[[Dict[str, Any]], None],
