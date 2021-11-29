@@ -27,6 +27,8 @@ class AsyncClient:
     def __init__(self, client: zulip.Client):
         self.sync_client = client
         self.session = None
+        self.retry_on_errors = client.retry_on_errors
+        self.verbose = client.verbose
 
     def ensure_session(self) -> None:
         # Check if the session has been created already, and return
@@ -143,6 +145,7 @@ class AsyncClient:
                     timeout=aiohttp.ClientTimeout(total=request_timeout),
                     **kwargs,
                 )
+                print(res)
 
                 self.has_connected = True
 
@@ -388,3 +391,13 @@ class AsyncClient:
             request=request,
             timeout=timeout,
         )
+
+    async def send_message(self, message_data: Dict[str, Any]) -> Awaitable[Dict[str, Any]]:
+        """
+        See examples/send-message for example usage.
+        """
+        return await self.call_endpoint(
+            url="messages",
+            request=message_data,
+        )
+
