@@ -302,13 +302,15 @@ def write_sample_config(target_path: str, zuliprc: Optional[str]) -> None:
         )
 
     sample_dict = dict(
-        discord=dict(
-            token="bot_token",
-        ),
         zulip=dict(
             email="discord-bot@chat.zulip.org",
             api_key="aPiKeY",
             site="https://chat.zulip.org",
+            forge_sender="false",
+        ),
+        discord=dict(
+            token="bot_token",
+            use_webhook="true",
         ),
         streams={
             "test here": "guild ID",

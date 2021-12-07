@@ -12,8 +12,10 @@ For that, you might want each Discord channel to match a Zulip stream, and
 Discord threads to match Zulip topics. Supporting this mode of operation as
 well would be a good future enhancement.
 
-There is currently no special support for threads, media, embeds,
-reactions, etc..
+There is currently no special support for threads, media, embeds, reactions,
+edits, system messages (joins/leaves), etc. -- all of these would be good
+future additions. The bot also does not create channels automatically for new
+Zulip topics, which might be a good (optional) addition.
 
 Configuration lives in a single `bridge.ini` file. A template can be created by running:
 ```
@@ -22,40 +24,13 @@ bridge.py --write-sample-config=bridge.ini --from-zuliprc=zuliprc
 
 (The `zuliprc` is optional; see the Zulip section for details on getting it.)
 
-Configuration consists of a `discord` section, `zulip` section, and a list of guilds and streams to associate.
+Configuration consists of a `zulip` section, `discord` section, and a list of guilds and streams to associate.
 
 With the exception of the stream<->guild setup, all configuration is global. Some features that might make sense to make configurable by guild:
 - Whether to use webhooks to forge Discord senders
 - How to create a topic name from a Discord thread
 
-## Discord
-
-Create a Discord integration (https://discord.com/developers/applications/)
-
-Grant it the following permissions:
-- Manage webhooks (to set the sender name)
-- Read messages / view channels
-- Send messages
-- Create public threads
-- Create private threads
-- Send messages in threads
-- Read message history
-
-This will produce a URL with these permissions and some client ID, along the lines of:
-https://discord.com/api/oauth2/authorize?client_id=914346072418185256&permissions=378494061568&scope=bot
-
-Following this link will allow adding the integration to a Discord server you have Manager Server permissions on.
-
-
-On the "Bot" tab, add a bot. Copy the token into the `token` key of the
-`discord` section of the config file. Enable "message content intent" -- this
-is a privileged intent, so if you want to use the bot with more than 100
-guilds, you'll need to get your bot reviewed. For typical uses with only a
-handful of guilds, though, no review is needed.
-
-The manage webhooks permission is optional, but makes messages forwarded to
-Discord look more native; if you wish to disable it, set the `use_webhook` key
-in the `discord` section to false.
+This is developed on Python 3.8, and definitely requires at least Python 3.7 (for `asyncio.run`).
 
 ## Zulip
 
@@ -81,6 +56,37 @@ more natural, but requires special permissions. To use it:
   `irc_mirror` in `bridge.py`. It should also be a simple server patch to
   support another client name with no suffix or a different suffix.)
 
+## Discord
+
+Create a Discord integration (https://discord.com/developers/applications/)
+
+Grant it the following permissions:
+- Manage webhooks (to set the sender name)
+- Read messages / view channels
+- Send messages
+- Create public threads
+- Create private threads
+- Send messages in threads
+- Read message history
+
+This will produce a URL with these permissions and some client ID, along the lines of:
+https://discord.com/api/oauth2/authorize?client_id=914346072418185256&permissions=378494061568&scope=bot
+
+Following this link will allow adding the integration to a Discord server you have Manager Server permissions on.
+
+
+On the "Bot" tab, add a bot. Copy the token into the `token` key of the
+`discord` section of the config file. (Don't confuse the token with the
+application ID on the "general information" tab, or the client ID or secret on
+the OAuth2 tab -- you should be on the "Bot" tab.) Enable "message content
+intent" -- this is a privileged intent, so if you want to use the bot with more
+than 100 guilds, you'll need to get your bot reviewed. For typical uses with
+only a handful of guilds, though, no review is needed.
+
+The manage webhooks permission is optional, but makes messages forwarded to
+Discord look more native; if you wish to disable it, set the `use_webhook` key
+in the `discord` section to false.
+
 ## Streams
 
 The `streams` section has no specific keys. Instead, each key is a stream name,
@@ -88,3 +94,6 @@ and the corresponding value is a Discord guild ID. To find a guild ID, open the
 the Discord webapp, and navigate to the guild (server). You should see a URL
 like `https://discord.com/channels/<guild>/<channel>`, where `<guild>` is the
 guild ID to use.
+
+Make sure to subscribe your Zulip bot user to each relevant stream, and add
+your Discord bot to each relevant guild.
