@@ -60,8 +60,17 @@ more natural, but requires special permissions. To use it:
 
 Create a Discord integration (https://discord.com/developers/applications/)
 
-Grant it the following permissions:
-- Manage webhooks (to set the sender name)
+On the "Bot" tab, add a bot. Copy the token into the `token` key of the
+`discord` section of the config file. (Don't confuse the token with the
+application ID on the "general information" tab, or the client ID or secret on
+the OAuth2 tab -- you should be on the "Bot" tab.) Enable "message content
+intent" -- this is a privileged intent, so if you want to use the bot with more
+than 100 guilds, you'll need to get your bot reviewed. For typical uses with
+only a handful of guilds, though, no review is needed.
+
+On the OAuth2 URL generator page, give it the `bot` scope with the following
+permissions:
+- Manage webhooks (optional; to set the sender name)
 - Read messages / view channels
 - Send messages
 - Create public threads
@@ -73,15 +82,6 @@ This will produce a URL with these permissions and some client ID, along the lin
 https://discord.com/api/oauth2/authorize?client_id=914346072418185256&permissions=378494061568&scope=bot
 
 Following this link will allow adding the integration to a Discord server you have Manager Server permissions on.
-
-
-On the "Bot" tab, add a bot. Copy the token into the `token` key of the
-`discord` section of the config file. (Don't confuse the token with the
-application ID on the "general information" tab, or the client ID or secret on
-the OAuth2 tab -- you should be on the "Bot" tab.) Enable "message content
-intent" -- this is a privileged intent, so if you want to use the bot with more
-than 100 guilds, you'll need to get your bot reviewed. For typical uses with
-only a handful of guilds, though, no review is needed.
 
 The manage webhooks permission is optional, but makes messages forwarded to
 Discord look more native; if you wish to disable it, set the `use_webhook` key
