@@ -10,7 +10,7 @@ import time
 import traceback
 import types
 import urllib.parse
-from configparser import SafeConfigParser
+from configparser import ConfigParser
 from typing import (
     IO,
     Any,
@@ -425,9 +425,9 @@ class Client:
             config_file = get_default_config_filename()
 
         if config_file is not None and os.path.exists(config_file):
-            config = SafeConfigParser()
+            config = ConfigParser()
             with open(config_file) as f:
-                config.readfp(f, config_file)
+                config.read_file(f, config_file)
             if api_key is None:
                 api_key = config.get("api", "key")
             if email is None:
