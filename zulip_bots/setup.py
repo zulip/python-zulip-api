@@ -13,8 +13,7 @@ package_data = {
     "zulip_bots": ["py.typed"],
 }
 
-# IS_PYPA_PACKAGE is set to True by tools/release-packages
-# before making a PyPA release.
+# IS_PYPA_PACKAGE should be set to True before making a PyPA release.
 if not IS_PYPA_PACKAGE:
     package_data[""].append("fixtures/*.json")
     package_data[""].append("logo.*")
