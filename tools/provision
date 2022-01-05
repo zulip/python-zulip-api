@@ -97,7 +97,7 @@ the Python version this command is executed with."""
     def install_dependencies(requirements_filename):
         pip_path = os.path.join(venv_dir, venv_exec_dir, "pip")
         # We first install a modern version of pip that supports --prefix
-        subprocess.call([pip_path, "install", "pip>=9.0"])
+        subprocess.call([pip_path, "install", "pip>=10"])
         if subprocess.call(
             [
                 pip_path,
