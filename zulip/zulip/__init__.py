@@ -1383,12 +1383,16 @@ class Client:
         )
 
     def remove_subscriptions(
-        self, streams: Iterable[str], principals: Union[Sequence[str], Sequence[int]] = []
+        self,
+        streams: Iterable[str],
+        principals: Optional[Union[Sequence[str], Sequence[int]]] = None,
     ) -> Dict[str, Any]:
         """
         See examples/unsubscribe for example usage.
         """
-        request = dict(subscriptions=streams, principals=principals)
+        request: Dict[str, object] = dict(subscriptions=streams)
+        if principals is not None:
+            request["principals"] = principals
         return self.call_endpoint(
             url="users/me/subscriptions",
             method="DELETE",
