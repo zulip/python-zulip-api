@@ -120,7 +120,7 @@ def get_bot_converter_response(message: Dict[str, str], bot_handler: BotHandler)
             if base_unit == "bit":
                 number_res *= 1024 ** (exponent // 3)
             else:
-                number_res *= 10 ** exponent
+                number_res *= 10**exponent
             number_res = round_to(number_res, 7)
 
             results.append(
