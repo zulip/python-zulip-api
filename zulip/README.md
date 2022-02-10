@@ -11,7 +11,7 @@ recommend installing version 0.6.4.
 
 #### Installing
 
-This package uses distutils, so you can just run:
+This package uses setuptools, so you can just run:
 
     python setup.py install
 

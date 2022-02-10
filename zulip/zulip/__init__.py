@@ -11,7 +11,6 @@ import traceback
 import types
 import urllib.parse
 from configparser import SafeConfigParser
-from distutils.version import LooseVersion
 from typing import (
     IO,
     Any,
@@ -36,9 +35,6 @@ assert sys.version_info >= (3, 6)
 
 logger = logging.getLogger(__name__)
 
-# Check that we have a recent enough version
-# Older versions don't provide the 'json' attribute on responses.
-assert LooseVersion(requests.__version__) >= LooseVersion("0.12.1")
 # In newer versions, the 'json' attribute is a function, not a property
 requests_json_is_function = callable(requests.Response.json)
 

@@ -2,8 +2,9 @@
 
 import itertools
 import os
-import sys
-from typing import Any, Dict, Generator, List, Tuple
+from typing import Any, Generator, List, Tuple
+
+from setuptools import find_packages, setup
 
 with open("README.md") as fh:
     long_description = fh.read()
@@ -26,8 +27,7 @@ def recur_expand(target_root: Any, dir: Any) -> Generator[Tuple[str, List[str]],
             yield os.path.join(target_root, root), paths
 
 
-# We should be installable with either setuptools or distutils.
-package_info = dict(
+setup(
     name="zulip",
     version=version(),
     description="Bindings for the Zulip message API",
@@ -63,37 +63,11 @@ package_info = dict(
             "zulip-api=zulip.cli:cli",
         ],
     },
-)  # type: Dict[str, Any]
-
-setuptools_info = dict(
     install_requires=[
         "requests[security]>=0.12.1",
         "matrix_client",
         "distro",
         "click",
     ],
+    packages=find_packages(exclude=["tests"]),
 )
-
-try:
-    from setuptools import find_packages, setup
-
-    package_info.update(setuptools_info)
-    package_info["packages"] = find_packages(exclude=["tests"])
-
-except ImportError:
-    from distutils.core import setup
-    from distutils.version import LooseVersion
-
-    # Manual dependency check
-    try:
-        import requests
-
-        assert LooseVersion(requests.__version__) >= LooseVersion("0.12.1")
-    except (ImportError, AssertionError):
-        print("requests >=0.12.1 is not installed", file=sys.stderr)
-        sys.exit(1)
-
-    package_info["packages"] = ["zulip"]
-
-
-setup(**package_info)
