@@ -10,7 +10,7 @@ import os
 import re
 import sys
 import traceback
-from typing import Any, Dict, Optional, Tuple, Union, cast
+from typing import Any, Dict, Literal, Optional, Tuple, Union, cast
 
 import discord
 
@@ -19,6 +19,8 @@ import zulip.asynch
 
 LOG_FORMAT = "%(asctime)s %(levelname)7s - %(name)20s - %(message)s"
 logger = logging.getLogger(__name__)
+
+CHANNEL_THREAD_SEP = " >> "
 
 
 class Bridge_ConfigException(Exception):
@@ -77,9 +79,22 @@ class Bridge:
             ret[guild_id] = GuildConfig(stream)
         return ret
 
-    def get_zulip_stream_and_topic_from_discord(self, message: discord.Message) -> Tuple[str, str]:
+    def get_zulip_stream_and_topic_from_discord(self, message: discord.Message) -> Tuple[Optional[str], str]:
+        if not message.guild:
+            logging.warning("Message not from a guild: %s", message)
+            return None, ""
         stream = self._guilds[message.guild.id].stream
-        topic = message.channel.name
+        if isinstance(message.channel, discord.TextChannel):
+            topic = message.channel.name
+        elif isinstance(message.channel, discord.Thread):
+            parent = message.channel.parent
+            if not parent:
+                logging.warning("Thread message has no parent: %s", message)
+                return None, ""
+            topic = parent.name + CHANNEL_THREAD_SEP + message.channel.name
+        else:
+            logging.warning("Message not text or thread: %s", message)
+            return None, ""
         return stream, topic
 
     def get_zulip_sender_from_discord(self, sender: discord.abc.User) -> str:
@@ -116,11 +131,14 @@ class Bridge:
 
         # Send it to Zulip
         stream, topic = self.get_zulip_stream_and_topic_from_discord(message)
+        if not stream:
+            # Above already did logging
+            return
         if self._forge_zulip:
             content = message.content  # TODO: consider including embeds, etc.
             out_msg = dict(
                 forged="yes",
-                sender=self.get_zulip_sender_from_discord(message.author),
+                sender=self.get_zulip_sender_from_discord(cast(discord.abc.User, message.author)),
                 type="stream",
                 subject=topic,
                 to=stream,
@@ -138,14 +156,20 @@ class Bridge:
         response = await self._zulip_client.send_message(out_msg)
         logger.info("Zulip send message response: %s", response)
 
-    def get_channel_from_zulip(self, message: Dict[str, Any]) -> Optional[discord.TextChannel]:
+    # TODO:
+    # https://docs.pycord.dev/en/master/api.html#discord.on_reaction_add
+
+    ChanThread = Tuple[Optional[discord.TextChannel],
+                           Union[discord.Thread,Literal[False],Literal[None]]]
+
+    def get_channel_from_zulip(self, message: Dict[str, Any]) -> ChanThread:
         stream = message["display_recipient"]
         topic = message["subject"]
         try:
             guild_id = self._streams[stream]
         except KeyError:
             logger.warning("Couldn't find guild for stream %s: message %s", stream, message)
-            return None
+            return None, None
         assert self._discord_client
         guild = self._discord_client.get_guild(guild_id)
         if not guild:
@@ -156,12 +180,21 @@ class Bridge:
                 message,
                 self._discord_client.guilds,
             )
-            return None
-        channel = discord.utils.get(guild.channels, name=topic)
-        if not channel:
-            logger.warning("Channel %s not found in guild %s: message %s", topic, guild, message)
-            return None
-        return channel
+            return None, None
+        channel_name, sep, thread_name = topic.partition(CHANNEL_THREAD_SEP)
+        channel = discord.utils.get(guild.channels, name=channel_name)
+        if not isinstance(channel, discord.TextChannel):
+            logger.warning("Channel %s not found as text channel in guild %s: "
+                           "channel %s, message %s", topic, guild, channel, message)
+            return None, None
+        thread: Union[Optional[discord.Thread], Literal[False]] = False
+        if thread_name:
+            thread = discord.utils.get(channel.threads, name=thread_name)
+            if not thread:
+                logger.warning("Thread %s (chan=%s, thread=%s) not found "
+                               "in guild %s: message %s",
+                               topic, channel_name, thread_name, guild, message)
+        return channel, thread
 
     async def get_webhook_for_discord_channel(
         self, channel: discord.TextChannel
@@ -200,7 +233,8 @@ class Bridge:
         if message["type"] != "stream":
             # ignore personals
             return
-        sender = message["sender_full_name"]
+        sender = cast(str, message["sender_full_name"])
+        content = cast(str, message['content'])
 
         # Check if this was a message we might have sent
         # Note that there is some server side filtering for clients named
@@ -211,17 +245,18 @@ class Bridge:
             return
 
         # Send to Discord
-        channel = self.get_channel_from_zulip(message)
+        channel, thread = self.get_channel_from_zulip(message)
         if not channel:
             # get_channel_from_zulip will have logged a warning
             return
         # TODO: consider including embeds, etc.
         webhook = await self.get_webhook_for_discord_channel(channel)
         if webhook:
-            await webhook.send(username=sender, content=message["content"])
+            thread_ = cast(discord.abc.Snowflake, thread or discord.utils.MISSING)
+            await webhook.send(username=sender, content=content, thread=thread_)
             return
         content = "%s: %s" % (sender, message["content"])
-        await channel.send(content=content)
+        await (thread or channel).send(content=content)
 
     async def run_tasks(self) -> None:
         logger.info("Starting tasks...")
