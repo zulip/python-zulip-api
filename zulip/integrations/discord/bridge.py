@@ -184,7 +184,8 @@ class Bridge:
 
         # See if we created one previously
         webhooks = await channel.webhooks()
-        webhook = discord.utils.get(webhooks, name="zulip_mirror")
+        webhook = discord.utils.get(webhooks, name="zulip_mirror",
+                                    user=self._discord_client.user)
         logger.info("Checked channel %s for existing webhooks, got %s", channel, webhook)
         if not webhook:
             # Create a new one
