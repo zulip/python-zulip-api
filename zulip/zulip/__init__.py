@@ -58,7 +58,7 @@ EmojiType = Literal["realm_emoji", "unicode_emoji", "zulip_extra_emoji"]
 # Message flags which may be directly modified by the current user:
 # - Updated by `update_message_flags` (and for the `read` flag, also
 #   the `mark_all_as_read`, `mark_stream_as_read`, and
-#   `mark_topic_as_read` actions.
+#   `mark_topic_as_read` actions).
 # - User is notified of changes via `update_message_flags` events.
 # See subset of https://zulip.com/api/update-message-flags#available-flags
 ModifiableMessageFlag = Literal["read", "starred", "collapsed"]
