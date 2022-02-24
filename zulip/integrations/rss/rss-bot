@@ -52,6 +52,13 @@ parser = zulip.add_default_arguments(
     argparse.ArgumentParser(usage)
 )  # type: argparse.ArgumentParser
 parser.add_argument(
+    "--topic",
+    dest="topic",
+    help="The Stream Topic to which to send RSS messages.",
+    default="stream events",
+    action="store",
+)
+parser.add_argument(
     "--stream",
     dest="stream",
     help="The stream to which to send RSS messages.",
@@ -241,7 +248,7 @@ for feed_url in feed_urls:
             # entries in reverse chronological order.
             break
 
-        feed_name = data.feed.title or feed_url  # type: str
+        feed_name = opts.topic
 
         response = send_zulip(entry, feed_name)  # type: Dict[str, Any]
         if response["result"] != "success":
