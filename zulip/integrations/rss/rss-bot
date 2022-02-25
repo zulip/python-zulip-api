@@ -42,6 +42,10 @@ You can customize the location on the feed file and recipient stream, e.g.:
 
 /usr/local/share/zulip/integrations/rss/rss-bot --feed-file=/path/to/my-feeds --stream=my-rss-stream
 
+optionally, you can also specify the name of the stream topic, e.g.:
+
+/usr/local/share/zulip/integrations/rss/rss-bot --feed-file=/path/to/my-feeds --stream=my-rss-stream --topic=my-topic-name
+
 4. Configure a crontab entry for this script. A sample crontab entry for
 processing feeds stored in the default location and sending to the default
 stream every 5 minutes is:
@@ -55,7 +59,6 @@ parser.add_argument(
     "--topic",
     dest="topic",
     help="The Stream Topic to which to send RSS messages.",
-    default="stream events",
     action="store",
 )
 parser.add_argument(
@@ -248,7 +251,7 @@ for feed_url in feed_urls:
             # entries in reverse chronological order.
             break
 
-        feed_name = opts.topic
+        feed_name = opts.topic or data.feed.title or feed_url  # type: str
 
         response = send_zulip(entry, feed_name)  # type: Dict[str, Any]
         if response["result"] != "success":
