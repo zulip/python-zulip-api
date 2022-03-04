@@ -44,7 +44,7 @@ You can customize the location on the feed file and recipient stream, e.g.:
 
 optionally, you can also specify the name of the stream topic, e.g.:
 
-/usr/local/share/zulip/integrations/rss/rss-bot --feed-file=/path/to/my-feeds --stream=my-rss-stream --topic=my-topic-name
+/usr/local/share/zulip/integrations/rss/rss-bot --feed-file=/path/to/my-feeds --stream=my-rss-stream --topic="topic name"
 
 4. Configure a crontab entry for this script. A sample crontab entry for
 processing feeds stored in the default location and sending to the default
