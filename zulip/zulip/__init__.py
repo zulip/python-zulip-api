@@ -29,7 +29,7 @@ import distro
 import requests
 from typing_extensions import Literal
 
-__version__ = "0.8.1"
+__version__ = "0.8.2"
 
 # Ensure the Python version is supported
 assert sys.version_info >= (3, 6)
