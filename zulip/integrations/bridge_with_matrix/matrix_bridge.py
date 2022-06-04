@@ -317,6 +317,11 @@ def main() -> None:
     zulip_config = config["zulip"]
     matrix_config = config["matrix"]
 
+    print(
+        "IMPORTANT: Make sure that the bot accounts have been"
+        " subscribed to the relevant Matrix room / Zulip stream"
+    )
+
     # Initiate clients
     backoff = zulip.RandomExponentialBackoff(timeout_success_equivalent=300)
     while backoff.keep_going():
