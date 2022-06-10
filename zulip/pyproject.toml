@@ -1,0 +1,44 @@
+[tool.poetry]
+name = "zulip"
+version = "0.8.2"
+description = "Bindings for the Zulip message API"
+authors = ["Zulip Open Source Project <zulip-devel@googlegroups.com>"]
+license = "Apache-2.0"
+readme = "README.md"
+homepage = "https://zulip.com/"
+repository = "https://github.com/zulip/python-zulip-api/"
+documentation = "https://zulip.com/api"
+classifiers=[
+    "Development Status :: 4 - Beta",
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Topic :: Communications :: Chat",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+]
+packages = [
+    { include = "zulip" },
+    { include = "integrations" },
+]
+
+[tool.poetry.dependencies]
+python = ">=3.6"
+requests = {version = ">=0.12.1", extras = ["security"]}
+matrix-client = "*"
+distro = "*"
+click = "*"
+typing_extensions = ">=3.7"
+
+[tool.poetry.scripts]
+zulip-send = "zulip.send:main"
+zulip-api-examples = "zulip.api_examples:main"
+zulip-matrix-bridge = "integrations.bridge_with_matrix.matrix_bridge:main"
+zulip-api = "zulip.cli:cli"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
