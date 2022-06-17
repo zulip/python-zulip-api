@@ -13,6 +13,7 @@ import sys
 import tempfile
 import textwrap
 import time
+from ctypes import POINTER, byref, c_char, c_int, c_ushort
 from queue import Queue
 from threading import Thread
 from types import FrameType
@@ -20,6 +21,7 @@ from typing import IO, Any, Dict, List, NoReturn, Optional, Set, Tuple, Union
 
 from typing_extensions import Literal, TypedDict
 
+import zephyr_ctypes
 import zulip
 from zulip import RandomExponentialBackoff
 
@@ -179,8 +181,23 @@ current_zephyr_subs = set()
 
 def zephyr_bulk_subscribe(subs: List[Tuple[str, str, str]]) -> None:
     try:
-        zephyr._z.subAll(subs)
-    except OSError:
+        zephyr_ctypes.check(
+            zephyr_ctypes.ZSubscribeTo(
+                (zephyr_ctypes.ZSubscription_t * len(subs))(
+                    *(
+                        zephyr_ctypes.ZSubscription_t(
+                            zsub_class=cls.encode(),
+                            zsub_classinst=instance.encode(),
+                            zsub_recipient=recipient.encode(),
+                        )
+                        for cls, instance, recipient in subs
+                    )
+                ),
+                len(subs),
+                0,
+            )
+        )
+    except zephyr_ctypes.ZephyrError:
         # Since we haven't added the subscription to
         # current_zephyr_subs yet, we can just return (so that we'll
         # continue processing normal messages) and we'll end up
@@ -189,26 +206,41 @@ def zephyr_bulk_subscribe(subs: List[Tuple[str, str, str]]) -> None:
         logger.exception("Error subscribing to streams (will retry automatically):")
         logger.warning(f"Streams were: {[cls for cls, instance, recipient in subs]}")
         return
+
     try:
-        actual_zephyr_subs = [cls for (cls, _, _) in zephyr._z.getSubscriptions()]
-    except OSError:
+        nsubs = c_int()
+        zephyr_ctypes.check(zephyr_ctypes.ZRetrieveSubscriptions(0, byref(nsubs)))
+        zsubs = (zephyr_ctypes.ZSubscription_t * nsubs.value)()
+        zephyr_ctypes.check(zephyr_ctypes.ZGetSubscriptions(zsubs, byref(nsubs)))
+        actual_zephyr_subs = {zsub.zsub_class.decode() for zsub in zsubs}
+    except zephyr_ctypes.ZephyrError:
         logger.exception("Error getting current Zephyr subscriptions")
         # Don't add anything to current_zephyr_subs so that we'll
         # retry the next time we check for streams to subscribe to
         # (within 15 seconds).
         return
+    finally:
+        zephyr_ctypes.ZFlushSubscriptions()
+
     for (cls, instance, recipient) in subs:
         if cls not in actual_zephyr_subs:
             logger.error(f"Zephyr failed to subscribe us to {cls}; will retry")
-            try:
-                # We'll retry automatically when we next check for
-                # streams to subscribe to (within 15 seconds), but
-                # it's worth doing 1 retry immediately to avoid
-                # missing 15 seconds of messages on the affected
-                # classes
-                zephyr._z.sub(cls, instance, recipient)
-            except OSError:
-                pass
+            # We'll retry automatically when we next check for
+            # streams to subscribe to (within 15 seconds), but
+            # it's worth doing 1 retry immediately to avoid
+            # missing 15 seconds of messages on the affected
+            # classes
+            zephyr_ctypes.ZSubscribeTo(
+                (zephyr_ctypes.ZSubscription_t * 1)(
+                    zephyr_ctypes.ZSubscription_t(
+                        zsub_class=cls.encode(),
+                        zsub_classinst=instance.encode(),
+                        zsub_recipient=recipient.encode(),
+                    )
+                ),
+                1,
+                0,
+            )
         else:
             current_zephyr_subs.add(cls)
 
@@ -259,8 +291,8 @@ def maybe_restart_mirroring_script() -> None:
         logger.warning("zephyr mirroring script has been updated; restarting...")
         maybe_kill_child()
         try:
-            zephyr._z.cancelSubs()
-        except OSError:
+            zephyr_ctypes.check(zephyr_ctypes.ZCancelSubscriptions(0))
+        except zephyr_ctypes.ZephyrError:
             # We don't care whether we failed to cancel subs properly, but we should log it
             logger.exception("")
         backoff = RandomExponentialBackoff(
@@ -281,22 +313,22 @@ def process_loop(zulip_queue: "Queue[ZephyrDict]", log: Optional[IO[str]]) -> No
     last_check_time = time.time()
     recieve_backoff = RandomExponentialBackoff()
     while True:
-        select.select([zephyr._z.getFD()], [], [], 15)
+        select.select([zephyr_ctypes.ZGetFD()], [], [], 15)
         try:
             process_backoff = RandomExponentialBackoff()
             # Fetch notices from the queue until its empty
-            while True:
-                notice = zephyr.receive(block=False)
+            while zephyr_ctypes.ZPending() != 0:
+                notice = zephyr_ctypes.ZNotice_t()
+                sender = zephyr_ctypes.sockaddr_in()
+                zephyr_ctypes.check(zephyr_ctypes.ZReceiveNotice(byref(notice), byref(sender)))
                 recieve_backoff.succeed()
-                if notice is None:
-                    break
                 try:
                     process_notice(notice, zulip_queue, log)
                     process_backoff.succeed()
-                except Exception:
+                except zephyr_ctypes.ZephyrError:
                     logger.exception("Error relaying zephyr:")
                     process_backoff.fail()
-        except Exception:
+        except zephyr_ctypes.ZephyrError:
             logger.exception("Error checking for new zephyrs:")
             recieve_backoff.fail()
             continue
@@ -409,39 +441,46 @@ def decrypt_zephyr(zephyr_class: str, instance: str, body: str) -> str:
 
 
 def process_notice(
-    notice: "zephyr.ZNotice", zulip_queue: "Queue[ZephyrDict]", log: Optional[IO[str]]
+    notice: zephyr_ctypes.ZNotice_t, zulip_queue: "Queue[ZephyrDict]", log: Optional[IO[str]]
 ) -> None:
-    assert notice.sender is not None
-    (zsig, body) = parse_zephyr_body(notice.message, notice.format)
+    assert notice.z_sender is not None
+    (zsig, body) = parse_zephyr_body(
+        notice.z_message[: notice.z_message_len].decode(errors="replace"),
+        notice.z_default_format.decode(errors="replace"),
+    )
     is_personal = False
     is_huddle = False
 
-    if notice.opcode == "PING":
+    if notice.z_opcode == b"PING":
         # skip PING messages
         return
 
-    zephyr_class = notice.cls.lower()
+    zephyr_class = notice.z_class.decode()
+    zephyr_instance = notice.z_class_inst.decode()
+    zephyr_sender = notice.z_sender.decode()
 
-    if zephyr_class == options.nagios_class:
+    if zephyr_class.lower() == options.nagios_class:
         # Mark that we got the message and proceed
         with open(options.nagios_path, "w") as f:
             f.write("0\n")
         return
 
-    if notice.recipient != "":
+    if notice.z_recipient != b"":
         is_personal = True
     # Drop messages not to the listed subscriptions
     if is_personal and not options.forward_personals:
         return
-    if (zephyr_class not in current_zephyr_subs) and not is_personal:
-        logger.debug(f"Skipping ... {zephyr_class}/{notice.instance}/{is_personal}")
+    if (zephyr_class.lower() not in current_zephyr_subs) and not is_personal:
+        logger.debug(f"Skipping ... {zephyr_class}/{zephyr_instance}/{is_personal}")
         return
-    if notice.format.startswith("Zephyr error: See") or notice.format.endswith("@(@color(blue))"):
+    if notice.z_default_format.startswith(b"Zephyr error: See") or notice.z_default_format.endswith(
+        b"@(@color(blue))"
+    ):
         logger.debug("Skipping message we got from Zulip!")
         return
     if (
-        zephyr_class == "mail"
-        and notice.instance.lower() == "inbox"
+        zephyr_class.lower() == "mail"
+        and zephyr_instance.lower() == "inbox"
         and is_personal
         and not options.forward_mail_zephyrs
     ):
@@ -455,21 +494,21 @@ def process_notice(
             huddle_recipients = [
                 to_zulip_username(x.strip()) for x in body.split("\n")[0][4:].split()
             ]
-            if notice.sender not in huddle_recipients:
-                huddle_recipients.append(to_zulip_username(notice.sender))
+            if zephyr_sender not in huddle_recipients:
+                huddle_recipients.append(to_zulip_username(zephyr_sender))
             body = body.split("\n", 1)[1]
 
     if (
         options.forward_class_messages
-        and notice.opcode is not None
-        and notice.opcode.lower() == "crypt"
+        and notice.z_opcode is not None
+        and notice.z_opcode.lower() == b"crypt"
     ):
-        body = decrypt_zephyr(zephyr_class, notice.instance.lower(), body)
+        body = decrypt_zephyr(zephyr_class.lower(), zephyr_instance.lower(), body)
 
     zeph: ZephyrDict
     zeph = {
-        "time": str(notice.time),
-        "sender": notice.sender,
+        "time": str(notice.z_time.tv_sec + notice.z_time.tv_usec / 1e6),
+        "sender": zephyr_sender,
         "zsig": zsig,  # logged here but not used by app
         "content": body,
     }
@@ -477,30 +516,30 @@ def process_notice(
         zeph["type"] = "private"
         zeph["recipient"] = huddle_recipients
     elif is_personal:
-        assert notice.recipient is not None
+        assert notice.z_recipient is not None
         zeph["type"] = "private"
-        zeph["recipient"] = to_zulip_username(notice.recipient)
+        zeph["recipient"] = to_zulip_username(notice.z_recipient.decode())
     else:
         zeph["type"] = "stream"
-        zeph["stream"] = zephyr_class
-        if notice.instance.strip() != "":
-            zeph["subject"] = notice.instance
+        zeph["stream"] = zephyr_class.lower()
+        if zephyr_instance.strip() != "":
+            zeph["subject"] = zephyr_instance
         else:
-            zeph["subject"] = f'(instance "{notice.instance}")'
+            zeph["subject"] = f'(instance "{zephyr_instance}")'
 
     # Add instances in for instanced personals
     if is_personal:
-        if notice.cls.lower() != "message" and notice.instance.lower() != "personal":
-            heading = f"[-c {notice.cls} -i {notice.instance}]\n"
-        elif notice.cls.lower() != "message":
-            heading = f"[-c {notice.cls}]\n"
-        elif notice.instance.lower() != "personal":
-            heading = f"[-i {notice.instance}]\n"
+        if zephyr_class.lower() != "message" and zephyr_instance.lower() != "personal":
+            heading = f"[-c {zephyr_class} -i {zephyr_instance}]\n"
+        elif zephyr_class.lower() != "message":
+            heading = f"[-c {zephyr_class}]\n"
+        elif zephyr_instance.lower() != "personal":
+            heading = f"[-i {zephyr_instance}]\n"
         else:
             heading = ""
         zeph["content"] = heading + zeph["content"]
 
-    logger.info(f"Received a message on {zephyr_class}/{notice.instance} from {notice.sender}...")
+    logger.info(f"Received a message on {zephyr_class}/{zephyr_instance} from {zephyr_sender}...")
     if log is not None:
         log.write(json.dumps(zeph) + "\n")
         log.flush()
@@ -530,12 +569,14 @@ def zephyr_init_autoretry() -> None:
     backoff = zulip.RandomExponentialBackoff()
     while backoff.keep_going():
         try:
-            # zephyr.init() tries to clear old subscriptions, and thus
-            # sometimes gets a SERVNAK from the server
-            zephyr.init()
+            # ZCancelSubscriptions sometimes gets a SERVNAK from the server
+            zephyr_ctypes.check(zephyr_ctypes.ZInitialize())
+            zephyr_port = c_ushort()
+            zephyr_ctypes.check(zephyr_ctypes.ZOpenPort(byref(zephyr_port)))
+            zephyr_ctypes.check(zephyr_ctypes.ZCancelSubscriptions(0))
             backoff.succeed()
             return
-        except OSError:
+        except zephyr_ctypes.ZephyrError:
             logger.exception("Error initializing Zephyr library (retrying).  Traceback:")
             backoff.fail()
 
@@ -548,11 +589,10 @@ def zephyr_load_session_autoretry(session_path: str) -> None:
         try:
             with open(session_path, "rb") as f:
                 session = f.read()
-            zephyr._z.initialize()
-            zephyr._z.load_session(session)
-            zephyr.__inited = True
+            zephyr_ctypes.check(zephyr_ctypes.ZInitialize())
+            zephyr_ctypes.check(zephyr_ctypes.ZLoadSession(session, len(session)))
             return
-        except OSError:
+        except zephyr_ctypes.ZephyrError:
             logger.exception("Error loading saved Zephyr session (retrying).  Traceback:")
             backoff.fail()
 
@@ -560,13 +600,26 @@ def zephyr_load_session_autoretry(session_path: str) -> None:
 
 
 def zephyr_subscribe_autoretry(sub: Tuple[str, str, str]) -> None:
+    cls, instance, recipient = sub
     backoff = zulip.RandomExponentialBackoff()
     while backoff.keep_going():
         try:
-            zephyr.Subscriptions().add(sub)
+            zephyr_ctypes.check(
+                zephyr_ctypes.ZSubscribeTo(
+                    (zephyr_ctypes.ZSubscription_t * 1)(
+                        zephyr_ctypes.ZSubscription_t(
+                            zsub_class=cls.encode(),
+                            zsub_classinst=instance.encode(),
+                            zsub_recipient=recipient.encode(),
+                        )
+                    ),
+                    1,
+                    0,
+                )
+            )
             backoff.succeed()
             return
-        except OSError:
+        except zephyr_ctypes.ZephyrError:
             # Probably a SERVNAK from the zephyr server, but log the
             # traceback just in case it's something else
             logger.exception("Error subscribing to personals (retrying).  Traceback:")
@@ -593,8 +646,14 @@ def zephyr_to_zulip(options: optparse.Values) -> None:
         if options.nagios_class:
             zephyr_subscribe_autoretry((options.nagios_class, "*", "*"))
         if options.use_sessions:
-            with open(options.session_path, "wb") as f:
-                f.write(zephyr._z.dump_session())
+            buf = POINTER(c_char)()
+            buf_len = c_int()
+            zephyr_ctypes.check(zephyr_ctypes.ZDumpSession(byref(buf), byref(buf_len)))
+            try:
+                with open(options.session_path, "wb") as f:
+                    f.write(buf[: buf_len.value])  # type: ignore[arg-type]  # bytes, but mypy infers List[c_char]
+            finally:
+                zephyr_ctypes.free(buf)
 
     if options.logs_to_resend is not None:
         with open(options.logs_to_resend) as log:
@@ -1184,8 +1243,8 @@ def die_gracefully(signal: int, frame: FrameType) -> None:
 
     if CURRENT_STATE == States.ZephyrToZulip and not options.use_sessions:
         try:
-            # zephyr=>zulip processes may have added subs, so run cancelSubs
-            zephyr._z.cancelSubs()
+            # zephyr=>zulip processes may have added subs, so run ZCancelSubscriptions
+            zephyr_ctypes.check(zephyr_ctypes.ZCancelSubscriptions(0))
         except OSError:
             # We don't care whether we failed to cancel subs properly, but we should log it
             logger.exception("")
@@ -1296,8 +1355,6 @@ or specify the --api-key-file option."""
     else:
         child_pid = None
     CURRENT_STATE = States.ZephyrToZulip
-
-    import zephyr
 
     logger_name = "zephyr=>zulip"
     if options.shard is not None:

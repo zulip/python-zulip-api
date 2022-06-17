@@ -6,10 +6,10 @@ import random
 import subprocess
 import sys
 import time
+from ctypes import byref, c_int, c_ushort
 from typing import Dict, List, Set, Tuple
 
-import zephyr
-
+import zephyr_ctypes
 import zulip
 
 parser = optparse.OptionParser()
@@ -136,9 +136,43 @@ for (stream, test) in test_streams:
 actually_subscribed = False
 for tries in range(10):
     try:
-        zephyr.init()
-        zephyr._z.subAll(zephyr_subs_to_add)
-        zephyr_subs = zephyr._z.getSubscriptions()
+        zephyr_ctypes.check(zephyr_ctypes.ZInitialize())
+        zephyr_port = c_ushort()
+        zephyr_ctypes.check(zephyr_ctypes.ZOpenPort(byref(zephyr_port)))
+        zephyr_ctypes.check(zephyr_ctypes.ZCancelSubscriptions(0))
+
+        zephyr_ctypes.check(
+            zephyr_ctypes.ZSubscribeTo(
+                (zephyr_ctypes.ZSubscription_t * len(zephyr_subs_to_add))(
+                    *(
+                        zephyr_ctypes.ZSubscription_t(
+                            zsub_class=cls.encode(),
+                            zsub_classinst=instance.encode(),
+                            zsub_recipient=recipient.encode(),
+                        )
+                        for cls, instance, recipient in zephyr_subs_to_add
+                    )
+                ),
+                len(zephyr_subs_to_add),
+                0,
+            )
+        )
+
+        try:
+            nsubs = c_int()
+            zephyr_ctypes.check(zephyr_ctypes.ZRetrieveSubscriptions(0, byref(nsubs)))
+            zsubs = (zephyr_ctypes.ZSubscription_t * nsubs.value)()
+            zephyr_ctypes.check(zephyr_ctypes.ZGetSubscriptions(zsubs, byref(nsubs)))
+            zephyr_subs = {
+                (
+                    zsub.zsub_class.decode(),
+                    zsub.zsub_classinst.decode(),
+                    zsub.zsub_recipient.decode(),
+                )
+                for zsub in zsubs
+            }
+        finally:
+            zephyr_ctypes.ZFlushSubscriptions()
 
         missing = 0
         for elt in zephyr_subs_to_add:
@@ -148,8 +182,8 @@ for tries in range(10):
         if missing == 0:
             actually_subscribed = True
             break
-    except OSError as e:
-        if "SERVNAK received" in e.args:
+    except zephyr_ctypes.ZephyrError as e:
+        if e.code == zephyr_ctypes.ZERR_SERVNAK:
             logger.error("SERVNAK repeatedly received, punting rest of test")
         else:
             logger.exception("Exception subscribing to zephyrs")
@@ -185,15 +219,15 @@ notices = []
 # receive queue with 30+ messages, which might result in messages
 # being dropped.
 def receive_zephyrs() -> None:
-    while True:
+    while zephyr_ctypes.ZPending() != 0:
+        notice = zephyr_ctypes.ZNotice_t()
+        sender = zephyr_ctypes.sockaddr_in()
         try:
-            notice = zephyr.receive(block=False)
-        except Exception:
+            zephyr_ctypes.check(zephyr_ctypes.ZReceiveNotice(byref(notice), byref(sender)))
+        except zephyr_ctypes.ZephyrError:
             logging.exception("Exception receiving zephyrs:")
-            notice = None
-        if notice is None:
             break
-        if notice.opcode != "":
+        if notice.z_opcode != b"":
             continue
         notices.append(notice)
 
@@ -294,7 +328,10 @@ def process_keys(content_list: List[str]) -> Tuple[Dict[str, int], Set[str], Set
 # The h_foo variables are about the messages we _received_ in Zulip
 # The z_foo variables are about the messages we _received_ in Zephyr
 h_contents = [message["content"] for message in messages]
-z_contents = [notice.message.split("\0")[1] for notice in notices]
+z_contents = [
+    notice.z_message[: notice.z_message_len].split(b"\0")[1].decode(errors="replace")
+    for notice in notices
+]
 (h_key_counts, h_missing_z, h_missing_h, h_duplicates, h_success) = process_keys(h_contents)
 (z_key_counts, z_missing_z, z_missing_h, z_duplicates, z_success) = process_keys(z_contents)
 
