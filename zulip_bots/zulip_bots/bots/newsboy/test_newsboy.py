@@ -19,8 +19,14 @@ class Testnewsbot(BotTestCase, DefaultTests):
             self.verify_reply(
                 "help",
                 """
-        This interactive bot can be used to fetch top news headline and description.
+        ## Newsboy
+        The Newsboy bot is a Zulip bot that fetches the top national news of particular country and 
+        displays it to the user with headline and short description.
+
         Use `list-commands` to get information about the supported commands.
+
+        Usage:
+        `get-top-news <country-abbreviation>` e.g. `get-top-news us`
         """,
             )
 
