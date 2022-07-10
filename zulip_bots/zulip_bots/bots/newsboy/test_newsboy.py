@@ -1,8 +1,7 @@
 import unittest
 from unittest.mock import patch
 
-from zulip_bots.bots.newsboy.newsboy import NewsboyHandler
-from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler
+from zulip_bots.test_lib import BotTestCase, DefaultTests
 
 mock_config = {"api_key": "TEST"}
 
@@ -20,7 +19,7 @@ class Testnewsbot(BotTestCase, DefaultTests):
                 "help",
                 """
         ## Newsboy
-        The Newsboy bot is a Zulip bot that fetches the top national news of particular country and 
+        The Newsboy bot is a Zulip bot that fetches the top national news of particular country and
         displays it to the user with headline and short description.
 
         Use `list-commands` to get information about the supported commands.

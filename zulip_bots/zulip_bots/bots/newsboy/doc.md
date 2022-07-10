@@ -40,5 +40,5 @@ Example:
 ![](assets/help.png)
 
  **`get-top-news <country>`**
- 
+
 ![](assets/news.png)

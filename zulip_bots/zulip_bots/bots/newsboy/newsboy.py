@@ -27,7 +27,9 @@ class NewsboyHandler:
         )
         try:
             if test_query_response.json()["status"] == "error":
-                bot_handler.quit("Invalid Credentials. Please see doc.md to find out how to get them.")
+                bot_handler.quit(
+                    "Invalid Credentials. Please see doc.md to find out how to get them."
+                )
         except AttributeError:
             pass
 
@@ -78,9 +80,7 @@ class NewsboyHandler:
                         and link is not None
                         and image is not None
                     ):
-                        return (
-                            f"## [{title}]({link})\n\n > ***{descr}*** "
-                        )
+                        return f"## [{title}]({link})\n\n > ***{descr}*** "
                 except Exception:
                     continue
         except Exception as e:
@@ -88,66 +88,67 @@ class NewsboyHandler:
 
     def get_all_supported_countries(self) -> str:
         countries = """
-            Argentina - ar 
-            Australia - au 
-            Austria - at 
-            Belgium - be 
-            Brazil - br 
-            Bulgaria - bg 
-            Canada - ca 
-            China - cn 
-            Colombia - co 
-            Cuba - cu 
-            Czech republic - cz 
-            Egypt - eg 
-            France - fr 
-            Germany - de 
-            Greece - gr 
-            Hong kong - hk 
-            Hungary - hu 
-            India - in 
-            Indonesia - id 
-            Ireland - ie 
-            Israel - il 
-            Italy - it 
-            Japan - jp 
-            Kazakhstan - kz 
-            Latvia - lv 
-            Lebanon - lb 
-            Lithuania - lt 
-            Malaysia - my 
-            Mexico - mx 
-            Morocco - ma 
-            Netherland - nl 
-            New zealand - nz 
-            Nigeria - ng 
-            North korea - kp 
-            Norway - no 
-            Pakistan - pk 
-            Peru - pe 
-            Philippines - ph 
-            Poland - pl 
-            Portugal - pt 
-            Romania - ro 
-            Russia - ru 
-            Saudi arabia - sa 
-            Serbia - rs 
-            Singapore - sg 
-            Slovakia - sk 
-            Slovenia - si 
-            South africa - za 
-            South korea - kr 
-            Spain - es 
-            Sweden - se 
-            Switzerland - ch 
-            Taiwan - tw 
-            Thailand - th 
-            Turkey - tr 
-            Ukraine - ua 
-            United arab emirates - ae 
-            United kingdom - gb 
-            United states of america - us 
-            Venezuela - ve"""
+            Argentina - ar \n
+            Australia - au \n
+            Austria - at \n
+            Belgium - be \n
+            Brazil - br \n
+            Bulgaria - bg \n
+            Canada - ca \n
+            China - cn \n
+            Colombia - co \n
+            Cuba - cu \n
+            Czech republic - cz \n
+            Egypt - eg \n
+            France - fr \n
+            Germany - de \n
+            Greece - gr \n
+            Hong kong - hk \n
+            Hungary - hu \n
+            India - in \n
+            Indonesia - id \n
+            Ireland - ie \n
+            Israel - il \n
+            Italy - it \n
+            Japan - jp \n
+            Kazakhstan - kz \n
+            Latvia - lv \n
+            Lebanon - lb \n
+            Lithuania - lt \n
+            Malaysia - my \n
+            Mexico - mx \n
+            Morocco - ma \n
+            Netherland - nl \n
+            New zealand - nz \n
+            Nigeria - ng \n
+            North korea - kp \n
+            Norway - no \n
+            Pakistan - pk \n
+            Peru - pe \n
+            Philippines - ph \n
+            Poland - pl \n
+            Portugal - pt \n
+            Romania - ro \n
+            Russia - ru \n
+            Saudi arabia - sa \n
+            Serbia - rs \n
+            Singapore - sg \n
+            Slovakia - sk \n
+            Slovenia - si \n
+            South africa - za \n
+            South korea - kr \n
+            Spain - es \n
+            Sweden - se \n
+            Switzerland - ch \n
+            Taiwan - tw \n
+            Thailand - th \n
+            Turkey - tr \n
+            Ukraine - ua \n
+            United arab emirates - ae \n
+            United kingdom - gb \n
+            United states of america - us \n
+            Venezuela - ve \n
+            """
         return countries
 
     def get_all_supported_commands(self) -> str:
@@ -158,9 +159,9 @@ class NewsboyHandler:
         return bot_response
 
     def usage(self) -> str:
-        help_content =  """
+        help_content = """
         ## Newsboy
-        The Newsboy bot is a Zulip bot that fetches the top national news of particular country and 
+        The Newsboy bot is a Zulip bot that fetches the top national news of particular country and
         displays it to the user with headline and short description.
 
         Use `list-commands` to get information about the supported commands.
