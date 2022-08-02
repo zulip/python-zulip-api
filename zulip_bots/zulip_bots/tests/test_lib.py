@@ -37,6 +37,11 @@ class FakeClient:
             storage=self.storage,
         )
 
+    def remove_storage(self, payload):
+        for item in payload["keys"]:
+            self.storage.pop(item)
+        return dict(result="success")
+
     def send_message(self, message):
         return dict(
             result="success",
