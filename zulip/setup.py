@@ -65,6 +65,7 @@ setup(
     },
     install_requires=[
         "requests[security]>=0.12.1",
+        "matrix_client",
         "distro",
         "click",
         "typing_extensions>=3.7",
