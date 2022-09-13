@@ -18,7 +18,7 @@ api_key_path = f"/home/zulip/api-keys/{program_name}"
 open(api_key_path, "w").write(api_key + "\n")
 
 # Setup supervisord configuration
-supervisor_path = f"/etc/supervisor/conf.d/zulip/{program_name}.conf"
+supervisor_path = f"/etc/supervisor/conf.d/zmirror/{program_name}.conf"
 template = os.path.join(os.path.dirname(__file__), "zmirror_private.conf.template")
 template_data = open(template).read()
 session_path = f"/home/zulip/zephyr_sessions/{program_name}"
