@@ -14,9 +14,6 @@ from concurrent.futures import ThreadPoolExecutor
 from io import BytesIO
 from typing import Any, Dict, List, Match, Optional, Set, Tuple, Type, Union
 
-if os.name != "nt":
-    import magic
-    import magic.compat
 import nio
 from nio.responses import (
     DownloadError,
@@ -352,17 +349,15 @@ class ZulipToMatrix:
             if result["result"] != "success":
                 success = False
                 continue
+
             try:
-                file_content: bytes = urllib.request.urlopen(self.server_url + result["url"]).read()
+                with urllib.request.urlopen(self.server_url + result["url"]) as response:
+                    file_content: bytes = response.read()
+                    mimetype: str = response.headers.get_content_type()
             except Exception:
                 success = False
                 continue
 
-            mimetype: str
-            if os.name == "nt":
-                mimetype = "m.file"
-            else:
-                mimetype = magic.from_buffer(file_content, mime=True)
             filename: str = file.split("/")[-1]
 
             response, _ = await self.matrix_client.upload(
