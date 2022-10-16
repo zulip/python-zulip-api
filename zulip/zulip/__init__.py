@@ -1040,20 +1040,24 @@ class Client:
             method="GET",
         )
 
-    def add_realm_filter(self, pattern: str, url_format_string: str) -> Dict[str, Any]:
+    def add_realm_filter(self, pattern: str, url_template: str) -> Dict[str, Any]:
         """
         Example usage:
 
-        >>> client.add_realm_filter('#(?P<id>[0-9]+)', 'https://github.com/zulip/zulip/issues/%(id)s')
+        >>> client.add_realm_filter('#(?P<id>[0-9]+)', 'https://github.com/zulip/zulip/issues/{id}')
         {'result': 'success', 'msg': '', 'id': 42}
         """
+        data = {"pattern": pattern}
+        if self.feature_level >= 176:
+            # Starting from feature level 176, we use RFC 6570 compliant URL
+            # templates instead.
+            data["url_template"] = url_template
+        else:
+            data["url_format_string"] = url_template
         return self.call_endpoint(
             url="realm/filters",
             method="POST",
-            request={
-                "pattern": pattern,
-                "url_format_string": url_format_string,
-            },
+            request=data,
         )
 
     def remove_realm_filter(self, filter_id: int) -> Dict[str, Any]:
@@ -1809,7 +1813,7 @@ if LEGACY_CLIENT_INTERFACE_FROM_SERVER_DOCS_VERSION == "3":
             Example usage:
 
             >>> client.get_realm_filters()
-            {'result': 'success', 'msg': '', 'filters': [['#(?P<id>[0-9]+)', 'https://github.com/zulip/zulip/issues/%(id)s', 1]]}
+            {'result': 'success', 'msg': '', 'filters': [['#(?P<id>[0-9]+)', 'https://github.com/zulip/zulip/issues/{id}', 1]]}
             """
             # This interface was removed in 4d482e0ef30297f716885fd8246f4638a856ba3b
             return self.call_endpoint(
