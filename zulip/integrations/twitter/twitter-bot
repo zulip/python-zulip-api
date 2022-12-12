@@ -109,9 +109,16 @@ if opts.search_terms:
     CONFIGFILE_INTERNAL = os.path.expanduser("~/.zulip_twitterrc_fetchsearch")
 elif opts.twitter_name:
     client_type = "ZulipTwitter/"
-    CONFIGFILE_INTERNAL = os.path.expanduser("~/.zulip_twitteruserrc_fetchuser")
+    for name in opts.twitter_name:
+        if name not in opts.excluded_users:
+            config_search_multiple_users += name.replace('@', '')
+        else:
+            print("Excluded users appears in the users list.")           
+    CONFIGFILE_INTERNAL = os.path.expanduser("~/.zulip_twitteruserrc_fetchuser_" 
+                                                + config_search_multiple_users)
 else:
-    parser.error("You must either specify a search term or a username.")
+    parser.print_help()
+    parser.error("You must either specify a search term or a list of usernames.")
 
 try:
     config = ConfigParser()
