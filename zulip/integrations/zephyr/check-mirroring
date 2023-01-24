@@ -228,6 +228,7 @@ def receive_zephyrs() -> None:
             logging.exception("Exception receiving zephyrs:")
             break
         if notice.z_opcode != b"":
+            zephyr_ctypes.ZFreeNotice(byref(notice))
             continue
         notices.append(notice)
 
@@ -334,6 +335,9 @@ z_contents = [
 ]
 (h_key_counts, h_missing_z, h_missing_h, h_duplicates, h_success) = process_keys(h_contents)
 (z_key_counts, z_missing_z, z_missing_h, z_duplicates, z_success) = process_keys(z_contents)
+
+for notice in notices:
+    zephyr_ctypes.ZFreeNotice(byref(notice))
 
 if z_success and h_success:
     logger.info("Success!")

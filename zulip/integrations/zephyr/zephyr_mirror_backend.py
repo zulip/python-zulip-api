@@ -321,13 +321,15 @@ def process_loop(zulip_queue: "Queue[ZephyrDict]", log: Optional[IO[str]]) -> No
                 notice = zephyr_ctypes.ZNotice_t()
                 sender = zephyr_ctypes.sockaddr_in()
                 zephyr_ctypes.check(zephyr_ctypes.ZReceiveNotice(byref(notice), byref(sender)))
-                recieve_backoff.succeed()
                 try:
+                    recieve_backoff.succeed()
                     process_notice(notice, zulip_queue, log)
                     process_backoff.succeed()
                 except zephyr_ctypes.ZephyrError:
                     logger.exception("Error relaying zephyr:")
                     process_backoff.fail()
+                finally:
+                    zephyr_ctypes.ZFreeNotice(byref(notice))
         except zephyr_ctypes.ZephyrError:
             logger.exception("Error checking for new zephyrs:")
             recieve_backoff.fail()
