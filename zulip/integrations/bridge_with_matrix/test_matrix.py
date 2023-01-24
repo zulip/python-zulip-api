@@ -41,7 +41,7 @@ topic = matrix
 ZULIP_MESSAGE_TEMPLATE: str = "**{username}** [{uid}]: {message}"
 
 
-# For Python 3.6 compatibility.
+# For Python 3.7 compatibility.
 # (Since 3.8, there is unittest.IsolatedAsyncioTestCase!)
 # source: https://stackoverflow.com/a/46324983
 def async_test(coro: Callable[..., Awaitable[Any]]) -> Callable[..., Any]:

@@ -17,33 +17,24 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Base images are built using `tools/ci/Dockerfile.prod.template`.
-          # The comments at the top explain how to build and upload these images.
-          # Bionic ships with Python 3.6.
-          - docker_image: zulip/ci:bionic
-            name: Ubuntu 18.04 Bionic (Python 3.6, backend)
-            os: bionic
-            is_bionic: true
-            include_frontend_tests: false
-            # Configure this test to run with the Zulip 3.2 release.
-            legacy_client_interface: 3
-            server_version: refs/tags/3.2
-          # Focal ships with Python 3.8.2.
+          # Focal ships with Python 3.8.10.
           - docker_image: zulip/ci:focal
-            name: Ubuntu 20.04 Focal (Python 3.8, backend)
+            name: Ubuntu 20.04 (Python 3.8, backend)
             os: focal
-            is_focal: true
-            include_frontend_tests: false
-            legacy_client_interface: 4
-            server_version: refs/tags/4.0
+            legacy_client_interface: "3"
+            server_version: refs/tags/3.2
           # Bullseye ships with Python 3.9.2.
           - docker_image: zulip/ci:bullseye
-            name: Debian 11 Bullseye (Python 3.9, backend)
+            name: Debian 11 (Python 3.9, backend)
             os: bullseye
-            is_bullseye: true
-            include_frontend_tests: false
-            legacy_client_interface: 4
+            legacy_client_interface: "4"
             server_version: refs/tags/4.0
+          # Ubuntu 22.04 ships with Python 3.10.6.
+          - docker_image: zulip/ci:jammy
+            name: Ubuntu 22.04 (Python 3.10, backend)
+            os: jammy
+            legacy_client_interface: "6"
+            server_version: refs/tags/6.0
 
     runs-on: ubuntu-latest
     name: ${{ matrix.name }} (Zulip ${{matrix.server_version}})
@@ -58,24 +49,17 @@ jobs:
       HOME: /home/github/
 
     steps:
-      - name: 'Checkout python-zulip-api'
+      - name: "Check out python-zulip-api"
         uses: actions/checkout@v2
         with:
           path: api
 
-      - name: 'Checkout Zulip server ${{ matrix.server_version }}'
+      - name: "Check out Zulip server ${{ matrix.server_version }}"
         uses: actions/checkout@v2
         with:
           repository: zulip/zulip
           ref: ${{ matrix.server_version }}
           path: server
-
-      - name: Do Bionic hack
-        if: ${{ matrix.is_bionic }}
-        run: |
-          # Temporary hack till `sudo service redis-server start` gets fixes in Bionic. See
-          # https://chat.zulip.org/#narrow/stream/3-backend/topic/Ubuntu.20bionic.20CircleCI
-          sudo sed -i '/^bind/s/bind.*/bind 0.0.0.0/' /etc/redis/redis.conf
 
       - name: Install dependencies
         run: |
