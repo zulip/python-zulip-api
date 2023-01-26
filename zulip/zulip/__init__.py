@@ -1652,6 +1652,22 @@ class Client:
             request=request,
         )
 
+    def remove_storage(self, request: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Example usage:
+
+        >>> client.remove_storage({'keys': ["entry 1", "entry 3"]})
+        >>> client.get_storage({'keys': ["entry 1", "entry 3"]})
+
+            raise KeyError("Key not found" + key)
+            KeyError: 'Key not found'
+        """
+        return self.call_endpoint(
+            url="bot_storage",
+            method="DELETE",
+            request=request,
+        )
+
     def set_typing_status(self, request: Dict[str, Any]) -> Dict[str, Any]:
         """
         Example usage:
