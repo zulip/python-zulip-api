@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import requests
 from requests.exceptions import ConnectionError
 
-from zulip_bots.lib import BotHandler
+from zulip_bots.lib import AbstractBotHandler
 
 USERS_LIST_URL = "https://api.flock.co/v1/roster.listContacts"
 SEND_MESSAGE_URL = "https://api.flock.co/v1/chat.sendMessage"
@@ -96,14 +96,14 @@ class FlockHandler:
     flock user without having to leave Zulip.
     """
 
-    def initialize(self, bot_handler: BotHandler) -> None:
+    def initialize(self, bot_handler: AbstractBotHandler) -> None:
         self.config_info = bot_handler.get_config_info("flock")
 
     def usage(self) -> str:
         return """Hello from Flock Bot. You can send messages to any Flock user
 right from Zulip."""
 
-    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: AbstractBotHandler) -> None:
         response = get_flock_bot_response(message["content"], self.config_info)
         bot_handler.send_reply(message, response)
 

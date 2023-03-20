@@ -2,7 +2,7 @@ from typing import Dict
 
 import tweepy
 
-from zulip_bots.lib import BotHandler
+from zulip_bots.lib import AbstractBotHandler
 
 
 class TwitpostBot:
@@ -21,7 +21,7 @@ class TwitpostBot:
         " * @twitpost tweet hey batman\n"
     )
 
-    def initialize(self, bot_handler: BotHandler) -> None:
+    def initialize(self, bot_handler: AbstractBotHandler) -> None:
         self.config_info = bot_handler.get_config_info("twitter")
         auth = tweepy.OAuthHandler(
             self.config_info["consumer_key"], self.config_info["consumer_secret"]
@@ -31,7 +31,7 @@ class TwitpostBot:
         )
         self.api = tweepy.API(auth, parser=tweepy.parsers.JSONParser())
 
-    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: AbstractBotHandler) -> None:
         content = message["content"]
 
         if content.strip() == "":

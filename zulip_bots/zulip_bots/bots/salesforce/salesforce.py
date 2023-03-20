@@ -7,7 +7,7 @@ from typing import Any, Dict, List
 import simple_salesforce
 
 from zulip_bots.bots.salesforce.utils import commands, default_query, link_query, object_types
-from zulip_bots.lib import BotHandler
+from zulip_bots.lib import AbstractBotHandler
 
 base_help_text = """Salesforce bot
 This bot can do simple salesforce query requests
@@ -161,7 +161,7 @@ class SalesforceHandler:
                         return "Usage: {} [arguments]".format(command["template"])
         return get_help_text()
 
-    def initialize(self, bot_handler: BotHandler) -> None:
+    def initialize(self, bot_handler: AbstractBotHandler) -> None:
         self.config_info = bot_handler.get_config_info("salesforce")
         try:
             self.sf = simple_salesforce.Salesforce(
@@ -172,7 +172,7 @@ class SalesforceHandler:
         except simple_salesforce.exceptions.SalesforceAuthenticationFailed as err:
             bot_handler.quit(f"Failed to log in to Salesforce. {err.code} {err.message}")
 
-    def handle_message(self, message: Dict[str, Any], bot_handler: BotHandler) -> None:
+    def handle_message(self, message: Dict[str, Any], bot_handler: AbstractBotHandler) -> None:
         try:
             bot_response = self.get_salesforce_response(message["content"])
             bot_handler.send_reply(message, bot_response)

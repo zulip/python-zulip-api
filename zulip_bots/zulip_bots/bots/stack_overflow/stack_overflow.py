@@ -3,7 +3,7 @@ from typing import Dict, Optional
 
 import requests
 
-from zulip_bots.lib import BotHandler
+from zulip_bots.lib import AbstractBotHandler
 
 # See readme.md for instructions on running this code.
 
@@ -31,12 +31,12 @@ class StackOverflowHandler:
             should preface query with "@mention-bot".
             @mention-bot <search query>"""
 
-    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: AbstractBotHandler) -> None:
         bot_response = self.get_bot_stackoverflow_response(message, bot_handler)
         bot_handler.send_reply(message, bot_response)
 
     def get_bot_stackoverflow_response(
-        self, message: Dict[str, str], bot_handler: BotHandler
+        self, message: Dict[str, str], bot_handler: AbstractBotHandler
     ) -> Optional[str]:
         """This function returns the URLs of the requested topic."""
 

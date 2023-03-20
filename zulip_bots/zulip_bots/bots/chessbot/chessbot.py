@@ -5,7 +5,7 @@ from typing import Dict, Optional
 import chess
 import chess.engine
 
-from zulip_bots.lib import BotHandler
+from zulip_bots.lib import AbstractBotHandler
 
 START_REGEX = re.compile("start with other user$")
 START_COMPUTER_REGEX = re.compile("start as (?P<user_color>white|black) with computer")
@@ -24,7 +24,7 @@ class ChessHandler:
             "Stockfish program on this computer."
         )
 
-    def initialize(self, bot_handler: BotHandler) -> None:
+    def initialize(self, bot_handler: AbstractBotHandler) -> None:
         self.config_info = bot_handler.get_config_info("chess")
 
         try:
@@ -36,7 +36,7 @@ class ChessHandler:
             # runner is testing or knows they won't be using an engine.
             print("That Stockfish doesn't exist. Continuing.")
 
-    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: AbstractBotHandler) -> None:
         content = message["content"]
 
         if content == "":
@@ -77,7 +77,7 @@ class ChessHandler:
         elif resign_regex_match:
             self.resign(message, bot_handler, last_fen)
 
-    def start(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
+    def start(self, message: Dict[str, str], bot_handler: AbstractBotHandler) -> None:
         """Starts a game with another user, with the current user as white.
         Replies to the bot handler.
 
@@ -94,7 +94,7 @@ class ChessHandler:
         bot_handler.storage.put("last_fen", new_board.fen())
 
     def start_computer(
-        self, message: Dict[str, str], bot_handler: BotHandler, is_white_user: bool
+        self, message: Dict[str, str], bot_handler: AbstractBotHandler, is_white_user: bool
     ) -> None:
         """Starts a game with the computer. Replies to the bot handler.
 
@@ -124,7 +124,7 @@ class ChessHandler:
             )
 
     def validate_board(
-        self, message: Dict[str, str], bot_handler: BotHandler, fen: str
+        self, message: Dict[str, str], bot_handler: AbstractBotHandler, fen: str
     ) -> Optional[chess.Board]:
         """Validates a board based on its FEN string. Replies to the bot
         handler if there is an error with the board.
@@ -148,7 +148,7 @@ class ChessHandler:
     def validate_move(
         self,
         message: Dict[str, str],
-        bot_handler: BotHandler,
+        bot_handler: AbstractBotHandler,
         last_board: chess.Board,
         move_san: str,
         is_computer: object,
@@ -181,7 +181,7 @@ class ChessHandler:
         return move
 
     def check_game_over(
-        self, message: Dict[str, str], bot_handler: BotHandler, new_board: chess.Board
+        self, message: Dict[str, str], bot_handler: AbstractBotHandler, new_board: chess.Board
     ) -> bool:
         """Checks if a game is over due to
          - checkmate,
@@ -225,7 +225,7 @@ class ChessHandler:
         return False
 
     def move(
-        self, message: Dict[str, str], bot_handler: BotHandler, last_fen: str, move_san: str
+        self, message: Dict[str, str], bot_handler: AbstractBotHandler, last_fen: str, move_san: str
     ) -> None:
         """Makes a move for a user in a game with another user. Replies to
         the bot handler.
@@ -257,7 +257,7 @@ class ChessHandler:
         bot_handler.storage.put("last_fen", new_board.fen())
 
     def move_computer(
-        self, message: Dict[str, str], bot_handler: BotHandler, last_fen: str, move_san: str
+        self, message: Dict[str, str], bot_handler: AbstractBotHandler, last_fen: str, move_san: str
     ) -> None:
         """Preforms a move for a user in a game with the computer and then
         makes the computer's move. Replies to the bot handler. Unlike `move`,
@@ -307,7 +307,7 @@ class ChessHandler:
         bot_handler.storage.put("last_fen", new_board_after_computer_move.fen())
 
     def move_computer_first(
-        self, message: Dict[str, str], bot_handler: BotHandler, last_fen: str
+        self, message: Dict[str, str], bot_handler: AbstractBotHandler, last_fen: str
     ) -> None:
         """Preforms a move for the computer without having the user go first in
         a game with the computer. Replies to the bot handler. Like
@@ -346,7 +346,7 @@ class ChessHandler:
         # `bot_handler`'s `storage` only accepts `str` values.
         bot_handler.storage.put("is_with_computer", str(True))
 
-    def resign(self, message: Dict[str, str], bot_handler: BotHandler, last_fen: str) -> None:
+    def resign(self, message: Dict[str, str], bot_handler: AbstractBotHandler, last_fen: str) -> None:
         """Resigns the game for the current player.
 
         Parameters:

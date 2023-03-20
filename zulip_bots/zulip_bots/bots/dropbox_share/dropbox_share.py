@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Tuple
 
 from dropbox import Dropbox
 
-from zulip_bots.lib import BotHandler
+from zulip_bots.lib import AbstractBotHandler
 
 URL = "[{name}](https://www.dropbox.com/home{path})"
 
@@ -14,7 +14,7 @@ class DropboxHandler:
     between zulip and your dropbox account.
     """
 
-    def initialize(self, bot_handler: BotHandler) -> None:
+    def initialize(self, bot_handler: AbstractBotHandler) -> None:
         self.config_info = bot_handler.get_config_info("dropbox_share")
         self.ACCESS_TOKEN = self.config_info.get("access_token")
         self.client = Dropbox(self.ACCESS_TOKEN)
@@ -22,7 +22,7 @@ class DropboxHandler:
     def usage(self) -> str:
         return get_help()
 
-    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: AbstractBotHandler) -> None:
         command = message["content"]
         if command == "":
             command = "help"

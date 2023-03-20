@@ -5,7 +5,7 @@ from math import floor, log10
 from typing import Any, Dict, List
 
 from zulip_bots.bots.converter import utils
-from zulip_bots.lib import BotHandler
+from zulip_bots.lib import AbstractBotHandler
 
 
 def is_float(value: Any) -> bool:
@@ -48,12 +48,12 @@ class ConverterHandler:
                all supported units.
                """
 
-    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: AbstractBotHandler) -> None:
         bot_response = get_bot_converter_response(message, bot_handler)
         bot_handler.send_reply(message, bot_response)
 
 
-def get_bot_converter_response(message: Dict[str, str], bot_handler: BotHandler) -> str:
+def get_bot_converter_response(message: Dict[str, str], bot_handler: AbstractBotHandler) -> str:
     content = message["content"]
 
     words = content.lower().split()

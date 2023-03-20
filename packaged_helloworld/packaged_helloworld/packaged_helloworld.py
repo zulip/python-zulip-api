@@ -3,7 +3,7 @@ from typing import Any, Dict
 
 import packaged_helloworld
 
-from zulip_bots.lib import BotHandler
+from zulip_bots.lib import AbstractBotHandler
 
 __version__ = packaged_helloworld.__version__
 
@@ -18,7 +18,7 @@ class HelloWorldHandler:
         sophisticated, bots that can be installed separately.
         """
 
-    def handle_message(self, message: Dict[str, Any], bot_handler: BotHandler) -> None:
+    def handle_message(self, message: Dict[str, Any], bot_handler: AbstractBotHandler) -> None:
         content = "beep boop"  # type: str
         bot_handler.send_reply(message, content)
 

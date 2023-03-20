@@ -4,7 +4,7 @@ from typing import Any, Dict, Optional
 
 import requests
 
-from zulip_bots.lib import BotHandler
+from zulip_bots.lib import AbstractBotHandler
 
 GET_REGEX = re.compile('get "(?P<issue_key>.+)"$')
 CREATE_REGEX = re.compile(
@@ -153,7 +153,7 @@ class JiraHandler:
         Jira Bot, `jira.conf` must be set up. See `doc.md` for more details.
         """
 
-    def initialize(self, bot_handler: BotHandler) -> None:
+    def initialize(self, bot_handler: AbstractBotHandler) -> None:
         config = bot_handler.get_config_info("jira")
 
         username = config.get("username")
@@ -205,7 +205,7 @@ class JiraHandler:
 
         return response
 
-    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: AbstractBotHandler) -> None:
         content = message.get("content")
         response = ""
 

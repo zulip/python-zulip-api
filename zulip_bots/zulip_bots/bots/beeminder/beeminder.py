@@ -4,7 +4,7 @@ from typing import Dict
 import requests
 from requests.exceptions import ConnectionError
 
-from zulip_bots.lib import BotHandler
+from zulip_bots.lib import AbstractBotHandler
 
 help_message = """
 You can add datapoints towards your beeminder goals \
@@ -86,7 +86,7 @@ class BeeminderHandler:
     towards their beeminder goals via zulip
     """
 
-    def initialize(self, bot_handler: BotHandler) -> None:
+    def initialize(self, bot_handler: AbstractBotHandler) -> None:
         self.config_info = bot_handler.get_config_info("beeminder")
         # Check for valid auth_token
         auth_token = self.config_info["auth_token"]
@@ -102,7 +102,7 @@ class BeeminderHandler:
     def usage(self) -> str:
         return "This plugin allows users to add datapoints towards their Beeminder goals"
 
-    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: AbstractBotHandler) -> None:
         response = get_beeminder_response(message["content"], self.config_info)
         bot_handler.send_reply(message, response)
 

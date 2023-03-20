@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from typing import Dict
 
-from zulip_bots.lib import BotHandler
+from zulip_bots.lib import AbstractBotHandler
 
 
 class FileUploaderHandler:
@@ -13,7 +13,7 @@ class FileUploaderHandler:
             "\n- @uploader help : Display help message"
         )
 
-    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: AbstractBotHandler) -> None:
         HELP_STR = (
             "Use this bot with any of the following commands:"
             "\n* `@uploader <local_file_path>` : Upload a file, where `<local_file_path>` is the path to the file"
