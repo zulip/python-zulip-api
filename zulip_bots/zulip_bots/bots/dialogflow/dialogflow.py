@@ -5,7 +5,7 @@ from typing import Dict
 
 import apiai
 
-from zulip_bots.lib import BotHandler
+from zulip_bots.lib import AbstractBotHandler
 
 help_message = """DialogFlow bot
 This bot will interact with dialogflow bots.
@@ -45,7 +45,7 @@ class DialogFlowHandler:
     DialogFlow bots to zulip
     """
 
-    def initialize(self, bot_handler: BotHandler) -> None:
+    def initialize(self, bot_handler: AbstractBotHandler) -> None:
         self.config_info = bot_handler.get_config_info("dialogflow")
 
     def usage(self) -> str:
@@ -54,7 +54,7 @@ class DialogFlowHandler:
             DialogFlow bots to zulip
             """
 
-    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: AbstractBotHandler) -> None:
         result = get_bot_result(message["content"], self.config_info, message["sender_id"])
         bot_handler.send_reply(message, result)
 

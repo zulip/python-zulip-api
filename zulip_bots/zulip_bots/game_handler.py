@@ -5,7 +5,7 @@ import re
 from copy import deepcopy
 from typing import Any, Dict, List, Tuple
 
-from zulip_bots.lib import BotHandler
+from zulip_bots.lib import AbstractBotHandler
 
 
 class BadMoveException(Exception):
@@ -206,13 +206,13 @@ class GameAdapter:
         """
         )
 
-    def initialize(self, bot_handler: BotHandler) -> None:
+    def initialize(self, bot_handler: AbstractBotHandler) -> None:
         self.bot_handler = bot_handler
         self.get_user_cache()
         self.email = self.bot_handler.email
         self.full_name = self.bot_handler.full_name
 
-    def handle_message(self, message: Dict[str, Any], bot_handler: BotHandler) -> None:
+    def handle_message(self, message: Dict[str, Any], bot_handler: AbstractBotHandler) -> None:
         try:
             self.bot_handler = bot_handler
             content = message["content"].strip()

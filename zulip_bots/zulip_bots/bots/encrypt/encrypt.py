@@ -1,6 +1,6 @@
 from typing import Dict
 
-from zulip_bots.lib import BotHandler
+from zulip_bots.lib import AbstractBotHandler
 
 
 def encrypt(text: str) -> str:
@@ -34,7 +34,7 @@ class EncryptHandler:
             Feeding encrypted messages into the bot decrypts them.
             """
 
-    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: AbstractBotHandler) -> None:
         bot_response = self.get_bot_encrypt_response(message)
         bot_handler.send_reply(message, bot_response)
 

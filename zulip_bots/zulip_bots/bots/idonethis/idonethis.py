@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional
 
 import requests
 
-from zulip_bots.lib import BotHandler
+from zulip_bots.lib import AbstractBotHandler
 
 API_BASE_URL = "https://beta.idonethis.com/api/v2"
 
@@ -155,7 +155,7 @@ More information in my help"""
 
 
 class IDoneThisHandler:
-    def initialize(self, bot_handler: BotHandler) -> None:
+    def initialize(self, bot_handler: AbstractBotHandler) -> None:
         global api_key, default_team
         self.config_info = bot_handler.get_config_info("idonethis")
         if "api_key" in self.config_info:
@@ -215,7 +215,7 @@ Below are some of the commands you can use, and what they do.
             + default_team_message
         )
 
-    def handle_message(self, message: Dict[str, Any], bot_handler: BotHandler) -> None:
+    def handle_message(self, message: Dict[str, Any], bot_handler: AbstractBotHandler) -> None:
         bot_handler.send_reply(message, self.get_response(message))
 
     def get_response(self, message: Dict[str, Any]) -> str:

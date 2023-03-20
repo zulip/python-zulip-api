@@ -9,7 +9,7 @@ from typing import Any, Dict
 from unittest import mock
 
 from zulip_bots.finder import metadata
-from zulip_bots.lib import BotHandler
+from zulip_bots.lib import AbstractBotHandler
 from zulip_botserver import server
 from zulip_botserver.input_parameters import parse_args
 
@@ -18,7 +18,7 @@ from .server_test_lib import BotServerTestCase
 
 class BotServerTests(BotServerTestCase):
     class MockMessageHandler:
-        def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
+        def handle_message(self, message: Dict[str, str], bot_handler: AbstractBotHandler) -> None:
             assert message == {"key": "test message"}
 
     class MockLibModule:

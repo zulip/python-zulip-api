@@ -3,7 +3,7 @@ from typing import Any, Dict
 
 import requests
 
-from zulip_bots.lib import BotHandler
+from zulip_bots.lib import AbstractBotHandler
 
 
 class LinkShortenerHandler:
@@ -18,11 +18,11 @@ class LinkShortenerHandler:
             "`key` must be set in `link_shortener.conf`."
         )
 
-    def initialize(self, bot_handler: BotHandler) -> None:
+    def initialize(self, bot_handler: AbstractBotHandler) -> None:
         self.config_info = bot_handler.get_config_info("link_shortener")
         self.check_api_key(bot_handler)
 
-    def check_api_key(self, bot_handler: BotHandler) -> None:
+    def check_api_key(self, bot_handler: AbstractBotHandler) -> None:
         test_request_data = self.call_link_shorten_service("www.youtube.com/watch")  # type: Any
         try:
             if self.is_invalid_token_error(test_request_data):
@@ -38,7 +38,7 @@ class LinkShortenerHandler:
             and response_json["status_txt"] == "INVALID_ARG_ACCESS_TOKEN"
         )
 
-    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: AbstractBotHandler) -> None:
         REGEX_STR = (
             r"("
             r"(?:http|https):\/\/"  # This allows for the HTTP or HTTPS

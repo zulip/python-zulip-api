@@ -2,7 +2,7 @@
 
 from typing import Any, Dict
 
-from zulip_bots.lib import BotHandler
+from zulip_bots.lib import AbstractBotHandler
 
 
 class HelloWorldHandler:
@@ -15,7 +15,7 @@ class HelloWorldHandler:
         sophisticated, bots.
         """
 
-    def handle_message(self, message: Dict[str, Any], bot_handler: BotHandler) -> None:
+    def handle_message(self, message: Dict[str, Any], bot_handler: AbstractBotHandler) -> None:
         content = "beep boop"  # type: str
         bot_handler.send_reply(message, content)
 
