@@ -43,7 +43,7 @@ if options.forward_class_messages and not options.noshard:
         process = await asyncio.create_subprocess_exec(*args, f"--shard={shard}")
         return await process.wait()
 
-    async def run_shards():
+    async def run_shards() -> None:
         for coro in asyncio.as_completed(map(run_shard, shards)):
             await coro
             print("A mirroring shard died!")
