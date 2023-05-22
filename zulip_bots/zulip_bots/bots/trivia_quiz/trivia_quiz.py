@@ -92,7 +92,6 @@ def get_trivia_quiz() -> Dict[str, Any]:
 
 
 def get_trivia_payload() -> Dict[str, Any]:
-
     url = "https://opentdb.com/api.php?amount=1&type=multiple"
 
     try:

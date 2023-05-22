@@ -7,7 +7,6 @@ class TestDefineBot(BotTestCase, DefaultTests):
     bot_name = "define"
 
     def test_bot(self) -> None:
-
         # Only one type(noun) of word.
         bot_response = (
             "**cat**:\n\n* (**noun**) a small domesticated carnivorous mammal "

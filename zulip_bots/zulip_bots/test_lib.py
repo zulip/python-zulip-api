@@ -145,7 +145,7 @@ class BotTestCase(unittest.TestCase):
         # Start a new message handler for the full conversation.
         bot, bot_handler = self._get_handlers()
 
-        for (request, expected_response) in conversation:
+        for request, expected_response in conversation:
             message = self.make_request_message(request)
             bot_handler.reset_transcript()
             bot.handle_message(message, bot_handler)

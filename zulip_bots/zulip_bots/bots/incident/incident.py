@@ -82,7 +82,7 @@ def parse_answer(query: str) -> Tuple[str, str]:
 def generate_ticket_id(storage: Any) -> str:
     try:
         incident_num = storage.get("ticket_id")
-    except (KeyError):
+    except KeyError:
         incident_num = 0
     incident_num += 1
     incident_num = incident_num % (1000)

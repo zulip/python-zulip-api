@@ -14,6 +14,7 @@ ZULIP_IGNORE_MISSING_STREAM = False
 # P4_WEB = "https://p4web.example.com"
 P4_WEB: Optional[str] = None
 
+
 # commit_notice_destination() lets you customize where commit notices
 # are sent to with the full power of a Python function.
 #

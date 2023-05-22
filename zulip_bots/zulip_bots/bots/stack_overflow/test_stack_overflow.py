@@ -6,7 +6,6 @@ class TestStackoverflowBot(BotTestCase, DefaultTests):
     bot_name = "stack_overflow"
 
     def test_bot(self) -> None:
-
         # Single-word query
         bot_request = "restful"
         bot_response = """For search term:restful

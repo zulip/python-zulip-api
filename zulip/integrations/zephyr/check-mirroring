@@ -61,7 +61,7 @@ if options.sharded:
         ("tabbott-nagios-test-11", "e"),
         ("tabbott-nagios-test-9", "f"),
     ]
-    for (stream, test) in test_streams:
+    for stream, test in test_streams:
         if stream == "message":
             continue
         assert hashlib.sha1(stream.encode("utf-8")).hexdigest().startswith(test)
@@ -73,7 +73,6 @@ else:
 
 
 def print_status_and_exit(status: int) -> None:
-
     # The output of this script is used by Nagios. Various outputs,
     # e.g. true success and punting due to a SERVNAK, result in a
     # non-alert case, so to give us something unambiguous to check in
@@ -127,7 +126,7 @@ except Exception:
 
 # Subscribe to Zephyrs
 zephyr_subs_to_add = []
-for (stream, test) in test_streams:
+for stream, test in test_streams:
     if stream == "message":
         zephyr_subs_to_add.append((stream, "personal", mit_user))
     else:
@@ -206,7 +205,7 @@ def gen_key(key_dict: Dict[str, Tuple[str, str]]) -> str:
 
 
 def gen_keys(key_dict: Dict[str, Tuple[str, str]]) -> None:
-    for (stream, test) in test_streams:
+    for stream, test in test_streams:
         key_dict[gen_key(key_dict)] = (stream, test)
 
 
@@ -214,6 +213,7 @@ gen_keys(zhkeys)
 gen_keys(hzkeys)
 
 notices = []
+
 
 # We check for new zephyrs multiple times, to avoid filling the zephyr
 # receive queue with 30+ messages, which might result in messages
@@ -310,7 +310,6 @@ all_keys = set(list(zhkeys.keys()) + list(hzkeys.keys()))
 
 
 def process_keys(content_list: List[str]) -> Tuple[Dict[str, int], Set[str], Set[str], bool, bool]:
-
     # Start by filtering out any keys that might have come from
     # concurrent check-mirroring processes
     content_keys = [key for key in content_list if key in all_keys]

@@ -222,7 +222,7 @@ def zephyr_bulk_subscribe(subs: List[Tuple[str, str, str]]) -> None:
     finally:
         zephyr_ctypes.ZFlushSubscriptions()
 
-    for (cls, instance, recipient) in subs:
+    for cls, instance, recipient in subs:
         if cls not in actual_zephyr_subs:
             logger.error(f"Zephyr failed to subscribe us to {cls}; will retry")
             # We'll retry automatically when we next check for
@@ -968,7 +968,7 @@ def subscribed_to_mail_messages() -> bool:
     stored_result = os.environ.get("HUMBUG_FORWARD_MAIL_ZEPHYRS")
     if stored_result is not None:
         return stored_result == "True"
-    for (cls, instance, recipient) in parse_zephyr_subs(verbose=False):
+    for cls, instance, recipient in parse_zephyr_subs(verbose=False):
         if cls.lower() == "mail" and instance.lower() == "inbox":
             os.environ["HUMBUG_FORWARD_MAIL_ZEPHYRS"] = "True"
             return True
@@ -981,7 +981,7 @@ def add_zulip_subscriptions(verbose: bool) -> None:
 
     zephyr_subscriptions = set()
     skipped = set()
-    for (cls, instance, recipient) in parse_zephyr_subs(verbose=verbose):
+    for cls, instance, recipient in parse_zephyr_subs(verbose=verbose):
         if cls.lower() == "message":
             if recipient != "*":
                 # We already have a (message, *, you) subscription, so
@@ -1079,7 +1079,7 @@ Zulip subscription to these lines in ~/.zephyr.subs:
                 + "\n"
             )
 
-    for (cls, instance, recipient, reason) in skipped:
+    for cls, instance, recipient, reason in skipped:
         if verbose:
             if reason != "":
                 logger.info(f"  [{cls},{instance},{recipient}] ({reason})")

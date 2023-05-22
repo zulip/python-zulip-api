@@ -8,6 +8,7 @@ STREAM_NAME = "commits"
 ZULIP_USER = "git-bot@example.com"
 ZULIP_API_KEY = "0123456789abcdef0123456789abcdef"
 
+
 # commit_notice_destination() lets you customize where commit notices
 # are sent to with the full power of a Python function.
 #
