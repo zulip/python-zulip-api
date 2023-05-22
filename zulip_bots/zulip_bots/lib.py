@@ -176,7 +176,6 @@ def use_storage(storage: BotStorage, keys: List[str]) -> Iterator[BotStorage]:
 
 
 class BotHandler(Protocol):
-
     user_id: int
     email: str
     full_name: str

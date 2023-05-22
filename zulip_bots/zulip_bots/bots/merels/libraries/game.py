@@ -62,17 +62,14 @@ def beat(message, topic_name, merels_storage):
     if match is None:
         return unknown_command()
     if match.group(1) is not None and match.group(2) is not None and match.group(3) is not None:
-
         responses = ""
         command = match.group(1)
 
         if command.lower() == "move":
-
             p1 = [int(x) for x in match.group(2).split(",")]
             p2 = [int(x) for x in match.group(3).split(",")]
 
             if mechanics.get_take_status(topic_name, merels_storage) == 1:
-
                 raise BadMoveException("Take is required to proceed." " Please try again.\n")
 
             responses += mechanics.move_man(topic_name, p1, p2, merels_storage) + "\n"

@@ -148,7 +148,6 @@ def add_default_arguments(
     patch_error_handling: bool = True,
     allow_provisioning: bool = False,
 ) -> argparse.ArgumentParser:
-
     if patch_error_handling:
 
         def custom_error_handling(self: argparse.ArgumentParser, message: str) -> None:
@@ -286,7 +285,6 @@ def generate_option_group(parser: optparse.OptionParser, prefix: str = "") -> op
 
 
 def init_from_options(options: Any, client: Optional[str] = None) -> "Client":
-
     if getattr(options, "provision", False):
         requirements_path = os.path.abspath(os.path.join(sys.path[0], "requirements.txt"))
         try:
@@ -521,7 +519,6 @@ class Client:
         assert self.zulip_version is not None
 
     def ensure_session(self) -> None:
-
         # Check if the session has been created already, and return
         # immediately if so.
         if self.session:
@@ -593,7 +590,7 @@ class Client:
         request = {}
         req_files = []
 
-        for (key, val) in orig_request.items():
+        for key, val in orig_request.items():
             if isinstance(val, str) or isinstance(val, str):
                 request[key] = val
             else:
@@ -728,7 +725,7 @@ class Client:
         if request is None:
             request = dict()
         marshalled_request = {}
-        for (k, v) in request.items():
+        for k, v in request.items():
             if v is not None:
                 marshalled_request[k] = v
         versioned_url = API_VERSTRING + (url if url is not None else "")
@@ -752,7 +749,6 @@ class Client:
             narrow = []
 
         def do_register() -> Tuple[str, int]:
-
             while True:
                 if event_types is None:
                     res = self.register(None, None, **kwargs)
@@ -841,7 +837,6 @@ class Client:
         return self.call_endpoint(url="messages", method="GET", request=message_filters)
 
     def check_messages_match_narrow(self, **request: Dict[str, Any]) -> Dict[str, Any]:
-
         """
         Example usage:
 
@@ -1278,7 +1273,6 @@ class Client:
         )
 
     def add_default_stream(self, stream_id: int) -> Dict[str, Any]:
-
         """
         Example usage:
 
@@ -1292,7 +1286,6 @@ class Client:
         )
 
     def get_user_by_id(self, user_id: int, **request: Any) -> Dict[str, Any]:
-
         """
         Example usage:
 
@@ -1306,7 +1299,6 @@ class Client:
         )
 
     def deactivate_user_by_id(self, user_id: int) -> Dict[str, Any]:
-
         """
         Example usage:
 
@@ -1319,7 +1311,6 @@ class Client:
         )
 
     def reactivate_user_by_id(self, user_id: int) -> Dict[str, Any]:
-
         """
         Example usage:
 
@@ -1332,7 +1323,6 @@ class Client:
         )
 
     def update_user_by_id(self, user_id: int, **request: Any) -> Dict[str, Any]:
-
         """
         Example usage:
 

@@ -31,7 +31,6 @@ class TestWeatherBot(BotTestCase, DefaultTests):
             self._test("", self.help_content)
 
     def test_bot(self) -> None:
-
         # City query
         bot_response = "Weather in New York, US:\n71.33 F / 21.85 C\nMist"
         self._test("New York", bot_response, "test_only_city")

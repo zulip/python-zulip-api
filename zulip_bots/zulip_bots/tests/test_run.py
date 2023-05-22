@@ -13,7 +13,6 @@ from zulip_bots.lib import extract_query_without_mention
 
 
 class TestDefaultArguments(TestCase):
-
     our_dir = os.path.dirname(__file__)
     path_to_bot = os.path.abspath(os.path.join(our_dir, "../bots/giphy/giphy.py"))
     packaged_bot_module = MagicMock(__version__="1.0.0")

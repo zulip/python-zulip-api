@@ -44,7 +44,6 @@ class YoutubeHandler:
             logging.warning("Bad connection")
 
     def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
-
         if message["content"] == "" or message["content"] == "help":
             bot_handler.send_reply(message, self.help_content)
         else:
@@ -55,7 +54,6 @@ class YoutubeHandler:
 
 
 def search_youtube(query: str, key: str, region: str, max_results: int = 1) -> List[List[str]]:
-
     videos = []
     params = {
         "part": "id,snippet",
@@ -96,7 +94,6 @@ def get_command_query(message: Dict[str, str]) -> Tuple[Optional[str], str]:
 def get_bot_response(
     query: Optional[str], command: Optional[str], config_info: Dict[str, str]
 ) -> str:
-
     key = config_info["key"]
     max_results = int(config_info["number_of_results"])
     region = config_info["video_region"]

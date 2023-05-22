@@ -6,7 +6,6 @@ class TestWikipediaBot(BotTestCase, DefaultTests):
     bot_name = "wikipedia"
 
     def test_bot(self) -> None:
-
         # Single-word query
         bot_request = "happy"
         bot_response = """For search term:happy
