@@ -819,6 +819,15 @@ class Client:
 
             for event in res["events"]:
                 last_event_id = max(last_event_id, int(event["id"]))
+
+                if event["type"] == "heartbeat":
+                    # Heartbeat events are sent to clients regardless
+                    # of the client's requested event types, and are
+                    # intended to be an internal part of the Zulip
+                    # longpolling protocol, not something that clients
+                    # need to handle.
+                    continue
+
                 callback(event)
 
     def call_on_each_message(
