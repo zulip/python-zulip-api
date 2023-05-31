@@ -182,7 +182,6 @@ def send_zulip(entry: Any, feed_name: str) -> Dict[str, Any]:
 
     message = {
         "type": "stream",
-        "sender": opts.zulip_email,
         "to": opts.stream,
         "subject": elide_subject(feed_name),
         "content": content,
