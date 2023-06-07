@@ -59,6 +59,13 @@ parser.add_argument(
     action="store",
 )
 parser.add_argument(
+    "--topic",
+    dest="topic",
+    help="A fixed topic to use for RSS messages, overriding the default of the feed title/URL",
+    default=None,
+    action="store",
+)
+parser.add_argument(
     "--data-dir",
     dest="data_dir",
     help="The directory where feed metadata is stored",
@@ -183,7 +190,7 @@ def send_zulip(entry: Any, feed_name: str) -> Dict[str, Any]:
     message = {
         "type": "stream",
         "to": opts.stream,
-        "subject": elide_subject(feed_name),
+        "subject": opts.topic or elide_subject(feed_name),
         "content": content,
     }  # type: Dict[str, str]
     return client.send_message(message)
