@@ -201,7 +201,9 @@ def handle_bot() -> str:
     bot_handler = app.config.get("BOT_HANDLERS", {})[bot]
     message_handler = app.config.get("MESSAGE_HANDLERS", {})[bot]
     is_mentioned = event["trigger"] == "mention"
-    is_private_message = event["trigger"] == "private_message"
+    # TODO/compatibility: Remove the support for "private_message" as a valid
+    # trigger value once we no longer support pre-8.0 Zulip servers.
+    is_direct_message = event["trigger"] in ["direct_message", "private_message"]
     message = event["message"]
     message["full_content"] = message["content"]
     # Strip at-mention botname from the message
@@ -212,7 +214,7 @@ def handle_bot() -> str:
         if message["content"] is None:
             return json.dumps(dict(response_not_required=True))
 
-    if is_private_message or is_mentioned:
+    if is_direct_message or is_mentioned:
         message_handler.handle_message(message=message, bot_handler=bot_handler)
     return json.dumps(dict(response_not_required=True))
 
