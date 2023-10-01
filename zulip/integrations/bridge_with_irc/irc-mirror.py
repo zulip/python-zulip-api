@@ -18,7 +18,9 @@ Example:
 
 --stream is a Zulip stream.
 --topic is a Zulip topic, is optionally specified, defaults to "IRC".
---nickserv-pw is a password for the nickserv, is optionally specified.
+Optional arguments:
+--nickserv-pw is a password for the nickserv.
+--sasl-password is a password for SASL authentication.
 
 Specify your Zulip API credentials and server in a ~/.zuliprc file or using the options.
 
@@ -36,6 +38,7 @@ if __name__ == "__main__":
     parser.add_argument("--stream", default="general")
     parser.add_argument("--topic", default="IRC")
     parser.add_argument("--nickserv-pw", default="")
+    parser.add_argument("--sasl-password", default=None)
 
     options = parser.parse_args()
     # Setting the client to irc_mirror is critical for this to work
@@ -64,5 +67,6 @@ if __name__ == "__main__":
         options.irc_server,
         options.nickserv_pw,
         options.port,
+        sasl_password=options.sasl_password,
     )
     bot.start()

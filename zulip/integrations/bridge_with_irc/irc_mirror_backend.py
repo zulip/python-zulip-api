@@ -1,16 +1,13 @@
 import multiprocessing as mp
 import sys
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 import irc.bot
 import irc.strings
 from irc.client import Event, ServerConnection, ip_numstr_to_quad
-from irc.client_aio import AioReactor
 
 
 class IRCBot(irc.bot.SingleServerIRCBot):
-    reactor_class = AioReactor
-
     def __init__(
         self,
         zulip_client: Any,
@@ -21,6 +18,7 @@ class IRCBot(irc.bot.SingleServerIRCBot):
         server: str,
         nickserv_password: str = "",
         port: int = 6667,
+        sasl_password: Optional[str] = None,
     ) -> None:
         self.channel: irc.bot.Channel = channel
         self.zulip_client = zulip_client
@@ -31,18 +29,16 @@ class IRCBot(irc.bot.SingleServerIRCBot):
         # Make sure the bot is subscribed to the stream
         self.check_subscription_or_die()
         # Initialize IRC bot after proper connection to Zulip server has been confirmed.
-        irc.bot.SingleServerIRCBot.__init__(self, [(server, port)], nickname, nickname)
+        if sasl_password is not None:
+            irc.bot.SingleServerIRCBot.__init__(
+                self, [(server, port, sasl_password)], nickname, nickname, sasl_login=nickname
+            )
+        else:
+            irc.bot.SingleServerIRCBot.__init__(self, [(server, port)], nickname, nickname)
 
     def zulip_sender(self, sender_string: str) -> str:
         nick = sender_string.split("!")[0]
         return nick + "@" + self.IRC_DOMAIN
-
-    def connect(self, *args: Any, **kwargs: Any) -> None:
-        # Taken from
-        # https://github.com/jaraco/irc/blob/main/irc/client_aio.py,
-        # in particular the method of AioSimpleIRCClient
-        self.c = self.reactor.loop.run_until_complete(self.connection.connect(*args, **kwargs))
-        print("Listening now. Please send an IRC message to verify operation")
 
     def check_subscription_or_die(self) -> None:
         resp = self.zulip_client.get_subscriptions()
@@ -76,7 +72,7 @@ class IRCBot(irc.bot.SingleServerIRCBot):
                 at_the_specified_subject = msg["subject"].casefold() == self.topic.casefold()
                 if in_the_specified_stream and at_the_specified_subject:
                     msg["content"] = "@**{}**: ".format(msg["sender_full_name"]) + msg["content"]
-                    send = lambda x: self.c.privmsg(self.channel, x)
+                    send = lambda x: c.privmsg(self.channel, x)
                 else:
                     return
             else:
@@ -86,9 +82,9 @@ class IRCBot(irc.bot.SingleServerIRCBot):
                     if u["email"] != msg["sender_email"]
                 ]
                 if len(recipients) == 1:
-                    send = lambda x: self.c.privmsg(recipients[0], x)
+                    send = lambda x: c.privmsg(recipients[0], x)
                 else:
-                    send = lambda x: self.c.privmsg_many(recipients, x)
+                    send = lambda x: c.privmsg_many(recipients, x)
             for line in msg["content"].split("\n"):
                 send(line)
 
