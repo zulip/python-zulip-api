@@ -241,14 +241,14 @@ class BaremetricsHandler:
         return "\n".join(response)
 
     def create_plan(self, parameters: List[str]) -> str:
-        data_header = {
+        data_header: Any = {
             "oid": parameters[1],
             "name": parameters[2],
             "currency": parameters[3],
             "amount": int(parameters[4]),
             "interval": parameters[5],
             "interval_count": int(parameters[6]),
-        }  # type: Any
+        }
 
         url = f"https://api.baremetrics.com/v1/{parameters[0]}/plans"
         create_plan_response = requests.post(url, data=data_header, headers=self.auth_header)

@@ -55,17 +55,17 @@ class GameAdapter:
         self.is_single_player = self.min_players == self.max_players == 1
         self.supports_computer = supports_computer
         self.gameMessageHandler = gameMessageHandler()
-        self.invites = {}  # type: Dict[str, Dict[str, str]]
-        self.instances = {}  # type: Dict[str, Any]
-        self.user_cache = {}  # type: Dict[str, Dict[str, Any]]
-        self.pending_subject_changes = []  # type: List[str]
+        self.invites: Dict[str, Dict[str, str]] = {}
+        self.instances: Dict[str, Any] = {}
+        self.user_cache: Dict[str, Dict[str, Any]] = {}
+        self.pending_subject_changes: List[str] = []
         self.stream = "games"
         self.rules = rules
 
     # Values are [won, lost, drawn, total] new values can be added, but MUST be added to the end of the list.
     def add_user_statistics(self, user: str, values: Dict[str, int]) -> None:
         self.get_user_cache()
-        current_values = {}  # type: Dict[str, int]
+        current_values: Dict[str, int] = {}
         if "stats" in self.get_user_by_email(user).keys():
             current_values = self.user_cache[user]["stats"]
         for key, value in values.items():
@@ -570,7 +570,7 @@ class GameAdapter:
 
     def get_players(self, game_id: str, parameter: str = "a") -> List[str]:
         if game_id in self.invites.keys():
-            players = []  # type: List[str]
+            players: List[str] = []
             if (
                 self.invites[game_id]["subject"] == "###private###" and "p" in parameter
             ) or "p" not in parameter:
@@ -587,7 +587,7 @@ class GameAdapter:
         return []
 
     def get_game_info(self, game_id: str) -> Dict[str, Any]:
-        game_info = {}  # type: Dict[str, Any]
+        game_info: Dict[str, Any] = {}
         if game_id in self.instances.keys():
             instance = self.instances[game_id]
             game_info = {
@@ -855,8 +855,8 @@ class GameInstance:
         self.model = deepcopy(self.gameAdapter.model())
         self.board = self.model.current_board
         self.turn = random.randrange(0, len(players)) - 1
-        self.current_draw = {}  # type: Dict[str, bool]
-        self.current_messages = []  # type: List[str]
+        self.current_draw: Dict[str, bool] = {}
+        self.current_messages: List[str] = []
         self.is_changing_subject = False
 
     def start(self) -> None:

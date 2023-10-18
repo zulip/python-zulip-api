@@ -28,7 +28,7 @@ options = parser.parse_args()
 client = zulip.init_from_options(options)
 
 if options.file_path:
-    file = open(options.file_path, "rb")  # type: IO[Any]
+    file: IO[Any] = open(options.file_path, "rb")
 else:
     file = StringIO("This is a test file.")
     file.name = "test.txt"

@@ -75,12 +75,12 @@ class MentionHandler:
             "Accept-Version": "1.15",
         }
 
-        create_alert_data = {
+        create_alert_data: Any = {
             "name": keyword,
             "query": {"type": "basic", "included_keywords": [keyword]},
             "languages": ["en"],
             "sources": ["web"],
-        }  # type: Any
+        }
 
         response = requests.post(
             "https://api.mention.net/api/accounts/" + self.account_id + "/alerts",

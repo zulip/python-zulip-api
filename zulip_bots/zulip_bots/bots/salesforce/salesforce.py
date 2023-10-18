@@ -78,7 +78,7 @@ def query_salesforce(
 ) -> str:
     arg = arg.strip()
     qarg = arg.split(" -", 1)[0]
-    split_args = []  # type: List[str]
+    split_args: List[str] = []
     raw_arg = ""
     if len(arg.split(" -", 1)) > 1:
         raw_arg = " -" + arg.split(" -", 1)[1]
@@ -96,10 +96,10 @@ def query_salesforce(
     res = salesforce.query(
         query.format(object_type["fields"], object_type["table"], qarg, limit_num)
     )
-    exclude_keys = []  # type: List[str]
+    exclude_keys: List[str] = []
     if "exclude_keys" in command.keys():
         exclude_keys = command["exclude_keys"]
-    force_keys = []  # type: List[str]
+    force_keys: List[str] = []
     if "force_keys" in command.keys():
         force_keys = command["force_keys"]
     rank_output = False

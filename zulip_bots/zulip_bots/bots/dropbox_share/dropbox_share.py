@@ -148,7 +148,7 @@ def dbx_ls(client: Any, fn: str) -> str:
 
     try:
         result = client.files_list_folder(fn)
-        files_list = []  # type: List[str]
+        files_list: List[str] = []
         for meta in result.entries:
             files_list += [" - " + URL.format(name=meta.name, path=meta.path_lower)]
 

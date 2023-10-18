@@ -192,8 +192,8 @@ if not actually_subscribed:
     print_status_and_exit(1)
 
 # Prepare keys
-zhkeys = {}  # type: Dict[str, Tuple[str, str]]
-hzkeys = {}  # type: Dict[str, Tuple[str, str]]
+zhkeys: Dict[str, Tuple[str, str]] = {}
+hzkeys: Dict[str, Tuple[str, str]] = {}
 
 
 def gen_key(key_dict: Dict[str, Tuple[str, str]]) -> str:
@@ -313,7 +313,7 @@ def process_keys(content_list: List[str]) -> Tuple[Dict[str, int], Set[str], Set
     # Start by filtering out any keys that might have come from
     # concurrent check-mirroring processes
     content_keys = [key for key in content_list if key in all_keys]
-    key_counts = {}  # type: Dict[str, int]
+    key_counts: Dict[str, int] = {}
     for key in all_keys:
         key_counts[key] = 0
     for key in content_keys:

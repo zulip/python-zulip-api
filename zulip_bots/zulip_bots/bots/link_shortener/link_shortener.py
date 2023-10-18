@@ -23,7 +23,7 @@ class LinkShortenerHandler:
         self.check_api_key(bot_handler)
 
     def check_api_key(self, bot_handler: BotHandler) -> None:
-        test_request_data = self.call_link_shorten_service("www.youtube.com/watch")  # type: Any
+        test_request_data: Any = self.call_link_shorten_service("www.youtube.com/watch")
         try:
             if self.is_invalid_token_error(test_request_data):
                 bot_handler.quit(

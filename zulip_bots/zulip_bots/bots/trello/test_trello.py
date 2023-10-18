@@ -7,7 +7,7 @@ mock_config = {"api_key": "TEST", "access_token": "TEST", "user_name": "TEST"}
 
 
 class TestTrelloBot(BotTestCase, DefaultTests):
-    bot_name = "trello"  # type: str
+    bot_name: str = "trello"
 
     def test_bot_responds_to_empty_message(self) -> None:
         with self.mock_config_info(mock_config), patch("requests.get"):

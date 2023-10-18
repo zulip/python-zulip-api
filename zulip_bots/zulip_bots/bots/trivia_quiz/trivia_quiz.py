@@ -130,13 +130,13 @@ def get_quiz_from_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
     for i in range(3):
         answers[letters[i + 1]] = result["incorrect_answers"][i]
     answers = {letter: fix_quotes(answer) for letter, answer in answers.items()}
-    quiz = dict(
+    quiz: Dict[str, Any] = dict(
         question=fix_quotes(question),
         answers=answers,
         answered_options=[],
         pending=True,
         correct_letter=correct_letter,
-    )  # type: Dict[str, Any]
+    )
     return quiz
 
 

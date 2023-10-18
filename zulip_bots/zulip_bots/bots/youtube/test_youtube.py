@@ -8,11 +8,11 @@ from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler, get_b
 
 class TestYoutubeBot(BotTestCase, DefaultTests):
     bot_name = "youtube"
-    normal_config = {
+    normal_config: Dict[str, str] = {
         "key": "12345678",
         "number_of_results": "5",
         "video_region": "US",
-    }  # type: Dict[str,str]
+    }
 
     help_content = (
         "*Help for YouTube bot* :robot_face: : \n\n"

@@ -31,7 +31,7 @@ def read_config_section(parser: configparser.ConfigParser, section: str) -> Dict
 
 
 def read_config_from_env_vars(bot_name: Optional[str] = None) -> Dict[str, Dict[str, str]]:
-    bots_config = {}  # type: Dict[str, Dict[str, str]]
+    bots_config: Dict[str, Dict[str, str]] = {}
     json_config = os.environ.get("ZULIP_BOTSERVER_CONFIG")
 
     if json_config is None:
@@ -67,7 +67,7 @@ def read_config_file(
 ) -> Dict[str, Dict[str, str]]:
     parser = parse_config_file(config_file_path)
 
-    bots_config = {}  # type: Dict[str, Dict[str, str]]
+    bots_config: Dict[str, Dict[str, str]] = {}
     if bot_name is None:
         bots_config = {
             section: read_config_section(parser, section) for section in parser.sections()
@@ -173,7 +173,7 @@ def init_message_handlers(
 
 
 app = Flask(__name__)
-bots_config = {}  # type: Dict[str, Dict[str, str]]
+bots_config: Dict[str, Dict[str, str]] = {}
 
 
 @app.route("/", methods=["POST"])

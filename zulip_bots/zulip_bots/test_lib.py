@@ -18,7 +18,7 @@ class StubBotHandler:
         self.reset_transcript()
 
     def reset_transcript(self) -> None:
-        self.transcript = []  # type: List[Tuple[str, Dict[str, Any]]]
+        self.transcript: List[Tuple[str, Dict[str, Any]]] = []
 
     def identity(self) -> BotIdentity:
         return BotIdentity(self.full_name, self.email)

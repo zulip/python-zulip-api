@@ -1,16 +1,12 @@
 from typing import List
 
-from zulint.custom_rules import RuleList
+from zulint.custom_rules import Rule, RuleList
 
-MYPY = False
-if MYPY:
-    from zulint.custom_rules import Rule
-
-whitespace_rules = [
+whitespace_rules: List[Rule] = [
     # This linter should be first since bash_rules depends on it.
     {"pattern": r"\s+$", "strip": "\n", "description": "Fix trailing whitespace"},
     {"pattern": "\t", "strip": "\n", "description": "Fix tab-based whitespace"},
-]  # type: List[Rule]
+]
 
 markdown_whitespace_rules = list(
     rule for rule in whitespace_rules if rule["pattern"] != r"\s+$"
@@ -129,7 +125,7 @@ json_rules = RuleList(
     rules=whitespace_rules[0:1],
 )
 
-prose_style_rules = [
+prose_style_rules: List[Rule] = [
     {
         "pattern": r'[^\/\#\-"]([jJ]avascript)',  # exclude usage in hrefs/divs
         "description": "javascript should be spelled JavaScript",
@@ -147,7 +143,7 @@ prose_style_rules = [
         "pattern": r"[^-_]botserver(?!rc)|bot server",
         "description": "Use Botserver instead of botserver or Botserver.",
     },
-]  # type: List[Rule]
+]
 
 markdown_docs_length_exclude = {
     "zulip_bots/zulip_bots/bots/converter/doc.md",

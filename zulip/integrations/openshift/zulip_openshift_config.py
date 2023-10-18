@@ -52,7 +52,7 @@ def format_deployment_message(
 
 ## If properly installed, the Zulip API should be in your import
 ## path, but if not, set a custom path below
-ZULIP_API_PATH = None  # type: Optional[str]
+ZULIP_API_PATH: Optional[str] = None
 
 # Set this to your Zulip server's API URI
 ZULIP_SITE = "https://zulip.example.com"

@@ -20,9 +20,9 @@ import feedparser
 
 import zulip
 
-VERSION = "0.9"  # type: str
-RSS_DATA_DIR = os.path.expanduser(os.path.join("~", ".cache", "zulip-rss"))  # type: str
-OLDNESS_THRESHOLD = 30  # type: int
+VERSION = "0.9"
+RSS_DATA_DIR = os.path.expanduser(os.path.join("~", ".cache", "zulip-rss"))
+OLDNESS_THRESHOLD = 30
 
 usage = """Usage: Send summaries of RSS entries for your favorite feeds to Zulip.
 
@@ -48,9 +48,7 @@ stream every 5 minutes is:
 
 */5 * * * * /usr/local/share/zulip/integrations/rss/rss-bot"""
 
-parser = zulip.add_default_arguments(
-    argparse.ArgumentParser(usage)
-)  # type: argparse.ArgumentParser
+parser = zulip.add_default_arguments(argparse.ArgumentParser(usage))
 parser.add_argument(
     "--stream",
     dest="stream",
@@ -94,7 +92,7 @@ parser.add_argument(
     default=False,
 )
 
-opts = parser.parse_args()  # type: Any
+opts = parser.parse_args()
 
 
 def mkdir_p(path: str) -> None:
@@ -115,15 +113,15 @@ except OSError:
     print(f"Unable to store RSS data at {opts.data_dir}.", file=sys.stderr)
     exit(1)
 
-log_file = os.path.join(opts.data_dir, "rss-bot.log")  # type: str
-log_format = "%(asctime)s: %(message)s"  # type: str
+log_file = os.path.join(opts.data_dir, "rss-bot.log")
+log_format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=log_format)
 
-formatter = logging.Formatter(log_format)  # type: logging.Formatter
-file_handler = logging.FileHandler(log_file)  # type: logging.FileHandler
+formatter = logging.Formatter(log_format)
+file_handler = logging.FileHandler(log_file)
 file_handler.setFormatter(formatter)
 
-logger = logging.getLogger(__name__)  # type: logging.Logger
+logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 logger.addHandler(file_handler)
 
@@ -138,7 +136,7 @@ class MLStripper(HTMLParser):
     def __init__(self) -> None:
         super().__init__()
         self.reset()
-        self.fed = []  # type: List[str]
+        self.fed: List[str] = []
 
     def handle_data(self, data: str) -> None:
         self.fed.append(data)
@@ -173,7 +171,7 @@ def elide_subject(subject: str) -> str:
 
 
 def send_zulip(entry: Any, feed_name: str) -> Dict[str, Any]:
-    body = entry.summary  # type: str
+    body: str = entry.summary
     if opts.unwrap:
         body = unwrap_text(body)
 
@@ -182,56 +180,52 @@ def send_zulip(entry: Any, feed_name: str) -> Dict[str, Any]:
         entry.link,
         strip_tags(body),
         entry.link,
-    )  # type: str
+    )
 
     if opts.math:
         content = content.replace("$", "$$")
 
-    message = {
+    message: Dict[str, str] = {
         "type": "stream",
         "to": opts.stream,
         "subject": opts.topic or elide_subject(feed_name),
         "content": content,
-    }  # type: Dict[str, str]
+    }
     return client.send_message(message)
 
 
 try:
     with open(opts.feed_file) as f:
-        feed_urls = [feed.strip() for feed in f.readlines()]  # type: List[str]
+        feed_urls: List[str] = [feed.strip() for feed in f.readlines()]
 except OSError:
     log_error_and_exit(f"Unable to read feed file at {opts.feed_file}.")
 
-client = zulip.Client(
+client: zulip.Client = zulip.Client(
     email=opts.zulip_email,
     api_key=opts.zulip_api_key,
     config_file=opts.zulip_config_file,
     site=opts.zulip_site,
     client="ZulipRSS/" + VERSION,
-)  # type: zulip.Client
+)
 
-first_message = True  # type: bool
+first_message = True
 
 for feed_url in feed_urls:
     feed_file = os.path.join(opts.data_dir, urllib.parse.urlparse(feed_url).netloc)  # Type: str
 
     try:
         with open(feed_file) as f:
-            old_feed_hashes = {
-                line.strip(): True for line in f.readlines()
-            }  # type: Dict[str, bool]
+            old_feed_hashes = {line.strip(): True for line in f.readlines()}
     except OSError:
         old_feed_hashes = {}
 
-    new_hashes = []  # type: List[str]
-    data = feedparser.parse(feed_url)  # type: feedparser.parse
+    new_hashes: List[str] = []
+    data = feedparser.parse(feed_url)
 
     for entry in data.entries:
-        entry_hash = compute_entry_hash(entry)  # type: str
+        entry_hash = compute_entry_hash(entry)
         # An entry has either been published or updated.
-        entry_time = entry.get(
-            "published_parsed", entry.get("updated_parsed")
-        )  # type: Tuple[int, int]
+        entry_time: Tuple[int, int] = entry.get("published_parsed", entry.get("updated_parsed"))
         if (
             entry_time is not None
             and (time.time() - calendar.timegm(entry_time)) > OLDNESS_THRESHOLD * 60 * 60 * 24
@@ -247,9 +241,9 @@ for feed_url in feed_urls:
             # entries in reverse chronological order.
             break
 
-        feed_name = data.feed.title or feed_url  # type: str
+        feed_name: str = data.feed.title or feed_url
 
-        response = send_zulip(entry, feed_name)  # type: Dict[str, Any]
+        response: Dict[str, Any] = send_zulip(entry, feed_name)
         if response["result"] != "success":
             logger.error(f"Error processing {feed_url}")
             logger.error(str(response))

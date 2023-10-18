@@ -175,7 +175,7 @@ for inpath in force_include:
     try:
         ext = os.path.splitext(inpath)[1].split(".")[1]
     except IndexError:
-        ext = "py"  # type: str
+        ext = "py"
     files_dict[ext].append(inpath)
 
 pyi_files = set(files_dict["pyi"])

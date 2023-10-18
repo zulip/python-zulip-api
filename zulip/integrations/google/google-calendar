@@ -31,10 +31,10 @@ APPLICATION_NAME = "Zulip"
 HOME_DIR = os.path.expanduser("~")
 
 # Our cached view of the calendar, updated periodically.
-events = []  # type: List[Tuple[int, datetime.datetime, str]]
+events: List[Tuple[int, datetime.datetime, str]] = []
 
 # Unique keys for events we've already sent, so we don't remind twice.
-sent = set()  # type: Set[Tuple[int, datetime.datetime]]
+sent: Set[Tuple[int, datetime.datetime]] = set()
 
 sys.path.append(os.path.dirname(__file__))
 

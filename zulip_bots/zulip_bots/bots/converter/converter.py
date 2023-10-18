@@ -87,8 +87,8 @@ def get_bot_converter_response(message: Dict[str, str], bot_handler: BotHandler)
                     exponent -= exp
                     unit_to = unit_to[len(key) :]
 
-            uf_to_std = utils.UNITS.get(unit_from, [])  # type: List[Any]
-            ut_to_std = utils.UNITS.get(unit_to, [])  # type: List[Any]
+            uf_to_std: List[Any] = utils.UNITS.get(unit_from, [])
+            ut_to_std: List[Any] = utils.UNITS.get(unit_to, [])
 
             if not uf_to_std:
                 results.append("`" + unit_from + "` is not a valid unit. " + utils.QUICK_HELP)

@@ -4,7 +4,7 @@ from zulip_bots.test_lib import BotTestCase, DefaultTests
 
 
 class TestIDoneThisBot(BotTestCase, DefaultTests):
-    bot_name = "idonethis"  # type: str
+    bot_name: str = "idonethis"
 
     def test_create_entry_default_team(self) -> None:
         with self.mock_config_info(

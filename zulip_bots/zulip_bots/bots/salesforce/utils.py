@@ -3,7 +3,7 @@ from typing import Any, Dict, List
 link_query = "SELECT {} FROM {} WHERE Id='{}'"
 default_query = "SELECT {} FROM {} WHERE Name LIKE '%{}%' LIMIT {}"
 
-commands = [
+commands: List[Dict[str, Any]] = [
     {
         "commands": ["search account", "find account", "search accounts", "find accounts"],
         "object": "account",
@@ -41,9 +41,9 @@ commands = [
         "rank_output": True,
         "force_keys": ["Amount"],
     },
-]  # type: List[Dict[str, Any]]
+]
 
-object_types = {
+object_types: Dict[str, Dict[str, str]] = {
     "account": {
         "fields": "Id, Name, Phone, BillingStreet, BillingCity, BillingState",
         "table": "Account",
@@ -53,4 +53,4 @@ object_types = {
         "fields": "Id, Name, Amount, Probability, StageName, CloseDate",
         "table": "Opportunity",
     },
-}  # type: Dict[str, Dict[str, str]]
+}

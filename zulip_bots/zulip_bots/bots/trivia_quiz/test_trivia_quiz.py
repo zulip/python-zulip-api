@@ -15,7 +15,7 @@ from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler, read_
 
 
 class TestTriviaQuizBot(BotTestCase, DefaultTests):
-    bot_name = "trivia_quiz"  # type: str
+    bot_name: str = "trivia_quiz"
 
     new_question_response = (
         "\nQ: Which class of animals are newts members of?\n\n"

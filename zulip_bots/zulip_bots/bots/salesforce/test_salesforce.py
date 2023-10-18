@@ -96,7 +96,7 @@ mock_object_types = {
 
 
 class TestSalesforceBot(BotTestCase, DefaultTests):
-    bot_name = "salesforce"  # type: str
+    bot_name: str = "salesforce"
 
     def _test(self, test_name: str, message: str, response: str, auth_success: bool = True) -> None:
         with self.mock_config_info(mock_config), mock_salesforce_auth(

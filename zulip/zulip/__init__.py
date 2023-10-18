@@ -485,7 +485,7 @@ class Client:
                 "certificate will not be validated, making the "
                 "HTTPS connection potentially insecure"
             )
-            self.tls_verification = False  # type: Union[bool, str]
+            self.tls_verification: Union[bool, str] = False
         elif cert_bundle is not None:
             if not os.path.isfile(cert_bundle):
                 raise ConfigNotFoundError(f"tls bundle '{cert_bundle}' does not exist")
@@ -509,7 +509,7 @@ class Client:
         self.client_cert = client_cert
         self.client_cert_key = client_cert_key
 
-        self.session = None  # type: Optional[requests.Session]
+        self.session: Optional[requests.Session] = None
 
         self.has_connected = False
 
@@ -527,10 +527,10 @@ class Client:
         # Build a client cert object for requests
         if self.client_cert_key is not None:
             assert self.client_cert is not None  # Otherwise ZulipError near end of __init__
-            client_cert = (
+            client_cert: Union[None, str, Tuple[str, str]] = (
                 self.client_cert,
                 self.client_cert_key,
-            )  # type: Union[None, str, Tuple[str, str]]
+            )
         else:
             client_cert = self.client_cert
 
@@ -602,11 +602,11 @@ class Client:
         self.ensure_session()
         assert self.session is not None
 
-        query_state = {
+        query_state: Dict[str, Any] = {
             "had_error_retry": False,
             "request": request,
             "failures": 0,
-        }  # type: Dict[str, Any]
+        }
 
         def error_retry(error_string: str) -> bool:
             if not self.retry_on_errors or query_state["failures"] >= 10:

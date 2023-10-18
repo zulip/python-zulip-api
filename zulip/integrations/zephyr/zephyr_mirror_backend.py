@@ -1107,7 +1107,7 @@ def valid_stream_name(name: str) -> bool:
 
 
 def parse_zephyr_subs(verbose: bool = False) -> Set[Tuple[str, str, str]]:
-    zephyr_subscriptions = set()  # type: Set[Tuple[str, str, str]]
+    zephyr_subscriptions: Set[Tuple[str, str, str]] = set()
     subs_file = os.path.join(os.environ["HOME"], ".zephyr.subs")
     if not os.path.exists(subs_file):
         if verbose:
@@ -1348,7 +1348,7 @@ or specify the --api-key-file option."""
         options.session_path = f"/var/tmp/{options.user}"
 
     if options.forward_from_zulip:
-        child_pid = os.fork()  # type: Optional[int]
+        child_pid: Optional[int] = os.fork()
         if child_pid == 0:
             CURRENT_STATE = States.ZulipToZephyr
             # Run the zulip => zephyr mirror in the child

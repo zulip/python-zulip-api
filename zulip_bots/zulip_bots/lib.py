@@ -53,7 +53,7 @@ class RateLimit:
     def __init__(self, message_limit: int, interval_limit: int) -> None:
         self.message_limit = message_limit
         self.interval_limit = interval_limit
-        self.message_list = []  # type: List[float]
+        self.message_list: List[float] = []
         self.error_message = "-----> !*!*!*MESSAGE RATE LIMIT REACHED, EXITING*!*!*! <-----\n"
         "Is your bot trapped in an infinite loop by reacting to its own messages?"
 

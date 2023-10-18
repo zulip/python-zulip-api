@@ -19,10 +19,10 @@ class HelloWorldHandler:
         """
 
     def handle_message(self, message: Dict[str, Any], bot_handler: BotHandler) -> None:
-        content = "beep boop"  # type: str
+        content = "beep boop"
         bot_handler.send_reply(message, content)
 
-        emoji_name = "wave"  # type: str
+        emoji_name = "wave"
         bot_handler.react(message, emoji_name)
         return
 

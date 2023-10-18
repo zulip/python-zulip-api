@@ -8,7 +8,7 @@ VERSION = "0.9"
 # Nagios passes the notification details as command line options.
 # In Nagios, "output" means "first line of output", and "long
 # output" means "other lines of output".
-parser = zulip.add_default_arguments(argparse.ArgumentParser())  # type: argparse.ArgumentParser
+parser = zulip.add_default_arguments(argparse.ArgumentParser())
 parser.add_argument("--output", default="")
 parser.add_argument("--long-output", default="")
 parser.add_argument("--stream", default="nagios")
@@ -17,11 +17,9 @@ for opt in ("type", "host", "service", "state"):
     parser.add_argument("--" + opt)
 opts = parser.parse_args()
 
-client = zulip.Client(
-    config_file=opts.config, client="ZulipNagios/" + VERSION
-)  # type: zulip.Client
+client = zulip.Client(config_file=opts.config, client="ZulipNagios/" + VERSION)
 
-msg = dict(type="stream", to=opts.stream)  # type: Dict[str, Any]
+msg: Dict[str, Any] = dict(type="stream", to=opts.stream)
 
 # Set a subject based on the host or service in question.  This enables
 # threaded discussion of multiple concurrent issues, and provides useful

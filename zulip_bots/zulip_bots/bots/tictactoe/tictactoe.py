@@ -160,7 +160,7 @@ class TicTacToeModel:
         # there are two blanks and an 2 in each row, column, and diagonal (done in two_blanks).
         # If smarter is False, all blank locations can be chosen.
         if self.smarter:
-            blanks = []  # type: Any
+            blanks: Any = []
             for triplet in self.triplets:
                 result = self.two_blanks(triplet, board)
                 if result:

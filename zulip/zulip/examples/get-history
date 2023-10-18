@@ -40,7 +40,7 @@ request = {
     "apply_markdown": False,
 }
 
-all_messages = []  # type: List[Dict[str, Any]]
+all_messages: List[Dict[str, Any]] = []
 found_newest = False
 
 while not found_newest:

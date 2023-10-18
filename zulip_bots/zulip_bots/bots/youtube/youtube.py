@@ -56,7 +56,7 @@ class YoutubeHandler:
 
 def search_youtube(query: str, key: str, region: str, max_results: int = 1) -> List[List[str]]:
     videos = []
-    params = {
+    params: Dict[str, Union[str, int]] = {
         "part": "id,snippet",
         "maxResults": max_results,
         "key": key,
@@ -64,7 +64,7 @@ def search_youtube(query: str, key: str, region: str, max_results: int = 1) -> L
         "alt": "json",
         "type": "video",
         "regionCode": region,
-    }  # type: Dict[str, Union[str, int]]
+    }
 
     url = "https://www.googleapis.com/youtube/v3/search"
     try:
@@ -98,7 +98,7 @@ def get_bot_response(
     key = config_info["key"]
     max_results = int(config_info["number_of_results"])
     region = config_info["video_region"]
-    video_list = []  # type: List[List[str]]
+    video_list: List[List[str]] = []
     try:
         if query == "" or query is None:
             return YoutubeHandler.help_content

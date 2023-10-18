@@ -93,7 +93,7 @@ class TrelloHandler:
         return bot_response
 
     def get_board_descs(self, boards: List[str]) -> str:
-        bot_response = []  # type: List[str]
+        bot_response: List[str] = []
         get_board_desc_url = "https://api.trello.com/1/boards/{}/"
         for index, board in enumerate(boards):
             board_desc_response = requests.get(

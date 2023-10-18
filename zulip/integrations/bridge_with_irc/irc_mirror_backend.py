@@ -21,7 +21,7 @@ class IRCBot(irc.bot.SingleServerIRCBot):
         nickserv_password: str = "",
         port: int = 6667,
     ) -> None:
-        self.channel = channel  # type: irc.bot.Channel
+        self.channel: irc.bot.Channel = channel
         self.zulip_client = zulip_client
         self.stream = stream
         self.topic = topic

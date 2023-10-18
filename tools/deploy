@@ -11,12 +11,12 @@ from typing import Any, Callable, Dict, List
 import requests
 from requests import Response
 
-red = "\033[91m"  # type: str
-green = "\033[92m"  # type: str
-end_format = "\033[0m"  # type: str
-bold = "\033[1m"  # type: str
+red = "\033[91m"
+green = "\033[92m"
+end_format = "\033[0m"
+bold = "\033[1m"
 
-bots_dir = ".bots"  # type: str
+bots_dir = ".bots"
 
 
 def pack(options: argparse.Namespace) -> None:
