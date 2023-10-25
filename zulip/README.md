@@ -3,7 +3,7 @@
 The [Zulip API](https://zulip.com/api) Python bindings require the
 following dependencies:
 
-* **Python (version >= 3.7)**
+* **Python (version >= 3.8)**
 * requests (version >= 0.12.1)
 
 **Note**: If you'd like to use the Zulip bindings with Python 2, we
