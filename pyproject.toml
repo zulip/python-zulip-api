@@ -12,3 +12,10 @@ src_paths = [
 ]
 profile = "black"
 line_length = 100
+
+[tool.pytest.ini_options]
+pythonpath = [
+    "zulip",
+    "zulip_bots",
+    "zulip_botserver",
+]
