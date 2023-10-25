@@ -4,24 +4,22 @@ from zulint.custom_rules import Rule, RuleList
 
 whitespace_rules: List[Rule] = [
     # This linter should be first since bash_rules depends on it.
-    {"pattern": r"\s+$", "strip": "\n", "description": "Fix trailing whitespace"},
-    {"pattern": "\t", "strip": "\n", "description": "Fix tab-based whitespace"},
+    {"pattern": r"[\t ]+$", "description": "Fix trailing whitespace"},
+    {"pattern": r"\t", "description": "Fix tab-based whitespace"},
 ]
 
 markdown_whitespace_rules = list(
-    rule for rule in whitespace_rules if rule["pattern"] != r"\s+$"
+    rule for rule in whitespace_rules if rule["pattern"] != r"[\t ]+$"
 ) + [
     # Two spaces trailing a line with other content is okay--it's a markdown line break.
     # This rule finds one space trailing a non-space, three or more trailing spaces, and
     # spaces on an empty line.
     {
-        "pattern": r"((?<!\s)\s$)|(\s\s\s+$)|(^\s+$)",
-        "strip": "\n",
+        "pattern": r"((?<![\t ])[\t ]$)|([\t ][\t ][\t ]+$)|(^[\t ]+$)",
         "description": "Fix trailing whitespace",
     },
     {
         "pattern": r"^#+[A-Za-z0-9]",
-        "strip": "\n",
         "description": "Missing space after # in heading",
     },
 ]
@@ -29,13 +27,6 @@ markdown_whitespace_rules = list(
 python_rules = RuleList(
     langs=["py"],
     rules=[
-        {"pattern": r'".*"%\([a-z_].*\)?$', "description": 'Missing space around "%"'},
-        {"pattern": r"'.*'%\([a-z_].*\)?$", "description": 'Missing space around "%"'},
-        # This rule is constructed with + to avoid triggering on itself
-        {"pattern": r" =" + r'[^ =>~"]', "description": 'Missing whitespace after "="'},
-        {"pattern": r'":\w[^"]*$', "description": 'Missing whitespace after ":"'},
-        {"pattern": r"':\w[^']*$", "description": 'Missing whitespace after ":"'},
-        {"pattern": r"^\s+[#]\w", "strip": "\n", "description": 'Missing whitespace after "#"'},
         {
             "pattern": r"assertEquals[(]",
             "description": "Use assertEqual, not assertEquals (which is deprecated).",
@@ -46,13 +37,6 @@ python_rules = RuleList(
             "good_lines": ["def foo (self):"],
             "bad_lines": ["def foo(self: Any):"],
         },
-        {"pattern": r"== None", "description": "Use `is None` to check whether something is None"},
-        {"pattern": r"type:[(]", "description": 'Missing whitespace after ":" in type annotation'},
-        {"pattern": r"# type [(]", "description": "Missing : after type in type annotation"},
-        {"pattern": r"#type", "description": 'Missing whitespace after "#" in type annotation'},
-        {"pattern": r"if[(]", "description": "Missing space between if and ("},
-        {"pattern": r", [)]", "description": 'Unnecessary whitespace between "," and ")"'},
-        {"pattern": r"%  [(]", "description": 'Unnecessary whitespace between "%" and "("'},
         # This next check could have false positives, but it seems pretty
         # rare; if we find any, they can be added to the exclude list for
         # this rule.
@@ -97,7 +81,6 @@ python_rules = RuleList(
         },
         *whitespace_rules,
     ],
-    max_length=140,
 )
 
 bash_rules = RuleList(
@@ -145,10 +128,6 @@ prose_style_rules: List[Rule] = [
     },
 ]
 
-markdown_docs_length_exclude = {
-    "zulip_bots/zulip_bots/bots/converter/doc.md",
-}
-
 markdown_rules = RuleList(
     langs=["md"],
     rules=[
@@ -159,8 +138,6 @@ markdown_rules = RuleList(
             "description": "Linkified markdown URLs should use cleaner <http://example.com> syntax.",
         },
     ],
-    max_length=120,
-    length_exclude=markdown_docs_length_exclude,
 )
 
 txt_rules = RuleList(

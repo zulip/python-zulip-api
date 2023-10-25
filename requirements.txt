@@ -1,6 +1,6 @@
 crayons
 twine
-black==23.3.0
+black~=23.10.1
 isort
 flake8
 mock
@@ -9,8 +9,8 @@ pytest-cov
 -e ./zulip
 -e ./zulip_bots
 -e ./zulip_botserver
--e git+https://github.com/zulip/zulint@14e3974001bf8442a6a3486125865660f1f2eb68#egg=zulint==1.0.0
-mypy==0.910
+-e git+https://github.com/zulip/zulint@85de0cbadbba3f498deba32f861bb9a478faa3b4#egg=zulint==1.0.0
+mypy==1.6.1
 types-python-dateutil
 types-pytz
 types-requests

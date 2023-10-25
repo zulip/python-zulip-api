@@ -149,7 +149,9 @@ def load_bot_handlers(
             api_key=bots_config[bot]["key"],
             site=bots_config[bot]["site"],
         )
-        bot_dir = os.path.join(os.path.dirname(os.path.abspath(bot_lib_modules[bot].__file__)))
+        bot_file = bot_lib_modules[bot].__file__
+        assert bot_file is not None
+        bot_dir = os.path.dirname(os.path.abspath(bot_file))
         bot_handler = lib.ExternalBotHandler(
             client, bot_dir, bot_details={}, bot_config_parser=third_party_bot_conf
         )
