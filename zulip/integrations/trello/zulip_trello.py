@@ -14,7 +14,7 @@ except ImportError:
     sys.exit(1)
 
 
-def get_model_id(options):
+def get_model_id(options: argparse.Namespace) -> str:
     """get_model_id
 
     Get Model Id from Trello API
@@ -43,7 +43,7 @@ def get_model_id(options):
     return board_info_json["id"]
 
 
-def get_webhook_id(options, id_model):
+def get_webhook_id(options: argparse.Namespace, id_model: str) -> str:
     """get_webhook_id
 
     Get webhook id from Trello API
@@ -78,7 +78,7 @@ def get_webhook_id(options, id_model):
     return webhook_info_json["id"]
 
 
-def create_webhook(options):
+def create_webhook(options: argparse.Namespace) -> None:
     """create_webhook
 
     Create Trello webhook
@@ -107,7 +107,7 @@ def create_webhook(options):
     )
 
 
-def main():
+def main() -> None:
     description = """
 zulip_trello.py is a handy little script that allows Zulip users to
 quickly set up a Trello webhook.
