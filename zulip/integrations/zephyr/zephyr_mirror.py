@@ -6,16 +6,16 @@ import signal
 import subprocess
 import sys
 import traceback
+from types import FrameType
+from typing import Optional
 
 sys.path[:0] = [os.path.dirname(__file__)]
 from zephyr_mirror_backend import parse_args
 
 (options, args) = parse_args()
 
-from types import FrameType
 
-
-def die(signal: int, frame: FrameType) -> None:
+def die(signal: int, frame: Optional[FrameType]) -> None:
     # We actually want to exit, so run os._exit (so as not to be caught and restarted)
     os._exit(1)
 

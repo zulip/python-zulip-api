@@ -1238,7 +1238,7 @@ def parse_args() -> Tuple[optparse.Values, List[str]]:
     return parser.parse_args()
 
 
-def die_gracefully(signal: int, frame: FrameType) -> None:
+def die_gracefully(signal: int, frame: Optional[FrameType]) -> None:
     if CURRENT_STATE == States.ZulipToZephyr:
         # this is a child process, so we want os._exit (no clean-up necessary)
         os._exit(1)
