@@ -4,9 +4,8 @@ import argparse
 import os
 import subprocess
 import sys
-from collections import OrderedDict
 from pathlib import PurePath
-from typing import Dict, List, cast
+from typing import List, OrderedDict
 
 from zulint import lister
 
@@ -25,7 +24,6 @@ exclude = [
     # Excluded out of laziness:
     "zulip_bots/zulip_bots/simple_lib.py",
     "zulip_bots/zulip_bots/tests/test_lib.py",
-    "tools",
 ]
 
 # These files will be included even if excluded by a rule above.
@@ -93,8 +91,6 @@ force_include = [
     "zulip_bots/zulip_bots/bots/susi/test_susi.py",
     "zulip_bots/zulip_bots/bots/front/front.py",
     "zulip_bots/zulip_bots/bots/front/test_front.py",
-    "tools/custom_check.py",
-    "tools/deploy",
 ]
 
 parser = argparse.ArgumentParser(description="Run mypy on files tracked by git.")
@@ -154,17 +150,14 @@ if args.all:
     exclude = []
 
 # find all non-excluded files in current directory
-files_dict = cast(
-    Dict[str, List[str]],
-    lister.list_files(
-        targets=args.targets,
-        ftypes=["py", "pyi"],
-        use_shebang=True,
-        modified_only=args.modified,
-        exclude=exclude + ["stubs"],
-        group_by_ftype=True,
-        extless_only=args.scripts_only,
-    ),
+files_dict = lister.list_files(
+    targets=args.targets,
+    ftypes=["py", "pyi"],
+    use_shebang=True,
+    modified_only=args.modified,
+    exclude=exclude + ["stubs"],
+    group_by_ftype=True,
+    extless_only=args.scripts_only,
 )
 
 for inpath in force_include:
@@ -179,7 +172,7 @@ python_files = [
     fpath for fpath in files_dict["py"] if not fpath.endswith(".py") or fpath + "i" not in pyi_files
 ]
 
-repo_python_files = OrderedDict(
+repo_python_files = OrderedDict[str, List[str]](
     [("zulip", []), ("zulip_bots", []), ("zulip_botserver", []), ("tools", [])]
 )
 for file_path in python_files:

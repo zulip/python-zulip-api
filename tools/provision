@@ -16,7 +16,7 @@ end_format = "\033[0m"
 bold = "\033[1m"
 
 
-def main():
+def main() -> None:
     usage = """./tools/provision
 
 Creates a Python virtualenv. Its Python version is equal to
@@ -94,7 +94,7 @@ the Python version this command is executed with."""
     # In order to install all required packages for the venv, `pip` needs to be executed by
     # the venv's Python interpreter. `--prefix venv_dir` ensures that all modules are installed
     # in the right place.
-    def install_dependencies(requirements_filename):
+    def install_dependencies(requirements_filename: str) -> None:
         pip_path = os.path.join(venv_dir, venv_exec_dir, "pip")
         # We first install a modern version of pip that supports --prefix
         subprocess.call([pip_path, "install", "pip>=10"])
