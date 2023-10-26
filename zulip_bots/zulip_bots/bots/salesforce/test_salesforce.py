@@ -4,7 +4,8 @@ from unittest.mock import patch
 
 from simple_salesforce.exceptions import SalesforceAuthenticationFailed
 
-from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler, read_bot_fixture_data
+from zulip_bots.test_file_utils import read_bot_fixture_data
+from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler
 
 
 @contextmanager

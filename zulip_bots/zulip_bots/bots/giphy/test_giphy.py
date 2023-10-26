@@ -2,7 +2,8 @@ from unittest.mock import patch
 
 from requests.exceptions import ConnectionError
 
-from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler, get_bot_message_handler
+from zulip_bots.test_file_utils import get_bot_message_handler
+from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler
 
 
 class TestGiphyBot(BotTestCase, DefaultTests):

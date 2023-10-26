@@ -11,7 +11,8 @@ from zulip_bots.bots.trivia_quiz.trivia_quiz import (
     update_quiz,
 )
 from zulip_bots.request_test_lib import mock_request_exception
-from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler, read_bot_fixture_data
+from zulip_bots.test_file_utils import read_bot_fixture_data
+from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler
 
 
 class TestTriviaQuizBot(BotTestCase, DefaultTests):

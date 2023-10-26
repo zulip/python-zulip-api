@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from zulip_bots.bots.connect_four.connect_four import ConnectFourModel
+from zulip_bots.bots.connect_four.controller import ConnectFourModel
 from zulip_bots.game_handler import BadMoveException
 from zulip_bots.test_lib import BotTestCase, DefaultTests
 

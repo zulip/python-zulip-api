@@ -8,7 +8,8 @@ from types import ModuleType
 from typing import Any, Dict
 from unittest import mock
 
-from zulip_bots.finder import metadata
+import importlib_metadata as metadata
+
 from zulip_bots.lib import BotHandler
 from zulip_botserver import server
 from zulip_botserver.input_parameters import parse_args

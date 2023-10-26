@@ -1,4 +1,5 @@
-from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler, get_bot_message_handler
+from zulip_bots.test_file_utils import get_bot_message_handler
+from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler
 
 
 class TestGithubDetailBot(BotTestCase, DefaultTests):

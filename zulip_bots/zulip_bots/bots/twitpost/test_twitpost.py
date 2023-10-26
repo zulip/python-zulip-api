@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
-from zulip_bots.test_file_utils import read_bot_fixture_data
-from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler, get_bot_message_handler
+from zulip_bots.test_file_utils import get_bot_message_handler, read_bot_fixture_data
+from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler
 
 
 class TestTwitpostBot(BotTestCase, DefaultTests):

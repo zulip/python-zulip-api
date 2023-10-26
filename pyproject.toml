@@ -32,7 +32,6 @@ disallow_subclassing_any = false
 disallow_untyped_calls = false
 disallow_untyped_decorators = false
 warn_return_any = false
-no_implicit_reexport = false
 
 # Enable optional errors.
 enable_error_code = [

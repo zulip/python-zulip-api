@@ -7,8 +7,9 @@ from typing import Optional
 from unittest import TestCase, mock
 from unittest.mock import MagicMock, patch
 
+import importlib_metadata as metadata
+
 import zulip_bots.run
-from zulip_bots.finder import metadata
 from zulip_bots.lib import extract_query_without_mention
 
 

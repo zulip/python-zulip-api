@@ -3,7 +3,8 @@ from contextlib import contextmanager
 from typing import ByteString, Iterator
 from unittest.mock import patch
 
-from zulip_bots.test_lib import BotTestCase, DefaultTests, read_bot_fixture_data
+from zulip_bots.test_file_utils import read_bot_fixture_data
+from zulip_bots.test_lib import BotTestCase, DefaultTests
 
 
 class MockHttplibRequest:
