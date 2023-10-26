@@ -152,7 +152,7 @@ class SalesforceHandler:
             for command_keyword in command["commands"]:
                 if content.startswith(command_keyword):
                     args = content.replace(command_keyword, "").strip()
-                    if args is not None and args != "":
+                    if args != "":
                         if "callback" in command.keys():
                             return command["callback"](args, self.sf, command)
                         else:

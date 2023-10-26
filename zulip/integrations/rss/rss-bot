@@ -14,7 +14,7 @@ import sys
 import time
 import urllib.parse
 from html.parser import HTMLParser
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import feedparser
 
@@ -225,7 +225,9 @@ for feed_url in feed_urls:
     for entry in data.entries:
         entry_hash = compute_entry_hash(entry)
         # An entry has either been published or updated.
-        entry_time: Tuple[int, int] = entry.get("published_parsed", entry.get("updated_parsed"))
+        entry_time: Optional[Tuple[int, int]] = entry.get(
+            "published_parsed", entry.get("updated_parsed")
+        )
         if (
             entry_time is not None
             and (time.time() - calendar.timegm(entry_time)) > OLDNESS_THRESHOLD * 60 * 60 * 24
