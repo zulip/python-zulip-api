@@ -2,6 +2,8 @@ import copy
 import random
 from typing import Any, List, Tuple
 
+from typing_extensions import override
+
 from zulip_bots.game_handler import BadMoveException, GameAdapter
 
 # -------------------------------------
@@ -267,6 +269,7 @@ class ticTacToeHandler(GameAdapter):
         "description": "Lets you play Tic-tac-toe against a computer.",
     }
 
+    @override
     def usage(self) -> str:
         return """
             You can play tic-tac-toe now! Make sure your

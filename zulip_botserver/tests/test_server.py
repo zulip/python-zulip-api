@@ -9,6 +9,7 @@ from typing import Any, Dict
 from unittest import mock
 
 import importlib_metadata as metadata
+from typing_extensions import override
 
 from zulip_bots.lib import BotHandler
 from zulip_botserver import server
@@ -26,6 +27,7 @@ class BotServerTests(BotServerTestCase):
         def handler_class(self) -> Any:
             return BotServerTests.MockMessageHandler()
 
+    @override
     def setUp(self) -> None:
         # Since initializing Client invokes `get_server_settings` that fails in the test
         # environment, we need to mock it to pretend that there exists a backend.

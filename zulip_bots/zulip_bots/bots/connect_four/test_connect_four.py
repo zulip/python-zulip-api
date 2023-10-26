@@ -1,5 +1,7 @@
 from typing import Dict, List
 
+from typing_extensions import override
+
 from zulip_bots.bots.connect_four.controller import ConnectFourModel
 from zulip_bots.game_handler import BadMoveException
 from zulip_bots.test_lib import BotTestCase, DefaultTests
@@ -8,6 +10,7 @@ from zulip_bots.test_lib import BotTestCase, DefaultTests
 class TestConnectFourBot(BotTestCase, DefaultTests):
     bot_name = "connect_four"
 
+    @override
     def make_request_message(
         self, content: str, user: str = "foo@example.com", user_name: str = "foo"
     ) -> Dict[str, str]:

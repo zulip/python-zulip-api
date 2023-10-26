@@ -57,7 +57,7 @@ setup(
         "html2text",
         "lxml",
         "BeautifulSoup4",
-        "typing_extensions",
+        "typing_extensions>=4.5.0",
         'importlib-metadata >= 3.6; python_version  < "3.10"',
     ],
     packages=find_packages(),

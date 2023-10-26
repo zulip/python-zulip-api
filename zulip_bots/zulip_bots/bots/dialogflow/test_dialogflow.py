@@ -3,6 +3,8 @@ from contextlib import contextmanager
 from typing import ByteString, Iterator
 from unittest.mock import patch
 
+from typing_extensions import override
+
 from zulip_bots.test_file_utils import read_bot_fixture_data
 from zulip_bots.test_lib import BotTestCase, DefaultTests
 
@@ -71,6 +73,7 @@ class TestDialogFlowBot(BotTestCase, DefaultTests):
     def test_alternate_response(self) -> None:
         self._test("test_alternate_result", "hello", "alternate result")
 
+    @override
     def test_bot_responds_to_empty_message(self) -> None:
         with self.mock_config_info({"key": "abcdefg", "bot_info": "bot info foo bar"}):
             pass

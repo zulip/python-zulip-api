@@ -44,6 +44,7 @@ setup(
         "zulip",
         "zulip_bots",
         "flask>=0.12.2",
+        "typing_extensions>=4.5.0",
     ],
     packages=find_packages(exclude=["tests"]),
 )

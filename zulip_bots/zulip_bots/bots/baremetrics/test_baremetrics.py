@@ -1,5 +1,7 @@
 from unittest.mock import patch
 
+from typing_extensions import override
+
 from zulip_bots.bots.baremetrics.baremetrics import BaremetricsHandler
 from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler
 
@@ -7,6 +9,7 @@ from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler
 class TestBaremetricsBot(BotTestCase, DefaultTests):
     bot_name = "baremetrics"
 
+    @override
     def test_bot_responds_to_empty_message(self) -> None:
         with self.mock_config_info({"api_key": "TEST"}), patch("requests.get"):
             self.verify_reply("", "No Command Specified")

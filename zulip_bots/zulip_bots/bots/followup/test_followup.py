@@ -1,3 +1,5 @@
+from typing_extensions import override
+
 from zulip_bots.test_lib import BotTestCase, DefaultTests
 
 
@@ -30,6 +32,7 @@ class TestFollowUpBot(BotTestCase, DefaultTests):
         self.assertEqual(response["content"], "from foo@example.com: feed the cat")
         self.assertEqual(response["to"], "issue")
 
+    @override
     def test_bot_responds_to_empty_message(self) -> None:
         bot_response = (
             "Please specify the message you want to send to followup stream after @mention-bot"

@@ -1,5 +1,7 @@
 from unittest.mock import patch
 
+from typing_extensions import override
+
 from zulip_bots.bots.mention.mention import MentionHandler
 from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler
 
@@ -7,6 +9,7 @@ from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler
 class TestMentionBot(BotTestCase, DefaultTests):
     bot_name = "mention"
 
+    @override
     def test_bot_responds_to_empty_message(self) -> None:
         with self.mock_config_info({"access_token": "12345"}), patch("requests.get"):
             self.verify_reply("", "Empty Mention Query")

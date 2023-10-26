@@ -3,6 +3,7 @@ from typing import Any, Dict, Iterator
 from unittest.mock import patch
 
 from simple_salesforce.exceptions import SalesforceAuthenticationFailed
+from typing_extensions import override
 
 from zulip_bots.test_file_utils import read_bot_fixture_data
 from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler
@@ -111,6 +112,7 @@ class TestSalesforceBot(BotTestCase, DefaultTests):
         ), mock_salesforce_commands_types():
             bot, bot_handler = self._get_handlers()
 
+    @override
     def test_bot_responds_to_empty_message(self) -> None:
         self._test("test_one_result", "", help_text)
 

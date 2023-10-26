@@ -1,6 +1,8 @@
 from typing import Any, Dict, Optional
 from unittest.mock import patch
 
+from typing_extensions import override
+
 from zulip_bots.test_file_utils import get_bot_message_handler
 from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler
 
@@ -28,6 +30,7 @@ class TestWitaiBot(BotTestCase, DefaultTests):
                     self.verify_reply("What is your favorite food?", "pizza")
 
     # This overrides the default one in `BotTestCase`.
+    @override
     def test_bot_responds_to_empty_message(self) -> None:
         with patch("zulip_bots.bots.witai.witai.get_handle", return_value=mock_handle):
             with self.mock_config_info(self.MOCK_CONFIG_INFO):

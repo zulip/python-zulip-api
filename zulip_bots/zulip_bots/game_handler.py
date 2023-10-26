@@ -5,6 +5,8 @@ import re
 from copy import deepcopy
 from typing import Any, Dict, List, Tuple
 
+from typing_extensions import override
+
 from zulip_bots.lib import BotHandler
 
 
@@ -12,6 +14,7 @@ class BadMoveException(Exception):
     def __init__(self, message: str) -> None:
         self.message = message
 
+    @override
     def __str__(self) -> str:
         return self.message
 
@@ -20,6 +23,7 @@ class SamePlayerMove(Exception):
     def __init__(self, message: str) -> None:
         self.message = message
 
+    @override
     def __str__(self) -> str:
         return self.message
 

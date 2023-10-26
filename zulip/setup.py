@@ -67,7 +67,7 @@ setup(
         "requests[security]>=0.12.1",
         "distro",
         "click",
-        "typing_extensions>=3.7",
+        "typing_extensions>=4.5.0",
     ],
     packages=find_packages(exclude=["tests"]),
 )

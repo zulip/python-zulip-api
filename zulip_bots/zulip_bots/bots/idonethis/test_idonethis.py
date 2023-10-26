@@ -1,5 +1,7 @@
 from unittest.mock import patch
 
+from typing_extensions import override
+
 from zulip_bots.test_lib import BotTestCase, DefaultTests
 
 
@@ -112,6 +114,7 @@ class TestIDoneThisBot(BotTestCase, DefaultTests):
                 "  * ID: 72c8241d2218464433268c5abd6625ac104e3d8f",
             )
 
+    @override
     def test_bot_responds_to_empty_message(self) -> None:
         with self.mock_config_info(
             {"api_key": "12345678", "bot_info": "team"}

@@ -1,5 +1,7 @@
 from unittest.mock import patch
 
+from typing_extensions import override
+
 from zulip_bots.bots.link_shortener.link_shortener import LinkShortenerHandler
 from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler
 
@@ -11,6 +13,7 @@ class TestLinkShortenerBot(BotTestCase, DefaultTests):
         with self.mock_config_info({"key": "qwertyuiop"}):
             self.verify_reply(message, response)
 
+    @override
     def test_bot_responds_to_empty_message(self) -> None:
         with patch("requests.get"):
             self._test(

@@ -17,6 +17,7 @@ from html.parser import HTMLParser
 from typing import Any, Dict, List, Optional, Tuple
 
 import feedparser
+from typing_extensions import override
 
 import zulip
 
@@ -138,6 +139,7 @@ class MLStripper(HTMLParser):
         self.reset()
         self.fed: List[str] = []
 
+    @override
     def handle_data(self, data: str) -> None:
         self.fed.append(data)
 

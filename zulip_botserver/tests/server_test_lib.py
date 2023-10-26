@@ -3,10 +3,13 @@ import json
 from typing import Any, Dict, List, Optional
 from unittest import TestCase, mock
 
+from typing_extensions import override
+
 from zulip_botserver import server
 
 
 class BotServerTestCase(TestCase):
+    @override
     def setUp(self) -> None:
         server.app.testing = True
         self.app = server.app.test_client()

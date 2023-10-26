@@ -1,3 +1,5 @@
+from typing_extensions import override
+
 from zulip_bots.test_file_utils import get_bot_message_handler
 from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler
 
@@ -8,6 +10,7 @@ class TestGithubDetailBot(BotTestCase, DefaultTests):
     empty_config = {"owner": "", "repo": ""}
 
     # Overrides default test_bot_usage().
+    @override
     def test_bot_usage(self) -> None:
         bot = get_bot_message_handler(self.bot_name)
         bot_handler = StubBotHandler()
@@ -18,6 +21,7 @@ class TestGithubDetailBot(BotTestCase, DefaultTests):
         self.assertIn("displays details on github issues", bot.usage())
 
     # Override default function in BotTestCase
+    @override
     def test_bot_responds_to_empty_message(self) -> None:
         with self.mock_config_info(self.mock_config):
             self.verify_reply("", "Failed to find any issue or PR.")

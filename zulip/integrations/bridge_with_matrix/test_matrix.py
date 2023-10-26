@@ -9,6 +9,7 @@ from typing import Any, Awaitable, Callable, Iterator, List
 from unittest import TestCase, mock
 
 import nio
+from typing_extensions import override
 
 from .matrix_bridge import MatrixToZulip, ZulipToMatrix, read_configuration
 
@@ -183,6 +184,7 @@ class MatrixBridgeMatrixToZulipTests(TestCase):
     room = mock.MagicMock()
     room.user_name = lambda _: "John Smith"
 
+    @override
     def setUp(self) -> None:
         self.matrix_to_zulip = mock.MagicMock()
         self.matrix_to_zulip.get_message_content_from_event = (
@@ -229,6 +231,7 @@ class MatrixBridgeZulipToMatrixTests(TestCase):
         subject=valid_zulip_config["topic"],
     )
 
+    @override
     def setUp(self) -> None:
         self.zulip_to_matrix = mock.MagicMock()
         self.zulip_to_matrix.zulip_config = self.valid_zulip_config

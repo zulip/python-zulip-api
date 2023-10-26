@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 from requests.exceptions import ConnectionError
+from typing_extensions import override
 
 from zulip_bots.test_file_utils import get_bot_message_handler
 from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler
@@ -10,6 +11,7 @@ class TestGiphyBot(BotTestCase, DefaultTests):
     bot_name = "giphy"
 
     # Test for bot response to empty message
+    @override
     def test_bot_responds_to_empty_message(self) -> None:
         bot_response = (
             "[Click to enlarge]"

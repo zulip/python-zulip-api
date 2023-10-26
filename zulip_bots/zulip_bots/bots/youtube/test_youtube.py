@@ -2,6 +2,7 @@ from typing import Dict
 from unittest.mock import patch
 
 from requests.exceptions import ConnectionError, HTTPError
+from typing_extensions import override
 
 from zulip_bots.test_file_utils import get_bot_message_handler
 from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler
@@ -27,6 +28,7 @@ class TestYoutubeBot(BotTestCase, DefaultTests):
     )
 
     # Override default function in BotTestCase
+    @override
     def test_bot_responds_to_empty_message(self) -> None:
         with self.mock_config_info(self.normal_config), self.mock_http_conversation("test_keyok"):
             self.verify_reply("", self.help_content)

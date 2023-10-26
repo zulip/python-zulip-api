@@ -1,11 +1,14 @@
 from typing import Any, Dict, Optional
 
+from typing_extensions import override
+
 from zulip_bots.test_lib import BotTestCase, DefaultTests
 
 
 class TestFrontBot(BotTestCase, DefaultTests):
     bot_name = "front"
 
+    @override
     def make_request_message(self, content: str) -> Dict[str, Any]:
         message = super().make_request_message(content)
         message["subject"] = "cnv_kqatm2"
@@ -18,6 +21,7 @@ class TestFrontBot(BotTestCase, DefaultTests):
             with self.assertRaises(KeyError):
                 bot, bot_handler = self._get_handlers()
 
+    @override
     def test_bot_responds_to_empty_message(self) -> None:
         with self.mock_config_info({"api_key": "TEST"}):
             self.verify_reply("", "Unknown command. Use `help` for instructions.")
@@ -87,11 +91,13 @@ class TestFrontBot(BotTestCase, DefaultTests):
 class TestFrontBotWrongTopic(BotTestCase, DefaultTests):
     bot_name = "front"
 
+    @override
     def make_request_message(self, content: str) -> Dict[str, Any]:
         message = super().make_request_message(content)
         message["subject"] = "kqatm2"
         return message
 
+    @override
     def test_bot_responds_to_empty_message(self) -> None:
         pass
 

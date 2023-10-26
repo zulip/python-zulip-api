@@ -1,5 +1,7 @@
 from unittest.mock import patch
 
+from typing_extensions import override
+
 from zulip_bots.bots.trello.trello import TrelloHandler
 from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler
 
@@ -9,10 +11,12 @@ mock_config = {"api_key": "TEST", "access_token": "TEST", "user_name": "TEST"}
 class TestTrelloBot(BotTestCase, DefaultTests):
     bot_name: str = "trello"
 
+    @override
     def test_bot_responds_to_empty_message(self) -> None:
         with self.mock_config_info(mock_config), patch("requests.get"):
             self.verify_reply("", "Empty Query")
 
+    @override
     def test_bot_usage(self) -> None:
         with self.mock_config_info(mock_config), patch("requests.get"):
             self.verify_reply(

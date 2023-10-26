@@ -16,6 +16,8 @@ from ctypes import (
     c_void_p,
 )
 
+from typing_extensions import override
+
 libc = CDLL("libc.so.6")
 com_err = CDLL("libcom_err.so.2")
 libzephyr = CDLL("libzephyr.so.4")
@@ -198,6 +200,7 @@ class ZephyrError(Exception):
     def __init__(self, code: int) -> None:
         self.code = code
 
+    @override
     def __str__(self) -> str:
         return error_message(self.code).decode()
 

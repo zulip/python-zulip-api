@@ -3,6 +3,8 @@ import json
 from typing import Any, Dict, Optional, Tuple
 from unittest.mock import patch
 
+from typing_extensions import override
+
 from zulip_bots.bots.trivia_quiz.trivia_quiz import (
     fix_quotes,
     get_quiz_from_id,
@@ -41,6 +43,7 @@ class TestTriviaQuizBot(BotTestCase, DefaultTests):
         else:
             self.verify_reply(message, response)
 
+    @override
     def test_bot_responds_to_empty_message(self) -> None:
         self._test("", 'type "new" for a new question')
 

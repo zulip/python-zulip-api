@@ -1,6 +1,8 @@
 from typing import Any, Dict, List
 from unittest.mock import patch
 
+from typing_extensions import override
+
 from zulip_bots.game_handler import GameInstance
 from zulip_bots.test_lib import BotTestCase, DefaultTests
 
@@ -8,6 +10,7 @@ from zulip_bots.test_lib import BotTestCase, DefaultTests
 class TestGameHandlerBot(BotTestCase, DefaultTests):
     bot_name = "game_handler_bot"
 
+    @override
     def make_request_message(
         self,
         content: str,

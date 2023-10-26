@@ -27,7 +27,7 @@ from typing import (
 
 import distro
 import requests
-from typing_extensions import Literal
+from typing_extensions import Literal, override
 
 __version__ = "0.8.2"
 
@@ -125,6 +125,7 @@ class CountingBackoff:
 
 
 class RandomExponentialBackoff(CountingBackoff):
+    @override
     def fail(self) -> None:
         super().fail()
         # Exponential growth with ratio sqrt(2); compute random delay
@@ -1802,6 +1803,7 @@ if LEGACY_CLIENT_INTERFACE_FROM_SERVER_DOCS_VERSION == "3":
     # This block is support for testing Zulip 3.x, which documents old
     # interfaces for the following functions:
     class LegacyInterfaceClient(Client):
+        @override
         def update_user_group_members(self, group_data: Dict[str, Any]) -> Dict[str, Any]:  # type: ignore[override] # Intentional override; see comments above.
             modern_group_data = group_data.copy()
             group_id = group_data["group_id"]

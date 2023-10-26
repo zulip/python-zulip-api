@@ -1,3 +1,5 @@
+from typing_extensions import override
+
 from zulip_bots.test_lib import BotTestCase, DefaultTests
 
 
@@ -107,6 +109,7 @@ To make your next move, respond to Chess Bot with
   h g f e d c b a
 ```"""
 
+    @override
     def test_bot_responds_to_empty_message(self) -> None:
         with self.mock_config_info({"stockfish_location": "/foo/bar"}):
             response = self.get_response(dict(content=""))
