@@ -58,7 +58,7 @@ setup(
         "lxml",
         "BeautifulSoup4",
         "typing_extensions",
-        'importlib-metadata >= 3.6; python_version  < "3.10"',
+        'importlib-metadata >= 3.6 ; python_version < "3.8"',
     ],
     packages=find_packages(),
     package_data=package_data,
