@@ -30,7 +30,7 @@ def mock_http_conversation(http_data: Dict[str, Any]) -> Any:
         mock_result.headers.update(http_headers)
         mock_result.encoding = get_encoding_from_headers(mock_result.headers)
         if is_raw_response:
-            mock_result._content = http_response.encode()  # type: ignore # This modifies a "hidden" attribute.
+            mock_result._content = http_response.encode()  # type: ignore[attr-defined] # This modifies a "hidden" attribute.
         else:
             mock_result._content = json.dumps(http_response).encode()
         return mock_result

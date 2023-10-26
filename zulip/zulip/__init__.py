@@ -154,7 +154,7 @@ def add_default_arguments(
             self.print_help(sys.stderr)
             self.exit(2, f"{self.prog}: error: {message}\n")
 
-        parser.error = types.MethodType(custom_error_handling, parser)  # type: ignore # patching function
+        parser.error = types.MethodType(custom_error_handling, parser)  # type: ignore[method-assign] # patching function
 
     if allow_provisioning:
         parser.add_argument(
@@ -1802,7 +1802,7 @@ if LEGACY_CLIENT_INTERFACE_FROM_SERVER_DOCS_VERSION == "3":
     # This block is support for testing Zulip 3.x, which documents old
     # interfaces for the following functions:
     class LegacyInterfaceClient(Client):
-        def update_user_group_members(self, group_data: Dict[str, Any]) -> Dict[str, Any]:  # type: ignore # Intentional override; see comments above.
+        def update_user_group_members(self, group_data: Dict[str, Any]) -> Dict[str, Any]:  # type: ignore[override] # Intentional override; see comments above.
             modern_group_data = group_data.copy()
             group_id = group_data["group_id"]
             del modern_group_data["group_id"]
@@ -1821,4 +1821,4 @@ if LEGACY_CLIENT_INTERFACE_FROM_SERVER_DOCS_VERSION == "3":
                 method="GET",
             )
 
-    Client = LegacyInterfaceClient  # type: ignore # Intentional override; see comments above.
+    Client = LegacyInterfaceClient  # type: ignore[misc] # Intentional override; see comments above.
