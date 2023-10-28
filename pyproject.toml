@@ -16,13 +16,23 @@ line_length = 100
 [tool.mypy]
 mypy_path = [
     "$MYPY_CONFIG_FILE_DIR/stubs",
+    "$MYPY_CONFIG_FILE_DIR/tools",
     "$MYPY_CONFIG_FILE_DIR/zulip",
+    "$MYPY_CONFIG_FILE_DIR/zulip/integrations/bridge_between_zulips",
+    "$MYPY_CONFIG_FILE_DIR/zulip/integrations/bridge_with_irc",
+    "$MYPY_CONFIG_FILE_DIR/zulip/integrations/bridge_with_slack",
+    "$MYPY_CONFIG_FILE_DIR/zulip/integrations/codebase",
+    "$MYPY_CONFIG_FILE_DIR/zulip/integrations/git",
+    "$MYPY_CONFIG_FILE_DIR/zulip/integrations/openshift",
+    "$MYPY_CONFIG_FILE_DIR/zulip/integrations/perforce",
+    "$MYPY_CONFIG_FILE_DIR/zulip/integrations/svn",
+    "$MYPY_CONFIG_FILE_DIR/zulip/integrations/trac",
+    "$MYPY_CONFIG_FILE_DIR/zulip/integrations/zephyr",
     "$MYPY_CONFIG_FILE_DIR/zulip_bots",
     "$MYPY_CONFIG_FILE_DIR/zulip_botserver",
 ]
 explicit_package_bases = true
 
-incremental = true
 scripts_are_modules = true
 show_traceback = true
 
@@ -46,6 +56,34 @@ enable_error_code = [
 
 # Other options.
 warn_unreachable = true
+
+[[tool.mypy.overrides]]
+module = [
+    "apiai.*",
+    "feedparser.*",
+    "gitlint.*",
+    "googleapiclient.*",
+    "irc.*",
+    "mercurial.*",
+    "nio.*",
+    "oauth2client.*",
+    "pysvn.*",
+    "scripts.*",
+    "setuptools.*",
+    "simple_salesforce.*",
+    "slack_sdk.*",
+    "sleekxmpp.*",
+    "trac.*",
+    "twitter.*",
+    "wit.*",
+]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = [
+    "git_p4",
+]
+ignore_errors = true
 
 [tool.pytest.ini_options]
 pythonpath = [
