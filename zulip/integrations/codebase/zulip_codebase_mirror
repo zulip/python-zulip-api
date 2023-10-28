@@ -75,7 +75,7 @@ def make_api_call(path: str) -> Optional[List[Dict[str, Any]]]:
         logging.error("Bad authorization from Codebase. Please check your credentials")
         sys.exit(-1)
     else:
-        logging.warn(
+        logging.warning(
             f"Found non-success response status code: {response.status_code} {response.text}"
         )
         return None
@@ -246,11 +246,11 @@ def handle_event(event: Dict[str, Any]) -> None:
         # but experimental testing showed that they were all sent as 'push' events
         pass
     elif event_type == "wiki_page":
-        logging.warn("Wiki page notifications not yet implemented")
+        logging.warning("Wiki page notifications not yet implemented")
     elif event_type == "sprint_creation":
-        logging.warn("Sprint notifications not yet implemented")
+        logging.warning("Sprint notifications not yet implemented")
     elif event_type == "sprint_ended":
-        logging.warn("Sprint notifications not yet implemented")
+        logging.warning("Sprint notifications not yet implemented")
     else:
         logging.info(f"Unknown event type {event_type}, ignoring!")
 
@@ -264,7 +264,7 @@ def handle_event(event: Dict[str, Any]) -> None:
         if res["result"] == "success":
             logging.info("Successfully sent Zulip with id: {}".format(res["id"]))
         else:
-            logging.warn("Failed to send Zulip: {} {}".format(res["result"], res["msg"]))
+            logging.warning("Failed to send Zulip: {} {}".format(res["result"], res["msg"]))
 
 
 # the main run loop for this mirror script
@@ -282,7 +282,7 @@ def run_mirror() -> None:
         else:
             since = datetime.fromtimestamp(float(timestamp), tz=pytz.utc)
     except (ValueError, OSError) as e:
-        logging.warn(f"Could not open resume file: {e}")
+        logging.warning(f"Could not open resume file: {e}")
         since = default_since()
 
     try:
