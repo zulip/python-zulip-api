@@ -707,11 +707,11 @@ def send_zephyr(zwrite_args: List[str], content: str) -> Tuple[int, str]:
             p.returncode,
         )
         if stdout:
-            logger.info("stdout: " + stdout)
+            logger.info("stdout: %s", stdout)
     elif stderr:
         logger.warning("zwrite command %r printed the following warning:", zwrite_args)
     if stderr:
-        logger.warning("stderr: " + stderr)
+        logger.warning("stderr: %s", stderr)
     return (p.returncode, stderr)
 
 
@@ -1027,10 +1027,9 @@ def add_zulip_subscriptions(verbose: bool) -> None:
                 logger.info("\nSuccessfully subscribed to: %s", ", ".join(list(new.values())[0]))
             if unauthorized is not None and len(unauthorized) > 0:
                 logger.info(
-                    "\n"
-                    + "\n".join(
-                        textwrap.wrap(
-                            """\
+                    "\n%s\n\n  %s",
+                    textwrap.wrap(
+                        """\
 The following streams you have NOT been subscribed to,
 because they have been configured in Zulip as invitation-only streams.
 This was done at the request of users of these Zephyr classes, usually
@@ -1040,16 +1039,15 @@ If you wish to read these streams in Zulip, you need to contact the people who a
 on these streams and already use Zulip.  They can subscribe you to them via the
 "streams" page in the Zulip web interface:
 """
-                        )
-                    )
-                    + "\n\n  {}".format(", ".join(unauthorized))
+                    ),
+                    ", ".join(unauthorized),
                 )
 
     if len(skipped) > 0:
         if verbose:
             logger.info(
-                "\n"
-                + "\n".join(
+                "\n%s\n",
+                "\n".join(
                     textwrap.wrap(
                         """\
 You have some lines in ~/.zephyr.subs that could not be
@@ -1062,8 +1060,7 @@ stream, so this tool has not created a corresponding
 Zulip subscription to these lines in ~/.zephyr.subs:
 """
                     )
-                )
-                + "\n"
+                ),
             )
 
     for cls, instance, recipient, reason in skipped:
@@ -1075,8 +1072,8 @@ Zulip subscription to these lines in ~/.zephyr.subs:
     if len(skipped) > 0:
         if verbose:
             logger.info(
-                "\n"
-                + "\n".join(
+                "\n%s\n",
+                "\n".join(
                     textwrap.wrap(
                         """\
 If you wish to be subscribed to any Zulip streams related
@@ -1084,8 +1081,7 @@ to these .zephyrs.subs lines, please do so via the Zulip
 web interface.
 """
                     )
-                )
-                + "\n"
+                ),
             )
 
 
@@ -1265,15 +1261,15 @@ if __name__ == "__main__":
     else:
         if not os.path.exists(options.api_key_file):
             logger.error(
-                "\n"
-                + "\n".join(
+                "\n%s",
+                "\n".join(
                     textwrap.wrap(
                         f"""\
 Could not find API key file.
 You need to either place your api key file at {options.api_key_file},
 or specify the --api-key-file option."""
                     )
-                )
+                ),
             )
             sys.exit(1)
         api_key = open(options.api_key_file).read().strip()
@@ -1282,7 +1278,7 @@ or specify the --api-key-file option."""
         os.environ["HUMBUG_API_KEY"] = api_key
 
     if options.nagios_path is None and options.nagios_class is not None:
-        logger.error("\n" + "nagios_path is required with nagios_class\n")
+        logger.error("\nnagios_path is required with nagios_class\n")
         sys.exit(1)
 
     zulip_account_email = options.user + "@mit.edu"

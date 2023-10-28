@@ -109,14 +109,14 @@ class JabberToZulipBot(ClientXMPP):
     def join_muc(self, room: str) -> None:
         if room in self.rooms:
             return
-        logging.debug("Joining " + room)
+        logging.debug("Joining %s", room)
         self.rooms.add(room)
         muc_jid = JID(local=room, domain=options.conference_domain)
         xep0045 = self.plugin["xep_0045"]
         try:
             xep0045.joinMUC(muc_jid, self.nick, wait=True)
         except InvalidJID:
-            logging.error("Could not join room: " + str(muc_jid))
+            logging.error("Could not join room: %s", muc_jid)
             return
 
         # Configure the room.  Really, we should only do this if the room is
@@ -129,12 +129,12 @@ class JabberToZulipBot(ClientXMPP):
         if form:
             xep0045.configureRoom(muc_jid, form)
         else:
-            logging.error("Could not configure room: " + str(muc_jid))
+            logging.error("Could not configure room: %s", muc_jid)
 
     def leave_muc(self, room: str) -> None:
         if room not in self.rooms:
             return
-        logging.debug("Leaving " + room)
+        logging.debug("Leaving %s", room)
         self.rooms.remove(room)
         muc_jid = JID(local=room, domain=options.conference_domain)
         self.plugin["xep_0045"].leaveMUC(muc_jid, self.nick)

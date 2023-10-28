@@ -48,10 +48,10 @@ def make_API_request(
         and "error" in r.json()
         and r.json()["error"] == "Invalid API Authentication"
     ):
-        logging.error("Error authenticating, please check key " + str(r.url))
+        logging.error("Error authenticating, please check key %s", r.url)
         raise AuthenticationException
     else:
-        logging.error("Error make API request, code " + str(r.status_code) + ". json: " + r.json())
+        logging.error("Error make API request, code %s. json: %s", r.status_code, r.json())
         raise UnspecifiedProblemException
 
 
@@ -242,9 +242,9 @@ Below are some of the commands you can use, and what they do.
                 "Sorry, I don't understand what your trying to say. Use `@mention help` to see my help. "
                 + e.detail
             )
-        except Exception as e:  # catches UnspecifiedProblemException, and other problems
+        except Exception:  # catches UnspecifiedProblemException, and other problems
             reply = "Oh dear, I'm having problems processing your request right now. Perhaps you could try again later :grinning:"
-            logging.error("Exception caught: " + str(e))
+            logging.exception("Exception caught")
         return reply
 
 
