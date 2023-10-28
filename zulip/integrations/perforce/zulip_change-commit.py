@@ -84,9 +84,7 @@ message = """**{user}** committed revision @{change} to `{path}`.
 ```quote
 {desc}
 ```
-""".format(
-    user=metadata["user"], change=change, path=changeroot, desc=metadata["desc"]
-)
+""".format(user=metadata["user"], change=change, path=changeroot, desc=metadata["desc"])
 
 message_data: Dict[str, Any] = {
     "type": "stream",

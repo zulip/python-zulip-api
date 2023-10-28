@@ -116,9 +116,7 @@ class GameAdapter:
 `quit`
 * To see rules of this game, type
 `rules`
-{}""".format(
-            self.game_name, self.get_bot_username(), self.move_help_message
-        )
+{}""".format(self.game_name, self.get_bot_username(), self.move_help_message)
 
     def get_commands(self) -> Dict[str, str]:
         action = self.help_message_single_player()
@@ -644,9 +642,7 @@ class GameAdapter:
                     message,
                     "Your current game is not in this subject. \n\
 To move subjects, send your message again, otherwise join the game using the link below.\n\n\
-{}".format(
-                        self.get_formatted_game_object(game_id)
-                    ),
+{}".format(self.get_formatted_game_object(game_id)),
                 )
                 self.pending_subject_changes.append(game_id)
                 return

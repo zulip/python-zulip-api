@@ -1,6 +1,5 @@
 crayons
 twine
-black~=23.10.1
 mock
 pytest
 pytest-cov

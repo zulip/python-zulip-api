@@ -54,8 +54,7 @@ class ChessHandler:
         if bot_handler.storage.contains("is_with_computer"):
             is_with_computer = (
                 # `bot_handler`'s `storage` only accepts `str` values.
-                bot_handler.storage.get("is_with_computer")
-                == str(True)
+                bot_handler.storage.get("is_with_computer") == str(True)
             )
 
         if bot_handler.storage.contains("last_fen"):

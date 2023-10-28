@@ -227,9 +227,7 @@ class ExternalBotHandler:
 
                 Have you not started the server?
                 Or did you mis-specify the URL?
-                """.format(
-                    e
-                )
+                """.format(e)
             )
             sys.exit(1)
 
@@ -238,9 +236,7 @@ class ExternalBotHandler:
             print(
                 """
                 ERROR: {}
-                """.format(
-                    msg
-                )
+                """.format(msg)
             )
             sys.exit(1)
 
@@ -338,9 +334,7 @@ class ExternalBotHandler:
                     The suggested name is {}.conf
 
                     We will proceed anyway.
-                    """.format(
-                        self.bot_config_file, bot_name
-                    )
+                    """.format(self.bot_config_file, bot_name)
                 )
 
             # We expect the caller to pass in None if the user does

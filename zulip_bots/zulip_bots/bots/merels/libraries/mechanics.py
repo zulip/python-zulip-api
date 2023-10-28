@@ -311,9 +311,7 @@ def display_game(topic_name, merels_storage):
     response += interface.graph_grid(data.grid()) + "\n"
     response += """Phase {}. Take mode: {}.
 X taken: {}, O taken: {}.
-    """.format(
-        data.get_phase(), take, data.x_taken, data.o_taken
-    )
+    """.format(data.get_phase(), take, data.x_taken, data.o_taken)
 
     return response
 

@@ -301,9 +301,7 @@ if __name__ == "__main__":
 zulip configuration file under the jabber_mirror section (exceptions are noted
 in their help sections).  Keys have the same name as options with hyphens
 replaced with underscores.  Zulip configuration options go in the api section,
-as normal.""".replace(
-            "\n", " "
-        )
+as normal.""".replace("\n", " ")
     )
     parser.add_option(
         "--mode",
@@ -314,9 +312,7 @@ as normal.""".replace(
 all messages they send on Zulip to Jabber and all private Jabber messages to
 Zulip.  In "public" mode, the mirror uses the credentials for a dedicated mirror
 user and mirrors messages sent to Jabber rooms to Zulip.  Defaults to
-"personal"'''.replace(
-            "\n", " "
-        ),
+"personal"'''.replace("\n", " "),
     )
     parser.add_option(
         "--zulip-email-suffix",
@@ -327,9 +323,7 @@ from JIDs and nicks before sending requests to the Zulip server, and remove the
 suffix before sending requests to the Jabber server.  For example, specifying
 "+foo" will cause messages that are sent to the "bar" room by nickname "qux" to
 be mirrored to the "bar/xmpp" stream in Zulip by user "qux+foo@example.com". This
-option does not affect login credentials.""".replace(
-            "\n", " "
-        ),
+option does not affect login credentials.""".replace("\n", " "),
     )
     parser.add_option(
         "-d",

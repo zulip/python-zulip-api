@@ -45,8 +45,10 @@ the Python version this command is executed with."""
 
     if py_version <= (3, 1) and (not options.force):
         print(
-            red + "Provision failed: Cannot create venv with outdated Python version ({}).\n"
-            "Maybe try `python3 tools/provision`.".format(py_version_output.strip()) + end_format
+            red
+            + "Provision failed: Cannot create venv with outdated Python version ({}).\n"
+            "Maybe try `python3 tools/provision`.".format(py_version_output.strip())
+            + end_format
         )
         sys.exit(1)
 

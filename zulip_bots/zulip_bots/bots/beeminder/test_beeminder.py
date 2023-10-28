@@ -79,9 +79,7 @@ right now.\nPlease try again later",
             {"auth_token": "someInvalidKey", "username": "aaron", "goalname": "goal"}
         ), patch("requests.get", side_effect=ConnectionError()), self.mock_http_conversation(
             "test_invalid_when_handle_message"
-        ), patch(
-            "logging.exception"
-        ):
+        ), patch("logging.exception"):
             self.verify_reply("5", "Error. Check your key!")
 
     def test_error(self) -> None:

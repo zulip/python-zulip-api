@@ -41,8 +41,9 @@ Zulip API configuration:
         expanded_test_path = os.path.abspath(os.path.expanduser(test_path))
         self.assertEqual(
             str(cm.exception),
-            "api_key or email not specified and "
-            "file {} does not exist".format(expanded_test_path),
+            "api_key or email not specified and " "file {} does not exist".format(
+                expanded_test_path
+            ),
         )
 
 

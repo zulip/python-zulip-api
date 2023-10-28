@@ -46,9 +46,7 @@ class TestIDoneThisBot(BotTestCase, DefaultTests):
             {"api_key": "87654321", "default_team": "testing team 1"}
         ), self.mock_http_conversation("test_401"), patch(
             "zulip_bots.bots.idonethis.idonethis.api_noop"
-        ), patch(
-            "logging.error"
-        ):
+        ), patch("logging.error"):
             self.verify_reply(
                 "list teams",
                 "I can't currently authenticate with idonethis. Can you check that your API key is correct? "

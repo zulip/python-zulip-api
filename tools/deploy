@@ -59,9 +59,7 @@ def pack(options: argparse.Namespace) -> None:
         [deploy]
         bot={}
         zuliprc=zuliprc
-        """.format(
-            options.main
-        )
+        """.format(options.main)
     )
     zip_file.writestr("config.ini", bot_config)
     zip_file.close()

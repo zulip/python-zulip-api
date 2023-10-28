@@ -74,18 +74,14 @@ class TerminalBotHandler:
                 """
                 stream: {} topic: {}
                 {}
-                """.format(
-                    message["to"], message["subject"], message["content"]
-                )
+                """.format(message["to"], message["subject"], message["content"])
             )
         else:
             print(
                 """
                 PM response:
                 {}
-                """.format(
-                    message["content"]
-                )
+                """.format(message["content"])
             )
         # Note that message_server is only responsible for storing and assigning an
         # id to the message instead of actually displaying it.
@@ -113,9 +109,7 @@ class TerminalBotHandler:
             """
             update to message #{}:
             {}
-            """.format(
-                message["message_id"], message["content"]
-            )
+            """.format(message["message_id"], message["content"])
         )
 
     def upload_file_from_path(self, file_path: str) -> Dict[str, Any]:

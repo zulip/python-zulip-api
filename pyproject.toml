@@ -110,4 +110,5 @@ src = [
     "zulip_bots",
     "zulip_botserver",
 ]
+target-version = "py38"
 line-length = 100
