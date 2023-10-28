@@ -259,4 +259,4 @@ for feed_url in feed_urls:
         for hash in new_hashes:
             f.write(hash + "\n")
 
-    logger.info("Sent zulips for %d %s entries" % (len(new_hashes), feed_url))
+    logger.info("Sent zulips for %d %s entries", len(new_hashes), feed_url)

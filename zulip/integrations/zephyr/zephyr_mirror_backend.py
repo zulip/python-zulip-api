@@ -702,11 +702,9 @@ def send_zephyr(zwrite_args: List[str], content: str) -> Tuple[int, str]:
     stdout, stderr = p.communicate(input=content)
     if p.returncode:
         logger.error(
-            "zwrite command '%s' failed with return code %d:"
-            % (
-                " ".join(zwrite_args),
-                p.returncode,
-            )
+            "zwrite command %r failed with return code %d:",
+            zwrite_args,
+            p.returncode,
         )
         if stdout:
             logger.info("stdout: " + stdout)

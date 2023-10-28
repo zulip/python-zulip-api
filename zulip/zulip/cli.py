@@ -89,7 +89,7 @@ def send_message(recipients: List[str], stream: str, subject: str, message: str)
             message_data["subject"],
         )
     else:
-        log.info("Sending message to %s... " % message_data["to"])
+        log.info("Sending message to %s... ", message_data["to"])
     response = client.send_message(message_data)
     log_exit(response)
 
