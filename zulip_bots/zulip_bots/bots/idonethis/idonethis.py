@@ -97,9 +97,7 @@ def get_team_hash(team_name: str) -> str:
 
 def team_info(team_name: str) -> str:
     data = api_show_team(get_team_hash(team_name))
-    return "\n".join(["Team Name: {name}", "ID: `{hash_id}`", "Created at: {created_at}"]).format(
-        **data
-    )
+    return "Team Name: {name}\nID: `{hash_id}`\nCreated at: {created_at}".format(**data)
 
 
 def entries_list(team_name: str) -> str:
@@ -110,17 +108,9 @@ def entries_list(team_name: str) -> str:
         data = api_list_entries()
         response = "Entries for all teams:"
     for entry in data:
-        response += "\n".join(
-            [
-                "",
-                " * {body_formatted}",
-                "  * Created at: {created_at}",
-                "  * Status: {status}",
-                "  * User: {username}",
-                "  * Team: {teamname}",
-                "  * ID: {hash_id}",
-            ]
-        ).format(username=entry["user"]["full_name"], teamname=entry["team"]["name"], **entry)
+        response += "\n * {body_formatted}\n  * Created at: {created_at}\n  * Status: {status}\n  * User: {username}\n  * Team: {teamname}\n  * ID: {hash_id}".format(
+            username=entry["user"]["full_name"], teamname=entry["team"]["name"], **entry
+        )
     return response
 
 

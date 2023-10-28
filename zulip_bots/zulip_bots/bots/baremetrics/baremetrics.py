@@ -154,15 +154,7 @@ class BaremetricsHandler:
         plans_data = plans_response.json()
         plans_data = plans_data["plans"]
 
-        template = "\n".join(
-            [
-                "{_count}.Name: {name}",
-                "Active: {active}",
-                "Interval: {interval}",
-                "Interval Count: {interval_count}",
-                "Amounts:",
-            ]
-        )
+        template = "{_count}.Name: {name}\nActive: {active}\nInterval: {interval}\nInterval Count: {interval_count}\nAmounts:"
         response = ["**Listing plans:**"]
         for index, plan in enumerate(plans_data):
             response += (
@@ -181,17 +173,7 @@ class BaremetricsHandler:
         customers_data = customers_data["customers"]
 
         # FIXME BUG here? mismatch of name and display name?
-        template = "\n".join(
-            [
-                "{_count}.Name: {display_name}",
-                "Display Name: {name}",
-                "OID: {oid}",
-                "Active: {is_active}",
-                "Email: {email}",
-                "Notes: {notes}",
-                "Current Plans:",
-            ]
-        )
+        template = "{_count}.Name: {display_name}\nDisplay Name: {name}\nOID: {oid}\nActive: {is_active}\nEmail: {email}\nNotes: {notes}\nCurrent Plans:"
         response = ["**Listing customers:**"]
         for index, customer in enumerate(customers_data):
             response += (
@@ -209,17 +191,7 @@ class BaremetricsHandler:
         subscriptions_data = subscriptions_response.json()
         subscriptions_data = subscriptions_data["subscriptions"]
 
-        template = "\n".join(
-            [
-                "{_count}.Customer Name: {name}",
-                "Customer Display Name: {display_name}",
-                "Customer OID: {oid}",
-                "Customer Email: {email}",
-                "Active: {_active}",
-                "Plan Name: {_plan_name}",
-                "Plan Amounts:",
-            ]
-        )
+        template = "{_count}.Customer Name: {name}\nCustomer Display Name: {display_name}\nCustomer OID: {oid}\nCustomer Email: {email}\nActive: {_active}\nPlan Name: {_plan_name}\nPlan Amounts:"
         response = ["**Listing subscriptions:**"]
         for index, subscription in enumerate(subscriptions_data):
             response += (
