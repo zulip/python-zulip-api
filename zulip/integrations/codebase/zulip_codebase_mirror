@@ -262,9 +262,9 @@ def handle_event(event: Dict[str, Any]) -> None:
             {"type": "stream", "to": stream, "subject": subject, "content": content}
         )
         if res["result"] == "success":
-            logging.info("Successfully sent Zulip with id: {}".format(res["id"]))
+            logging.info("Successfully sent Zulip with id: %s", res["id"])
         else:
-            logging.warning("Failed to send Zulip: {} {}".format(res["result"], res["msg"]))
+            logging.warning("Failed to send Zulip: %s %s", res["result"], res["msg"])
 
 
 # the main run loop for this mirror script

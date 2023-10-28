@@ -669,9 +669,9 @@ def zephyr_to_zulip(options: optparse.Values) -> None:
                     if "instance" in zeph:
                         zeph["subject"] = zeph["instance"]
                     logger.info(
-                        "sending saved message to {} from {}...".format(
-                            zeph.get("stream", zeph.get("recipient")), zeph["sender"]
-                        )
+                        "sending saved message to %s from %s...",
+                        zeph.get("stream", zeph.get("recipient")),
+                        zeph["sender"],
                     )
                     send_zulip(zulip_client, zeph)
                 except Exception:
@@ -711,9 +711,7 @@ def send_zephyr(zwrite_args: List[str], content: str) -> Tuple[int, str]:
         if stdout:
             logger.info("stdout: " + stdout)
     elif stderr:
-        logger.warning(
-            "zwrite command '{}' printed the following warning:".format(" ".join(zwrite_args))
-        )
+        logger.warning("zwrite command %r printed the following warning:", zwrite_args)
     if stderr:
         logger.warning("stderr: " + stderr)
     return (p.returncode, stderr)
@@ -929,7 +927,7 @@ def maybe_forward_to_zephyr(message: Dict[str, Any], zulip_client: zulip.Client)
         timestamp_now = int(time.time())
         if float(message["timestamp"]) < timestamp_now - 15:
             logger.warning(
-                "Skipping out of order message: {} < {}".format(message["timestamp"], timestamp_now)
+                "Skipping out of order message: %s < %s", message["timestamp"], timestamp_now
             )
             return
         try:
@@ -1018,7 +1016,7 @@ def add_zulip_subscriptions(verbose: bool) -> None:
             authorization_errors_fatal=False,
         )
         if res.get("result") != "success":
-            logger.error("Error subscribing to streams:\n{}".format(res["msg"]))
+            logger.error("Error subscribing to streams:\n%s", res["msg"])
             return
 
         already = res.get("already_subscribed")
@@ -1026,13 +1024,9 @@ def add_zulip_subscriptions(verbose: bool) -> None:
         unauthorized = res.get("unauthorized")
         if verbose:
             if already is not None and len(already) > 0:
-                logger.info(
-                    "\nAlready subscribed to: {}".format(", ".join(list(already.values())[0]))
-                )
+                logger.info("\nAlready subscribed to: %s", ", ".join(list(already.values())[0]))
             if new is not None and len(new) > 0:
-                logger.info(
-                    "\nSuccessfully subscribed to: {}".format(", ".join(list(new.values())[0]))
-                )
+                logger.info("\nSuccessfully subscribed to: %s", ", ".join(list(new.values())[0]))
             if unauthorized is not None and len(unauthorized) > 0:
                 logger.info(
                     "\n"

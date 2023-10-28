@@ -53,9 +53,9 @@ def read_config_from_env_vars(bot_name: Optional[str] = None) -> Dict[str, Dict[
             first_bot_name = list(env_config.keys())[0]
             bots_config[bot_name] = env_config[first_bot_name]
             logging.warning(
-                "First bot name in the config list was changed from '{}' to '{}'".format(
-                    first_bot_name, bot_name
-                )
+                "First bot name in the config list was changed from %r to %r",
+                first_bot_name,
+                bot_name,
             )
     else:
         bots_config = dict(env_config)
