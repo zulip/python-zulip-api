@@ -1,5 +1,6 @@
 from copy import deepcopy
 from functools import reduce
+from typing import List
 
 from zulip_bots.game_handler import BadMoveException
 
@@ -10,7 +11,7 @@ class ConnectFourModel:
     Four logic for the Connect Four Bot
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.blank_board = [
             [0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0],
@@ -22,14 +23,14 @@ class ConnectFourModel:
 
         self.current_board = self.blank_board
 
-    def update_board(self, board):
+    def update_board(self, board: List[List[int]]) -> None:
         self.current_board = deepcopy(board)
 
-    def get_column(self, col):
+    def get_column(self, col: int) -> List[int]:
         # We use this in tests.
         return [self.current_board[i][col] for i in range(6)]
 
-    def validate_move(self, column_number):
+    def validate_move(self, column_number: int) -> bool:
         if column_number < 0 or column_number > 6:
             return False
 
@@ -38,7 +39,7 @@ class ConnectFourModel:
 
         return self.current_board[row][column] == 0
 
-    def available_moves(self):
+    def available_moves(self) -> List[int]:
         available_moves = []
         row = 0
         for column in range(0, 7):
@@ -47,7 +48,9 @@ class ConnectFourModel:
 
         return available_moves
 
-    def make_move(self, move, player_number, is_computer=False):
+    def make_move(
+        self, move: str, player_number: int, is_computer: bool = False
+    ) -> List[List[int]]:
         if player_number == 1:
             token_number = -1
         if player_number == 0:
@@ -67,8 +70,8 @@ class ConnectFourModel:
 
         return deepcopy(self.current_board)
 
-    def determine_game_over(self, players):
-        def get_horizontal_wins(board):
+    def determine_game_over(self, players: List[str]) -> str:
+        def get_horizontal_wins(board: List[List[int]]) -> int:
             horizontal_sum = 0
 
             for row in range(0, 6):
@@ -86,7 +89,7 @@ class ConnectFourModel:
 
             return 0
 
-        def get_vertical_wins(board):
+        def get_vertical_wins(board: List[List[int]]) -> int:
             vertical_sum = 0
 
             for row in range(0, 3):
@@ -104,7 +107,7 @@ class ConnectFourModel:
 
             return 0
 
-        def get_diagonal_wins(board):
+        def get_diagonal_wins(board: List[List[int]]) -> int:
             major_diagonal_sum = 0
             minor_diagonal_sum = 0
 
