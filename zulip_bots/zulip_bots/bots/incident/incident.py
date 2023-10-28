@@ -63,7 +63,7 @@ def start_new_incident(query: str, message: Dict[str, Any], bot_handler: BotHand
 def parse_answer(query: str) -> Tuple[str, str]:
     m = re.match(r"answer\s+(TICKET....)\s+(.)", query)
     if not m:
-        raise InvalidAnswerException()
+        raise InvalidAnswerException
 
     ticket_id = m.group(1)
 
@@ -74,7 +74,7 @@ def parse_answer(query: str) -> Tuple[str, str]:
 
     answer = m.group(2).upper()
     if answer not in "1234":
-        raise InvalidAnswerException()
+        raise InvalidAnswerException
 
     return (ticket_id, ANSWERS[answer])
 

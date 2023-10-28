@@ -104,7 +104,7 @@ def fetch_xkcd_query(mode: int, comic_id: Optional[str] = None) -> Dict[str, str
             latest = requests.get(LATEST_XKCD_URL)
 
             if latest.status_code != 200:
-                raise XkcdServerError()
+                raise XkcdServerError
 
             latest_id = latest.json()["num"]
             random_id = random.randint(1, latest_id)
@@ -118,9 +118,9 @@ def fetch_xkcd_query(mode: int, comic_id: Optional[str] = None) -> Dict[str, str
         fetched = requests.get(url)
 
         if fetched.status_code == 404:
-            raise XkcdNotFoundError()
+            raise XkcdNotFoundError
         elif fetched.status_code != 200:
-            raise XkcdServerError()
+            raise XkcdServerError
 
         xkcd_json = fetched.json()
     except requests.exceptions.ConnectionError:

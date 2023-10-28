@@ -77,7 +77,7 @@ def get_url_gif_giphy(keyword: str, api_key: str) -> Union[int, str]:
     try:
         gif_url = data.json()["data"]["images"]["original"]["url"]
     except (TypeError, KeyError):  # Usually triggered by no result in Giphy.
-        raise GiphyNoResultException()
+        raise GiphyNoResultException
     return gif_url
 
 

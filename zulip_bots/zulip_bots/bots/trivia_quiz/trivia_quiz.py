@@ -75,12 +75,12 @@ def start_new_quiz(message: Dict[str, Any], bot_handler: BotHandler) -> None:
 def parse_answer(query: str) -> Tuple[str, str]:
     m = re.match(r"answer\s+(Q...)\s+(.)", query)
     if not m:
-        raise InvalidAnswerException()
+        raise InvalidAnswerException
 
     quiz_id = m.group(1)
     answer = m.group(2).upper()
     if answer not in "ABCD":
-        raise InvalidAnswerException()
+        raise InvalidAnswerException
 
     return (quiz_id, answer)
 
@@ -98,10 +98,10 @@ def get_trivia_payload() -> Dict[str, Any]:
         data = requests.get(url)
 
     except requests.exceptions.RequestException:
-        raise NotAvailableException()
+        raise NotAvailableException
 
     if data.status_code != 200:
-        raise NotAvailableException()
+        raise NotAvailableException
 
     payload = data.json()
     return payload

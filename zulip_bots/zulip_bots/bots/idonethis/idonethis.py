@@ -49,10 +49,10 @@ def make_API_request(
         and r.json()["error"] == "Invalid API Authentication"
     ):
         logging.error("Error authenticating, please check key " + str(r.url))
-        raise AuthenticationException()
+        raise AuthenticationException
     else:
         logging.error("Error make API request, code " + str(r.status_code) + ". json: " + r.json())
-        raise UnspecifiedProblemException()
+        raise UnspecifiedProblemException
 
 
 def api_noop() -> None:

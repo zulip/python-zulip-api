@@ -51,7 +51,7 @@ class StubBotHandler:
         pass
 
     def quit(self, message: str = "") -> None:
-        raise self.BotQuitException()
+        raise self.BotQuitException
 
     def get_config_info(self, bot_name: str, optional: bool = False) -> Dict[str, str]:
         return {}
@@ -77,10 +77,10 @@ class DefaultTests:
     bot_name = ""
 
     def make_request_message(self, content: str) -> Dict[str, Any]:
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def get_response(self, message: Dict[str, Any]) -> Dict[str, Any]:
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def test_bot_usage(self) -> None:
         bot = get_bot_message_handler(self.bot_name)
