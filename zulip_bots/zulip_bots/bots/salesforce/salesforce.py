@@ -88,7 +88,7 @@ def query_salesforce(
     limit = re_limit.search(raw_arg)
     if limit:
         limit_num = int(limit.group().rsplit(" ", 1)[1])
-        logging.info(f"Searching with limit {limit_num}")
+        logging.info("Searching with limit %d", limit_num)
     query = default_query
     if "query" in command.keys():
         query = command["query"]

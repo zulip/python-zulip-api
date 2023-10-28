@@ -90,12 +90,12 @@ def read_config_file(
         bot_section = parser.sections()[0]
         bots_config[bot_name] = read_config_section(parser, bot_section)
         logging.warning(
-            f"First bot name in the config list was changed from '{bot_section}' to '{bot_name}'"
+            "First bot name in the config list was changed from %r to %r", bot_section, bot_name
         )
         ignored_sections = parser.sections()[1:]
 
     if len(ignored_sections) > 0:
-        logging.warning(f"Sections except the '{bot_section}' will be ignored")
+        logging.warning("Sections except the %r will be ignored", bot_section)
 
     return bots_config
 

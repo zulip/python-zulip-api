@@ -226,7 +226,7 @@ class GameAdapter:
 
             if sender not in self.user_cache.keys():
                 self.add_user_to_cache(message)
-                logging.info(f"Added {sender} to user cache")
+                logging.info("Added %s to user cache", sender)
 
             if self.is_single_player:
                 if content.lower().startswith("start game with") or content.lower().startswith(

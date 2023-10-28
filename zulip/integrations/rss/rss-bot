@@ -244,8 +244,8 @@ for feed_url in feed_urls:
 
         response: Dict[str, Any] = send_zulip(entry, feed_name)
         if response["result"] != "success":
-            logger.error(f"Error processing {feed_url}")
-            logger.error(str(response))
+            logger.error("Error processing %s", feed_url)
+            logger.error("%s", response)
             if first_message:
                 # This is probably some fundamental problem like the stream not
                 # existing or something being misconfigured, so bail instead of

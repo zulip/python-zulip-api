@@ -76,7 +76,7 @@ def make_api_call(path: str) -> Optional[List[Dict[str, Any]]]:
         sys.exit(-1)
     else:
         logging.warning(
-            f"Found non-success response status code: {response.status_code} {response.text}"
+            "Found non-success response status code: %s %s", response.status_code, response.text
         )
         return None
 
@@ -252,7 +252,7 @@ def handle_event(event: Dict[str, Any]) -> None:
     elif event_type == "sprint_ended":
         logging.warning("Sprint notifications not yet implemented")
     else:
-        logging.info(f"Unknown event type {event_type}, ignoring!")
+        logging.info("Unknown event type %s, ignoring!", event_type)
 
     if subject and content:
         if len(subject) > 60:
@@ -281,8 +281,8 @@ def run_mirror() -> None:
             since = default_since()
         else:
             since = datetime.fromtimestamp(float(timestamp), tz=pytz.utc)
-    except (ValueError, OSError) as e:
-        logging.warning(f"Could not open resume file: {e}")
+    except (ValueError, OSError):
+        logging.warning("Could not open resume file", exc_info=True)
         since = default_since()
 
     try:

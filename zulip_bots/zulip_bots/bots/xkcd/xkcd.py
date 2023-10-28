@@ -84,7 +84,9 @@ def get_xkcd_bot_response(message: Dict[str, str], quoted_name: str) -> str:
         logging.exception("Connection error occurred when trying to connect to xkcd server")
         return "Sorry, I cannot process your request right now, please try again later!"
     except XkcdNotFoundError:
-        logging.exception(f"XKCD server responded 404 when trying to fetch comic with id {command}")
+        logging.exception(
+            "XKCD server responded 404 when trying to fetch comic with id %s", command
+        )
         return f"Sorry, there is likely no xkcd comic strip with id: #{command}"
     else:
         return "#{}: **{}**\n[{}]({})".format(
