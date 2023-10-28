@@ -222,21 +222,21 @@ class ExternalBotHandler:
             user_profile = client.get_profile()
         except ZulipError as e:
             print(
-                """
-                ERROR: {}
+                f"""
+                ERROR: {e}
 
                 Have you not started the server?
                 Or did you mis-specify the URL?
-                """.format(e)
+                """
             )
             sys.exit(1)
 
         if user_profile.get("result") == "error":
             msg = user_profile.get("msg", "unknown")
             print(
+                f"""
+                ERROR: {msg}
                 """
-                ERROR: {}
-                """.format(msg)
             )
             sys.exit(1)
 
@@ -323,18 +323,18 @@ class ExternalBotHandler:
 
             if bot_name not in self.bot_config_file:
                 print(
-                    """
+                    f"""
                     WARNING!
 
-                    {} does not adhere to the
+                    {self.bot_config_file} does not adhere to the
                     file naming convention, and it could be a
                     sign that you passed in the
                     wrong third-party configuration file.
 
-                    The suggested name is {}.conf
+                    The suggested name is {bot_name}.conf
 
                     We will proceed anyway.
-                    """.format(self.bot_config_file, bot_name)
+                    """
                 )
 
             # We expect the caller to pass in None if the user does
@@ -368,8 +368,8 @@ class ExternalBotHandler:
             return open(abs_filepath)
         else:
             raise PermissionError(
-                'Cannot open file "{}". Bots may only access '
-                "files in their local directory.".format(abs_filepath)
+                f'Cannot open file "{abs_filepath}". Bots may only access '
+                "files in their local directory."
             )
 
     def quit(self, message: str = "") -> None:

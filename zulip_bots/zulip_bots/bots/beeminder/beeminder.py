@@ -26,9 +26,7 @@ def get_beeminder_response(message_content: str, config_info: Dict[str, str]) ->
     if message_content == "" or message_content == "help":
         return help_message
 
-    url = "https://www.beeminder.com/api/v1/users/{}/goals/{}/datapoints.json".format(
-        username, goalname
-    )
+    url = f"https://www.beeminder.com/api/v1/users/{username}/goals/{goalname}/datapoints.json"
     message_pieces = message_content.split(",")
     for i in range(len(message_pieces)):
         message_pieces[i] = message_pieces[i].strip()
@@ -66,13 +64,11 @@ at syntax by: @mention-botname help"
             if r.status_code == 401:  # Handles case of invalid key and missing key
                 return "Error. Check your key!"
             else:
-                return "Error occured : {}".format(
-                    r.status_code
-                )  # Occures in case of unprocessable entity
+                return f"Error occured : {r.status_code}"  # Occures in case of unprocessable entity
         else:
             datapoint_link = f"https://www.beeminder.com/{username}/{goalname}"
-            return "[Datapoint]({}) created.".format(
-                datapoint_link
+            return (
+                f"[Datapoint]({datapoint_link}) created."
             )  # Handles the case of successful datapoint creation
     except ConnectionError as e:
         logging.exception(str(e))

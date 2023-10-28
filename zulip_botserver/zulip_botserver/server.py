@@ -90,9 +90,7 @@ def read_config_file(
         bot_section = parser.sections()[0]
         bots_config[bot_name] = read_config_section(parser, bot_section)
         logging.warning(
-            "First bot name in the config list was changed from '{}' to '{}'".format(
-                bot_section, bot_name
-            )
+            f"First bot name in the config list was changed from '{bot_section}' to '{bot_name}'"
         )
         ignored_sections = parser.sections()[1:]
 
@@ -118,7 +116,7 @@ def load_lib_modules(available_bots: List[str]) -> Dict[str, ModuleType]:
             if bot.endswith(".py") and os.path.isfile(bot):
                 lib_module = import_module_from_source(bot, "custom_bot_module")
             else:
-                module_name = "zulip_bots.bots.{bot}.{bot}".format(bot=bot)
+                module_name = f"zulip_bots.bots.{bot}.{bot}"
                 lib_module = import_module(module_name)
             bots_lib_module[bot] = lib_module
         except ImportError:

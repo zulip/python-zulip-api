@@ -124,26 +124,15 @@ def format_incident_for_widget(ticket_id: str, incident: Dict[str, Any]) -> str:
 
 
 def format_incident_for_markdown(ticket_id: str, incident: Dict[str, Any]) -> str:
-    answer_list = "\n".join(
-        "* **{code}** {answer}".format(
-            code=code,
-            answer=ANSWERS[code],
-        )
-        for code in "1234"
-    )
+    answer_list = "\n".join(f"* **{code}** {ANSWERS[code]}" for code in "1234")
     how_to_respond = f"""**reply**: answer {ticket_id} <code>"""
 
-    content = """
+    content = f"""
 Incident: {incident}
-Q: {question}
+Q: {QUESTION}
 
 {answer_list}
-{how_to_respond}""".format(
-        question=QUESTION,
-        answer_list=answer_list,
-        how_to_respond=how_to_respond,
-        incident=incident,
-    )
+{how_to_respond}"""
     return content
 
 

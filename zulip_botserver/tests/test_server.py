@@ -273,8 +273,8 @@ class BotServerTests(BotServerTestCase):
         # load invalid file path
         with self.assertRaisesRegex(
             SystemExit,
-            'Error: Bot "{}/zulip_bots/zulip_bots/bots/helloworld.py" doesn\'t exist. '
-            "Please make sure you have set up the botserverrc file correctly.".format(root_dir),
+            f'Error: Bot "{root_dir}/zulip_bots/zulip_bots/bots/helloworld.py" doesn\'t exist. '
+            "Please make sure you have set up the botserverrc file correctly.",
         ):
             path = Path(
                 root_dir, "zulip_bots/zulip_bots/bots/{bot}.py".format(bot="helloworld")

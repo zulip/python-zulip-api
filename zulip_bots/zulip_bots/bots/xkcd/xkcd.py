@@ -62,11 +62,11 @@ def get_xkcd_bot_response(message: Dict[str, str], quoted_name: str) -> str:
 
     commands_help = (
         "%s"
-        "\n* `{0} help` to show this help message."
-        "\n* `{0} latest` to fetch the latest comic strip from xkcd."
-        "\n* `{0} random` to fetch a random comic strip from xkcd."
-        "\n* `{0} <comic id>` to fetch a comic strip based on `<comic id>` "
-        "e.g `{0} 1234`.".format(quoted_name)
+        f"\n* `{quoted_name} help` to show this help message."
+        f"\n* `{quoted_name} latest` to fetch the latest comic strip from xkcd."
+        f"\n* `{quoted_name} random` to fetch a random comic strip from xkcd."
+        f"\n* `{quoted_name} <comic id>` to fetch a comic strip based on `<comic id>` "
+        f"e.g `{quoted_name} 1234`."
     )
 
     try:

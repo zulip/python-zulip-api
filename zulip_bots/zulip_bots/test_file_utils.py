@@ -19,7 +19,7 @@ def get_bot_message_handler(bot_name: str) -> Any:
     # handler class. Eventually, we want bot's handler classes to
     # inherit from a common prototype specifying the handle_message
     # function.
-    lib_module: Any = import_module("zulip_bots.bots.{bot}.{bot}".format(bot=bot_name))
+    lib_module: Any = import_module(f"zulip_bots.bots.{bot_name}.{bot_name}")
     return lib_module.handler_class()
 
 

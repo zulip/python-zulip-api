@@ -284,8 +284,8 @@ def create_room(topic_name, merels_storage):
         return response
     else:
         return (
-            "Failed: Cannot create an already existing game in {}. "
-            "Please finish the game first.".format(topic_name)
+            f"Failed: Cannot create an already existing game in {topic_name}. "
+            "Please finish the game first."
         )
 
 
@@ -309,9 +309,9 @@ def display_game(topic_name, merels_storage):
         take = "No"
 
     response += interface.graph_grid(data.grid()) + "\n"
-    response += """Phase {}. Take mode: {}.
-X taken: {}, O taken: {}.
-    """.format(data.get_phase(), take, data.x_taken, data.o_taken)
+    response += f"""Phase {data.get_phase()}. Take mode: {take}.
+X taken: {data.x_taken}, O taken: {data.o_taken}.
+    """
 
     return response
 
@@ -362,9 +362,7 @@ def move_man(topic_name, p1, p2, merels_storage):
             data.hill_uid,
             data.take_mode,
         )
-        return "Moved a man from ({}, {}) -> ({}, {}) for {}.".format(
-            p1[0], p1[1], p2[0], p2[1], data.turn
-        )
+        return f"Moved a man from ({p1[0]}, {p1[1]}) -> ({p2[0]}, {p2[1]}) for {data.turn}."
     else:
         raise BadMoveException("Failed: That's not a legal move. Please try again.")
 

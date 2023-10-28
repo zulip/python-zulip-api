@@ -124,9 +124,7 @@ def get_bot_converter_response(message: Dict[str, str], bot_handler: BotHandler)
             number_res = round_to(number_res, 7)
 
             results.append(
-                "{} {} = {} {}".format(
-                    number, words[convert_index + 2], number_res, words[convert_index + 3]
-                )
+                f"{number} {words[convert_index + 2]} = {number_res} {words[convert_index + 3]}"
             )
 
         else:

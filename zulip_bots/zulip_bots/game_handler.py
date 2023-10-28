@@ -80,12 +80,12 @@ class GameAdapter:
         self.put_user_cache()
 
     def help_message(self) -> str:
-        return """** {} Bot Help:**
-*Preface all commands with @**{}***
+        return f"""** {self.game_name} Bot Help:**
+*Preface all commands with @**{self.get_bot_username()}***
 * To start a game in a stream (*recommended*), type
 `start game`
 * To start a game against another player, type
-`start game with @<player-name>`{}
+`start game with @<player-name>`{self.play_with_computer_help()}
 * To play game with the current number of players, type
 `play game`
 * To quit a game at any time, type
@@ -100,23 +100,18 @@ class GameAdapter:
 `cancel game`
 * To see rules of this game, type
 `rules`
-{}""".format(
-            self.game_name,
-            self.get_bot_username(),
-            self.play_with_computer_help(),
-            self.move_help_message,
-        )
+{self.move_help_message}"""
 
     def help_message_single_player(self) -> str:
-        return """** {} Bot Help:**
-*Preface all commands with @**{}***
+        return f"""** {self.game_name} Bot Help:**
+*Preface all commands with @**{self.get_bot_username()}***
 * To start a game in a stream, type
 `start game`
 * To quit a game at any time, type
 `quit`
 * To see rules of this game, type
 `rules`
-{}""".format(self.game_name, self.get_bot_username(), self.move_help_message)
+{self.move_help_message}"""
 
     def get_commands(self) -> Dict[str, str]:
         action = self.help_message_single_player()
@@ -359,9 +354,7 @@ class GameAdapter:
             if len(users) + 1 < self.min_players:
                 self.send_reply(
                     message,
-                    "You must have at least {} players to play.\nGame cancelled.".format(
-                        self.min_players
-                    ),
+                    f"You must have at least {self.min_players} players to play.\nGame cancelled.",
                 )
                 return
             if len(users) + 1 > self.max_players:
@@ -546,11 +539,9 @@ class GameAdapter:
         self.instances[game_id].start()
 
     def get_formatted_game_object(self, game_id: str) -> str:
-        object = """> **Game `{}`**
-> {}
-> {}/{} players""".format(
-            game_id, self.game_name, self.get_number_of_players(game_id), self.max_players
-        )
+        object = f"""> **Game `{game_id}`**
+> {self.game_name}
+> {self.get_number_of_players(game_id)}/{self.max_players} players"""
         if game_id in self.instances.keys():
             instance = self.instances[game_id]
             if not self.is_single_player:
@@ -631,18 +622,16 @@ class GameAdapter:
                 return
             self.send_reply(
                 message,
-                "Join your game using the link below!\n\n{}".format(
-                    self.get_formatted_game_object(game_id)
-                ),
+                f"Join your game using the link below!\n\n{self.get_formatted_game_object(game_id)}",
             )
             return
         if game["subject"] != message["subject"] or game["stream"] != message["display_recipient"]:
             if game_id not in self.pending_subject_changes:
                 self.send_reply(
                     message,
-                    "Your current game is not in this subject. \n\
+                    f"Your current game is not in this subject. \n\
 To move subjects, send your message again, otherwise join the game using the link below.\n\n\
-{}".format(self.get_formatted_game_object(game_id)),
+{self.get_formatted_game_object(game_id)}",
                 )
                 self.pending_subject_changes.append(game_id)
                 return
@@ -950,9 +939,7 @@ class GameInstance:
         if not is_computer:
             self.current_messages.append(
                 self.gameAdapter.gameMessageHandler.alert_move_message(
-                    "**{}**".format(
-                        self.gameAdapter.get_username_by_email(self.players[self.turn])
-                    ),
+                    f"**{self.gameAdapter.get_username_by_email(self.players[self.turn])}**",
                     content,
                 )
             )
@@ -973,9 +960,7 @@ class GameInstance:
         if not is_computer:
             self.current_messages.append(
                 self.gameAdapter.gameMessageHandler.alert_move_message(
-                    "**{}**".format(
-                        self.gameAdapter.get_username_by_email(self.players[self.turn])
-                    ),
+                    f"**{self.gameAdapter.get_username_by_email(self.players[self.turn])}**",
                     content,
                 )
             )

@@ -793,9 +793,7 @@ Feedback button or at support@zulip.com."""
             # Forward messages sent to '(instance "WHITESPACE")' back to the
             # appropriate WHITESPACE instance for bidirectional mirroring
             instance = match_whitespace_instance.group(1)
-        elif instance == f"instance {zephyr_class}" or instance == "test instance {}".format(
-            zephyr_class,
-        ):
+        elif instance == f"instance {zephyr_class}" or instance == f"test instance {zephyr_class}":
             # Forward messages to e.g. -c -i white-magic back from the
             # place we forward them to
             if instance.startswith("test"):

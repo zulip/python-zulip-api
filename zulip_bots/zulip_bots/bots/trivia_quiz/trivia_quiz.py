@@ -189,24 +189,14 @@ def format_quiz_for_widget(quiz_id: str, quiz: Dict[str, Any]) -> str:
 def format_quiz_for_markdown(quiz_id: str, quiz: Dict[str, Any]) -> str:
     question = quiz["question"]
     answers = quiz["answers"]
-    answer_list = "\n".join(
-        "* **{letter}** {answer}".format(
-            letter=letter,
-            answer=answers[letter],
-        )
-        for letter in "ABCD"
-    )
+    answer_list = "\n".join(f"* **{letter}** {answers[letter]}" for letter in "ABCD")
     how_to_respond = f"""**reply**: answer {quiz_id} <letter>"""
 
-    content = """
+    content = f"""
 Q: {question}
 
 {answer_list}
-{how_to_respond}""".format(
-        question=question,
-        answer_list=answer_list,
-        how_to_respond=how_to_respond,
-    )
+{how_to_respond}"""
     return content
 
 

@@ -173,10 +173,7 @@ def handle_event(event: Dict[str, Any]) -> None:
 
         if "status_id" in changes:
             status_change = changes.get("status_id")
-            content += "Status changed from **{}** to **{}**\n\n".format(
-                status_change[0],
-                status_change[1],
-            )
+            content += f"Status changed from **{status_change[0]}** to **{status_change[1]}**\n\n"
     elif event_type == "ticketing_milestone":
         stream = config.ZULIP_TICKETS_STREAM_NAME
 
@@ -199,12 +196,7 @@ def handle_event(event: Dict[str, Any]) -> None:
             url = make_url(f"projects/{project_link}/repositories/{repo_link}/commit/{commit}")
 
             subject = f"{actor_name} commented on {commit}"
-            content = "{} commented on [{}]({}):\n\n~~~ quote\n{}".format(
-                actor_name,
-                commit,
-                url,
-                comment,
-            )
+            content = f"{actor_name} commented on [{commit}]({url}):\n\n~~~ quote\n{comment}"
         else:
             # Otherwise, this is a Discussion item, and handle it
             subj = raw_props.get("subject")

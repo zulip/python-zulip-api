@@ -242,24 +242,14 @@ class JiraHandler:
                 response = "Oh no! Jira raised an error:\n > " + ", ".join(errors)
             else:
                 response = (
-                    "**Issue *[{}]({})*: {}**\n\n"
-                    " - Type: *{}*\n"
+                    f"**Issue *[{key}]({url})*: {summary}**\n\n"
+                    f" - Type: *{type_name}*\n"
                     " - Description:\n"
-                    " > {}\n"
-                    " - Creator: *{}*\n"
-                    " - Project: *{}*\n"
-                    " - Priority: *{}*\n"
-                    " - Status: *{}*\n"
-                ).format(
-                    key,
-                    url,
-                    summary,
-                    type_name,
-                    description,
-                    creator_name,
-                    project_name,
-                    priority_name,
-                    status_name,
+                    f" > {description}\n"
+                    f" - Creator: *{creator_name}*\n"
+                    f" - Project: *{project_name}*\n"
+                    f" - Priority: *{priority_name}*\n"
+                    f" - Status: *{status_name}*\n"
                 )
         elif create_match:
             jira_response = requests.post(

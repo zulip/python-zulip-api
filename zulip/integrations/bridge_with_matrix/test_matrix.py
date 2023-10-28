@@ -118,11 +118,7 @@ class MatrixBridgeScriptTests(TestCase):
             )
             self.assertEqual(
                 output_lines,
-                [
-                    "Wrote sample configuration to '{}' using zuliprc file '{}'".format(
-                        path, zuliprc_path
-                    )
-                ],
+                [f"Wrote sample configuration to '{path}' using zuliprc file '{zuliprc_path}'"],
             )
 
             with open(path) as sample_file:
@@ -143,11 +139,7 @@ class MatrixBridgeScriptTests(TestCase):
             )
             self.assertEqual(
                 output_lines,
-                [
-                    "Could not write sample config: Zuliprc file '{}' does not exist.".format(
-                        zuliprc_path
-                    )
-                ],
+                [f"Could not write sample config: Zuliprc file '{zuliprc_path}' does not exist."],
             )
 
     def test_parse_multiple_bridges(self) -> None:

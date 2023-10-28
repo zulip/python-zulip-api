@@ -58,12 +58,10 @@ the Python version this command is executed with."""
             return_code = subprocess.call([options.python_interpreter, "-m", "venv", venv_dir])
         except OSError:
             print(
-                "{red}Installation with venv failed. Probable errors are: "
+                f"{red}Installation with venv failed. Probable errors are: "
                 "You are on Ubuntu and you haven't installed python3-venv,"
                 "or you are running an unsupported python version"
-                "or python is not installed properly{end_format}".format(
-                    red=red, end_format=end_format
-                )
+                f"or python is not installed properly{end_format}"
             )
             sys.exit(1)
             raise

@@ -55,11 +55,11 @@ def pack(options: argparse.Namespace) -> None:
     zip_file.write(options.config, "zuliprc")
     # Pack the config file for the botfarm.
     bot_config = textwrap.dedent(
-        """\
+        f"""\
         [deploy]
-        bot={}
+        bot={options.main}
         zuliprc=zuliprc
-        """.format(options.main)
+        """
     )
     zip_file.writestr("config.ini", bot_config)
     zip_file.close()

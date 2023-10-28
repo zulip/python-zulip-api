@@ -77,7 +77,7 @@ if hasattr(config, "P4_WEB"):
 
 if p4web is not None:
     # linkify the change number
-    change = "[{change}]({p4web}/{change}?ac=10)".format(p4web=p4web, change=change)
+    change = f"[{change}]({p4web}/{change}?ac=10)"
 
 message = """**{user}** committed revision @{change} to `{path}`.
 
