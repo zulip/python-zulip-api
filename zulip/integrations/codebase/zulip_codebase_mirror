@@ -282,7 +282,7 @@ def run_mirror() -> None:
         else:
             since = datetime.fromtimestamp(float(timestamp), tz=pytz.utc)
     except (ValueError, OSError) as e:
-        logging.warn(f"Could not open resume file: {str(e)}")
+        logging.warn(f"Could not open resume file: {e}")
         since = default_since()
 
     try:

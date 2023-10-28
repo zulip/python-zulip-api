@@ -145,7 +145,7 @@ class StateHandler:
         self.state_[key] = self.marshal(value)
         response = self._client.update_storage({"storage": {key: self.state_[key]}})
         if response["result"] != "success":
-            raise StateHandlerError(f"Error updating state: {str(response)}")
+            raise StateHandlerError(f"Error updating state: {response}")
 
     def get(self, key: str) -> Any:
         if key in self.state_:

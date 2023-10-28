@@ -160,7 +160,7 @@ def send_zulip(zulip_client: zulip.Client, zeph: ZephyrDict) -> Dict[str, Any]:
     message["content"] = unwrap_lines(zeph["content"])
 
     if options.test_mode and options.site == DEFAULT_SITE:
-        logger.debug(f"Message is: {str(message)}")
+        logger.debug(f"Message is: {message}")
         return {"result": "success"}
 
     return zulip_client.send_message(message)
