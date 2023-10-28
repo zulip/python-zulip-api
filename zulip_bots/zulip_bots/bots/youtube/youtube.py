@@ -123,8 +123,7 @@ def get_bot_response(
     elif len(video_list) == 1:
         return (
             reply
-            + "\n%s - [Watch now](https://www.youtube.com/watch?v=%s)"
-            % (video_list[0][0], video_list[0][1])
+            + f"\n{video_list[0][0]} - [Watch now](https://www.youtube.com/watch?v={video_list[0][1]})"
         ).strip()
 
     for title, id in video_list:

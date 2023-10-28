@@ -147,10 +147,7 @@ def handle_event(event: Dict[str, Any]) -> None:
         if assignee is None:
             assignee = "no one"
         subject = f"#{num}: {name}"
-        content = (
-            """%s created a new ticket [#%s](%s) priority **%s** assigned to %s:\n\n~~~ quote\n %s"""
-            % (actor_name, num, url, priority, assignee, name)
-        )
+        content = f"""{actor_name} created a new ticket [#{num}]({url}) priority **{priority}** assigned to {assignee}:\n\n~~~ quote\n {name}"""
     elif event_type == "ticketing_note":
         stream = config.ZULIP_TICKETS_STREAM_NAME
 
@@ -225,8 +222,7 @@ def handle_event(event: Dict[str, Any]) -> None:
         )
         end_ref_url = make_url(f"projects/{project_link}/repositories/{repo_link}/commit/{end_ref}")
         between_url = make_url(
-            "projects/%s/repositories/%s/compare/%s...%s"
-            % (project_link, repo_link, start_ref, end_ref)
+            f"projects/{project_link}/repositories/{repo_link}/compare/{start_ref}...{end_ref}"
         )
 
         subject = f"Deployment to {environment}"

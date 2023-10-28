@@ -51,8 +51,7 @@ class IRCBot(irc.bot.SingleServerIRCBot):
         subs = [s["name"] for s in resp["subscriptions"]]
         if self.stream not in subs:
             print(
-                "The bot is not yet subscribed to stream '%s'. Please subscribe the bot to the stream first."
-                % (self.stream,)
+                f"The bot is not yet subscribed to stream '{self.stream}'. Please subscribe the bot to the stream first."
             )
             exit(1)
 

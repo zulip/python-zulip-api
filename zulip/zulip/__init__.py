@@ -496,8 +496,7 @@ class Client:
         if client_cert is None:
             if client_cert_key is not None:
                 raise ConfigNotFoundError(
-                    "client cert key '%s' specified, but no client cert public part provided"
-                    % (client_cert_key,)
+                    f"client cert key '{client_cert_key}' specified, but no client cert public part provided"
                 )
         else:  # we have a client cert
             if not os.path.isfile(client_cert):
@@ -609,8 +608,7 @@ class Client:
             if self.verbose:
                 if not query_state["had_error_retry"]:
                     sys.stdout.write(
-                        "zulip API(%s): connection error%s -- retrying."
-                        % (
+                        "zulip API({}): connection error{} -- retrying.".format(
                             url.split(API_VERSTRING, 2)[0],
                             error_string,
                         )

@@ -669,8 +669,9 @@ def zephyr_to_zulip(options: optparse.Values) -> None:
                     if "instance" in zeph:
                         zeph["subject"] = zeph["instance"]
                     logger.info(
-                        "sending saved message to %s from %s..."
-                        % (zeph.get("stream", zeph.get("recipient")), zeph["sender"])
+                        "sending saved message to {} from {}...".format(
+                            zeph.get("stream", zeph.get("recipient")), zeph["sender"]
+                        )
                     )
                     send_zulip(zulip_client, zeph)
                 except Exception:
@@ -831,7 +832,7 @@ Feedback button or at support@zulip.com."""
         if result is None:
             send_error_zulip(
                 zulip_client,
-                """%s
+                f"""{support_heading}
 
 Your Zulip-Zephyr mirror bot was unable to forward that last message \
 from Zulip to Zephyr because you were sending to a zcrypted Zephyr \
@@ -839,8 +840,7 @@ class and your mirroring bot does not have access to the relevant \
 key (perhaps because your AFS tokens expired). That means that while \
 Zulip users (like you) received it, Zephyr users did not.
 
-%s"""
-                % (support_heading, support_closing),
+{support_closing}""",
             )
             return
 
@@ -858,15 +858,14 @@ Zulip users (like you) received it, Zephyr users did not.
     elif code == 0:
         send_error_zulip(
             zulip_client,
-            """%s
+            f"""{support_heading}
 
 Your last message was successfully mirrored to zephyr, but zwrite \
 returned the following warning:
 
-%s
+{stderr}
 
-%s"""
-            % (support_heading, stderr, support_closing),
+{support_closing}""",
         )
         return
     elif code != 0 and (
@@ -881,7 +880,7 @@ returned the following warning:
                 return
             send_error_zulip(
                 zulip_client,
-                """%s
+                f"""{support_heading}
 
 Your last message was forwarded from Zulip to Zephyr unauthenticated, \
 because your Kerberos tickets have expired. It was sent successfully, \
@@ -889,8 +888,7 @@ but please renew your Kerberos tickets in the screen session where you \
 are running the Zulip-Zephyr mirroring bot, so we can send \
 authenticated Zephyr messages for you again.
 
-%s"""
-                % (support_heading, support_closing),
+{support_closing}""",
             )
             return
 
@@ -899,16 +897,15 @@ authenticated Zephyr messages for you again.
     # but regardless, we should just notify the user.
     send_error_zulip(
         zulip_client,
-        """%s
+        f"""{support_heading}
 
 Your Zulip-Zephyr mirror bot was unable to forward that last message \
 from Zulip to Zephyr. That means that while Zulip users (like you) \
 received it, Zephyr users did not.  The error message from zwrite was:
 
-%s
+{stderr}
 
-%s"""
-        % (support_heading, stderr, support_closing),
+{support_closing}""",
     )
     return
 
@@ -1279,11 +1276,10 @@ if __name__ == "__main__":
                 "\n"
                 + "\n".join(
                     textwrap.wrap(
-                        """\
+                        f"""\
 Could not find API key file.
-You need to either place your api key file at %s,
+You need to either place your api key file at {options.api_key_file},
 or specify the --api-key-file option."""
-                        % (options.api_key_file,)
                     )
                 )
             )

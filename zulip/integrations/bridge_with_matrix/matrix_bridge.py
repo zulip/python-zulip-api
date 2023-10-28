@@ -91,7 +91,7 @@ class MatrixToZulip:
         return matrix_to_zulip
 
     async def _matrix_to_zulip(self, room: nio.MatrixRoom, event: nio.Event) -> None:
-        logging.debug("_matrix_to_zulip; room %s, event: %s" % (str(room.room_id), str(event)))
+        logging.debug(f"_matrix_to_zulip; room {str(room.room_id)}, event: {str(event)}")
 
         # We do this to identify the messages generated from Zulip -> Matrix
         # and we make sure we don't forward it again to the Zulip stream.
@@ -253,7 +253,7 @@ class ZulipToMatrix:
             raise Bridge_FatalMatrixException(str(result))
 
     def _zulip_to_matrix(self, msg: Dict[str, Any]) -> None:
-        logging.debug("_zulip_to_matrix; msg: %s" % (str(msg),))
+        logging.debug(f"_zulip_to_matrix; msg: {str(msg)}")
 
         room_id: Optional[str] = self.get_matrix_room_for_zulip_message(msg)
         if room_id is None:
@@ -485,8 +485,7 @@ def read_configuration(config_file: str) -> Dict[str, Dict[str, Any]]:
         if section.startswith("additional_bridge"):
             if section_keys != bridge_key_set:
                 raise Bridge_ConfigException(
-                    "Please ensure the bridge configuration section %s contain the following keys: %s."
-                    % (section, str(bridge_key_set))
+                    f"Please ensure the bridge configuration section {section} contain the following keys: {str(bridge_key_set)}."
                 )
 
             zulip_target = (section_config["stream"], section_config["topic"])
@@ -519,7 +518,7 @@ def read_configuration(config_file: str) -> Dict[str, Dict[str, Any]]:
             for key in zulip_bridge_key_set:
                 first_bridge[key] = section_config[key]
         else:
-            logging.warning("Unknown section %s" % (section,))
+            logging.warning(f"Unknown section {section}")
 
     # Add the "first_bridge" to the bridges.
     zulip_target = (first_bridge["stream"], first_bridge["topic"])

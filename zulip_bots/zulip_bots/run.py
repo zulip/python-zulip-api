@@ -103,12 +103,11 @@ def exit_gracefully_if_bot_config_file_does_not_exist(bot_config_file: Optional[
 
     if not os.path.exists(bot_config_file):
         print(
-            """
-            ERROR: %s does not exist.
+            f"""
+            ERROR: {bot_config_file} does not exist.
 
             You probably just specified the wrong file location here.
             """
-            % (bot_config_file,)
         )
         sys.exit(1)
 

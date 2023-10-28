@@ -18,8 +18,9 @@ def do_send_message(client: zulip.Client, message_data: Dict[str, Any]) -> bool:
 
     if message_data["type"] == "stream":
         log.info(
-            'Sending message to stream "%s", subject "%s"... '
-            % (message_data["to"], message_data["subject"])
+            'Sending message to stream "{}", subject "{}"... '.format(
+                message_data["to"], message_data["subject"]
+            )
         )
     else:
         log.info("Sending message to {}... ".format(message_data["to"]))

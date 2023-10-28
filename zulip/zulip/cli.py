@@ -84,8 +84,9 @@ def send_message(recipients: List[str], stream: str, subject: str, message: str)
 
     if message_data["type"] == "stream":
         log.info(
-            'Sending message to stream "%s", subject "%s"... '
-            % (message_data["to"], message_data["subject"])
+            'Sending message to stream "{}", subject "{}"... '.format(
+                message_data["to"], message_data["subject"]
+            )
         )
     else:
         log.info("Sending message to %s... " % message_data["to"])
