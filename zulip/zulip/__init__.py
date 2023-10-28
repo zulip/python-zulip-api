@@ -1395,7 +1395,7 @@ class Client:
 
     def list_subscriptions(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         logger.warning(
-            "list_subscriptions() is deprecated." " Please use get_subscriptions() instead."
+            "list_subscriptions() is deprecated. Please use get_subscriptions() instead."
         )
         return self.get_subscriptions(request)
 
@@ -1699,7 +1699,7 @@ class Client:
         if message_id is None:
             if propagate_mode != "change_all":
                 raise AttributeError(
-                    "A message_id must be provided if " 'propagate_mode isn\'t "change_all"'
+                    'A message_id must be provided if propagate_mode isn\'t "change_all"'
                 )
 
             # ask the server for the latest message ID in the topic.

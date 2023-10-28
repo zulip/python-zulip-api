@@ -19,7 +19,7 @@ def getInfo():
 
     :return: Info on how to start the game
     """
-    return "To start a game, mention me and add `create`. A game will start " "in that topic. "
+    return "To start a game, mention me and add `create`. A game will start in that topic. "
 
 
 def getHelp():
@@ -70,7 +70,7 @@ def beat(message, topic_name, merels_storage):
             p2 = [int(x) for x in match.group(3).split(",")]
 
             if mechanics.get_take_status(topic_name, merels_storage) == 1:
-                raise BadMoveException("Take is required to proceed." " Please try again.\n")
+                raise BadMoveException("Take is required to proceed. Please try again.\n")
 
             responses += mechanics.move_man(topic_name, p1, p2, merels_storage) + "\n"
             no_moves = after_event_checkup(responses, topic_name, merels_storage)
@@ -98,7 +98,7 @@ def beat(message, topic_name, merels_storage):
             responses = ""
 
             if mechanics.get_take_status(topic_name, merels_storage) == 1:
-                raise BadMoveException("Take is required to proceed." " Please try again.\n")
+                raise BadMoveException("Take is required to proceed. Please try again.\n")
             responses += mechanics.put_man(topic_name, p1[0], p1[1], merels_storage) + "\n"
             no_moves = after_event_checkup(responses, topic_name, merels_storage)
 
@@ -162,7 +162,7 @@ def check_any_moves(topic_name, merels_storage):
     """
     if not mechanics.can_make_any_move(topic_name, merels_storage):
         mechanics.update_change_turn(topic_name, merels_storage)
-        return "Cannot make any move on the grid. Switching to " "previous player.\n"
+        return "Cannot make any move on the grid. Switching to previous player.\n"
 
     return ""
 

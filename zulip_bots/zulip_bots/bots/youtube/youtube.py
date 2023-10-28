@@ -37,7 +37,7 @@ class YoutubeHandler:
             assert e.response is not None
             if e.response.json()["error"]["errors"][0]["reason"] == "keyInvalid":
                 bot_handler.quit(
-                    "Invalid key." "Follow the instructions in doc.md for setting API key."
+                    "Invalid key.Follow the instructions in doc.md for setting API key."
                 )
             else:
                 raise
@@ -112,7 +112,7 @@ def get_bot_response(
             return YoutubeHandler.help_content
 
     except (ConnectionError, HTTPError):
-        return "Uh-Oh, couldn't process the request " "right now.\nPlease again later"
+        return "Uh-Oh, couldn't process the request right now.\nPlease again later"
 
     reply = "Here is what I found for `" + query + "` : "
 

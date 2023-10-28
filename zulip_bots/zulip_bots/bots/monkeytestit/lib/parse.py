@@ -22,7 +22,7 @@ def execute(message: str, apikey: str) -> str:
         len_params = len(params)
 
         if len_params < 2:
-            return failed("You **must** provide at least an URL to perform a " "check.")
+            return failed("You **must** provide at least an URL to perform a check.")
 
         options = {
             "secret": apikey,
@@ -65,7 +65,7 @@ def execute(message: str, apikey: str) -> str:
         # the user needs to modify the asset_count. There are probably ways
         # to counteract this, but I think this is more fast to run.
     else:
-        return "Unknown command. Available commands: `check <website> " "[params]`"
+        return "Unknown command. Available commands: `check <website> [params]`"
 
 
 def failed(message: str) -> str:

@@ -96,7 +96,7 @@ def get_bot_giphy_response(
             "let's try again later! :grin:"
         )
     except GiphyNoResultException:
-        return f'Sorry, I don\'t have a GIF for "{keyword}"! ' ":astonished:"
+        return f'Sorry, I don\'t have a GIF for "{keyword}"! :astonished:'
     return (
         f"[Click to enlarge]({gif_url})"
         "[](/static/images/interactive-bot/giphy/powered-by-giphy.png)"

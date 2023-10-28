@@ -15,7 +15,7 @@ class TestMerelsBot(BotTestCase, DefaultTests):
         )
         res = self.get_response(message)
         self.assertEqual(
-            res["content"], "You are not in a game at the moment." " Type `help` for help."
+            res["content"], "You are not in a game at the moment. Type `help` for help."
         )
 
     # FIXME: Add tests for computer moves

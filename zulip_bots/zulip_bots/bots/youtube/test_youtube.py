@@ -108,5 +108,5 @@ class TestYoutubeBot(BotTestCase, DefaultTests):
             "requests.get", side_effect=ConnectionError()
         ), patch("logging.exception"):
             self.verify_reply(
-                "Wow !", "Uh-Oh, couldn't process the request " "right now.\nPlease again later"
+                "Wow !", "Uh-Oh, couldn't process the request right now.\nPlease again later"
             )

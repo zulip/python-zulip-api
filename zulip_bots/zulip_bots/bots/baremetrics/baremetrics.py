@@ -142,7 +142,7 @@ class BaremetricsHandler:
         response = "**Listing sources:** \n"
         for index, source in enumerate(sources_data):
             response += (
-                "{_count}.ID: {id}\n" "Provider: {provider}\n" "Provider ID: {provider_id}\n\n"
+                "{_count}.ID: {id}\nProvider: {provider}\nProvider ID: {provider_id}\n\n"
             ).format(_count=index + 1, **source)
 
         return response

@@ -122,7 +122,7 @@ at <https://zulip.com/integrations/doc/trello>.
     parser.add_argument(
         "--trello-board-id",
         required=True,
-        help=("The Trello board short ID. Can usually be found " "in the URL of the Trello board."),
+        help=("The Trello board short ID. Can usually be found in the URL of the Trello board."),
     )
     parser.add_argument(
         "--trello-api-key",

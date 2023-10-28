@@ -253,9 +253,7 @@ class TicTacToeMessageHandler:
         return f"{original_player} put a token at {move_info}"
 
     def game_start_message(self) -> str:
-        return (
-            "Welcome to tic-tac-toe!" "To make a move, type @-mention `move <number>` or `<number>`"
-        )
+        return "Welcome to tic-tac-toe!To make a move, type @-mention `move <number>` or `<number>`"
 
 
 class ticTacToeHandler(GameAdapter):
