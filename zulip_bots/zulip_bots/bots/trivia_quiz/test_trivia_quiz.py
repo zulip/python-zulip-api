@@ -22,11 +22,11 @@ class TestTriviaQuizBot(BotTestCase, DefaultTests):
 
     new_question_response = (
         "\nQ: Which class of animals are newts members of?\n\n"
-        + "* **A** Amphibian\n"
-        + "* **B** Fish\n"
-        + "* **C** Reptiles\n"
-        + "* **D** Mammals\n"
-        + "**reply**: answer Q001 <letter>"
+        "* **A** Amphibian\n"
+        "* **B** Fish\n"
+        "* **C** Reptiles\n"
+        "* **D** Mammals\n"
+        "**reply**: answer Q001 <letter>"
     )
 
     def get_test_quiz(self) -> Tuple[Dict[str, Any], Any]:

@@ -73,7 +73,7 @@ class TestConnectFourBot(BotTestCase, DefaultTests):
     def test_game_message_handler_responses(self) -> None:
         board = (
             ":one: :two: :three: :four: :five: :six: :seven:\n\n"
-            + "\
+            "\
 :white_circle: :white_circle: :white_circle: :white_circle: \
 :white_circle: :white_circle: :white_circle: \n\n\
 :white_circle: :white_circle: :white_circle: :white_circle: \

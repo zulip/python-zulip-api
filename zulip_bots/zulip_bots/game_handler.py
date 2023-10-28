@@ -531,8 +531,7 @@ class GameAdapter:
         self.instances[game_id] = GameInstance(self, False, subject, game_id, players, stream)
         self.broadcast(
             game_id,
-            f"The game has started in #{stream} {self.instances[game_id].subject}"
-            + "\n"
+            f"The game has started in #{stream} {self.instances[game_id].subject}\n"
             + self.get_formatted_game_object(game_id),
         )
         del self.invites[game_id]
