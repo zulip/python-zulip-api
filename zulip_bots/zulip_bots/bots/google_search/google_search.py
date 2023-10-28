@@ -3,7 +3,7 @@ import logging
 from typing import Dict, List
 
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 
 from zulip_bots.lib import BotHandler
 
@@ -16,7 +16,9 @@ def google_search(keywords: str) -> List[Dict[str, str]]:
     soup = BeautifulSoup(page.text, "lxml")
 
     # Gets all search URLs
-    anchors = soup.find(id="search").findAll("a")
+    search = soup.find(id="search")
+    assert isinstance(search, Tag)
+    anchors = search.findAll("a")
     results = []
 
     for a in anchors:

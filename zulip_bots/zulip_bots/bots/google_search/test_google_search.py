@@ -32,9 +32,7 @@ class TestGoogleSearchBot(BotTestCase, DefaultTests):
 
     def test_attribute_error(self) -> None:
         with self.mock_http_conversation("test_attribute_error"), patch("logging.exception"):
-            self.verify_reply(
-                "test", "Error: Search failed. 'NoneType' object has no attribute 'findAll'."
-            )
+            self.verify_reply("test", "Error: Search failed. .")
 
     # Makes sure cached results, irrelevant links, or empty results are not displayed
     def test_ignore_links(self) -> None:
