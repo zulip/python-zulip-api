@@ -39,13 +39,6 @@ def run() -> None:
         "gitlint", ["tools/lint-commits"], description="Git Lint for commit messages"
     )
     linter_config.external_linter(
-        "isort",
-        ["isort"],
-        ["py"],
-        description="Sorts Python import statements",
-        check_arg=["--check-only", "--diff"],
-    )
-    linter_config.external_linter(
         "black",
         ["black"],
         ["py"],

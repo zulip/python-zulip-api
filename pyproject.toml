@@ -93,7 +93,21 @@ pythonpath = [
 ]
 
 [tool.ruff]
+select = [
+    "E", # style errors
+    "F", # flakes
+    "I", # import sorting
+]
 ignore = [
     "E402", # Module level import not at top of file
+    "E501", # Line too long
     "E731", # Do not assign a `lambda` expression, use a `def`
 ]
+src = [
+    "tools",
+    "zulip",
+    "zulip/integrations/zephyr",
+    "zulip_bots",
+    "zulip_botserver",
+]
+line-length = 100

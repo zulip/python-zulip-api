@@ -2,7 +2,6 @@
 from typing import Any, Dict
 
 import packaged_helloworld
-
 from zulip_bots.lib import BotHandler
 
 __version__ = packaged_helloworld.__version__
