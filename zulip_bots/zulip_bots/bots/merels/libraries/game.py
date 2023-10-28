@@ -145,7 +145,7 @@ def check_take_mode(response, topic_name, merels_storage):
     :param merels_storage: Merels' storage
     :return: None
     """
-    if not ("Failed" in response):
+    if "Failed" not in response:
         if mechanics.can_take_mode(topic_name, merels_storage):
             mechanics.update_toggle_take_mode(topic_name, merels_storage)
         else:

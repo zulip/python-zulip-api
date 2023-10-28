@@ -91,3 +91,9 @@ pythonpath = [
     "zulip_bots",
     "zulip_botserver",
 ]
+
+[tool.ruff]
+ignore = [
+    "E402", # Module level import not at top of file
+    "E731", # Do not assign a `lambda` expression, use a `def`
+]

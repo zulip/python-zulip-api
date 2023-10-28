@@ -33,7 +33,7 @@ def run() -> None:
         description="Static type checker for Python (config: mypy.ini)",
     )
     linter_config.external_linter(
-        "flake8", ["flake8"], ["py"], description="Standard Python linter (config: .flake8)"
+        "ruff", ["ruff", "check", "--quiet"], ["py"], fix_arg="--fix", description="Python linter"
     )
     linter_config.external_linter(
         "gitlint", ["tools/lint-commits"], description="Git Lint for commit messages"
