@@ -112,37 +112,6 @@ parser.add_argument(
     help="""run mypy on all python files, ignoring the exclude list.
                     This is useful if you have to find out which files fail mypy check.""",
 )
-parser.add_argument(
-    "--no-disallow-untyped-defs",
-    dest="disallow_untyped_defs",
-    action="store_false",
-    default=True,
-    help="""Don't throw errors when functions are not annotated""",
-)
-parser.add_argument(
-    "--scripts-only",
-    dest="scripts_only",
-    action="store_true",
-    default=False,
-    help="""Only type check extensionless python scripts""",
-)
-parser.add_argument(
-    "--warn-unused-ignores",
-    dest="warn_unused_ignores",
-    action="store_true",
-    default=False,
-    help="""Use the --warn-unused-ignores flag with mypy""",
-)
-parser.add_argument(
-    "--no-ignore-missing-imports",
-    dest="ignore_missing_imports",
-    action="store_false",
-    default=True,
-    help="""Don't use the --ignore-missing-imports flag with mypy""",
-)
-parser.add_argument(
-    "--quick", action="store_true", default=False, help="""Use the --quick flag with mypy"""
-)
 args = parser.parse_args()
 
 if args.all:
@@ -156,7 +125,6 @@ files_dict = lister.list_files(
     modified_only=args.modified,
     exclude=exclude + ["stubs"],
     group_by_ftype=True,
-    extless_only=args.scripts_only,
 )
 
 for inpath in force_include:
@@ -181,22 +149,12 @@ for file_path in python_files:
 
 mypy_command = "mypy"
 
-extra_args = ["--follow-imports=silent"]
-if args.disallow_untyped_defs:
-    extra_args.append("--disallow-untyped-defs")
-if args.warn_unused_ignores:
-    extra_args.append("--warn-unused-ignores")
-if args.ignore_missing_imports:
-    extra_args.append("--ignore-missing-imports")
-if args.quick:
-    extra_args.append("--quick")
-
 # run mypy
 status = 0
 for repo, python_files in repo_python_files.items():
     print(f"Running mypy for `{repo}`.", flush=True)
     if python_files:
-        result = subprocess.call([mypy_command] + extra_args + python_files)
+        result = subprocess.call([mypy_command, "--"] + python_files)
         if result != 0:
             status = result
     else:
