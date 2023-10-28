@@ -30,8 +30,8 @@ def make_flock_request(url: str, params: Dict[str, str]) -> Tuple[Any, str]:
     try:
         res = requests.get(url, params=params)
         return (res.json(), None)
-    except ConnectionError as e:
-        logging.exception(str(e))
+    except ConnectionError:
+        logging.exception("Error connecting to Flock")
         error = "Uh-Oh, couldn't process the request \
 right now.\nPlease try again later"
         return (None, error)

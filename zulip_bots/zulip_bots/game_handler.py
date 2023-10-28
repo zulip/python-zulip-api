@@ -296,7 +296,7 @@ class GameAdapter:
                 else:
                     self.send_reply(message, self.help_message())
         except Exception as e:
-            logging.exception(str(e))
+            logging.exception("Error handling game message")
             self.bot_handler.send_reply(message, f"Error {e}.")
 
     def is_user_in_game(self, user_email: str) -> str:

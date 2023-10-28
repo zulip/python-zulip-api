@@ -62,7 +62,7 @@ def get_google_result(search_keywords: str) -> str:
                 return "Found no results."
             return "Found Result: [{}]({})".format(results[0]["name"], results[0]["url"])
         except Exception as e:
-            logging.exception(str(e))
+            logging.exception("Error fetching Google results")
             return f"Error: Search failed. {e}."
 
 

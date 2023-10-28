@@ -70,8 +70,8 @@ at syntax by: @mention-botname help"
             return (
                 f"[Datapoint]({datapoint_link}) created."
             )  # Handles the case of successful datapoint creation
-    except ConnectionError as e:
-        logging.exception(str(e))
+    except ConnectionError:
+        logging.exception("Error connecting to Beeminder")
         return "Uh-Oh, couldn't process the request \
 right now.\nPlease try again later"
 
@@ -92,8 +92,8 @@ class BeeminderHandler:
             )
             if r.status_code == 401:
                 bot_handler.quit("Invalid key!")
-        except ConnectionError as e:
-            logging.exception(str(e))
+        except ConnectionError:
+            logging.exception("Error connecting to Beeminder")
 
     def usage(self) -> str:
         return "This plugin allows users to add datapoints towards their Beeminder goals"

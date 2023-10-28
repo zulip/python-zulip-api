@@ -35,7 +35,7 @@ def get_bot_result(message_content: str, config: Dict[str, str], sender_id: str)
             return "Error. No result."
         return res_json["result"]["fulfillment"]["speech"]
     except Exception as e:
-        logging.exception(str(e))
+        logging.exception("Error getting Dialogflow bot response")
         return f"Error. {e}."
 
 

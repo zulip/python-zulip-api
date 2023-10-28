@@ -57,8 +57,8 @@ class GithubHandler:
             r = requests.get(
                 self.GITHUB_ISSUE_URL_TEMPLATE.format(owner=owner, repo=repo, id=number)
             )
-        except requests.exceptions.RequestException as e:
-            logging.exception(str(e))
+        except requests.exceptions.RequestException:
+            logging.exception("Error connecting to GitHub")
             return None
         if r.status_code != requests.codes.ok:
             return None
