@@ -9,7 +9,7 @@ pytest-cov
 -e ./zulip
 -e ./zulip_bots
 -e ./zulip_botserver
--e git+https://github.com/zulip/zulint@0d68c1fe184a757ab4d249e0005f2e43b6464565#egg=zulint==1.0.0
+git+https://github.com/zulip/zulint@61fe2ec73e272396152d293fbf07926120e42f38#egg=zulint==1.0.0
 mypy==1.6.1
 types-python-dateutil
 types-pytz
