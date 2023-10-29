@@ -1,6 +1,5 @@
 import json
 import os
-import unittest
 from collections import OrderedDict
 from importlib import import_module
 from pathlib import Path
@@ -311,7 +310,3 @@ class BotServerTests(BotServerTestCase):
         mock_app.config.__setitem__.assert_any_call(
             "BOTS_LIB_MODULES", {"packaged_bot": packaged_bot_module}
         )
-
-
-if __name__ == "__main__":
-    unittest.main()

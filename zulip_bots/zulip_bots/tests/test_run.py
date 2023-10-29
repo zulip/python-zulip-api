@@ -1,7 +1,5 @@
-#!/usr/bin/env python3
 import os
 import sys
-import unittest
 from pathlib import Path
 from typing import Optional
 from unittest import TestCase, mock
@@ -149,7 +147,3 @@ class TestBotLib(TestCase):
         test_message("nomention", "foo", None)
         test_message("Max Mustermann", "@**Max Mustermann** foo", "foo")
         test_message(r"Max (Mustermann)#(*$&12]\]", r"@**Max (Mustermann)#(*$&12]\]** foo", "foo")
-
-
-if __name__ == "__main__":
-    unittest.main()

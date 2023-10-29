@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-
-import unittest
 from unittest import TestCase
 
 import zulip
@@ -19,7 +16,3 @@ class TestHashUtilDecode(TestCase):
         for encoded_string, decoded_string in tests:
             with self.subTest(encoded_string=encoded_string):
                 self.assertEqual(zulip.hash_util_decode(encoded_string), decoded_string)
-
-
-if __name__ == "__main__":
-    unittest.main()

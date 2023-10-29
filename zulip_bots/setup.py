@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from setuptools import find_packages, setup
 
 ZULIP_BOTS_VERSION = "0.8.2"

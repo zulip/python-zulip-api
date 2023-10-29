@@ -1,9 +1,6 @@
-#!/usr/bin/env python3
-
 import argparse
 import io
 import os
-import unittest
 from unittest import TestCase
 from unittest.mock import patch
 
@@ -43,7 +40,3 @@ Zulip API configuration:
             str(cm.exception),
             f"api_key or email not specified and file {expanded_test_path} does not exist",
         )
-
-
-if __name__ == "__main__":
-    unittest.main()
