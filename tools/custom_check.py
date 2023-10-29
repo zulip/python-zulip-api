@@ -8,9 +8,8 @@ whitespace_rules: List[Rule] = [
     {"pattern": r"\t", "description": "Fix tab-based whitespace"},
 ]
 
-markdown_whitespace_rules = list(
-    rule for rule in whitespace_rules if rule["pattern"] != r"[\t ]+$"
-) + [
+markdown_whitespace_rules: List[Rule] = [
+    *(rule for rule in whitespace_rules if rule["pattern"] != r"[\t ]+$"),
     # Two spaces trailing a line with other content is okay--it's a markdown line break.
     # This rule finds one space trailing a non-space, three or more trailing spaces, and
     # spaces on an empty line.

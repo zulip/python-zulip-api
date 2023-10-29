@@ -1012,7 +1012,7 @@ def add_zulip_subscriptions(verbose: bool) -> None:
 
     if len(zephyr_subscriptions) != 0:
         res = zulip_client.add_subscriptions(
-            list({"name": stream} for stream in zephyr_subscriptions),
+            [{"name": stream} for stream in zephyr_subscriptions],
             authorization_errors_fatal=False,
         )
         if res.get("result") != "success":
