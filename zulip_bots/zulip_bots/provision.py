@@ -12,9 +12,7 @@ from typing import Iterator
 def get_bot_paths() -> Iterator[str]:
     current_dir = os.path.dirname(os.path.abspath(__file__))
     bots_dir = os.path.join(current_dir, "bots")
-    bots_subdirs = map(lambda d: os.path.abspath(d), glob.glob(bots_dir + "/*"))
-    paths = filter(lambda d: os.path.isdir(d), bots_subdirs)
-    return paths
+    return (os.path.abspath(d) for d in glob.glob(bots_dir + "/*/"))
 
 
 def provision_bot(path_to_bot: str, force: bool) -> None:
