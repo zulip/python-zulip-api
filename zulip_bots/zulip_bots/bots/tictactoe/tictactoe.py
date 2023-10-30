@@ -256,7 +256,7 @@ class TicTacToeMessageHandler:
         return "Welcome to tic-tac-toe!To make a move, type @-mention `move <number>` or `<number>`"
 
 
-class ticTacToeHandler(GameAdapter):
+class TicTacToeHandler(GameAdapter):
     """
     You can play tic-tac-toe! Make sure your message starts with
     "@mention-bot".
@@ -304,4 +304,4 @@ def coords_from_command(cmd: str) -> str:
     return cmd
 
 
-handler_class = ticTacToeHandler
+handler_class = TicTacToeHandler
