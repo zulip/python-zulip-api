@@ -1023,9 +1023,9 @@ def add_zulip_subscriptions(verbose: bool) -> None:
         unauthorized = res.get("unauthorized")
         if verbose:
             if already is not None and len(already) > 0:
-                logger.info("\nAlready subscribed to: %s", ", ".join(list(already.values())[0]))
+                logger.info("\nAlready subscribed to: %s", ", ".join(next(iter(already.values()))))
             if new is not None and len(new) > 0:
-                logger.info("\nSuccessfully subscribed to: %s", ", ".join(list(new.values())[0]))
+                logger.info("\nSuccessfully subscribed to: %s", ", ".join(next(iter(new.values()))))
             if unauthorized is not None and len(unauthorized) > 0:
                 logger.info(
                     "\n%s\n\n  %s",

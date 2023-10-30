@@ -50,7 +50,7 @@ def read_config_from_env_vars(bot_name: Optional[str] = None) -> Dict[str, Dict[
             # exist in the configuration provided via the environment
             # variable, use the first bot in the environment variable,
             # with name updated to match, along with a warning.
-            first_bot_name = list(env_config.keys())[0]
+            first_bot_name = next(iter(env_config.keys()))
             bots_config[bot_name] = env_config[first_bot_name]
             logging.warning(
                 "First bot name in the config list was changed from %r to %r",
