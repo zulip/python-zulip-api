@@ -585,7 +585,7 @@ class Client:
         req_files = []
 
         for key, val in orig_request.items():
-            if isinstance(val, str) or isinstance(val, str):
+            if isinstance(val, str):
                 request[key] = val
             else:
                 request[key] = json.dumps(val)
