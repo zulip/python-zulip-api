@@ -863,9 +863,11 @@ returned the following warning:
 {support_closing}""",
         )
         return
-    elif code != 0 and (
-        stderr.startswith("zwrite: Ticket expired while sending notice to ")
-        or stderr.startswith("zwrite: No credentials cache found while sending notice to ")
+    elif code != 0 and stderr.startswith(
+        (
+            "zwrite: Ticket expired while sending notice to ",
+            "zwrite: No credentials cache found while sending notice to ",
+        )
     ):
         # Retry sending the message unauthenticated; if that works,
         # just notify the user that they need to renew their tickets
