@@ -29,9 +29,11 @@ def get_bot_result(message_content: str, config: Dict[str, str], sender_id: str)
                 res_json["status"]["code"], res_json["status"]["errorDetails"]
             )
         if res_json["result"]["fulfillment"]["speech"] == "":
-            if "alternateResult" in res_json.keys():
-                if res_json["alternateResult"]["fulfillment"]["speech"] != "":
-                    return res_json["alternateResult"]["fulfillment"]["speech"]
+            if (
+                "alternateResult" in res_json.keys()
+                and res_json["alternateResult"]["fulfillment"]["speech"] != ""
+            ):
+                return res_json["alternateResult"]["fulfillment"]["speech"]
             return "Error. No result."
         return res_json["result"]["fulfillment"]["speech"]
     except Exception as e:

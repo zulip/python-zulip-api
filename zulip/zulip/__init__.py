@@ -501,9 +501,8 @@ class Client:
         else:  # we have a client cert
             if not os.path.isfile(client_cert):
                 raise ConfigNotFoundError(f"client cert '{client_cert}' does not exist")
-            if client_cert_key is not None:
-                if not os.path.isfile(client_cert_key):
-                    raise ConfigNotFoundError(f"client cert key '{client_cert_key}' does not exist")
+            if client_cert_key is not None and not os.path.isfile(client_cert_key):
+                raise ConfigNotFoundError(f"client cert key '{client_cert_key}' does not exist")
         self.client_cert = client_cert
         self.client_cert_key = client_cert_key
 
@@ -652,10 +651,11 @@ class Client:
                 self.has_connected = True
 
                 # On 50x errors, try again after a short sleep
-                if str(res.status_code).startswith("5"):
-                    if error_retry(f" (server {res.status_code})"):
-                        continue
-                    # Otherwise fall through and process the python-requests error normally
+                if str(res.status_code).startswith("5") and error_retry(
+                    f" (server {res.status_code})"
+                ):
+                    continue
+                # Otherwise fall through and process the python-requests error normally
             except (requests.exceptions.Timeout, requests.exceptions.SSLError) as e:
                 # Timeouts are either a Timeout or an SSLError; we
                 # want the later exception handlers to deal with any

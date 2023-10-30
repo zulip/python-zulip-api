@@ -603,9 +603,8 @@ class GameAdapter:
     def get_user_by_name(self, name: str) -> Dict[str, Any]:
         name = name.strip()
         for user in self.user_cache.values():
-            if "full_name" in user.keys():
-                if user["full_name"].lower() == name.lower():
-                    return user
+            if "full_name" in user.keys() and user["full_name"].lower() == name.lower():
+                return user
         return {}
 
     def get_number_of_players(self, game_id: str) -> int:
@@ -756,9 +755,8 @@ To move subjects, send your message again, otherwise join the game using the lin
                 return False
         for invite in self.invites.values():
             for u in invite.keys():
-                if u == "host":
-                    if user_email == invite["host"]:
-                        return False
+                if u == "host" and user_email == invite["host"]:
+                    return False
                 if u == user_email and "a" in invite[u]:
                     return False
         return True
@@ -776,15 +774,14 @@ To move subjects, send your message again, otherwise join the game using the lin
             if private_recipients is not None:
                 for user in private_recipients:
                     self.send_message(user, content, True)
-        if game_id in self.invites.keys():
-            if self.invites[game_id]["subject"] != "###private###":
-                self.send_message(
-                    self.invites[game_id]["stream"],
-                    content,
-                    False,
-                    self.invites[game_id]["subject"],
-                )
-                return True
+        if game_id in self.invites.keys() and self.invites[game_id]["subject"] != "###private###":
+            self.send_message(
+                self.invites[game_id]["stream"],
+                content,
+                False,
+                self.invites[game_id]["subject"],
+            )
+            return True
         if game_id in self.instances.keys():
             self.send_message(
                 self.instances[game_id].stream, content, False, self.instances[game_id].subject

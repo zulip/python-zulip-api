@@ -489,16 +489,13 @@ def process_notice(
         # Only forward mail zephyrs if forwarding them is enabled.
         return
 
-    if is_personal:
-        if body.startswith("CC:"):
-            is_huddle = True
-            # Map "CC: user1 user2" => "user1@mit.edu, user2@mit.edu"
-            huddle_recipients = [
-                to_zulip_username(x.strip()) for x in body.split("\n")[0][4:].split()
-            ]
-            if zephyr_sender not in huddle_recipients:
-                huddle_recipients.append(to_zulip_username(zephyr_sender))
-            body = body.split("\n", 1)[1]
+    if is_personal and body.startswith("CC:"):
+        is_huddle = True
+        # Map "CC: user1 user2" => "user1@mit.edu, user2@mit.edu"
+        huddle_recipients = [to_zulip_username(x.strip()) for x in body.split("\n")[0][4:].split()]
+        if zephyr_sender not in huddle_recipients:
+            huddle_recipients.append(to_zulip_username(zephyr_sender))
+        body = body.split("\n", 1)[1]
 
     if (
         options.forward_class_messages
@@ -1045,13 +1042,12 @@ on these streams and already use Zulip.  They can subscribe you to them via the
                     ", ".join(unauthorized),
                 )
 
-    if len(skipped) > 0:
-        if verbose:
-            logger.info(
-                "\n%s\n",
-                "\n".join(
-                    textwrap.wrap(
-                        """\
+    if len(skipped) > 0 and verbose:
+        logger.info(
+            "\n%s\n",
+            "\n".join(
+                textwrap.wrap(
+                    """\
 You have some lines in ~/.zephyr.subs that could not be
 synced to your Zulip subscriptions because they do not
 use "*" as both the instance and recipient and not one of
@@ -1061,9 +1057,9 @@ allow subscribing to only some subjects on a Zulip
 stream, so this tool has not created a corresponding
 Zulip subscription to these lines in ~/.zephyr.subs:
 """
-                    )
-                ),
-            )
+                )
+            ),
+        )
 
     for cls, instance, recipient, reason in skipped:
         if verbose:
@@ -1071,20 +1067,19 @@ Zulip subscription to these lines in ~/.zephyr.subs:
                 logger.info("  [%s,%s,%s] (%s)", cls, instance, recipient, reason)
             else:
                 logger.info("  [%s,%s,%s]", cls, instance, recipient)
-    if len(skipped) > 0:
-        if verbose:
-            logger.info(
-                "\n%s\n",
-                "\n".join(
-                    textwrap.wrap(
-                        """\
+    if len(skipped) > 0 and verbose:
+        logger.info(
+            "\n%s\n",
+            "\n".join(
+                textwrap.wrap(
+                    """\
 If you wish to be subscribed to any Zulip streams related
 to these .zephyrs.subs lines, please do so via the Zulip
 web interface.
 """
-                    )
-                ),
-            )
+                )
+            ),
+        )
 
 
 def valid_stream_name(name: str) -> bool:
