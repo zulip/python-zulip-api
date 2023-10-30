@@ -693,7 +693,11 @@ To move subjects, send your message again, otherwise join the game using the lin
         verified_users = []
         failed = False
         for u in users:
-            user = u.strip().lstrip("@**").rstrip("**")
+            user = u.strip()
+            if user.startswith("@**"):
+                user = user[len("@**") :]
+            if user.endswith("**"):
+                user = user[: -len("**")]
             if (
                 user == self.get_bot_username() or user == self.email
             ) and not self.supports_computer:
@@ -1007,7 +1011,7 @@ class GameInstance:
         if winner == "draw":
             self.broadcast("It was a draw!")
         elif winner.startswith("except:"):
-            loser = winner.lstrip("except:")
+            loser = winner[len("except:") :]
         else:
             winner_name = self.game_adapter.get_username_by_email(winner)
             self.broadcast(f"**{winner_name}** won! :tada:")
