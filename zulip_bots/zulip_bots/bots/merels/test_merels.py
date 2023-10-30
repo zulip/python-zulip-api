@@ -47,8 +47,8 @@ class TestMerelsBot(BotTestCase, DefaultTests):
 
     def test_parse_board(self) -> None:
         board = EMPTY_BOARD
-        expectResponse = EMPTY_BOARD
-        self._test_parse_board(board, expectResponse)
+        expect_response = EMPTY_BOARD
+        self._test_parse_board(board, expect_response)
 
     def test_add_user_to_cache(self):
         self.add_user_to_cache("Name")

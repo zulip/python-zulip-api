@@ -166,9 +166,9 @@ def unwrap_text(body: str) -> str:
 
 
 def elide_subject(subject: str) -> str:
-    MAX_TOPIC_LENGTH = 60
-    if len(subject) > MAX_TOPIC_LENGTH:
-        subject = subject[: MAX_TOPIC_LENGTH - 3].rstrip() + "..."
+    max_topic_length = 60
+    if len(subject) > max_topic_length:
+        subject = subject[: max_topic_length - 3].rstrip() + "..."
     return subject
 
 

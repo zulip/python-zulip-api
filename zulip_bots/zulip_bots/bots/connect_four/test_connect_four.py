@@ -130,13 +130,13 @@ The first player to get 4 in a row wins!\n Good Luck!",
         def confirm_available_moves(
             good_moves: List[int], bad_moves: List[int], board: List[List[int]]
         ) -> None:
-            connectFourModel.update_board(board)
+            connect_four_model.update_board(board)
 
             for move in good_moves:
-                self.assertTrue(connectFourModel.validate_move(move))
+                self.assertTrue(connect_four_model.validate_move(move))
 
             for move in bad_moves:
-                self.assertFalse(connectFourModel.validate_move(move))
+                self.assertFalse(connect_four_model.validate_move(move))
 
         def confirm_move(
             column_number: int,
@@ -144,14 +144,14 @@ The first player to get 4 in a row wins!\n Good Luck!",
             initial_board: List[List[int]],
             final_board: List[List[int]],
         ) -> None:
-            connectFourModel.update_board(initial_board)
-            test_board = connectFourModel.make_move("move " + str(column_number), token_number)
+            connect_four_model.update_board(initial_board)
+            test_board = connect_four_model.make_move("move " + str(column_number), token_number)
 
             self.assertEqual(test_board, final_board)
 
         def confirm_game_over(board: List[List[int]], result: str) -> None:
-            connectFourModel.update_board(board)
-            game_over = connectFourModel.determine_game_over(["first_player", "second_player"])
+            connect_four_model.update_board(board)
+            game_over = connect_four_model.determine_game_over(["first_player", "second_player"])
 
             self.assertEqual(game_over, result)
 
@@ -162,7 +162,7 @@ The first player to get 4 in a row wins!\n Good Luck!",
             for board in array[1]:
                 confirm_game_over(board, "second_player")
 
-        connectFourModel = ConnectFourModel()
+        connect_four_model = ConnectFourModel()
 
         # Basic Board setups
         blank_board = [
@@ -433,14 +433,14 @@ The first player to get 4 in a row wins!\n Good Luck!",
         confirm_available_moves([0, 1, 2, 3, 4, 5], [6], diagonal_board)
 
         # Test Available Move Logic
-        connectFourModel.update_board(blank_board)
-        self.assertEqual(connectFourModel.available_moves(), [0, 1, 2, 3, 4, 5, 6])
+        connect_four_model.update_board(blank_board)
+        self.assertEqual(connect_four_model.available_moves(), [0, 1, 2, 3, 4, 5, 6])
 
-        connectFourModel.update_board(single_column_board)
-        self.assertEqual(connectFourModel.available_moves(), [3])
+        connect_four_model.update_board(single_column_board)
+        self.assertEqual(connect_four_model.available_moves(), [3])
 
-        connectFourModel.update_board(full_board)
-        self.assertEqual(connectFourModel.available_moves(), [])
+        connect_four_model.update_board(full_board)
+        self.assertEqual(connect_four_model.available_moves(), [])
 
         # Test Move Logic
         confirm_move(

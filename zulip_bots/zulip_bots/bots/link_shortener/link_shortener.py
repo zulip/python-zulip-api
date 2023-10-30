@@ -39,7 +39,7 @@ class LinkShortenerHandler:
         )
 
     def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
-        REGEX_STR = (
+        regex_str = (
             r"("
             r"(?:http|https):\/\/"  # This allows for the HTTP or HTTPS
             # protocol.
@@ -48,7 +48,7 @@ class LinkShortenerHandler:
             r")"
         )
 
-        HELP_STR = (
+        help_str = (
             "Mention the link shortener bot in a conversation and "
             "then enter any URLs you want to shorten in the body of "
             "the message."
@@ -57,10 +57,10 @@ class LinkShortenerHandler:
         content = message["content"]
 
         if content.strip() == "help":
-            bot_handler.send_reply(message, HELP_STR)
+            bot_handler.send_reply(message, help_str)
             return
 
-        link_matches = re.findall(REGEX_STR, content)
+        link_matches = re.findall(regex_str, content)
 
         shortened_links = [self.shorten_link(link) for link in link_matches]
         link_pairs = [
@@ -71,7 +71,7 @@ class LinkShortenerHandler:
         final_response = "\n".join(link_pairs)
 
         if final_response == "":
-            bot_handler.send_reply(message, "No links found. " + HELP_STR)
+            bot_handler.send_reply(message, "No links found. " + help_str)
             return
 
         bot_handler.send_reply(message, final_response)

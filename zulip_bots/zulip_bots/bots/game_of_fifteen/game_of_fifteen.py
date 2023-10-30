@@ -130,7 +130,7 @@ class GameOfFifteenBotHandler(GameAdapter):
         )
         move_regex = r"move [\d{1}\s]+$"
         model = GameOfFifteenModel
-        gameMessageHandler = GameOfFifteenMessageHandler
+        game_message_handler = GameOfFifteenMessageHandler
         rules = """Arrange the board’s tiles from smallest to largest, left to right,
                   top to bottom, and tiles adjacent to :grey_question: can only be moved.
                   Final configuration will have :grey_question: in top left."""
@@ -141,7 +141,7 @@ class GameOfFifteenBotHandler(GameAdapter):
             move_help_message,
             move_regex,
             model,
-            gameMessageHandler,
+            game_message_handler,
             rules,
             min_players=1,
             max_players=1,

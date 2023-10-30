@@ -59,7 +59,9 @@ class TestGameOfFifteenBot(BotTestCase, DefaultTests):
         board = "\n\n:grey_question::one::two:\n\n:three::four::five:\n\n:six::seven::eight:"
         bot, bot_handler = self._get_handlers()
         self.assertEqual(bot.game_message_handler.parse_board(self.winning_board), board)
-        self.assertEqual(bot.game_message_handler.alert_move_message("foo", "move 1"), "foo moved 1")
+        self.assertEqual(
+            bot.game_message_handler.alert_move_message("foo", "move 1"), "foo moved 1"
+        )
         self.assertEqual(
             bot.game_message_handler.game_start_message(),
             "Welcome to Game of Fifteen!"
@@ -72,12 +74,12 @@ class TestGameOfFifteenBot(BotTestCase, DefaultTests):
         def confirm_available_moves(
             good_moves: List[int], bad_moves: List[int], board: List[List[int]]
         ) -> None:
-            gameOfFifteenModel.update_board(board)
+            game_of_fifteen_model.update_board(board)
             for move in good_moves:
-                self.assertTrue(gameOfFifteenModel.validate_move(move))
+                self.assertTrue(game_of_fifteen_model.validate_move(move))
 
             for move in bad_moves:
-                self.assertFalse(gameOfFifteenModel.validate_move(move))
+                self.assertFalse(game_of_fifteen_model.validate_move(move))
 
         def confirm_move(
             tile: str,
@@ -85,23 +87,23 @@ class TestGameOfFifteenBot(BotTestCase, DefaultTests):
             initial_board: List[List[int]],
             final_board: List[List[int]],
         ) -> None:
-            gameOfFifteenModel.update_board(initial_board)
-            test_board = gameOfFifteenModel.make_move("move " + tile, token_number)
+            game_of_fifteen_model.update_board(initial_board)
+            test_board = game_of_fifteen_model.make_move("move " + tile, token_number)
 
             self.assertEqual(test_board, final_board)
 
         def confirm_game_over(board: List[List[int]], result: str) -> None:
-            gameOfFifteenModel.update_board(board)
-            game_over = gameOfFifteenModel.determine_game_over(["first_player"])
+            game_of_fifteen_model.update_board(board)
+            game_over = game_of_fifteen_model.determine_game_over(["first_player"])
 
             self.assertEqual(game_over, result)
 
         def confirm_coordinates(board: List[List[int]], result: Dict[int, Tuple[int, int]]) -> None:
-            gameOfFifteenModel.update_board(board)
-            coordinates = gameOfFifteenModel.get_coordinates(board)
+            game_of_fifteen_model.update_board(board)
+            coordinates = game_of_fifteen_model.get_coordinates(board)
             self.assertEqual(coordinates, result)
 
-        gameOfFifteenModel = GameOfFifteenModel()
+        game_of_fifteen_model = GameOfFifteenModel()
 
         # Basic Board setups
         initial_board = [[8, 7, 6], [5, 4, 3], [2, 1, 0]]

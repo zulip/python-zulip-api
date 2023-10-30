@@ -25,8 +25,8 @@ class DatabaseTest(BotTestCase, DefaultTests):
         self.merels.update_game("topic1", "X", 0, 0, "NNNNNNNNNNNNNNNNNNNNNNNN", "", 0)
         self.merels.update_game("topic2", "O", 5, 4, "XXXXOOOOONNNNNNNNNNNNNNN", "", 0)
         self.assertTrue(self.storage.contains("topic1"), self.storage.contains("topic2"))
-        topic2Board = game_data.GameData(self.merels.get_game_data("topic2"))
-        self.assertEqual(topic2Board.board, "XXXXOOOOONNNNNNNNNNNNNNN")
+        topic2_board = game_data.GameData(self.merels.get_game_data("topic2"))
+        self.assertEqual(topic2_board.board, "XXXXOOOOONNNNNNNNNNNNNNN")
 
     def test_remove_game(self):
         self.merels.update_game("topic1", "X", 0, 0, "NNNNNNNNNNNNNNNNNNNNNNNN", "", 0)

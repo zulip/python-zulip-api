@@ -284,11 +284,11 @@ def run_mirror() -> None:
         since = default_since()
 
     try:
-        sleepInterval = 1
+        sleep_interval = 1
         while True:
             events = make_api_call("activity")
             if events is not None:
-                sleepInterval = 1
+                sleep_interval = 1
                 for event in events[::-1]:
                     timestamp = event.get("event", {}).get("timestamp", "")
                     event_date = dateutil.parser.parse(timestamp)
@@ -297,9 +297,9 @@ def run_mirror() -> None:
                         since = event_date
             else:
                 # back off a bit
-                if sleepInterval < 22:
-                    sleepInterval += 4
-            time.sleep(sleepInterval)
+                if sleep_interval < 22:
+                    sleep_interval += 4
+            time.sleep(sleep_interval)
 
     except KeyboardInterrupt:
         open(config.RESUME_FILE, "w").write(since.strftime("%s"))

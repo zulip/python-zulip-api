@@ -14,7 +14,7 @@ class FileUploaderHandler:
         )
 
     def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
-        HELP_STR = (
+        help_str = (
             "Use this bot with any of the following commands:"
             "\n* `@uploader <local_file_path>` : Upload a file, where `<local_file_path>` is the path to the file"
             "\n* `@uploader help` : Display help message"
@@ -22,7 +22,7 @@ class FileUploaderHandler:
 
         content = message["content"].strip()
         if content == "help":
-            bot_handler.send_reply(message, HELP_STR)
+            bot_handler.send_reply(message, help_str)
             return
 
         path = Path(os.path.expanduser(content))

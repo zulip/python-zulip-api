@@ -62,25 +62,25 @@ class CheckIntegrity(unittest.TestCase):
             [6, 6],
         )
 
-        AM = grid_layout
+        am = grid_layout
 
         relative_hills = (
-            [AM[0], AM[1], AM[2]],
-            [AM[3], AM[4], AM[5]],
-            [AM[6], AM[7], AM[8]],
-            [AM[9], AM[10], AM[11]],
-            [AM[12], AM[13], AM[14]],
-            [AM[15], AM[16], AM[17]],
-            [AM[18], AM[19], AM[20]],
-            [AM[21], AM[22], AM[23]],
-            [AM[0], AM[9], AM[21]],
-            [AM[3], AM[10], AM[18]],
-            [AM[6], AM[11], AM[15]],
-            [AM[1], AM[4], AM[7]],
-            [AM[16], AM[19], AM[22]],
-            [AM[8], AM[12], AM[17]],
-            [AM[5], AM[13], AM[20]],
-            [AM[2], AM[14], AM[23]],
+            [am[0], am[1], am[2]],
+            [am[3], am[4], am[5]],
+            [am[6], am[7], am[8]],
+            [am[9], am[10], am[11]],
+            [am[12], am[13], am[14]],
+            [am[15], am[16], am[17]],
+            [am[18], am[19], am[20]],
+            [am[21], am[22], am[23]],
+            [am[0], am[9], am[21]],
+            [am[3], am[10], am[18]],
+            [am[6], am[11], am[15]],
+            [am[1], am[4], am[7]],
+            [am[16], am[19], am[22]],
+            [am[8], am[12], am[17]],
+            [am[5], am[13], am[20]],
+            [am[2], am[14], am[23]],
         )
 
         self.assertEqual(constants.HILLS, relative_hills, "Incorrect relative hills arrangement")

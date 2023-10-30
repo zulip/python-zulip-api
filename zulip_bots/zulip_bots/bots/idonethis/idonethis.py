@@ -115,20 +115,20 @@ def entries_list(team_name: str) -> str:
 
 
 def create_entry(message: str) -> str:
-    SINGLE_WORD_REGEX = re.compile("--team=([a-zA-Z0-9_]*)")
-    MULTIWORD_REGEX = re.compile('"--team=([^"]*)"')
+    single_word_regex = re.compile("--team=([a-zA-Z0-9_]*)")
+    multiword_regex = re.compile('"--team=([^"]*)"')
 
     team = ""
     new_message = ""
-    single_word_match = SINGLE_WORD_REGEX.search(message)
-    multiword_match = MULTIWORD_REGEX.search(message)
+    single_word_match = single_word_regex.search(message)
+    multiword_match = multiword_regex.search(message)
 
     if multiword_match is not None:
         team = multiword_match.group(1)
-        new_message = MULTIWORD_REGEX.sub("", message).strip()
+        new_message = multiword_regex.sub("", message).strip()
     elif single_word_match is not None:
         team = single_word_match.group(1)
-        new_message = SINGLE_WORD_REGEX.sub("", message).strip()
+        new_message = single_word_regex.sub("", message).strip()
     elif default_team:
         team = default_team
         new_message = message

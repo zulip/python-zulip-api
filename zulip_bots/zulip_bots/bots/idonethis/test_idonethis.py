@@ -74,14 +74,14 @@ class TestIDoneThisBot(BotTestCase, DefaultTests):
             {"api_key": "12345678", "default_team": "testing team 1"}
         ), self.mock_http_conversation("test_show_team"), patch(
             "zulip_bots.bots.idonethis.idonethis.get_team_hash", return_value="31415926535"
-        ) as get_team_hashFunction:
+        ) as get_team_hash_function:
             self.verify_reply(
                 "team info testing team 1",
                 "Team Name: testing team 1\n"
                 "ID: `31415926535`\n"
                 "Created at: 2017-12-28T19:12:55.121+11:00",
             )
-            get_team_hashFunction.assert_called_with("testing team 1")
+            get_team_hash_function.assert_called_with("testing team 1")
 
     def test_entries_list(self) -> None:
         with self.mock_config_info(

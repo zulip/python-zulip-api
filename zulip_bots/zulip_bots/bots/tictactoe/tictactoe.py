@@ -280,7 +280,7 @@ class TicTacToeHandler(GameAdapter):
         move_help_message = "* To move during a game, type\n`move <number>` or `<number>`"
         move_regex = r"(move (\d)$)|((\d)$)"
         model = TicTacToeModel
-        gameMessageHandler = TicTacToeMessageHandler
+        game_message_handler = TicTacToeMessageHandler
         rules = """Try to get three in horizontal or vertical or diagonal row to win the game."""
         super().__init__(
             game_name,
@@ -288,7 +288,7 @@ class TicTacToeHandler(GameAdapter):
             move_help_message,
             move_regex,
             model,
-            gameMessageHandler,
+            game_message_handler,
             rules,
             supports_computer=True,
         )

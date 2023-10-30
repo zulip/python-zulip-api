@@ -50,7 +50,7 @@ class GameHandlerBotHandler(GameAdapter):
         move_help_message = "* To make your move during a game, type\n```move <column-number>```"
         move_regex = r"move (\d)$"
         model = MockModel
-        gameMessageHandler = GameHandlerBotMessageHandler
+        game_message_handler = GameHandlerBotMessageHandler
         rules = ""
 
         super().__init__(
@@ -59,7 +59,7 @@ class GameHandlerBotHandler(GameAdapter):
             move_help_message,
             move_regex,
             model,
-            gameMessageHandler,
+            game_message_handler,
             rules,
             max_players=2,
             supports_computer=True,

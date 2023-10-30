@@ -180,7 +180,7 @@ class JiraHandler:
             self.display_url = self.domain_with_protocol
 
     def jql_search(self, jql_query: str) -> str:
-        UNKNOWN_VAL = "*unknown*"
+        unknown_val = "*unknown*"
         jira_response = requests.get(
             self.domain_with_protocol
             + f"/rest/api/2/search?jql={jql_query}&fields=key,summary,status",
@@ -197,8 +197,8 @@ class JiraHandler:
             response = f"*Found {results} results*\n\n"
             for issue in jira_response.get("issues", []):
                 fields = issue.get("fields", {})
-                summary = fields.get("summary", UNKNOWN_VAL)
-                status_name = fields.get("status", {}).get("name", UNKNOWN_VAL)
+                summary = fields.get("summary", unknown_val)
+                status_name = fields.get("status", {}).get("name", unknown_val)
                 response += "\n - {}: [{}]({}) **[{}]**".format(
                     issue["key"], summary, url + issue["key"], status_name
                 )
@@ -217,7 +217,7 @@ class JiraHandler:
         help_match = HELP_REGEX.match(content)
 
         if get_match:
-            UNKNOWN_VAL = "*unknown*"
+            unknown_val = "*unknown*"
 
             key = get_match.group("issue_key")
 
@@ -230,13 +230,13 @@ class JiraHandler:
             errors = jira_response.get("errorMessages", [])
             fields = jira_response.get("fields", {})
 
-            creator_name = fields.get("creator", {}).get("name", UNKNOWN_VAL)
-            description = fields.get("description", UNKNOWN_VAL)
-            priority_name = fields.get("priority", {}).get("name", UNKNOWN_VAL)
-            project_name = fields.get("project", {}).get("name", UNKNOWN_VAL)
-            type_name = fields.get("issuetype", {}).get("name", UNKNOWN_VAL)
-            status_name = fields.get("status", {}).get("name", UNKNOWN_VAL)
-            summary = fields.get("summary", UNKNOWN_VAL)
+            creator_name = fields.get("creator", {}).get("name", unknown_val)
+            description = fields.get("description", unknown_val)
+            priority_name = fields.get("priority", {}).get("name", unknown_val)
+            project_name = fields.get("project", {}).get("name", unknown_val)
+            type_name = fields.get("issuetype", {}).get("name", unknown_val)
+            status_name = fields.get("status", {}).get("name", unknown_val)
+            summary = fields.get("summary", unknown_val)
 
             if errors:
                 response = "Oh no! Jira raised an error:\n > " + ", ".join(errors)

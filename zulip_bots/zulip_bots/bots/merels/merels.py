@@ -88,14 +88,14 @@ class MerelsHandler(GameAdapter):
         move_regex = ".*"
         model = MerelsModel
         rules = game.get_info()
-        gameMessageHandler = MerelsMessageHandler
+        game_message_handler = MerelsMessageHandler
         super().__init__(
             game_name,
             bot_name,
             move_help_message,
             move_regex,
             model,
-            gameMessageHandler,
+            game_message_handler,
             rules,
             max_players=2,
             min_players=2,
