@@ -425,11 +425,11 @@ option does not affect login credentials.""".replace("\n", " "),
             "in the Zulip configuration file or on the commandline"
         )
 
-    zulipToJabber = ZulipToJabberBot(
+    zulip_to_jabber = ZulipToJabberBot(
         zulip.init_from_options(options, "JabberMirror/" + __version__)
     )
     # This won't work for open realms that don't have a consistent domain
-    options.zulip_domain = zulipToJabber.client.email.partition("@")[-1]
+    options.zulip_domain = zulip_to_jabber.client.email.partition("@")[-1]
 
     try:
         jid = JID(options.jid)
@@ -439,7 +439,7 @@ option does not affect login credentials.""".replace("\n", " "),
     if options.conference_domain is None:
         options.conference_domain = f"conference.{jid.domain}"
 
-    xmpp = JabberToZulipBot(jid, options.jabber_password, get_rooms(zulipToJabber))
+    xmpp = JabberToZulipBot(jid, options.jabber_password, get_rooms(zulip_to_jabber))
 
     address = None
     if options.jabber_server_address:
@@ -448,16 +448,16 @@ option does not affect login credentials.""".replace("\n", " "),
     if not xmpp.connect(use_tls=not options.no_use_tls, address=address):
         sys.exit("Unable to connect to Jabber server")
 
-    xmpp.set_zulip_client(zulipToJabber)
-    zulipToJabber.set_jabber_client(xmpp)
+    xmpp.set_zulip_client(zulip_to_jabber)
+    zulip_to_jabber.set_jabber_client(xmpp)
 
     xmpp.process(block=False)
     event_types = ["stream"] if options.mode == "public" else ["message", "subscription"]
 
     try:
         logging.info("Connecting to Zulip.")
-        zulipToJabber.client.call_on_each_event(
-            zulipToJabber.process_event, event_types=event_types
+        zulip_to_jabber.client.call_on_each_event(
+            zulip_to_jabber.process_event, event_types=event_types
         )
     except BaseException:
         logging.exception("Exception in main loop")
