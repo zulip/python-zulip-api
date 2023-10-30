@@ -47,11 +47,11 @@ class StubBotHandler:
     def upload_file(self, file: IO[Any]) -> Dict[str, Any]:
         return self.message_server.upload_file(file)
 
-    class BotQuitException(Exception):
+    class BotQuitError(Exception):
         pass
 
     def quit(self, message: str = "") -> None:
-        raise self.BotQuitException
+        raise self.BotQuitError
 
     def get_config_info(self, bot_name: str, optional: bool = False) -> Dict[str, str]:
         return {}

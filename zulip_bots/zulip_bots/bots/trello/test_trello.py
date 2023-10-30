@@ -29,7 +29,7 @@ class TestTrelloBot(BotTestCase, DefaultTests):
             )
 
     def test_bot_quit_with_invalid_config(self) -> None:
-        with self.mock_config_info(mock_config), self.assertRaises(StubBotHandler.BotQuitException):
+        with self.mock_config_info(mock_config), self.assertRaises(StubBotHandler.BotQuitError):
             with self.mock_http_conversation("invalid_key"):
                 TrelloHandler().initialize(StubBotHandler())
 

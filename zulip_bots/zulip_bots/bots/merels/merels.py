@@ -1,6 +1,6 @@
 from typing import Any, List
 
-from zulip_bots.game_handler import GameAdapter, SamePlayerMove
+from zulip_bots.game_handler import GameAdapter, SamePlayerMoveError
 
 from .libraries import database, game, game_data, mechanics
 
@@ -47,7 +47,7 @@ class MerelsModel:
             )
         self.current_board, same_player_move = game.beat(move, self.topic, self.storage)
         if same_player_move != "":
-            raise SamePlayerMove(same_player_move)
+            raise SamePlayerMoveError(same_player_move)
         return self.current_board
 
 

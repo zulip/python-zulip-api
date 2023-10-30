@@ -8,7 +8,7 @@ from typing import Optional
 
 from zulip_bots import finder
 from zulip_bots.lib import (
-    NoBotConfigException,
+    NoBotConfigError,
     run_message_handler_for_bot,
     zulip_env_vars_are_present,
 )
@@ -118,7 +118,7 @@ def main() -> None:
     if args.registry:
         try:
             bot_source, lib_module = finder.import_module_from_zulip_bot_registry(args.bot)
-        except finder.DuplicateRegisteredBotName as error:
+        except finder.DuplicateRegisteredBotNameError as error:
             print(
                 f'ERROR: Found duplicate entries for "{error}" in zulip bots registry.\n'
                 "Make sure that you don't install bots using the same entry point. Exiting now."
@@ -182,7 +182,7 @@ def main() -> None:
             bot_name=bot_name,
             bot_source=bot_source,
         )
-    except NoBotConfigException:
+    except NoBotConfigError:
         print(
             """
             ERROR: Your bot requires you to specify a third party

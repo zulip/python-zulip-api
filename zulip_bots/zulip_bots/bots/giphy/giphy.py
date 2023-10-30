@@ -52,7 +52,7 @@ class GiphyHandler:
         bot_handler.send_reply(message, bot_response)
 
 
-class GiphyNoResultException(Exception):
+class GiphyNoResultError(Exception):
     pass
 
 
@@ -77,7 +77,7 @@ def get_url_gif_giphy(keyword: str, api_key: str) -> Union[int, str]:
     try:
         gif_url = data.json()["data"]["images"]["original"]["url"]
     except (TypeError, KeyError):  # Usually triggered by no result in Giphy.
-        raise GiphyNoResultException
+        raise GiphyNoResultError
     return gif_url
 
 
@@ -95,7 +95,7 @@ def get_bot_giphy_response(
             "cannot process your request right now. But, "
             "let's try again later! :grin:"
         )
-    except GiphyNoResultException:
+    except GiphyNoResultError:
         return f'Sorry, I don\'t have a GIF for "{keyword}"! :astonished:'
     return (
         f"[Click to enlarge]({gif_url})"

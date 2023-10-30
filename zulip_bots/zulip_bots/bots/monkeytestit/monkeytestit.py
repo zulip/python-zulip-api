@@ -2,7 +2,7 @@ import logging
 from typing import Dict
 
 from zulip_bots.bots.monkeytestit.lib import parse
-from zulip_bots.lib import BotHandler, NoBotConfigException
+from zulip_bots.lib import BotHandler, NoBotConfigError
 
 
 class MonkeyTestitBot:
@@ -20,7 +20,7 @@ class MonkeyTestitBot:
     def initialize(self, bot_handler: BotHandler) -> None:
         try:
             self.config = bot_handler.get_config_info("monkeytestit")
-        except NoBotConfigException:
+        except NoBotConfigError:
             bot_handler.quit(
                 "Quitting because there's no config file "
                 "supplied. See doc.md for a guide on setting up "

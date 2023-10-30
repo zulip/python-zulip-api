@@ -14,7 +14,7 @@ ANSWERS = {
 }
 
 
-class InvalidAnswerException(Exception):
+class InvalidAnswerError(Exception):
     pass
 
 
@@ -35,7 +35,7 @@ class IncidentHandler:
         elif query.startswith("answer "):
             try:
                 (ticket_id, answer) = parse_answer(query)
-            except InvalidAnswerException:
+            except InvalidAnswerError:
                 bot_response = "Invalid answer format"
                 bot_handler.send_reply(message, bot_response)
                 return
@@ -63,7 +63,7 @@ def start_new_incident(query: str, message: Dict[str, Any], bot_handler: BotHand
 def parse_answer(query: str) -> Tuple[str, str]:
     m = re.match(r"answer\s+(TICKET....)\s+(.)", query)
     if not m:
-        raise InvalidAnswerException
+        raise InvalidAnswerError
 
     ticket_id = m.group(1)
 
@@ -74,7 +74,7 @@ def parse_answer(query: str) -> Tuple[str, str]:
 
     answer = m.group(2).upper()
     if answer not in "1234":
-        raise InvalidAnswerException
+        raise InvalidAnswerError
 
     return (ticket_id, ANSWERS[answer])
 

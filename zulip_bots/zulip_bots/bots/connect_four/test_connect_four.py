@@ -3,7 +3,7 @@ from typing import Dict, List
 from typing_extensions import override
 
 from zulip_bots.bots.connect_four.controller import ConnectFourModel
-from zulip_bots.game_handler import BadMoveException
+from zulip_bots.game_handler import BadMoveError
 from zulip_bots.test_lib import BotTestCase, DefaultTests
 
 
@@ -583,5 +583,5 @@ The first player to get 4 in a row wins!\n Good Luck!",
         self.assertEqual(model.get_column(col), [0, -1, -1, -1, 1, 1])
         model.make_move(move, player_number=0)
         self.assertEqual(model.get_column(col), [1, -1, -1, -1, 1, 1])
-        with self.assertRaises(BadMoveException):
+        with self.assertRaises(BadMoveError):
             model.make_move(move, player_number=0)

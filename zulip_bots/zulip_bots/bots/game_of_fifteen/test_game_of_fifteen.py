@@ -1,7 +1,7 @@
 from typing import Dict, List, Tuple
 
 from zulip_bots.bots.game_of_fifteen.game_of_fifteen import GameOfFifteenModel
-from zulip_bots.game_handler import BadMoveException
+from zulip_bots.game_handler import BadMoveError
 from zulip_bots.test_lib import BotTestCase, DefaultTests
 
 
@@ -158,13 +158,13 @@ class TestGameOfFifteenBot(BotTestCase, DefaultTests):
         initial_board = [[8, 7, 6], [5, 4, 3], [2, 1, 0]]
 
         model.update_board(initial_board)
-        with self.assertRaises(BadMoveException):
+        with self.assertRaises(BadMoveError):
             model.make_move(move1, player_number=0)
-        with self.assertRaises(BadMoveException):
+        with self.assertRaises(BadMoveError):
             model.make_move(move2, player_number=0)
-        with self.assertRaises(BadMoveException):
+        with self.assertRaises(BadMoveError):
             model.make_move(move3, player_number=0)
-        with self.assertRaises(BadMoveException):
+        with self.assertRaises(BadMoveError):
             model.make_move(move4, player_number=0)
-        with self.assertRaises(BadMoveException):
+        with self.assertRaises(BadMoveError):
             model.make_move(move5, player_number=0)

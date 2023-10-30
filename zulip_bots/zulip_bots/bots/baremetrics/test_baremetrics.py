@@ -98,7 +98,7 @@ class TestBaremetricsBot(BotTestCase, DefaultTests):
 
         with self.mock_config_info({"api_key": "TEST"}):
             with self.mock_http_conversation("invalid_api_key"):
-                with self.assertRaises(StubBotHandler.BotQuitException):
+                with self.assertRaises(StubBotHandler.BotQuitError):
                     bot_test_instance.initialize(StubBotHandler())
 
     def test_invalid_command(self) -> None:

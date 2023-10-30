@@ -50,7 +50,7 @@ class TestYoutubeBot(BotTestCase, DefaultTests):
         with self.mock_config_info(
             {"key": "somethinginvalid", "number_of_results": "5", "video_region": "US"}
         ), self.mock_http_conversation("test_invalid_key"), self.assertRaises(
-            bot_handler.BotQuitException
+            bot_handler.BotQuitError
         ):
             bot.initialize(bot_handler)
 

@@ -4,7 +4,7 @@ from typing import Any, List, Tuple
 
 from typing_extensions import override
 
-from zulip_bots.game_handler import BadMoveException, GameAdapter
+from zulip_bots.game_handler import BadMoveError, GameAdapter
 
 # -------------------------------------
 
@@ -203,7 +203,7 @@ class TicTacToeModel:
             return self.computer_move(self.current_board, player_number + 1)
         move_coords_str = coords_from_command(move)
         if not self.is_valid_move(move_coords_str):
-            raise BadMoveException("Make sure your move is from 0-9")
+            raise BadMoveError("Make sure your move is from 0-9")
         board = self.current_board
         move_coords = move_coords_str.split(",")
         # Subtraction must be done to convert to the right indices,
@@ -211,7 +211,7 @@ class TicTacToeModel:
         row = (int(move_coords[1])) - 1
         column = (int(move_coords[0])) - 1
         if board[row][column] != 0:
-            raise BadMoveException("Make sure your space hasn't already been filled.")
+            raise BadMoveError("Make sure your space hasn't already been filled.")
         board[row][column] = player_number + 1
         return board
 

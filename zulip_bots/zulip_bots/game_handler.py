@@ -10,7 +10,7 @@ from typing_extensions import override
 from zulip_bots.lib import BotHandler
 
 
-class BadMoveException(Exception):
+class BadMoveError(Exception):
     def __init__(self, message: str) -> None:
         self.message = message
 
@@ -19,7 +19,7 @@ class BadMoveException(Exception):
         return self.message
 
 
-class SamePlayerMove(Exception):
+class SamePlayerMoveError(Exception):
     def __init__(self, message: str) -> None:
         self.message = message
 
@@ -925,10 +925,10 @@ class GameInstance:
         try:
             self.model.make_move(content, self.turn, is_computer)
         # Keep the turn of the same player
-        except SamePlayerMove as smp:
+        except SamePlayerMoveError as smp:
             self.same_player_turn(content, smp.message, is_computer)
             return
-        except BadMoveException as e:
+        except BadMoveError as e:
             self.broadcast(e.message)
             self.broadcast(self.parse_current_board())
             return

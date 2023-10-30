@@ -84,11 +84,11 @@ class TestGoogleTranslateBot(BotTestCase, DefaultTests):
             self._test('"hello" de', "Error. .", "test_languages")
 
     def test_invalid_api_key(self):
-        with self.assertRaises(StubBotHandler.BotQuitException):
+        with self.assertRaises(StubBotHandler.BotQuitError):
             self._test(None, None, "test_invalid_api_key")
 
     def test_api_access_not_configured(self):
-        with self.assertRaises(StubBotHandler.BotQuitException):
+        with self.assertRaises(StubBotHandler.BotQuitError):
             self._test(None, None, "test_api_access_not_configured")
 
     def test_connection_error(self):

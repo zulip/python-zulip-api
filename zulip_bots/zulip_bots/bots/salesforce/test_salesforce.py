@@ -163,7 +163,7 @@ class TestSalesforceBot(BotTestCase, DefaultTests):
         self._test("test_one_result", "find contact", "Usage: find contact <name> [arguments]")
 
     def test_bad_auth(self) -> None:
-        with self.assertRaises(StubBotHandler.BotQuitException):
+        with self.assertRaises(StubBotHandler.BotQuitError):
             self._test_initialize(auth_success=False)
 
     def test_callback(self) -> None:

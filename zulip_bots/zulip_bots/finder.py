@@ -30,7 +30,7 @@ def import_module_by_name(name: str) -> Any:
         return None
 
 
-class DuplicateRegisteredBotName(Exception):
+class DuplicateRegisteredBotNameError(Exception):
     pass
 
 
@@ -73,7 +73,7 @@ def import_module_from_zulip_bot_registry(name: str) -> Tuple[str, Optional[Modu
             return f"editable package: {bot_name}", bot_module
 
     if len(matching_bots) > 1:
-        raise DuplicateRegisteredBotName(name)
+        raise DuplicateRegisteredBotNameError(name)
 
     return "", None  # no matches in registry
 

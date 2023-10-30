@@ -2,7 +2,7 @@ from copy import deepcopy
 from functools import reduce
 from typing import List
 
-from zulip_bots.game_handler import BadMoveException
+from zulip_bots.game_handler import BadMoveError
 
 
 class ConnectFourModel:
@@ -61,7 +61,7 @@ class ConnectFourModel:
 
         while finding_move:
             if row < 0:
-                raise BadMoveException("Make sure your move is in a column with free space.")
+                raise BadMoveError("Make sure your move is in a column with free space.")
             if self.current_board[row][column] == 0:
                 self.current_board[row][column] = token_number
                 finding_move = False

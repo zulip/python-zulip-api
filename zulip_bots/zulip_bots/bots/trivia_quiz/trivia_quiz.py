@@ -9,11 +9,11 @@ import requests
 from zulip_bots.lib import BotHandler
 
 
-class NotAvailableException(Exception):
+class NotAvailableError(Exception):
     pass
 
 
-class InvalidAnswerException(Exception):
+class InvalidAnswerError(Exception):
     pass
 
 
@@ -29,14 +29,14 @@ class TriviaQuizHandler:
             try:
                 start_new_quiz(message, bot_handler)
                 return
-            except NotAvailableException:
+            except NotAvailableError:
                 bot_response = "Uh-Oh! Trivia service is down."
                 bot_handler.send_reply(message, bot_response)
                 return
         elif query.startswith("answer"):
             try:
                 (quiz_id, answer) = parse_answer(query)
-            except InvalidAnswerException:
+            except InvalidAnswerError:
                 bot_response = "Invalid answer format"
                 bot_handler.send_reply(message, bot_response)
                 return
@@ -75,12 +75,12 @@ def start_new_quiz(message: Dict[str, Any], bot_handler: BotHandler) -> None:
 def parse_answer(query: str) -> Tuple[str, str]:
     m = re.match(r"answer\s+(Q...)\s+(.)", query)
     if not m:
-        raise InvalidAnswerException
+        raise InvalidAnswerError
 
     quiz_id = m.group(1)
     answer = m.group(2).upper()
     if answer not in "ABCD":
-        raise InvalidAnswerException
+        raise InvalidAnswerError
 
     return (quiz_id, answer)
 
@@ -98,10 +98,10 @@ def get_trivia_payload() -> Dict[str, Any]:
         data = requests.get(url)
 
     except requests.exceptions.RequestException:
-        raise NotAvailableException
+        raise NotAvailableError
 
     if data.status_code != 200:
-        raise NotAvailableException
+        raise NotAvailableError
 
     payload = data.json()
     return payload

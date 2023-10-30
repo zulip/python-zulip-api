@@ -14,7 +14,7 @@ from typing_extensions import Protocol
 from zulip import Client, ZulipError
 
 
-class NoBotConfigException(Exception):
+class NoBotConfigError(Exception):
     pass
 
 
@@ -319,7 +319,7 @@ class ExternalBotHandler:
                 # on setting up the configuration specfic to this bot.
                 # And then `run.py` should also catch exceptions on how
                 # to specify the file in the command line.
-                raise NoBotConfigException(bot_name)
+                raise NoBotConfigError(bot_name)
 
             if bot_name not in self.bot_config_file:
                 print(

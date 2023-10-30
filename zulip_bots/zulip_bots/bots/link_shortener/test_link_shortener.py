@@ -65,5 +65,5 @@ class TestLinkShortenerBot(BotTestCase, DefaultTests):
         bot_test_instance = LinkShortenerHandler()
         with self.mock_config_info({"key": "qwertyuiopx"}):
             with self.mock_http_conversation("test_invalid_access_token"):
-                with self.assertRaises(StubBotHandler.BotQuitException):
+                with self.assertRaises(StubBotHandler.BotQuitError):
                     bot_test_instance.initialize(StubBotHandler())

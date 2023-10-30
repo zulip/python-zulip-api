@@ -97,7 +97,7 @@ right now.\nPlease try again later",
         with self.mock_config_info(
             {"auth_token": "someInvalidKey", "username": "aaron", "goalname": "goal"}
         ), self.mock_http_conversation("test_invalid_when_initialize"), self.assertRaises(
-            bot_handler.BotQuitException
+            bot_handler.BotQuitError
         ):
             bot.initialize(bot_handler)
 

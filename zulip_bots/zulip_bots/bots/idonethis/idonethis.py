@@ -12,21 +12,21 @@ api_key = ""
 default_team = ""
 
 
-class AuthenticationException(Exception):
+class AuthenticationError(Exception):
     pass
 
 
-class TeamNotFoundException(Exception):
+class TeamNotFoundError(Exception):
     def __init__(self, team: str) -> None:
         self.team = team
 
 
-class UnknownCommandSyntax(Exception):
+class UnknownCommandSyntaxError(Exception):
     def __init__(self, detail: str) -> None:
         self.detail = detail
 
 
-class UnspecifiedProblemException(Exception):
+class UnspecifiedProblemError(Exception):
     pass
 
 
@@ -49,10 +49,10 @@ def make_api_request(
         and r.json()["error"] == "Invalid API Authentication"
     ):
         logging.error("Error authenticating, please check key %s", r.url)
-        raise AuthenticationException
+        raise AuthenticationError
     else:
         logging.error("Error make API request, code %s. json: %s", r.status_code, r.json())
-        raise UnspecifiedProblemException
+        raise UnspecifiedProblemError
 
 
 def api_noop() -> None:
@@ -92,7 +92,7 @@ def get_team_hash(team_name: str) -> str:
     for team in api_list_team():
         if team["name"].lower() == team_name.lower() or team["hash_id"] == team_name:
             return team["hash_id"]
-    raise TeamNotFoundException(team_name)
+    raise TeamNotFoundError(team_name)
 
 
 def team_info(team_name: str) -> str:
@@ -133,7 +133,7 @@ def create_entry(message: str) -> str:
         team = default_team
         new_message = message
     else:
-        raise UnknownCommandSyntax(
+        raise UnknownCommandSyntaxError(
             """I don't know which team you meant for me to create an entry under.
 Either set a default team or pass the `--team` flag.
 More information in my help"""
@@ -166,12 +166,12 @@ class IDoneThisHandler:
 
         try:
             api_noop()
-        except AuthenticationException:
+        except AuthenticationError:
             logging.error(
                 "Authentication exception with idonethis. Can you check that your API keys are correct? "
             )
             bot_handler.quit()
-        except UnspecifiedProblemException:
+        except UnspecifiedProblemError:
             logging.error("Problem connecting to idonethis. Please check connection")
             bot_handler.quit()
 
@@ -219,7 +219,7 @@ Below are some of the commands you can use, and what they do.
                 if len(message_content) > 2:
                     reply = team_info(" ".join(message_content[2:]))
                 else:
-                    raise UnknownCommandSyntax(
+                    raise UnknownCommandSyntaxError(
                         "You must specify the team in which you request information from."
                     )
             elif command in ["entries list", "list entries"]:
@@ -229,15 +229,17 @@ Below are some of the commands you can use, and what they do.
             elif command in ["help"]:
                 reply = self.usage()
             else:
-                raise UnknownCommandSyntax("I can't understand the command you sent me :confused: ")
-        except TeamNotFoundException as e:
+                raise UnknownCommandSyntaxError(
+                    "I can't understand the command you sent me :confused: "
+                )
+        except TeamNotFoundError as e:
             reply = (
                 "Sorry, it doesn't seem as if I can find a team named `" + e.team + "` :frowning:."
             )
-        except AuthenticationException:
+        except AuthenticationError:
             reply = "I can't currently authenticate with idonethis. "
             reply += "Can you check that your API key is correct? For more information see my documentation."
-        except UnknownCommandSyntax as e:
+        except UnknownCommandSyntaxError as e:
             reply = (
                 "Sorry, I don't understand what your trying to say. Use `@mention help` to see my help. "
                 + e.detail

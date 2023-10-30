@@ -1,6 +1,6 @@
 from typing import Any, List
 
-from zulip_bots.game_handler import BadMoveException, GameAdapter
+from zulip_bots.game_handler import BadMoveError, GameAdapter
 
 
 class GameHandlerBotMessageHandler:
@@ -31,7 +31,7 @@ class MockModel:
             if int(move.replace("move ", "")) < 9:
                 return "mock board"
             else:
-                raise BadMoveException("Invalid Move.")
+                raise BadMoveError("Invalid Move.")
         return "mock board"
 
     def determine_game_over(self, players: List[str]) -> None:

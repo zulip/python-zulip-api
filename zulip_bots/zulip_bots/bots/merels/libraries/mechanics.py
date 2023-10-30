@@ -5,7 +5,7 @@ mechanisms as well as some functions for accessing the database.
 from collections import Counter
 from math import sqrt
 
-from zulip_bots.game_handler import BadMoveException
+from zulip_bots.game_handler import BadMoveError
 
 from . import constants, database, game_data, interface
 
@@ -361,7 +361,7 @@ def move_man(topic_name, p1, p2, merels_storage):
         )
         return f"Moved a man from ({p1[0]}, {p1[1]}) -> ({p2[0]}, {p2[1]}) for {data.turn}."
     else:
-        raise BadMoveException("Failed: That's not a legal move. Please try again.")
+        raise BadMoveError("Failed: That's not a legal move. Please try again.")
 
 
 def put_man(topic_name, v, h, merels_storage):
@@ -399,7 +399,7 @@ def put_man(topic_name, v, h, merels_storage):
         )
         return f"Put a man to ({v}, {h}) for {data.turn}."
     else:
-        raise BadMoveException("Failed: That's not a legal put. Please try again.")
+        raise BadMoveError("Failed: That's not a legal put. Please try again.")
 
 
 def take_man(topic_name, v, h, merels_storage):
@@ -443,7 +443,7 @@ def take_man(topic_name, v, h, merels_storage):
         )
         return f"Taken a man from ({v}, {h}) for {data.turn}."
     else:
-        raise BadMoveException("Failed: That's not a legal take. Please try again.")
+        raise BadMoveError("Failed: That's not a legal take. Please try again.")
 
 
 def update_hill_uid(topic_name, merels_storage):

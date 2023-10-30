@@ -35,15 +35,15 @@ ZULIP_MESSAGE_TEMPLATE: str = "**{username}** [{uid}]: {message}"
 MATRIX_MESSAGE_TEMPLATE: str = "<{username} ({uid})> {message}"
 
 
-class BridgeConfigException(Exception):
+class BridgeConfigError(Exception):
     pass
 
 
-class BridgeFatalMatrixException(Exception):
+class BridgeFatalMatrixError(Exception):
     pass
 
 
-class BridgeFatalZulipException(Exception):
+class BridgeFatalZulipError(Exception):
     pass
 
 
@@ -86,7 +86,7 @@ class MatrixToZulip:
         # the new messages and not with all the old ones.
         sync_response: Union[SyncResponse, SyncError] = await matrix_client.sync()
         if isinstance(sync_response, nio.SyncError):
-            raise BridgeFatalMatrixException(sync_response.message)
+            raise BridgeFatalMatrixError(sync_response.message)
 
         return matrix_to_zulip
 
@@ -117,10 +117,10 @@ class MatrixToZulip:
             )
         except Exception as exception:
             # Generally raised when user is forbidden
-            raise BridgeFatalZulipException(exception)
+            raise BridgeFatalZulipError(exception)
         if result["result"] != "success":
             # Generally raised when API key is invalid
-            raise BridgeFatalZulipException(result["msg"])
+            raise BridgeFatalZulipError(result["msg"])
 
         # Update the bot's read marker in order to show the other users which
         # messages are already processed by the bot.
@@ -194,14 +194,14 @@ class MatrixToZulip:
         for room_id in self.matrix_config["bridges"]:
             result: Union[JoinResponse, JoinError] = await self.matrix_client.join(room_id)
             if isinstance(result, nio.JoinError):
-                raise BridgeFatalMatrixException(str(result))
+                raise BridgeFatalMatrixError(str(result))
 
     async def matrix_login(self) -> None:
         result: Union[LoginResponse, LoginError] = await self.matrix_client.login(
             self.matrix_config["password"]
         )
         if isinstance(result, nio.LoginError):
-            raise BridgeFatalMatrixException(str(result))
+            raise BridgeFatalMatrixError(str(result))
 
     async def run(self) -> None:
         print("Starting message handler on Matrix client")
@@ -230,7 +230,7 @@ class ZulipToMatrix:
         # Precompute the url of the Zulip server, needed later.
         result: Dict[str, Any] = self.zulip_client.get_server_settings()
         if result["result"] != "success":
-            raise BridgeFatalZulipException("cannot get server settings")
+            raise BridgeFatalZulipError("cannot get server settings")
         self.server_url: str = result["realm_uri"]
 
     @classmethod
@@ -250,7 +250,7 @@ class ZulipToMatrix:
             self.matrix_client.room_send(**kwargs), self.loop
         ).result()
         if isinstance(result, nio.RoomSendError):
-            raise BridgeFatalMatrixException(str(result))
+            raise BridgeFatalMatrixError(str(result))
 
     def _zulip_to_matrix(self, msg: Dict[str, Any]) -> None:
         logging.debug("_zulip_to_matrix; msg: %s", msg)
@@ -303,12 +303,12 @@ class ZulipToMatrix:
         for stream, _ in self.zulip_config["bridges"]:
             result: Dict[str, Any] = self.zulip_client.get_stream_id(stream)
             if result["result"] == "error":
-                raise BridgeFatalZulipException(f"cannot access stream '{stream}': {result}")
+                raise BridgeFatalZulipError(f"cannot access stream '{stream}': {result}")
             if result["result"] != "success":
-                raise BridgeFatalZulipException(f"cannot checkout stream id for stream '{stream}'")
+                raise BridgeFatalZulipError(f"cannot checkout stream id for stream '{stream}'")
             result = self.zulip_client.add_subscriptions(streams=[{"name": stream}])
             if result["result"] != "success":
-                raise BridgeFatalZulipException(f"cannot subscribe to stream '{stream}': {result}")
+                raise BridgeFatalZulipError(f"cannot subscribe to stream '{stream}': {result}")
 
     def get_matrix_room_for_zulip_message(self, msg: Dict[str, Any]) -> Optional[str]:
         """Check whether we want to process the given message.
@@ -459,10 +459,10 @@ def read_configuration(config_file: str) -> Dict[str, Dict[str, Any]]:
     try:
         config.read(config_file)
     except configparser.Error as exception:
-        raise BridgeConfigException(str(exception))
+        raise BridgeConfigError(str(exception))
 
     if set(config.sections()) < {"matrix", "zulip"}:
-        raise BridgeConfigException("Please ensure the configuration has zulip & matrix sections.")
+        raise BridgeConfigError("Please ensure the configuration has zulip & matrix sections.")
 
     result: Dict[str, Dict[str, Any]] = {"matrix": {}, "zulip": {}}
     # For Matrix: create a mapping with the Matrix room_ids as keys and
@@ -484,7 +484,7 @@ def read_configuration(config_file: str) -> Dict[str, Dict[str, Any]]:
 
         if section.startswith("additional_bridge"):
             if section_keys != bridge_key_set:
-                raise BridgeConfigException(
+                raise BridgeConfigError(
                     f"Please ensure the bridge configuration section {section} contain the following keys: {bridge_key_set}."
                 )
 
@@ -493,7 +493,7 @@ def read_configuration(config_file: str) -> Dict[str, Dict[str, Any]]:
             result["matrix"]["bridges"][section_config["room_id"]] = zulip_target
         elif section == "matrix":
             if section_keys != matrix_full_key_set:
-                raise BridgeConfigException(
+                raise BridgeConfigError(
                     "Please ensure the matrix configuration section contains the following keys: %s."
                     % str(matrix_full_key_set)
                 )
@@ -505,10 +505,10 @@ def read_configuration(config_file: str) -> Dict[str, Dict[str, Any]]:
 
             # Verify the format of the Matrix user ID.
             if re.fullmatch(r"@[^:]+:.+", result["matrix"]["mxid"]) is None:
-                raise BridgeConfigException("Malformatted mxid.")
+                raise BridgeConfigError("Malformatted mxid.")
         elif section == "zulip":
             if section_keys != zulip_full_key_set:
-                raise BridgeConfigException(
+                raise BridgeConfigError(
                     "Please ensure the zulip configuration section contains the following keys: %s."
                     % str(zulip_full_key_set)
                 )
@@ -555,9 +555,9 @@ async def run(zulip_config: Dict[str, Any], matrix_config: Dict[str, Any], no_no
 
             await asyncio.gather(matrix_to_zulip.run(), zulip_to_matrix.run())
 
-        except BridgeFatalMatrixException as exception:
+        except BridgeFatalMatrixError as exception:
             sys.exit(f"Matrix bridge error: {exception}")
-        except BridgeFatalZulipException as exception:
+        except BridgeFatalZulipError as exception:
             sys.exit(f"Zulip bridge error: {exception}")
         except zulip.ZulipError as exception:
             sys.exit(f"Zulip error: {exception}")
@@ -571,7 +571,7 @@ async def run(zulip_config: Dict[str, Any], matrix_config: Dict[str, Any], no_no
 
 def write_sample_config(target_path: str, zuliprc: Optional[str]) -> None:
     if os.path.exists(target_path):
-        raise BridgeConfigException(f"Path '{target_path}' exists; not overwriting existing file.")
+        raise BridgeConfigError(f"Path '{target_path}' exists; not overwriting existing file.")
 
     sample_dict: OrderedDict[str, OrderedDict[str, str]] = OrderedDict(
         (
@@ -613,20 +613,20 @@ def write_sample_config(target_path: str, zuliprc: Optional[str]) -> None:
 
     if zuliprc is not None:
         if not os.path.exists(zuliprc):
-            raise BridgeConfigException(f"Zuliprc file '{zuliprc}' does not exist.")
+            raise BridgeConfigError(f"Zuliprc file '{zuliprc}' does not exist.")
 
         zuliprc_config: configparser.ConfigParser = configparser.ConfigParser()
         try:
             zuliprc_config.read(zuliprc)
         except configparser.Error as exception:
-            raise BridgeConfigException(str(exception))
+            raise BridgeConfigError(str(exception))
 
         try:
             sample_dict["zulip"]["email"] = zuliprc_config["api"]["email"]
             sample_dict["zulip"]["site"] = zuliprc_config["api"]["site"]
             sample_dict["zulip"]["api_key"] = zuliprc_config["api"]["key"]
         except KeyError as exception:
-            raise BridgeConfigException("You provided an invalid zuliprc file: " + str(exception))
+            raise BridgeConfigError("You provided an invalid zuliprc file: " + str(exception))
 
     sample: configparser.ConfigParser = configparser.ConfigParser()
     sample.read_dict(sample_dict)
@@ -648,7 +648,7 @@ def main() -> None:
     if options.sample_config:
         try:
             write_sample_config(options.sample_config, options.zuliprc)
-        except BridgeConfigException as exception:
+        except BridgeConfigError as exception:
             print(f"Could not write sample config: {exception}")
             sys.exit(1)
         if options.zuliprc is None:
@@ -667,7 +667,7 @@ def main() -> None:
 
     try:
         config: Dict[str, Dict[str, Any]] = read_configuration(options.config)
-    except BridgeConfigException as exception:
+    except BridgeConfigError as exception:
         print(f"Could not parse config file: {exception}")
         sys.exit(1)
 
