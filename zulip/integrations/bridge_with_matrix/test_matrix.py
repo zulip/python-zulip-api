@@ -66,7 +66,7 @@ def new_temp_dir() -> Iterator[str]:
 class MatrixBridgeScriptTests(TestCase):
     def output_from_script(self, options: List[str]) -> List[str]:
         popen = Popen(
-            [sys.executable, script] + options, stdin=PIPE, stdout=PIPE, universal_newlines=True
+            [sys.executable, script, *options], stdin=PIPE, stdout=PIPE, universal_newlines=True
         )
         return popen.communicate()[0].strip().split("\n")
 

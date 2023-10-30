@@ -57,8 +57,7 @@ def get_bot_converter_response(message: Dict[str, str], bot_handler: BotHandler)
     content = message["content"]
 
     words = content.lower().split()
-    convert_indexes = [i for i, word in enumerate(words) if word == "@convert"]
-    convert_indexes = [-1] + convert_indexes
+    convert_indexes = [-1, *(i for i, word in enumerate(words) if word == "@convert")]
     results = []
 
     for convert_index in convert_indexes:

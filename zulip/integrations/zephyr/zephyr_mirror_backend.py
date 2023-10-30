@@ -719,7 +719,7 @@ def send_authed_zephyr(zwrite_args: List[str], content: str) -> Tuple[int, str]:
 
 
 def send_unauthed_zephyr(zwrite_args: List[str], content: str) -> Tuple[int, str]:
-    return send_zephyr(zwrite_args + ["-d"], content)
+    return send_zephyr([*zwrite_args, "-d"], content)
 
 
 def zcrypt_encrypt_content(zephyr_class: str, instance: str, content: str) -> Optional[str]:

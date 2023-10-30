@@ -123,7 +123,7 @@ files_dict = lister.list_files(
     ftypes=["py", "pyi"],
     use_shebang=True,
     modified_only=args.modified,
-    exclude=exclude + ["stubs"],
+    exclude=[*exclude, "stubs"],
     group_by_ftype=True,
 )
 
@@ -154,7 +154,7 @@ status = 0
 for repo, python_files in repo_python_files.items():
     print(f"Running mypy for `{repo}`.", flush=True)
     if python_files:
-        result = subprocess.call([mypy_command, "--"] + python_files)
+        result = subprocess.call([mypy_command, "--", *python_files])
         if result != 0:
             status = result
     else:
