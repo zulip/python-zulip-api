@@ -14,7 +14,7 @@ from . import database, mechanics
 COMMAND_PATTERN = re.compile("^(\\w*).*(\\d,\\d).*(\\d,\\d)|^(\\w+).*(\\d,\\d)")
 
 
-def getInfo():
+def get_info():
     """Gets the info on starting the game
 
     :return: Info on how to start the game
@@ -22,7 +22,7 @@ def getInfo():
     return "To start a game, mention me and add `create`. A game will start in that topic. "
 
 
-def getHelp():
+def get_help():
     """Gets the help message
 
     :return: Help message

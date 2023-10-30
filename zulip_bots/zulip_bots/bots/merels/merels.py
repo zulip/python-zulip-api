@@ -64,7 +64,7 @@ class MerelsMessageHandler:
         return original_player + " :" + move_info
 
     def game_start_message(self) -> str:
-        return game.getHelp()
+        return game.get_help()
 
 
 class MerelsHandler(GameAdapter):
@@ -79,7 +79,7 @@ class MerelsHandler(GameAdapter):
     }
 
     def usage(self) -> str:
-        return game.getInfo()
+        return game.get_info()
 
     def __init__(self) -> None:
         game_name = "Merels"
@@ -87,7 +87,7 @@ class MerelsHandler(GameAdapter):
         move_help_message = ""
         move_regex = ".*"
         model = MerelsModel
-        rules = game.getInfo()
+        rules = game.get_info()
         gameMessageHandler = MerelsMessageHandler
         super().__init__(
             game_name,

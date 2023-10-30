@@ -69,7 +69,7 @@ class TestGameOfFifteenBot(BotTestCase, DefaultTests):
     winning_board = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
 
     def test_game_of_fifteen_logic(self) -> None:
-        def confirmAvailableMoves(
+        def confirm_available_moves(
             good_moves: List[int], bad_moves: List[int], board: List[List[int]]
         ) -> None:
             gameOfFifteenModel.update_board(board)
@@ -79,7 +79,7 @@ class TestGameOfFifteenBot(BotTestCase, DefaultTests):
             for move in bad_moves:
                 self.assertFalse(gameOfFifteenModel.validate_move(move))
 
-        def confirmMove(
+        def confirm_move(
             tile: str,
             token_number: int,
             initial_board: List[List[int]],
@@ -90,7 +90,7 @@ class TestGameOfFifteenBot(BotTestCase, DefaultTests):
 
             self.assertEqual(test_board, final_board)
 
-        def confirmGameOver(board: List[List[int]], result: str) -> None:
+        def confirm_game_over(board: List[List[int]], result: str) -> None:
             gameOfFifteenModel.update_board(board)
             game_over = gameOfFifteenModel.determine_game_over(["first_player"])
 
@@ -111,20 +111,20 @@ class TestGameOfFifteenBot(BotTestCase, DefaultTests):
         winning_board = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
 
         # Test Move Validation Logic
-        confirmAvailableMoves([1, 2, 3, 4, 5, 6, 7, 8], [0, 9, -1], initial_board)
+        confirm_available_moves([1, 2, 3, 4, 5, 6, 7, 8], [0, 9, -1], initial_board)
 
         # Test Move Logic
-        confirmMove("1", 0, initial_board, [[8, 7, 6], [5, 4, 3], [2, 0, 1]])
+        confirm_move("1", 0, initial_board, [[8, 7, 6], [5, 4, 3], [2, 0, 1]])
 
-        confirmMove("1 2", 0, initial_board, [[8, 7, 6], [5, 4, 3], [0, 2, 1]])
+        confirm_move("1 2", 0, initial_board, [[8, 7, 6], [5, 4, 3], [0, 2, 1]])
 
-        confirmMove("1 2 5", 0, initial_board, [[8, 7, 6], [0, 4, 3], [5, 2, 1]])
+        confirm_move("1 2 5", 0, initial_board, [[8, 7, 6], [0, 4, 3], [5, 2, 1]])
 
-        confirmMove("1 2 5 4", 0, initial_board, [[8, 7, 6], [4, 0, 3], [5, 2, 1]])
+        confirm_move("1 2 5 4", 0, initial_board, [[8, 7, 6], [4, 0, 3], [5, 2, 1]])
 
-        confirmMove("3", 0, sample_board, [[7, 6, 8], [0, 3, 1], [2, 4, 5]])
+        confirm_move("3", 0, sample_board, [[7, 6, 8], [0, 3, 1], [2, 4, 5]])
 
-        confirmMove("3 7", 0, sample_board, [[0, 6, 8], [7, 3, 1], [2, 4, 5]])
+        confirm_move("3 7", 0, sample_board, [[0, 6, 8], [7, 3, 1], [2, 4, 5]])
 
         # Test coordinates logic:
         confirm_coordinates(
@@ -143,8 +143,8 @@ class TestGameOfFifteenBot(BotTestCase, DefaultTests):
         )
 
         # Test Game Over Logic:
-        confirmGameOver(winning_board, "current turn")
-        confirmGameOver(sample_board, "")
+        confirm_game_over(winning_board, "current turn")
+        confirm_game_over(sample_board, "")
 
     def test_invalid_moves(self) -> None:
         model = GameOfFifteenModel()

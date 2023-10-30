@@ -127,7 +127,7 @@ The first player to get 4 in a row wins!\n Good Luck!",
     ]
 
     def test_connect_four_logic(self) -> None:
-        def confirmAvailableMoves(
+        def confirm_available_moves(
             good_moves: List[int], bad_moves: List[int], board: List[List[int]]
         ) -> None:
             connectFourModel.update_board(board)
@@ -138,7 +138,7 @@ The first player to get 4 in a row wins!\n Good Luck!",
             for move in bad_moves:
                 self.assertFalse(connectFourModel.validate_move(move))
 
-        def confirmMove(
+        def confirm_move(
             column_number: int,
             token_number: int,
             initial_board: List[List[int]],
@@ -149,18 +149,18 @@ The first player to get 4 in a row wins!\n Good Luck!",
 
             self.assertEqual(test_board, final_board)
 
-        def confirmGameOver(board: List[List[int]], result: str) -> None:
+        def confirm_game_over(board: List[List[int]], result: str) -> None:
             connectFourModel.update_board(board)
             game_over = connectFourModel.determine_game_over(["first_player", "second_player"])
 
             self.assertEqual(game_over, result)
 
-        def confirmWinStates(array: List[List[List[List[int]]]]) -> None:
+        def confirm_win_states(array: List[List[List[List[int]]]]) -> None:
             for board in array[0]:
-                confirmGameOver(board, "first_player")
+                confirm_game_over(board, "first_player")
 
             for board in array[1]:
-                confirmGameOver(board, "second_player")
+                confirm_game_over(board, "second_player")
 
         connectFourModel = ConnectFourModel()
 
@@ -428,9 +428,9 @@ The first player to get 4 in a row wins!\n Good Luck!",
         ]
 
         # Test Move Validation Logic
-        confirmAvailableMoves([0, 1, 2, 3, 4, 5, 6], [-1, 7], blank_board)
-        confirmAvailableMoves([3], [0, 1, 2, 4, 5, 6], single_column_board)
-        confirmAvailableMoves([0, 1, 2, 3, 4, 5], [6], diagonal_board)
+        confirm_available_moves([0, 1, 2, 3, 4, 5, 6], [-1, 7], blank_board)
+        confirm_available_moves([3], [0, 1, 2, 4, 5, 6], single_column_board)
+        confirm_available_moves([0, 1, 2, 3, 4, 5], [6], diagonal_board)
 
         # Test Available Move Logic
         connectFourModel.update_board(blank_board)
@@ -443,7 +443,7 @@ The first player to get 4 in a row wins!\n Good Luck!",
         self.assertEqual(connectFourModel.available_moves(), [])
 
         # Test Move Logic
-        confirmMove(
+        confirm_move(
             1,
             0,
             blank_board,
@@ -457,7 +457,7 @@ The first player to get 4 in a row wins!\n Good Luck!",
             ],
         )
 
-        confirmMove(
+        confirm_move(
             1,
             1,
             blank_board,
@@ -471,7 +471,7 @@ The first player to get 4 in a row wins!\n Good Luck!",
             ],
         )
 
-        confirmMove(
+        confirm_move(
             1,
             0,
             diagonal_board,
@@ -485,7 +485,7 @@ The first player to get 4 in a row wins!\n Good Luck!",
             ],
         )
 
-        confirmMove(
+        confirm_move(
             2,
             0,
             diagonal_board,
@@ -499,7 +499,7 @@ The first player to get 4 in a row wins!\n Good Luck!",
             ],
         )
 
-        confirmMove(
+        confirm_move(
             3,
             0,
             diagonal_board,
@@ -513,7 +513,7 @@ The first player to get 4 in a row wins!\n Good Luck!",
             ],
         )
 
-        confirmMove(
+        confirm_move(
             4,
             0,
             diagonal_board,
@@ -527,7 +527,7 @@ The first player to get 4 in a row wins!\n Good Luck!",
             ],
         )
 
-        confirmMove(
+        confirm_move(
             5,
             0,
             diagonal_board,
@@ -541,7 +541,7 @@ The first player to get 4 in a row wins!\n Good Luck!",
             ],
         )
 
-        confirmMove(
+        confirm_move(
             6,
             0,
             diagonal_board,
@@ -556,14 +556,14 @@ The first player to get 4 in a row wins!\n Good Luck!",
         )
 
         # Test Game Over Logic:
-        confirmGameOver(blank_board, "")
-        confirmGameOver(full_board, "draw")
+        confirm_game_over(blank_board, "")
+        confirm_game_over(full_board, "draw")
 
         # Test Win States:
-        confirmWinStates(horizontal_win_boards)
-        confirmWinStates(vertical_win_boards)
-        confirmWinStates(major_diagonal_win_boards)
-        confirmWinStates(minor_diagonal_win_boards)
+        confirm_win_states(horizontal_win_boards)
+        confirm_win_states(vertical_win_boards)
+        confirm_win_states(major_diagonal_win_boards)
+        confirm_win_states(minor_diagonal_win_boards)
 
     def test_more_logic(self) -> None:
         model = ConnectFourModel()
