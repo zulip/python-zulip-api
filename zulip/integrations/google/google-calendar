@@ -160,8 +160,6 @@ def populate_events() -> Optional[None]:
 
 
 def send_reminders() -> Optional[None]:
-    global sent
-
     messages = []
     keys = set()
     now = datetime.datetime.now(tz=pytz.utc)
