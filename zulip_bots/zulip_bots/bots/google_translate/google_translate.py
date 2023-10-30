@@ -74,7 +74,7 @@ def translate(text_to_translate, key, dest, src):
 
 def get_code_for_language(language, all_languages):
     if language.lower() not in all_languages.values():
-        if language.lower() not in all_languages.keys():
+        if language.lower() not in all_languages:
             return ""
         language = all_languages[language.lower()]
     return language

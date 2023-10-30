@@ -99,7 +99,7 @@ def get_enabled_checkers(results: Dict) -> List:
     """
     checkers = results["enabled_checkers"]
     enabled_checkers = []
-    for checker in checkers.keys():
+    for checker in checkers:
         if checkers[checker]:  # == True/False
             enabled_checkers.append(checker)
     return enabled_checkers

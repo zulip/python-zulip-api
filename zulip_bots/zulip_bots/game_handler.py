@@ -70,10 +70,10 @@ class GameAdapter:
     def add_user_statistics(self, user: str, values: Dict[str, int]) -> None:
         self.get_user_cache()
         current_values: Dict[str, int] = {}
-        if "stats" in self.get_user_by_email(user).keys():
+        if "stats" in self.get_user_by_email(user):
             current_values = self.user_cache[user]["stats"]
         for key, value in values.items():
-            if key not in current_values.keys():
+            if key not in current_values:
                 current_values.update({key: 0})
             current_values[key] += value
         self.user_cache[user].update({"stats": current_values})
@@ -216,7 +216,7 @@ class GameAdapter:
             sender = message["sender_email"].lower()
             message["sender_email"] = message["sender_email"].lower()
 
-            if self.email not in self.user_cache.keys() and self.supports_computer:
+            if self.email not in self.user_cache and self.supports_computer:
                 self.add_user_to_cache(
                     {"sender_email": self.email, "sender_full_name": self.full_name}
                 )
@@ -224,7 +224,7 @@ class GameAdapter:
             if sender == self.email:
                 return
 
-            if sender not in self.user_cache.keys():
+            if sender not in self.user_cache:
                 self.add_user_to_cache(message)
                 logging.info("Added %s to user cache", sender)
 
@@ -489,7 +489,7 @@ class GameAdapter:
     def get_sorted_player_statistics(self) -> List[Tuple[str, Dict[str, int]]]:
         players = []
         for user_name, u in self.user_cache.items():
-            if "stats" in u.keys():
+            if "stats" in u:
                 players.append((user_name, u["stats"]))
         return sorted(
             players,
@@ -508,11 +508,11 @@ class GameAdapter:
             self.send_reply(message, self.confirm_new_invitation(user_email))
 
     def cancel_game(self, game_id: str, reason: str = "") -> None:
-        if game_id in self.invites.keys():
+        if game_id in self.invites:
             self.broadcast(game_id, "Game cancelled.\n" + reason)
             del self.invites[game_id]
             return
-        if game_id in self.instances.keys():
+        if game_id in self.instances:
             self.instances[game_id].broadcast("Game ended.\n" + reason)
             del self.instances[game_id]
             return
@@ -541,7 +541,7 @@ class GameAdapter:
         object = f"""> **Game `{game_id}`**
 > {self.game_name}
 > {self.get_number_of_players(game_id)}/{self.max_players} players"""
-        if game_id in self.instances.keys():
+        if game_id in self.instances:
             instance = self.instances[game_id]
             if not self.is_single_player:
                 object += "\n> **[Join Game](/#narrow/stream/{}/topic/{})**".format(
@@ -561,7 +561,7 @@ class GameAdapter:
         self.start_game_if_ready(game_id)
 
     def get_players(self, game_id: str, parameter: str = "a") -> List[str]:
-        if game_id in self.invites.keys():
+        if game_id in self.invites:
             players: List[str] = []
             if (
                 self.invites[game_id]["subject"] == "###private###" and "p" in parameter
@@ -573,14 +573,14 @@ class GameAdapter:
                 if parameter in accepted:
                     players.append(player)
             return players
-        if game_id in self.instances.keys() and "p" not in parameter:
+        if game_id in self.instances and "p" not in parameter:
             players = self.instances[game_id].players
             return players
         return []
 
     def get_game_info(self, game_id: str) -> Dict[str, Any]:
         game_info: Dict[str, Any] = {}
-        if game_id in self.instances.keys():
+        if game_id in self.instances:
             instance = self.instances[game_id]
             game_info = {
                 "game_id": game_id,
@@ -589,7 +589,7 @@ class GameAdapter:
                 "subject": instance.subject,
                 "players": self.get_players(game_id),
             }
-        if game_id in self.invites.keys():
+        if game_id in self.invites:
             invite = self.invites[game_id]
             game_info = {
                 "game_id": game_id,
@@ -603,7 +603,7 @@ class GameAdapter:
     def get_user_by_name(self, name: str) -> Dict[str, Any]:
         name = name.strip()
         for user in self.user_cache.values():
-            if "full_name" in user.keys() and user["full_name"].lower() == name.lower():
+            if "full_name" in user and user["full_name"].lower() == name.lower():
                 return user
         return {}
 
@@ -646,9 +646,9 @@ To move subjects, send your message again, otherwise join the game using the lin
             if message != {}:
                 self.send_reply(message, "There is already a game in this subject.")
             return
-        if game_id in self.instances.keys():
+        if game_id in self.instances:
             self.instances[game_id].change_subject(stream_name, subject_name)
-        if game_id in self.invites.keys():
+        if game_id in self.invites:
             invite = self.invites[game_id]
             invite["stream"] = stream_name
             invite["subject"] = stream_name
@@ -658,7 +658,7 @@ To move subjects, send your message again, otherwise join the game using the lin
     ) -> str:
         user_email = user_email.lower()
         for game, users in self.invites.items():
-            if user_email in users.keys():
+            if user_email in users:
                 if is_accepted:
                     if message["type"] == "private":
                         users[user_email] = "pa"
@@ -754,7 +754,7 @@ To move subjects, send your message again, otherwise join the game using the lin
             if user_email in instance.players:
                 return False
         for invite in self.invites.values():
-            for u in invite.keys():
+            for u in invite:
                 if u == "host" and user_email == invite["host"]:
                     return False
                 if u == user_email and "a" in invite[u]:
@@ -774,7 +774,7 @@ To move subjects, send your message again, otherwise join the game using the lin
             if private_recipients is not None:
                 for user in private_recipients:
                     self.send_message(user, content, True)
-        if game_id in self.invites.keys() and self.invites[game_id]["subject"] != "###private###":
+        if game_id in self.invites and self.invites[game_id]["subject"] != "###private###":
             self.send_message(
                 self.invites[game_id]["stream"],
                 content,
@@ -782,7 +782,7 @@ To move subjects, send your message again, otherwise join the game using the lin
                 self.invites[game_id]["subject"],
             )
             return True
-        if game_id in self.instances.keys():
+        if game_id in self.instances:
             self.send_message(
                 self.instances[game_id].stream, content, False, self.instances[game_id].subject
             )
@@ -801,7 +801,7 @@ To move subjects, send your message again, otherwise join the game using the lin
         for instance in self.instances.values():
             if user_email in instance.players:
                 return instance.game_id
-        for game_id in self.invites.keys():
+        for game_id in self.invites:
             players = self.get_players(game_id)
             if user_email in players:
                 return game_id
@@ -879,7 +879,7 @@ class GameInstance:
             self.end_game("except:" + player_email)
             return
         if content == "draw":
-            if player_email in self.current_draw.keys():
+            if player_email in self.current_draw:
                 self.current_draw[player_email] = True
             else:
                 self.current_draw = {p: False for p in self.players}

@@ -31,7 +31,7 @@ login_url = "https://login.salesforce.com/"
 def get_help_text() -> str:
     command_text = ""
     for command in commands:
-        if "template" in command.keys() and "description" in command.keys():
+        if "template" in command and "description" in command:
             command_text += "**{}**: {}\n".format(
                 "{} [arguments]".format(command["template"]), command["description"]
             )
@@ -90,23 +90,23 @@ def query_salesforce(
         limit_num = int(limit.group().rsplit(" ", 1)[1])
         logging.info("Searching with limit %d", limit_num)
     query = default_query
-    if "query" in command.keys():
+    if "query" in command:
         query = command["query"]
     object_type = object_types[command["object"]]
     res = salesforce.query(
         query.format(object_type["fields"], object_type["table"], qarg, limit_num)
     )
     exclude_keys: List[str] = []
-    if "exclude_keys" in command.keys():
+    if "exclude_keys" in command:
         exclude_keys = command["exclude_keys"]
     force_keys: List[str] = []
-    if "force_keys" in command.keys():
+    if "force_keys" in command:
         force_keys = command["force_keys"]
     rank_output = False
-    if "rank_output" in command.keys():
+    if "rank_output" in command:
         rank_output = command["rank_output"]
     show_all_keys = "show" in split_args
-    if "show_all_keys" in command.keys():
+    if "show_all_keys" in command:
         show_all_keys = command["show_all_keys"] or "show" in split_args
     return format_result(
         res,
@@ -153,7 +153,7 @@ class SalesforceHandler:
                 if content.startswith(command_keyword):
                     args = content.replace(command_keyword, "").strip()
                     if args != "":
-                        if "callback" in command.keys():
+                        if "callback" in command:
                             return command["callback"](args, self.sf, command)
                         else:
                             return query_salesforce(args, self.sf, command)

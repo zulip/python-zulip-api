@@ -24,13 +24,13 @@ def get_bot_result(message_content: str, config: Dict[str, str], sender_id: str)
         response = request.getresponse()
         res_str = response.read().decode("utf8", "ignore")
         res_json = json.loads(res_str)
-        if res_json["status"]["errorType"] != "success" and "result" not in res_json.keys():
+        if res_json["status"]["errorType"] != "success" and "result" not in res_json:
             return "Error {}: {}.".format(
                 res_json["status"]["code"], res_json["status"]["errorDetails"]
             )
         if res_json["result"]["fulfillment"]["speech"] == "":
             if (
-                "alternateResult" in res_json.keys()
+                "alternateResult" in res_json
                 and res_json["alternateResult"]["fulfillment"]["speech"] != ""
             ):
                 return res_json["alternateResult"]["fulfillment"]["speech"]
