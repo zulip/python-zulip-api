@@ -98,11 +98,11 @@ def get_enabled_checkers(results: Dict) -> List:
     :return: A list containing enabled checkers
     """
     checkers = results["enabled_checkers"]
-    enabled_checkers = []
-    for checker in checkers:
-        if checkers[checker]:  # == True/False
-            enabled_checkers.append(checker)
-    return enabled_checkers
+    return [
+        checker
+        for checker in checkers
+        if checkers[checker]  # == True/False
+    ]
 
 
 def print_enabled_checkers(results: Dict) -> str:

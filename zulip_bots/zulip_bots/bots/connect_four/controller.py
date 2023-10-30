@@ -40,13 +40,8 @@ class ConnectFourModel:
         return self.current_board[row][column] == 0
 
     def available_moves(self) -> List[int]:
-        available_moves = []
         row = 0
-        for column in range(7):
-            if self.current_board[row][column] == 0:
-                available_moves.append(column)
-
-        return available_moves
+        return [column for column in range(7) if self.current_board[row][column] == 0]
 
     def make_move(
         self, move: str, player_number: int, is_computer: bool = False

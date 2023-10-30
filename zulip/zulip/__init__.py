@@ -574,17 +574,12 @@ class Client:
         # Otherwise, 15s should be plenty of time.
         request_timeout = 90.0 if longpolling else timeout or 15.0
 
-        request = {}
-        req_files = []
+        request = {
+            key: val if isinstance(val, str) else json.dumps(val)
+            for key, val in orig_request.items()
+        }
 
-        for key, val in orig_request.items():
-            if isinstance(val, str):
-                request[key] = val
-            else:
-                request[key] = json.dumps(val)
-
-        for f in files:
-            req_files.append((f.name, f))
+        req_files = [(f.name, f) for f in files]
 
         self.ensure_session()
         assert self.session is not None

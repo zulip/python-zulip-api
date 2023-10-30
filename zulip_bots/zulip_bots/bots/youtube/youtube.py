@@ -55,7 +55,6 @@ class YoutubeHandler:
 
 
 def search_youtube(query: str, key: str, region: str, max_results: int = 1) -> List[List[str]]:
-    videos = []
     params: Dict[str, Union[str, int]] = {
         "part": "id,snippet",
         "maxResults": max_results,
@@ -76,10 +75,11 @@ def search_youtube(query: str, key: str, region: str, max_results: int = 1) -> L
     search_response = r.json()
     # Add each result to the appropriate list, and then display the lists of
     # matching videos, channels, and playlists.
-    for search_result in search_response.get("items", []):
-        if search_result["id"]["kind"] == "youtube#video":
-            videos.append([search_result["snippet"]["title"], search_result["id"]["videoId"]])
-    return videos
+    return [
+        [search_result["snippet"]["title"], search_result["id"]["videoId"]]
+        for search_result in search_response.get("items", [])
+        if search_result["id"]["kind"] == "youtube#video"
+    ]
 
 
 def get_command_query(message: Dict[str, str]) -> Tuple[Optional[str], str]:

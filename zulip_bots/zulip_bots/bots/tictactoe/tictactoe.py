@@ -68,29 +68,15 @@ class TicTacToeModel:
 
     def get_locations_of_char(self, board: Any, char: int) -> List[List[int]]:
         """Gets the locations of the board that have char in them."""
-        locations = []
-        for row in range(3):
-            for col in range(3):
-                if board[row][col] == char:
-                    locations.append([row, col])
-        return locations
+        return [[row, col] for row in range(3) for col in range(3) if board[row][col] == char]
 
     def two_blanks(self, triplet: List[Tuple[int, int]], board: Any) -> List[Tuple[int, int]]:
         """Determines which rows/columns/diagonals have two blank spaces and an 2 already in them. It's more advantageous
         for the computer to move there. This is used when the computer makes its move."""
 
-        o_found = False
-        for position in triplet:
-            if self.get_value(board, position) == 2:
-                o_found = True
-                break
-
-        blanks_list = []
+        o_found = any(self.get_value(board, position) == 2 for position in triplet)
         if o_found:
-            for position in triplet:
-                if self.get_value(board, position) == 0:
-                    blanks_list.append(position)
-
+            blanks_list = [position for position in triplet if self.get_value(board, position) == 0]
             if len(blanks_list) == 2:
                 return blanks_list
         return []
