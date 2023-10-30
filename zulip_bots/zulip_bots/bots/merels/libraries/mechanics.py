@@ -580,7 +580,7 @@ def check_moves(turn, grid):
     :return: True, if there is any, False if otherwise
     """
     for hill in constants.HILLS:
-        for k in range(0, 2):
+        for k in range(2):
             g1 = grid[hill[k][0]][hill[k][1]]
             g2 = grid[hill[k + 1][0]][hill[k + 1][1]]
             if (g1 == " " and g2 == turn) or (g2 == " " and g1 == turn):

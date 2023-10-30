@@ -11,9 +11,9 @@ class ConnectFourMessageHandler:
         # Header for the top of the board
         board_str = ":one: :two: :three: :four: :five: :six: :seven:"
 
-        for row in range(0, 6):
+        for row in range(6):
             board_str += "\n\n"
-            for column in range(0, 7):
+            for column in range(7):
                 if board[row][column] == 0:
                     board_str += ":white_circle: "
                 elif board[row][column] == 1:

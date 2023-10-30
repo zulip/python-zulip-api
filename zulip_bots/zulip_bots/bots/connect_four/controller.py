@@ -42,7 +42,7 @@ class ConnectFourModel:
     def available_moves(self) -> List[int]:
         available_moves = []
         row = 0
-        for column in range(0, 7):
+        for column in range(7):
             if self.current_board[row][column] == 0:
                 available_moves.append(column)
 
@@ -74,8 +74,8 @@ class ConnectFourModel:
         def get_horizontal_wins(board: List[List[int]]) -> int:
             horizontal_sum = 0
 
-            for row in range(0, 6):
-                for column in range(0, 4):
+            for row in range(6):
+                for column in range(4):
                     horizontal_sum = (
                         board[row][column]
                         + board[row][column + 1]
@@ -92,8 +92,8 @@ class ConnectFourModel:
         def get_vertical_wins(board: List[List[int]]) -> int:
             vertical_sum = 0
 
-            for row in range(0, 3):
-                for column in range(0, 7):
+            for row in range(3):
+                for column in range(7):
                     vertical_sum = (
                         board[row][column]
                         + board[row + 1][column]
@@ -112,8 +112,8 @@ class ConnectFourModel:
             minor_diagonal_sum = 0
 
             # Major Diagonl Sum
-            for row in range(0, 3):
-                for column in range(0, 4):
+            for row in range(3):
+                for column in range(4):
                     major_diagonal_sum = (
                         board[row][column]
                         + board[row + 1][column + 1]
@@ -127,7 +127,7 @@ class ConnectFourModel:
 
             # Minor Diagonal Sum
             for row in range(3, 6):
-                for column in range(0, 4):
+                for column in range(4):
                     minor_diagonal_sum = (
                         board[row][column]
                         + board[row - 1][column + 1]
