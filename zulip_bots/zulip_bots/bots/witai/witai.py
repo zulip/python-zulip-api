@@ -87,7 +87,7 @@ def get_handle(location: str) -> Optional[Callable[[Dict[str, Any]], Optional[st
         if not isinstance(loader, importlib.abc.Loader):
             return None
         loader.exec_module(handler)
-        return getattr(handler, "handle")
+        return handler.handle
     except Exception as e:
         print(e)
         return None
