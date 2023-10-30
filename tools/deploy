@@ -47,7 +47,7 @@ def pack(options: argparse.Namespace) -> None:
     zip_file_path = os.path.join(bots_dir, options.botname + ".zip")
     zip_file = zipfile.ZipFile(zip_file_path, "w", zipfile.ZIP_DEFLATED)
     # Pack the complete bot folder
-    for root, dirs, files in os.walk(options.path):
+    for root, _dirs, files in os.walk(options.path):
         for file in files:
             file_path = os.path.join(root, file)
             zip_file.write(file_path, os.path.relpath(file_path, options.path))

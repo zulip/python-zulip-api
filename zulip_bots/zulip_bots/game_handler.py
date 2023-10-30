@@ -766,7 +766,7 @@ To move subjects, send your message again, otherwise join the game using the lin
     def generate_game_id(self) -> str:
         id = ""
         valid_characters = "abcdefghijklmnopqrstuvwxyz0123456789"
-        for i in range(6):
+        for _i in range(6):
             id += valid_characters[random.randrange(0, len(valid_characters))]
         return id
 

@@ -126,14 +126,14 @@ except Exception:
 
 # Subscribe to Zephyrs
 zephyr_subs_to_add = []
-for stream, test in test_streams:
+for stream, _test in test_streams:
     if stream == "message":
         zephyr_subs_to_add.append((stream, "personal", mit_user))
     else:
         zephyr_subs_to_add.append((stream, "*", "*"))
 
 actually_subscribed = False
-for tries in range(10):
+for _tries in range(10):
     try:
         zephyr_ctypes.check(zephyr_ctypes.ZInitialize())
         zephyr_port = c_ushort()
@@ -236,7 +236,7 @@ def receive_zephyrs() -> None:
 logger.info("Starting sending messages!")
 # Send zephyrs
 zsig = "Timothy Good Abbott"
-for key, (stream, test) in zhkeys.items():
+for key, (stream, _test) in zhkeys.items():
     if stream == "message":
         zwrite_args = ["zwrite", "-n", "-s", zsig, mit_user]
     else:
@@ -261,7 +261,7 @@ receive_zephyrs()
 logger.info("Sent Zephyr messages!")
 
 # Send Zulips
-for key, (stream, test) in hzkeys.items():
+for key, (stream, _test) in hzkeys.items():
     if stream == "message":
         send_zulip(
             {

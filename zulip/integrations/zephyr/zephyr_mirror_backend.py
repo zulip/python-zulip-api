@@ -960,7 +960,7 @@ def subscribed_to_mail_messages() -> bool:
     stored_result = os.environ.get("HUMBUG_FORWARD_MAIL_ZEPHYRS")
     if stored_result is not None:
         return stored_result == "True"
-    for cls, instance, recipient in parse_zephyr_subs(verbose=False):
+    for cls, instance, _recipient in parse_zephyr_subs(verbose=False):
         if cls.lower() == "mail" and instance.lower() == "inbox":
             os.environ["HUMBUG_FORWARD_MAIL_ZEPHYRS"] = "True"
             return True

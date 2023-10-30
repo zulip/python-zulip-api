@@ -568,7 +568,7 @@ def guide_with_numbers(board_str: str) -> str:
     # newline. From then on, numbers are inserted at newlines.
     row_list = list("8" + board_without_whitespace_str)
 
-    for i, char in enumerate(row_list):
+    for i, _char in enumerate(row_list):
         # `(i + 1) % 10 == 0` if it is the end of a row, i.e., the 10th column
         # since lists are 0-indexed.
         if (i + 1) % 10 == 0:
