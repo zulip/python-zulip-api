@@ -20,12 +20,8 @@ try:
 
     setup_path()
 except ImportError:
-    try:
-        import scripts.lib.setup_path_on_import
-
-        scripts.lib.setup_path_on_import  # Suppress unused import warning
-    except ImportError:
-        pass
+    with contextlib.suppress(ImportError):
+        import scripts.lib.setup_path_on_import  # noqa: F401
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../"))
 
