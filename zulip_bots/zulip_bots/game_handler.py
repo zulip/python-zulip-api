@@ -3,7 +3,7 @@ import logging
 import random
 import re
 from copy import deepcopy
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, Iterable, List, Sequence, Tuple
 
 from typing_extensions import override
 
@@ -344,7 +344,7 @@ class GameAdapter:
         )
         self.start_game_if_ready(game_id)
 
-    def create_game_lobby(self, message: Dict[str, Any], users: List[str] = []) -> None:
+    def create_game_lobby(self, message: Dict[str, Any], users: Sequence[str] = []) -> None:
         if self.is_game_in_subject(message["subject"], message["display_recipient"]):
             self.send_reply(message, "There is already a game in this stream.")
             return
@@ -499,7 +499,7 @@ class GameAdapter:
             reverse=True,
         )
 
-    def send_invite(self, game_id: str, user_email: str, message: Dict[str, Any] = {}) -> None:
+    def send_invite(self, game_id: str, user_email: str, message: Dict[str, Any]) -> None:
         self.invites[game_id].update({user_email.lower(): "p"})
         self.send_message(user_email, self.alert_new_invitation(game_id), True)
         if message != {}:
@@ -547,7 +547,7 @@ class GameAdapter:
                 )
         return object
 
-    def join_game(self, game_id: str, user_email: str, message: Dict[str, Any] = {}) -> None:
+    def join_game(self, game_id: str, user_email: str, message: Dict[str, Any]) -> None:
         if len(self.get_players(game_id)) >= self.max_players:
             if message != {}:
                 self.send_reply(message, "This game is full.")
@@ -638,7 +638,7 @@ To move subjects, send your message again, otherwise join the game using the lin
         self.instances[game_id].handle_message(message["content"], message["sender_email"])
 
     def change_game_subject(
-        self, game_id: str, stream_name: str, subject_name: str, message: Dict[str, Any] = {}
+        self, game_id: str, stream_name: str, subject_name: str, message: Dict[str, Any]
     ) -> None:
         if self.get_game_instance_by_subject(stream_name, subject_name) is not None:
             if message != {}:
@@ -689,7 +689,7 @@ To move subjects, send your message again, otherwise join the game using the lin
         self.user_cache = json.loads(user_cache_str)
         return self.user_cache
 
-    def verify_users(self, users: List[str], message: Dict[str, Any] = {}) -> List[str]:
+    def verify_users(self, users: Iterable[str], message: Dict[str, Any]) -> List[str]:
         verified_users = []
         failed = False
         for u in users:
@@ -741,7 +741,7 @@ To move subjects, send your message again, otherwise join the game using the lin
             or self.get_game_instance_by_subject(subject_name, stream_name) is not None
         )
 
-    def is_user_not_player(self, user_email: str, message: Dict[str, Any] = {}) -> bool:
+    def is_user_not_player(self, user_email: str, message: Dict[str, Any]) -> bool:
         user = self.get_user_by_email(user_email)
         if user == {}:
             if message != {}:
