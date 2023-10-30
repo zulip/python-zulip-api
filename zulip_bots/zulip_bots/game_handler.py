@@ -290,11 +290,10 @@ class GameAdapter:
                 self.send_reply(
                     message, "You are not in a game at the moment. Type `help` for help."
                 )
+            elif self.is_single_player:
+                self.send_reply(message, self.help_message_single_player())
             else:
-                if self.is_single_player:
-                    self.send_reply(message, self.help_message_single_player())
-                else:
-                    self.send_reply(message, self.help_message())
+                self.send_reply(message, self.help_message())
         except Exception as e:
             logging.exception("Error handling game message")
             self.bot_handler.send_reply(message, f"Error {e}.")
@@ -893,16 +892,15 @@ class GameInstance:
             return
         if self.is_turn_of(player_email):
             self.handle_current_player_command(content)
+        elif self.game_adapter.is_single_player:
+            self.broadcast("It's your turn")
         else:
-            if self.game_adapter.is_single_player:
-                self.broadcast("It's your turn")
-            else:
-                self.broadcast(
-                    "It's **{}**'s ({}) turn.".format(
-                        self.game_adapter.get_username_by_email(self.players[self.turn]),
-                        self.game_adapter.game_message_handler.get_player_color(self.turn),
-                    )
+            self.broadcast(
+                "It's **{}**'s ({}) turn.".format(
+                    self.game_adapter.get_username_by_email(self.players[self.turn]),
+                    self.game_adapter.game_message_handler.get_player_color(self.turn),
                 )
+            )
 
     def broadcast(self, content: str) -> None:
         self.game_adapter.broadcast(self.game_id, content)
@@ -1022,11 +1020,10 @@ class GameInstance:
                     values.update({"games_drawn": 1})
                 else:
                     values.update({"games_lost": 1})
+            elif u == loser:
+                values.update({"games_lost": 1})
             else:
-                if u == loser:
-                    values.update({"games_lost": 1})
-                else:
-                    values.update({"games_won": 1})
+                values.update({"games_won": 1})
             self.game_adapter.add_user_statistics(u, values)
         if self.game_adapter.email in self.players:
             self.send_win_responses(winner)

@@ -60,15 +60,14 @@ class TrelloHandler:
             bot_reply = self.get_all_supported_commands()
         elif content == ["get-all-boards"]:
             bot_reply = self.get_all_boards()
+        elif content[0] == "get-all-cards":
+            bot_reply = self.get_all_cards(content)
+        elif content[0] == "get-all-checklists":
+            bot_reply = self.get_all_checklists(content)
+        elif content[0] == "get-all-lists":
+            bot_reply = self.get_all_lists(content)
         else:
-            if content[0] == "get-all-cards":
-                bot_reply = self.get_all_cards(content)
-            elif content[0] == "get-all-checklists":
-                bot_reply = self.get_all_checklists(content)
-            elif content[0] == "get-all-lists":
-                bot_reply = self.get_all_lists(content)
-            else:
-                bot_reply = "Command not supported"
+            bot_reply = "Command not supported"
 
         bot_handler.send_reply(message, bot_reply)
 

@@ -207,11 +207,10 @@ def update_quiz(quiz: Dict[str, Any], quiz_id: str, bot_handler: BotHandler) -> 
 def build_response(is_correct: bool, num_answers: int) -> str:
     if is_correct:
         response = ":tada: **{answer}** is correct, {sender_name}!"
+    elif num_answers >= 3:
+        response = ":disappointed: WRONG, {sender_name}! The correct answer is **{answer}**."
     else:
-        if num_answers >= 3:
-            response = ":disappointed: WRONG, {sender_name}! The correct answer is **{answer}**."
-        else:
-            response = ":disappointed: WRONG, {sender_name}! {option} is not correct."
+        response = ":disappointed: WRONG, {sender_name}! {option} is not correct."
     return response
 
 

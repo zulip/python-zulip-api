@@ -258,13 +258,12 @@ def get_phase_number(grid, turn, x_pieces_possessed_not_on_grid, o_pieces_posses
     if x_pieces_possessed_not_on_grid != 0 or o_pieces_possessed_not_on_grid != 0:
         # Placing pieces
         return 1
+    elif get_piece("X", grid) <= 3 or get_piece("O", grid) <= 3:
+        # Flying
+        return 3
     else:
-        if get_piece("X", grid) <= 3 or get_piece("O", grid) <= 3:
-            # Flying
-            return 3
-        else:
-            # Moving pieces
-            return 2
+        # Moving pieces
+        return 2
 
 
 def create_room(topic_name, merels_storage):

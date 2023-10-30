@@ -295,10 +295,9 @@ def run_mirror() -> None:
                     if event_date > since:
                         handle_event(event)
                         since = event_date
-            else:
+            elif sleep_interval < 22:
                 # back off a bit
-                if sleep_interval < 22:
-                    sleep_interval += 4
+                sleep_interval += 4
             time.sleep(sleep_interval)
 
     except KeyboardInterrupt:
