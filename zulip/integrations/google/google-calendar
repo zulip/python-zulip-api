@@ -111,8 +111,6 @@ def get_credentials() -> client.Credentials:
 
 
 def populate_events() -> Optional[None]:
-    global events
-
     credentials = get_credentials()
     creds = credentials.authorize(httplib2.Http())
     service = discovery.build("calendar", "v3", http=creds)
@@ -130,7 +128,7 @@ def populate_events() -> Optional[None]:
         .execute()
     )
 
-    events = []
+    events.clear()
     for event in feed["items"]:
         try:
             start = dateutil.parser.parse(event["start"]["dateTime"])
