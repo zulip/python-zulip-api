@@ -21,7 +21,6 @@ class HelloWorldHandler:
 
         emoji_name = "wave"
         bot_handler.react(message, emoji_name)
-        return
 
 
 handler_class = HelloWorldHandler

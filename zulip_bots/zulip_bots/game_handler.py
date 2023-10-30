@@ -484,7 +484,6 @@ class GameAdapter:
             values = [str(stat[key]) for key in raw_headers]
             response += " | ".join(values)
         self.send_reply(message, response)
-        return
 
     def get_sorted_player_statistics(self) -> List[Tuple[str, Dict[str, int]]]:
         players = []
