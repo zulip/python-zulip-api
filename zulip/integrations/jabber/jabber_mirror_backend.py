@@ -121,15 +121,13 @@ class JabberToZulipBot(ClientXMPP):
 
         # Configure the room.  Really, we should only do this if the room is
         # newly created.
-        form = None
         try:
             form = xep0045.getRoomConfig(muc_jid)
         except ValueError:
-            pass
-        if form:
-            xep0045.configureRoom(muc_jid, form)
-        else:
             logging.error("Could not configure room: %s", muc_jid)
+            return
+
+        xep0045.configureRoom(muc_jid, form)
 
     def leave_muc(self, room: str) -> None:
         if room not in self.rooms:

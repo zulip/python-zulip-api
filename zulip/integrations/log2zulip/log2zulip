@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
 import argparse
+import contextlib
 import errno
+import json
 import os
 import platform
 import re
@@ -9,6 +11,7 @@ import subprocess
 import sys
 import tempfile
 import traceback
+from typing import List
 
 # Use the Zulip virtualenv if available
 sys.path.append("/home/zulip/deployments/current")
@@ -24,10 +27,7 @@ except ImportError:
     except ImportError:
         pass
 
-import json
-
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../"))
-from typing import List
 
 import zulip
 
@@ -129,7 +129,5 @@ if __name__ == "__main__":
             sys.exit(1)
         process_logs()
     finally:
-        try:
+        with contextlib.suppress(OSError):
             os.remove(lock_path)
-        except OSError:
-            pass
