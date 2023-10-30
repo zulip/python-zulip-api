@@ -88,13 +88,13 @@ class TestConnectFourBot(BotTestCase, DefaultTests):
 :white_circle: :white_circle: "
         )
         bot, bot_handler = self._get_handlers()
-        self.assertEqual(bot.gameMessageHandler.parse_board(self.almost_win_board), board)
-        self.assertEqual(bot.gameMessageHandler.get_player_color(1), ":red_circle:")
+        self.assertEqual(bot.game_message_handler.parse_board(self.almost_win_board), board)
+        self.assertEqual(bot.game_message_handler.get_player_color(1), ":red_circle:")
         self.assertEqual(
-            bot.gameMessageHandler.alert_move_message("foo", "move 6"), "foo moved in column 6"
+            bot.game_message_handler.alert_move_message("foo", "move 6"), "foo moved in column 6"
         )
         self.assertEqual(
-            bot.gameMessageHandler.game_start_message(),
+            bot.game_message_handler.game_start_message(),
             "Type `move <column-number>` or `<column-number>` to place a token.\n\
 The first player to get 4 in a row wins!\n Good Luck!",
         )

@@ -169,4 +169,4 @@ class TestTicTacToeBot(BotTestCase, DefaultTests):
 
     def _get_game_handlers(self) -> Tuple[Any, Any]:
         bot, bot_handler = self._get_handlers()
-        return bot.model, bot.gameMessageHandler
+        return bot.model, bot.game_message_handler

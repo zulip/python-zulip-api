@@ -17,7 +17,7 @@ class BotServerTestCase(TestCase):
     @mock.patch("zulip_bots.lib.ExternalBotHandler")
     def assert_bot_server_response(
         self,
-        mock_ExternalBotHandler: mock.Mock,
+        mock_external_bot_handler: mock.Mock,
         available_bots: Optional[List[str]] = None,
         bots_config: Optional[Dict[str, Dict[str, str]]] = None,
         bot_handlers: Optional[Dict[str, Any]] = None,
@@ -40,13 +40,13 @@ class BotServerTestCase(TestCase):
             server.app.config["BOT_HANDLERS"] = bot_handlers
             server.app.config["MESSAGE_HANDLERS"] = message_handlers
 
-        mock_ExternalBotHandler.return_value.full_name = "test"
+        mock_external_bot_handler.return_value.full_name = "test"
         response = self.app.post(data=json.dumps(event))
 
         # NOTE: Currently, assert_bot_server_response can only check the expected_response
         # for bots that use send_reply. However, the vast majority of bots use send_reply.
         # Therefore, the Botserver can be still be effectively tested.
-        bot_send_reply_call = mock_ExternalBotHandler.return_value.send_reply
+        bot_send_reply_call = mock_external_bot_handler.return_value.send_reply
         if expected_response is not None:
             self.assertTrue(bot_send_reply_call.called)
             self.assertEqual(expected_response, bot_send_reply_call.call_args[0][1])

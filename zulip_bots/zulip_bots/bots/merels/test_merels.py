@@ -78,7 +78,7 @@ class TestMerelsBot(BotTestCase, DefaultTests):
 
     def _get_game_handlers(self) -> Tuple[Any, Any]:
         bot, bot_handler = self._get_handlers()
-        return bot.model, bot.gameMessageHandler
+        return bot.model, bot.game_message_handler
 
     def _test_parse_board(self, board: str, expected_response: str) -> None:
         model, message_handler = self._get_game_handlers()

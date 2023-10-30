@@ -97,8 +97,8 @@ class JabberToZulipBot(ClientXMPP):
         self.register_plugin("xep_0045")  # Jabber chatrooms
         self.register_plugin("xep_0199")  # XMPP Ping
 
-    def set_zulip_client(self, zulipToJabberClient: "ZulipToJabberBot") -> None:
-        self.zulipToJabber = zulipToJabberClient
+    def set_zulip_client(self, zulip_to_jabber_client: "ZulipToJabberBot") -> None:
+        self.zulip_to_jabber = zulip_to_jabber_client
 
     def session_start(self, event: Dict[str, Any]) -> None:
         self.get_roster()
@@ -161,7 +161,7 @@ class JabberToZulipBot(ClientXMPP):
             to=recipient,
             content=msg["body"],
         )
-        ret = self.zulipToJabber.client.send_message(zulip_message)
+        ret = self.zulip_to_jabber.client.send_message(zulip_message)
         if ret.get("result") != "success":
             logging.error(str(ret))
 
@@ -188,7 +188,7 @@ class JabberToZulipBot(ClientXMPP):
             to=stream,
             content=msg["body"],
         )
-        ret = self.zulipToJabber.client.send_message(zulip_message)
+        ret = self.zulip_to_jabber.client.send_message(zulip_message)
         if ret.get("result") != "success":
             logging.error(str(ret))
 
@@ -267,7 +267,7 @@ class ZulipToJabberBot:
                 self.jabber.leave_muc(stream_to_room(stream))
 
 
-def get_rooms(zulipToJabber: ZulipToJabberBot) -> List[str]:
+def get_rooms(zulip_to_jabber: ZulipToJabberBot) -> List[str]:
     def get_stream_infos(key: str, method: Callable[[], Dict[str, Any]]) -> Any:
         ret = method()
         if ret.get("result") != "success":
@@ -276,9 +276,9 @@ def get_rooms(zulipToJabber: ZulipToJabberBot) -> List[str]:
         return ret[key]
 
     if options.mode == "public":
-        stream_infos = get_stream_infos("streams", zulipToJabber.client.get_streams)
+        stream_infos = get_stream_infos("streams", zulip_to_jabber.client.get_streams)
     else:
-        stream_infos = get_stream_infos("subscriptions", zulipToJabber.client.get_subscriptions)
+        stream_infos = get_stream_infos("subscriptions", zulip_to_jabber.client.get_subscriptions)
 
     rooms: List[str] = []
     for stream_info in stream_infos:

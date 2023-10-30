@@ -58,10 +58,10 @@ class TestGameOfFifteenBot(BotTestCase, DefaultTests):
     def test_game_message_handler_responses(self) -> None:
         board = "\n\n:grey_question::one::two:\n\n:three::four::five:\n\n:six::seven::eight:"
         bot, bot_handler = self._get_handlers()
-        self.assertEqual(bot.gameMessageHandler.parse_board(self.winning_board), board)
-        self.assertEqual(bot.gameMessageHandler.alert_move_message("foo", "move 1"), "foo moved 1")
+        self.assertEqual(bot.game_message_handler.parse_board(self.winning_board), board)
+        self.assertEqual(bot.game_message_handler.alert_move_message("foo", "move 1"), "foo moved 1")
         self.assertEqual(
-            bot.gameMessageHandler.game_start_message(),
+            bot.game_message_handler.game_start_message(),
             "Welcome to Game of Fifteen!"
             "To make a move, type @-mention `move <tile1> <tile2> ...`",
         )
