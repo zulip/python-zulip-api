@@ -77,13 +77,10 @@ the Python version this command is executed with."""
     else:
         print("Virtualenv already exists.")
 
-    if os.path.isdir(os.path.join(venv_dir, "Scripts")):
-        # POSIX compatibility layer and Linux environment emulation for Windows
-        # venv uses /Scripts instead of /bin on Windows cmd and Power Shell.
-        # Read https://docs.python.org/3/library/venv.html
-        venv_exec_dir = "Scripts"
-    else:
-        venv_exec_dir = "bin"
+    # POSIX compatibility layer and Linux environment emulation for Windows
+    # venv uses /Scripts instead of /bin on Windows cmd and Power Shell.
+    # Read https://docs.python.org/3/library/venv.html
+    venv_exec_dir = "Scripts" if os.path.isdir(os.path.join(venv_dir, "Scripts")) else "bin"
 
     # On OS X, ensure we use the virtualenv version of the python binary for
     # future subprocesses instead of the version that this script was launched with. See

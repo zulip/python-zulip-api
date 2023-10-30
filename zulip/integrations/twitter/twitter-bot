@@ -181,15 +181,9 @@ elif opts.twitter_name:
     else:
         statuses = api.GetUserTimeline(screen_name=opts.twitter_name, since_id=since_id)
 
-if opts.excluded_terms:
-    excluded_terms = opts.excluded_terms.split(",")
-else:
-    excluded_terms = []
+excluded_terms = opts.excluded_terms.split(",") if opts.excluded_terms else []
 
-if opts.excluded_users:
-    excluded_users = opts.excluded_users.split(",")
-else:
-    excluded_users = []
+excluded_users = opts.excluded_users.split(",") if opts.excluded_users else []
 
 for status in statuses[::-1][: opts.limit_tweets]:
     # Check if the tweet is from an excluded user

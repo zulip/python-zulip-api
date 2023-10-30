@@ -452,10 +452,7 @@ option does not affect login credentials.""".replace("\n", " "),
     zulipToJabber.set_jabber_client(xmpp)
 
     xmpp.process(block=False)
-    if options.mode == "public":
-        event_types = ["stream"]
-    else:
-        event_types = ["message", "subscription"]
+    event_types = ["stream"] if options.mode == "public" else ["message", "subscription"]
 
     try:
         logging.info("Connecting to Zulip.")

@@ -181,10 +181,7 @@ def prepare(options: argparse.Namespace) -> None:
 def log(options: argparse.Namespace) -> None:
     check_common_options(options)
     headers = {"key": options.token}
-    if options.lines:
-        lines = options.lines
-    else:
-        lines = None
+    lines = options.lines
     payload = {"name": options.botname, "lines": lines}
     url = urllib.parse.urljoin(options.server, "bots/logs/" + options.botname)
     response = requests.get(url, json=payload, headers=headers)
@@ -209,10 +206,7 @@ def delete(options: argparse.Namespace) -> None:
 def list_bots(options: argparse.Namespace) -> None:
     check_common_options(options)
     headers = {"key": options.token}
-    if options.format:
-        pretty_print = True
-    else:
-        pretty_print = False
+    pretty_print = options.format
     url = urllib.parse.urljoin(options.server, "bots/list")
     response = requests.get(url, headers=headers)
     result = handle_common_response(

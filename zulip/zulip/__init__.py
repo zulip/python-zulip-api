@@ -36,9 +36,6 @@ assert sys.version_info >= (3, 6)
 
 logger = logging.getLogger(__name__)
 
-# In newer versions, the 'json' attribute is a function, not a property
-requests_json_is_function = callable(requests.Response.json)
-
 API_VERSTRING = "v1/"
 
 # An optional parameter to `move_topic` and `update_message` actions
@@ -571,14 +568,11 @@ class Client:
         if files is None:
             files = []
 
-        if longpolling:
-            # When long-polling, set timeout to 90 sec as a balance
-            # between a low traffic rate and a still reasonable latency
-            # time in case of a connection failure.
-            request_timeout = 90.0
-        else:
-            # Otherwise, 15s should be plenty of time.
-            request_timeout = 15.0 if not timeout else timeout
+        # When long-polling, set timeout to 90 sec as a balance
+        # between a low traffic rate and a still reasonable latency
+        # time in case of a connection failure.
+        # Otherwise, 15s should be plenty of time.
+        request_timeout = 90.0 if longpolling else timeout or 15.0
 
         request = {}
         req_files = []
@@ -630,10 +624,7 @@ class Client:
 
         while True:
             try:
-                if method == "GET":
-                    kwarg = "params"
-                else:
-                    kwarg = "data"
+                kwarg = "params" if method == "GET" else "data"
 
                 kwargs = {kwarg: query_state["request"]}
 
@@ -689,22 +680,17 @@ class Client:
                 raise
 
             try:
-                if requests_json_is_function:
-                    json_result = res.json()
-                else:
-                    json_result = res.json
+                json_result = res.json()
             except Exception:
-                json_result = None
+                end_error_retry(False)
+                return {
+                    "msg": "Unexpected error from the server",
+                    "result": "http-error",
+                    "status_code": res.status_code,
+                }
 
-            if json_result is not None:
-                end_error_retry(True)
-                return json_result
-            end_error_retry(False)
-            return {
-                "msg": "Unexpected error from the server",
-                "result": "http-error",
-                "status_code": res.status_code,
-            }
+            end_error_retry(True)
+            return json_result
 
     def call_endpoint(
         self,

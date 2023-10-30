@@ -113,10 +113,7 @@ def syntax_help(cmd_name: str) -> str:
     commands = get_commands()
     f, arg_names = commands[cmd_name]
     arg_syntax = " ".join("<" + a + ">" for a in arg_names)
-    if arg_syntax:
-        cmd = cmd_name + " " + arg_syntax
-    else:
-        cmd = cmd_name
+    cmd = cmd_name + " " + arg_syntax if arg_syntax else cmd_name
     return f"syntax: {cmd}"
 
 
@@ -207,10 +204,7 @@ def dbx_read(client: Any, fn: str) -> str:
 
 
 def dbx_search(client: Any, query: str, folder: str, max_results: str) -> str:
-    if folder is None:
-        folder = ""
-    else:
-        folder = "/" + folder
+    folder = "" if folder is None else "/" + folder
     if max_results is None:
         max_results = "20"
     try:

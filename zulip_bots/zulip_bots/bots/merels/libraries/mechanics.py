@@ -303,10 +303,7 @@ def display_game(topic_name, merels_storage):
 
     response = ""
 
-    if data.take_mode == 1:
-        take = "Yes"
-    else:
-        take = "No"
+    take = "Yes" if data.take_mode == 1 else "No"
 
     response += interface.graph_grid(data.grid()) + "\n"
     response += f"""Phase {data.get_phase()}. Take mode: {take}.
