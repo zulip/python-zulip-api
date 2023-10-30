@@ -283,7 +283,7 @@ def maybe_restart_mirroring_script() -> None:
     if os.stat(
         os.path.join(options.stamp_path, "stamps", "restart_stamp")
     ).st_mtime > start_time or (
-        (options.user == "tabbott" or options.user == "tabbott/extra")
+        options.user in ("tabbott", "tabbott/extra")
         and os.stat(os.path.join(options.stamp_path, "stamps", "tabbott_stamp")).st_mtime
         > start_time
     ):
@@ -357,9 +357,9 @@ def process_loop(zulip_queue: "Queue[ZephyrDict]", log: Optional[IO[str]]) -> No
 def parse_zephyr_body(zephyr_data: str, notice_format: str) -> Tuple[str, str]:
     try:
         (zsig, body) = zephyr_data.split("\x00", 1)
-        if (
-            notice_format == "New transaction [$1] entered in $2\nFrom: $3 ($5)\nSubject: $4"
-            or notice_format == "New transaction [$1] entered in $2\nFrom: $3\nSubject: $4"
+        if notice_format in (
+            "New transaction [$1] entered in $2\nFrom: $3 ($5)\nSubject: $4",
+            "New transaction [$1] entered in $2\nFrom: $3\nSubject: $4",
         ):
             # Logic based off of owl_zephyr_get_message in barnowl
             fields = body.split("\x00")
@@ -789,7 +789,7 @@ Feedback button or at support@zulip.com."""
             # Forward messages sent to '(instance "WHITESPACE")' back to the
             # appropriate WHITESPACE instance for bidirectional mirroring
             instance = match_whitespace_instance.group(1)
-        elif instance == f"instance {zephyr_class}" or instance == f"test instance {zephyr_class}":
+        elif instance in (f"instance {zephyr_class}", f"test instance {zephyr_class}"):
             # Forward messages to e.g. -c -i white-magic back from the
             # place we forward them to
             if instance.startswith("test"):

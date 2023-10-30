@@ -56,11 +56,11 @@ def is_jump(vpos_before, hpos_before, vpos_after, hpos_after):
 
     # If the man is in outer square, the distance must be 3 or 1
     if [vpos_before, hpos_before] in constants.OUTER_SQUARE:
-        return not (distance == 3 or distance == 1)
+        return distance not in (3, 1)
 
     # If the man is in middle square, the distance must be 2 or 1
     if [vpos_before, hpos_before] in constants.MIDDLE_SQUARE:
-        return not (distance == 2 or distance == 1)
+        return distance not in (2, 1)
 
     # If the man is in inner square, the distance must be only 1
     if [vpos_before, hpos_before] in constants.INNER_SQUARE:

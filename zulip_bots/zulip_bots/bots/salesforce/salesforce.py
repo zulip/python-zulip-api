@@ -144,7 +144,7 @@ class SalesforceHandler:
 
     def get_salesforce_response(self, content: str) -> str:
         content = content.strip()
-        if content == "" or content == "help":
+        if content in ("", "help"):
             return get_help_text()
         if content.startswith("http") and "force" in content:
             return get_salesforce_link_details(content, self.sf)

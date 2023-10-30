@@ -95,7 +95,7 @@ def construct_grid(board):
     grid = [[" " for _ in range(7)] for _ in range(7)]
 
     for k, cell in enumerate(board):
-        if cell == "O" or cell == "X":
+        if cell in ("O", "X"):
             grid[constants.ALLOWED_MOVES[k][0]][constants.ALLOWED_MOVES[k][1]] = cell
 
     return grid
@@ -113,7 +113,7 @@ def construct_board(grid):
 
     for cell_location in constants.ALLOWED_MOVES:
         cell_content = grid[cell_location[0]][cell_location[1]]
-        if cell_content == "X" or cell_content == "O":
+        if cell_content in ("X", "O"):
             board += cell_content
         else:
             board += "N"

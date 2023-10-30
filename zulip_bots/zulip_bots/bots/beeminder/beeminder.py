@@ -23,7 +23,7 @@ def get_beeminder_response(message_content: str, config_info: Dict[str, str]) ->
     auth_token = config_info["auth_token"]
 
     message_content = message_content.strip()
-    if message_content == "" or message_content == "help":
+    if message_content in ("", "help"):
         return help_message
 
     url = f"https://www.beeminder.com/api/v1/users/{username}/goals/{goalname}/datapoints.json"

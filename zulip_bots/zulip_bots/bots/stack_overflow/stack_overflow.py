@@ -44,7 +44,7 @@ class StackOverflowHandler:
 
         # Checking if the link exists.
         query = message["content"]
-        if query == "" or query == "help":
+        if query in ("", "help"):
             return help_text
 
         query_stack_url = "http://api.stackexchange.com/2.2/search/advanced"

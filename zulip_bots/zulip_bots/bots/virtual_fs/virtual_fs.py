@@ -198,7 +198,7 @@ def fs_mkdir(fs: Dict[str, Any], user: str, fn: str) -> Tuple[Dict[str, Any], An
 
 
 def fs_ls(fs: Dict[str, Any], user: str, fn: str) -> Tuple[Dict[str, Any], Any]:
-    if fn == "." or fn == "":
+    if fn in (".", ""):
         path = fs["user_paths"][user]
     else:
         path, msg = make_path(fs, user, fn)

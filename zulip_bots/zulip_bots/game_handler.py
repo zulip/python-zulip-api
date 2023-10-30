@@ -567,7 +567,7 @@ class GameAdapter:
             ) or "p" not in parameter:
                 players = [self.invites[game_id]["host"]]
             for player, accepted in self.invites[game_id].items():
-                if player == "host" or player == "subject" or player == "stream":
+                if player in ("host", "subject", "stream"):
                     continue
                 if parameter in accepted:
                     players.append(player)

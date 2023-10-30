@@ -84,7 +84,7 @@ def get_flock_response(content: str, config: Dict[str, str]) -> str:
 
 def get_flock_bot_response(content: str, config: Dict[str, str]) -> None:
     content = content.strip()
-    if content == "" or content == "help":
+    if content in ("", "help"):
         return help_message
     else:
         result = get_flock_response(content, config)

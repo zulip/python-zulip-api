@@ -40,7 +40,7 @@ class SusiHandler:
 
     def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
         msg = message["content"]
-        if msg == "help" or msg == "":
+        if msg in ("help", ""):
             bot_handler.send_reply(message, self.usage())
             return
         reply = requests.get("https://api.susi.ai/susi/chat.json", params=dict(q=msg))
