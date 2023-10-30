@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import json
+import sys
 from typing import Any, Dict, List
 
 import zulip
@@ -56,7 +57,7 @@ while not found_newest:
         # Might occur when the request is not returned with a success status
         print("Error occured: Payload was:")
         print(result)
-        quit()
+        sys.exit()
 
 with open(options.filename, "w+") as f:
     print("Writing %d messages..." % len(all_messages))

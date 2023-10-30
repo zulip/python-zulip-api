@@ -1,4 +1,5 @@
 import multiprocessing as mp
+import sys
 from typing import Any, Dict
 
 import irc.bot
@@ -47,13 +48,13 @@ class IRCBot(irc.bot.SingleServerIRCBot):
         resp = self.zulip_client.get_subscriptions()
         if resp["result"] != "success":
             print("ERROR: {}".format(resp["msg"]))
-            exit(1)
+            sys.exit(1)
         subs = [s["name"] for s in resp["subscriptions"]]
         if self.stream not in subs:
             print(
                 f"The bot is not yet subscribed to stream '{self.stream}'. Please subscribe the bot to the stream first."
             )
-            exit(1)
+            sys.exit(1)
 
     def on_nicknameinuse(self, c: ServerConnection, e: Event) -> None:
         c.nick(c.get_nickname().replace("_zulip", "__zulip"))

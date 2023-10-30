@@ -143,7 +143,7 @@ if __name__ == "__main__":
             'The key "channel_mapping" is not found in bridge_with_slack_config.py.\n'
             "Your config file may be outdated."
         )
-        exit(1)
+        sys.exit(1)
 
     print("Starting slack mirroring bot")
     print("MAKE SURE THE BOT IS SUBSCRIBED TO THE RELEVANT ZULIP STREAM(S) & SLACK CHANNEL(S)!")

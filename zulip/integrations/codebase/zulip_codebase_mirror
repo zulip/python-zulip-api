@@ -22,7 +22,7 @@ try:
 except ImportError as e:
     print(e, file=sys.stderr)
     print("Please install the python-dateutil package.", file=sys.stderr)
-    exit(1)
+    sys.exit(1)
 
 sys.path.insert(0, os.path.dirname(__file__))
 import zulip_codebase_config as config
