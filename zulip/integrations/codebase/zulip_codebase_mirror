@@ -247,9 +247,7 @@ def handle_event(event: Dict[str, Any]) -> None:
         pass
     elif event_type == "wiki_page":
         logging.warning("Wiki page notifications not yet implemented")
-    elif event_type == "sprint_creation":
-        logging.warning("Sprint notifications not yet implemented")
-    elif event_type == "sprint_ended":
+    elif event_type in ("sprint_creation", "sprint_ended"):
         logging.warning("Sprint notifications not yet implemented")
     else:
         logging.info("Unknown event type %s, ignoring!", event_type)

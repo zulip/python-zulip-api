@@ -51,9 +51,7 @@ def get_google_result(search_keywords: str) -> str:
 
     search_keywords = search_keywords.strip()
 
-    if search_keywords == "help":
-        return help_message
-    elif search_keywords == "" or search_keywords is None:
+    if search_keywords in ("help", ""):
         return help_message
     else:
         try:
