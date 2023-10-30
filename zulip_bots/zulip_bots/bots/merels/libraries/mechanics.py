@@ -64,7 +64,7 @@ def is_jump(vpos_before, hpos_before, vpos_after, hpos_after):
 
     # If the man is in inner square, the distance must be only 1
     if [vpos_before, hpos_before] in constants.INNER_SQUARE:
-        return not (distance == 1)
+        return distance != 1
 
 
 def get_hills_numbers(grid):

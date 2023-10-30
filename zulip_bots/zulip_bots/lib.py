@@ -405,7 +405,7 @@ def is_private_message_but_not_group_pm(
     zulip/zulip project, so refactor with care.  See the comments in
     extract_query_without_mention.
     """
-    if not message_dict["type"] == "private":
+    if message_dict["type"] != "private":
         return False
     is_message_from_self = current_user.user_id == message_dict["sender_id"]
     recipients = [
