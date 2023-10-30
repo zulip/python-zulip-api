@@ -98,8 +98,8 @@ def unwrap_lines(body: str) -> str:
     lines = body.split("\n")
     result = ""
     previous_line = lines[0]
-    for line in lines[1:]:
-        line = line.rstrip()
+    for raw_line in lines[1:]:
+        line = raw_line.rstrip()
         if re.match(r"^\W", line, flags=re.UNICODE) and re.match(
             r"^\W", previous_line, flags=re.UNICODE
         ):
@@ -1096,8 +1096,8 @@ def parse_zephyr_subs(verbose: bool = False) -> Set[Tuple[str, str, str]]:
             logger.error("Couldn't find ~/.zephyr.subs!")
         return zephyr_subscriptions
 
-    for line in open(subs_file).readlines():
-        line = line.strip()
+    for raw_line in open(subs_file).readlines():
+        line = raw_line.strip()
         if len(line) == 0:
             continue
         try:
