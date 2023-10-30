@@ -1219,11 +1219,11 @@ def parse_args() -> Tuple[optparse.Values, List[str]]:
 
 
 def die_gracefully(signal: int, frame: Optional[FrameType]) -> None:
-    if CURRENT_STATE == States.ZulipToZephyr:
+    if States.ZulipToZephyr == CURRENT_STATE:
         # this is a child process, so we want os._exit (no clean-up necessary)
         os._exit(1)
 
-    if CURRENT_STATE == States.ZephyrToZulip and not options.use_sessions:
+    if States.ZephyrToZulip == CURRENT_STATE and not options.use_sessions:
         try:
             # zephyr=>zulip processes may have added subs, so run ZCancelSubscriptions
             zephyr_ctypes.check(zephyr_ctypes.ZCancelSubscriptions(0))
