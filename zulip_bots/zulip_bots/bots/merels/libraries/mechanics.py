@@ -570,10 +570,9 @@ def can_take_mode(topic_name, merels_storage):
 
     updated_hill_uid = get_hills_numbers(updated_grid)
 
-    if current_hill_uid != updated_hill_uid and len(updated_hill_uid) >= len(current_hill_uid):
-        return True
-    else:
-        return False
+    return bool(
+        current_hill_uid != updated_hill_uid and len(updated_hill_uid) >= len(current_hill_uid)
+    )
 
 
 def check_moves(turn, grid):

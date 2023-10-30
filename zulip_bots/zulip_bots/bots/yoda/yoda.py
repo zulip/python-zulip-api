@@ -124,10 +124,7 @@ class YodaSpeakHandler:
     def is_help(self, original_content: str) -> bool:
         # gets rid of whitespace around the edges, so that they aren't a problem in the future
         message_content = original_content.strip()
-        if message_content == "help":
-            return True
-        else:
-            return False
+        return message_content == "help"
 
 
 handler_class = YodaSpeakHandler
