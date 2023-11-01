@@ -1,15 +1,10 @@
 #!/usr/bin/env python3
 
 import argparse
-from io import StringIO as _StringIO
+from io import StringIO
 from typing import IO, Any
 
 import zulip
-
-
-class StringIO(_StringIO):
-    name = ""  # https://github.com/python/typeshed/issues/598
-
 
 usage = """upload-file [options]
 
