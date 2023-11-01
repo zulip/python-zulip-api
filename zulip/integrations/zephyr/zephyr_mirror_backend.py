@@ -14,6 +14,7 @@ import tempfile
 import textwrap
 import time
 from ctypes import POINTER, byref, c_char, c_int, c_ushort
+from pathlib import Path
 from queue import Queue
 from threading import Thread
 from types import FrameType
@@ -247,9 +248,7 @@ def zephyr_bulk_subscribe(subs: List[Tuple[str, str, str]]) -> None:
 
 def update_subscriptions() -> None:
     try:
-        f = open(options.stream_file_path)
-        public_streams: List[str] = json.loads(f.read())
-        f.close()
+        public_streams: List[str] = json.loads(Path(options.stream_file_path).read_text())
     except Exception:
         logger.exception("Error reading public streams:")
         return
@@ -380,11 +379,11 @@ def parse_zephyr_body(zephyr_data: str, notice_format: str) -> Tuple[str, str]:
 
 def parse_crypt_table(zephyr_class: str, instance: str) -> Optional[str]:
     try:
-        crypt_table = open(os.path.join(os.environ["HOME"], ".crypt-table"))
+        crypt_table = (Path(os.environ["HOME"]) / ".crypt-table").read_text()
     except OSError:
         return None
 
-    for line in crypt_table.readlines():
+    for line in crypt_table.splitlines():
         if line.strip() == "":
             # Ignore blank lines
             continue
@@ -1090,13 +1089,13 @@ def valid_stream_name(name: str) -> bool:
 
 def parse_zephyr_subs(verbose: bool = False) -> Set[Tuple[str, str, str]]:
     zephyr_subscriptions: Set[Tuple[str, str, str]] = set()
-    subs_file = os.path.join(os.environ["HOME"], ".zephyr.subs")
-    if not os.path.exists(subs_file):
+    subs_path = Path(os.environ["HOME"]) / ".zephyr.subs"
+    if not subs_path.exists():
         if verbose:
             logger.error("Couldn't find ~/.zephyr.subs!")
         return zephyr_subscriptions
 
-    for raw_line in open(subs_file).readlines():
+    for raw_line in subs_path.read_text().splitlines():
         line = raw_line.strip()
         if len(line) == 0:
             continue
@@ -1271,7 +1270,7 @@ or specify the --api-key-file option."""
                 ),
             )
             sys.exit(1)
-        api_key = open(options.api_key_file).read().strip()
+        api_key = Path(options.api_key_file).read_text().strip()
         # Store the API key in the environment so that our children
         # don't need to read it in
         os.environ["HUMBUG_API_KEY"] = api_key

@@ -7,6 +7,7 @@ import signal
 import sys
 import time
 from contextlib import contextmanager
+from pathlib import Path
 from typing import IO, Any, Dict, Iterator, List, Optional, Set
 
 from typing_extensions import Protocol
@@ -415,7 +416,7 @@ def is_private_message_but_not_group_pm(
 
 
 def display_config_file_errors(error_msg: str, config_file: str) -> None:
-    file_contents = open(config_file).read()
+    file_contents = Path(config_file).read_text()
     print(f"\nERROR: {config_file} seems to be broken:\n\n{file_contents}")
     print(f"\nMore details here:\n\n{error_msg}\n")
 

@@ -13,6 +13,7 @@ import os
 import sys
 import time
 from datetime import datetime, timedelta
+from pathlib import Path
 
 import pytz
 import requests
@@ -301,7 +302,7 @@ def run_mirror() -> None:
             time.sleep(sleep_interval)
 
     except KeyboardInterrupt:
-        open(config.RESUME_FILE, "w").write(since.strftime("%s"))
+        Path(config.RESUME_FILE).write_text(since.strftime("%s"))
         logging.info("Shutting down Codebase mirror")
 
 
@@ -310,13 +311,15 @@ def check_permissions() -> None:
     # check that the log file can be written
     if config.LOG_FILE:
         try:
-            open(config.LOG_FILE, "w")
+            with open(config.LOG_FILE, "w"):
+                pass
         except OSError as e:
             sys.stderr.write("Could not open up log for writing:")
             sys.stderr.write(str(e))
     # check that the resume file can be written (this creates if it doesn't exist)
     try:
-        open(config.RESUME_FILE, "a+")
+        with open(config.RESUME_FILE, "a+"):
+            pass
     except OSError as e:
         sys.stderr.write(f"Could not open up the file {config.RESUME_FILE} for reading and writing")
         sys.stderr.write(str(e))

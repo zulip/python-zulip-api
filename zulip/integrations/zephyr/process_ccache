@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import base64
-import os
 import subprocess
 import sys
+from pathlib import Path
 
 short_user = sys.argv[1]
 api_key = sys.argv[2]
@@ -14,25 +14,25 @@ with open(f"/home/zulip/ccache/{program_name}", "wb") as f:
     f.write(base64.b64decode(ccache_data_encoded))
 
 # Setup API key
-api_key_path = f"/home/zulip/api-keys/{program_name}"
-open(api_key_path, "w").write(api_key + "\n")
+api_key_path = Path(f"/home/zulip/api-keys/{program_name}")
+api_key_path.write_text(api_key + "\n")
 
 # Setup supervisord configuration
-supervisor_path = f"/etc/supervisor/conf.d/zmirror/{program_name}.conf"
-template = os.path.join(os.path.dirname(__file__), "zmirror_private.conf.template")
-template_data = open(template).read()
+supervisor_path = Path(f"/etc/supervisor/conf.d/zmirror/{program_name}.conf")
+template_path = Path(__file__).parent / "zmirror_private.conf.template"
+template_data = template_path.read_text()
 session_path = f"/home/zulip/zephyr_sessions/{program_name}"
 
 # Preserve mail zephyrs forwarding setting across rewriting the config file
 
 try:
-    if "--forward-mail-zephyrs" in open(supervisor_path).read():
+    if "--forward-mail-zephyrs" in supervisor_path.read_text():
         template_data = template_data.replace(
             "--use-sessions", "--use-sessions --forward-mail-zephyrs"
         )
 except Exception:
     pass
-open(supervisor_path, "w").write(template_data.replace("USERNAME", short_user))
+supervisor_path.write_text(template_data.replace("USERNAME", short_user))
 
 # Delete your session
 subprocess.check_call(["rm", "-f", session_path])
