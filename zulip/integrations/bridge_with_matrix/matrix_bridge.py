@@ -232,6 +232,8 @@ class ZulipToMatrix:
         if result["result"] != "success":
             raise BridgeFatalZulipError("cannot get server settings")
         self.server_url: str = result["realm_uri"]
+        if not self.server_url.startswith(("http:", "https:")):
+            raise ValueError("Unexpected server URL scheme")
 
     @classmethod
     async def create(
