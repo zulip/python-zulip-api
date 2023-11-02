@@ -21,6 +21,7 @@ try:
     from googleapiclient import discovery
 except ImportError:
     logging.exception("Install google-api-python-client")
+    sys.exit(1)
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../"))
 import zulip
@@ -106,8 +107,10 @@ def get_credentials() -> client.Credentials:
         return credentials
     except client.Error:
         logging.exception("Error while trying to open the `google-credentials.json` file.")
+        sys.exit(1)
     except OSError:
         logging.error("Run the get-google-credentials script from this directory first.")
+        sys.exit(1)
 
 
 def populate_events() -> Optional[None]:
