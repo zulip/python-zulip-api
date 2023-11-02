@@ -73,7 +73,7 @@ def to_zephyr_username(zulip_username: str) -> str:
         return user.lower() + "@ATHENA.MIT.EDU"
     match_user = re.match(r"([a-zA-Z0-9_]+)\|(.+)", user)
     if not match_user:
-        raise Exception(f"Could not parse Zephyr realm for cross-realm user {zulip_username}")
+        raise ValueError(f"Could not parse Zephyr realm for cross-realm user {zulip_username}")
     return match_user.group(1).lower() + "@" + match_user.group(2).upper()
 
 
@@ -307,7 +307,7 @@ def maybe_restart_mirroring_script() -> None:
             except Exception:
                 logger.exception("Error restarting mirroring script; trying again... Traceback:")
                 backoff.fail()
-        raise Exception("Failed to reload too many times, aborting!")
+        raise RuntimeError("Failed to reload too many times, aborting!")
 
 
 def process_loop(zulip_queue: "Queue[ZephyrDict]", log: Optional[IO[str]]) -> NoReturn:

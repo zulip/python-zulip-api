@@ -114,7 +114,7 @@ def fetch_xkcd_query(mode: int, comic_id: Optional[str] = None) -> Dict[str, str
 
         elif mode == XkcdBotCommand.COMIC_ID:  # Fetch specific comic strip by id number.
             if comic_id is None:
-                raise Exception("Missing comic_id argument")
+                raise TypeError("Missing comic_id argument")
             url = XKCD_TEMPLATE_URL % (comic_id,)
 
         fetched = requests.get(url)

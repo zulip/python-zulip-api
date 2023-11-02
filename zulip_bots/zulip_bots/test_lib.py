@@ -68,9 +68,9 @@ class StubBotHandler:
 
     def ensure_unique_response(self, responses: List[Dict[str, Any]]) -> None:
         if not responses:
-            raise Exception("The bot is not responding for some reason.")
+            raise ValueError("The bot is not responding for some reason.")
         if len(responses) > 1:
-            raise Exception("The bot is giving too many responses for some reason.")
+            raise ValueError("The bot is giving too many responses for some reason.")
 
 
 class DefaultTests:
