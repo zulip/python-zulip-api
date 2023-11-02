@@ -114,15 +114,15 @@ class MentionHandler:
 
         try:
             alert_id = self.get_alert_id(keyword)
-        except (TypeError, KeyError):
+        except (TypeError, KeyError) as e:
             # Usually triggered by invalid token or json parse error when account quote is finished.
-            raise MentionNoResponseError
+            raise MentionNoResponseError from e
 
         try:
             mentions = self.get_mentions(alert_id)
-        except (TypeError, KeyError):
+        except (TypeError, KeyError) as e:
             # Usually triggered by no response or json parse error when account quota is finished.
-            raise MentionNoResponseError
+            raise MentionNoResponseError from e
 
         reply = "The most recent mentions of `" + keyword + "` on the web are: \n"
         for mention in mentions:

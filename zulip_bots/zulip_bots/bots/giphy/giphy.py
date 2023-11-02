@@ -34,7 +34,7 @@ class GiphyHandler:
             data = requests.get(GIPHY_TRANSLATE_API, params=query)
             data.raise_for_status()
         except ConnectionError as e:
-            raise ConfigValidationError(str(e))
+            raise ConfigValidationError(str(e)) from e
         except HTTPError as e:
             error_message = str(e)
             if data.status_code == 403:
@@ -42,7 +42,7 @@ class GiphyHandler:
                     "This is likely due to an invalid key.\n"
                     "Follow the instructions in doc.md for setting an API key."
                 )
-            raise ConfigValidationError(error_message)
+            raise ConfigValidationError(error_message) from e
 
     def initialize(self, bot_handler: BotHandler) -> None:
         self.config_info = bot_handler.get_config_info("giphy")
@@ -76,8 +76,8 @@ def get_url_gif_giphy(keyword: str, api_key: str) -> Union[int, str]:
 
     try:
         gif_url = data.json()["data"]["images"]["original"]["url"]
-    except (TypeError, KeyError):  # Usually triggered by no result in Giphy.
-        raise GiphyNoResultError
+    except (TypeError, KeyError) as e:  # Usually triggered by no result in Giphy.
+        raise GiphyNoResultError from e
     return gif_url
 
 

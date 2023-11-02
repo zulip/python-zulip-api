@@ -117,7 +117,7 @@ class MatrixToZulip:
             )
         except Exception as exception:
             # Generally raised when user is forbidden
-            raise BridgeFatalZulipError(exception)
+            raise BridgeFatalZulipError(exception) from exception
         if result["result"] != "success":
             # Generally raised when API key is invalid
             raise BridgeFatalZulipError(result["msg"])
@@ -459,7 +459,7 @@ def read_configuration(config_file: str) -> Dict[str, Dict[str, Any]]:
     try:
         config.read(config_file)
     except configparser.Error as exception:
-        raise BridgeConfigError(str(exception))
+        raise BridgeConfigError(str(exception)) from exception
 
     if set(config.sections()) < {"matrix", "zulip"}:
         raise BridgeConfigError("Please ensure the configuration has zulip & matrix sections.")
@@ -619,14 +619,16 @@ def write_sample_config(target_path: str, zuliprc: Optional[str]) -> None:
         try:
             zuliprc_config.read(zuliprc)
         except configparser.Error as exception:
-            raise BridgeConfigError(str(exception))
+            raise BridgeConfigError(str(exception)) from exception
 
         try:
             sample_dict["zulip"]["email"] = zuliprc_config["api"]["email"]
             sample_dict["zulip"]["site"] = zuliprc_config["api"]["site"]
             sample_dict["zulip"]["api_key"] = zuliprc_config["api"]["key"]
         except KeyError as exception:
-            raise BridgeConfigError("You provided an invalid zuliprc file: " + str(exception))
+            raise BridgeConfigError(
+                "You provided an invalid zuliprc file: " + str(exception)
+            ) from exception
 
     sample: configparser.ConfigParser = configparser.ConfigParser()
     sample.read_dict(sample_dict)

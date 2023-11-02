@@ -650,7 +650,7 @@ class Client:
                     isinstance(e, requests.exceptions.SSLError)
                     and str(e) != "The read operation timed out"
                 ):
-                    raise UnrecoverableNetworkError("SSL Error")
+                    raise UnrecoverableNetworkError("SSL Error") from e
                 if longpolling:
                     # When longpolling, we expect the timeout to fire,
                     # and the correct response is to just retry
@@ -658,13 +658,15 @@ class Client:
                 else:
                     end_error_retry(False)
                     raise
-            except requests.exceptions.ConnectionError:
+            except requests.exceptions.ConnectionError as e:
                 if not self.has_connected:
                     # If we have never successfully connected to the server, don't
                     # go into retry logic, because the most likely scenario here is
                     # that somebody just hasn't started their server, or they passed
                     # in an invalid site.
-                    raise UnrecoverableNetworkError("cannot connect to server " + self.base_url)
+                    raise UnrecoverableNetworkError(
+                        "cannot connect to server " + self.base_url
+                    ) from e
 
                 if error_retry(""):
                     continue

@@ -97,8 +97,8 @@ def get_trivia_payload() -> Dict[str, Any]:
     try:
         data = requests.get(url)
 
-    except requests.exceptions.RequestException:
-        raise NotAvailableError
+    except requests.exceptions.RequestException as e:
+        raise NotAvailableError from e
 
     if data.status_code != 200:
         raise NotAvailableError
