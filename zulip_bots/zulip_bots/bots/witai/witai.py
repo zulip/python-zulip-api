@@ -28,11 +28,7 @@ class WitaiHandler:
         handler_location = config.get("handler_location")
         if not handler_location:
             raise KeyError("No `handler_location` was specified")
-        handle = get_handle(handler_location)
-        if handle is None:
-            raise Exception("Could not get handler from handler_location.")
-        else:
-            self.handle = handle
+        self.handle = get_handle(handler_location)
 
         help_message = config.get("help_message")
         if not help_message:
@@ -63,7 +59,7 @@ class WitaiHandler:
 handler_class = WitaiHandler
 
 
-def get_handle(location: str) -> Optional[Callable[[Dict[str, Any]], Optional[str]]]:
+def get_handle(location: str) -> Callable[[Dict[str, Any]], Optional[str]]:
     """Returns a function to be used when generating a response from Wit.ai
     bot. This function is the function named `handle` in the module at the
     given `location`. For an example of a `handle` function, see `doc.md`.
@@ -78,16 +74,9 @@ def get_handle(location: str) -> Optional[Callable[[Dict[str, Any]], Optional[st
     Parameters:
      - location: The absolute path to the module to look for `handle` in.
     """
-    try:
-        spec = importlib.util.spec_from_file_location("module.name", location)
-        if spec is None:
-            return None
-        handler = importlib.util.module_from_spec(spec)
-        loader = spec.loader
-        if not isinstance(loader, importlib.abc.Loader):
-            return None
-        loader.exec_module(handler)
-        return handler.handle
-    except Exception as e:
-        print(e)
-        return None
+    spec = importlib.util.spec_from_file_location("module.name", location)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"Could not get handler from {location!r}.")
+    handler = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(handler)
+    return handler.handle
