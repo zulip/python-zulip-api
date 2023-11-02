@@ -1,6 +1,6 @@
 import copy
 import random
-from typing import Any, List, Tuple
+from typing import Any, Final, List, Tuple
 
 from typing_extensions import override
 
@@ -15,7 +15,7 @@ class TicTacToeModel:
     smarter = True
     # If smarter is True, the computer will do some extra thinking - it'll be harder for the user.
 
-    triplets = [
+    triplets: Final = [
         [(0, 0), (0, 1), (0, 2)],  # Row 1
         [(1, 0), (1, 1), (1, 2)],  # Row 2
         [(2, 0), (2, 1), (2, 2)],  # Row 3
@@ -26,7 +26,7 @@ class TicTacToeModel:
         [(0, 2), (1, 1), (2, 0)],  # Diagonal 2
     ]
 
-    initial_board = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+    initial_board: Final = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
 
     def __init__(self, board: Any = None) -> None:
         if board is not None:
@@ -203,7 +203,7 @@ class TicTacToeModel:
 
 
 class TicTacToeMessageHandler:
-    tokens = [":x:", ":o:"]
+    tokens = (":x:", ":o:")
 
     def parse_row(self, row: Tuple[int, int], row_num: int) -> str:
         """Takes the row passed in as a list and returns it as a string."""
@@ -248,7 +248,7 @@ class TicTacToeHandler(GameAdapter):
     "@mention-bot".
     """
 
-    META = {
+    META: Final = {
         "name": "TicTacToe",
         "description": "Lets you play Tic-tac-toe against a computer.",
     }

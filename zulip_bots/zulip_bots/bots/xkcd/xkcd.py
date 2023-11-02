@@ -1,6 +1,6 @@
 import logging
 import random
-from typing import Dict, Optional
+from typing import Dict, Final, Optional
 
 import requests
 
@@ -18,7 +18,7 @@ class XkcdHandler:
     commands.
     """
 
-    META = {
+    META: Final = {
         "name": "XKCD",
         "description": "Fetches comic strips from https://xkcd.com.",
     }

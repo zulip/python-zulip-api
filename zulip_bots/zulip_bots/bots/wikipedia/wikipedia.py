@@ -1,5 +1,5 @@
 import logging
-from typing import Dict
+from typing import Dict, Final
 
 import requests
 
@@ -20,7 +20,7 @@ class WikipediaHandler:
     kind of external issue tracker as well.
     """
 
-    META = {
+    META: Final = {
         "name": "Wikipedia",
         "description": "Searches Wikipedia for a term and returns the top 3 articles.",
     }

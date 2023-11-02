@@ -5,7 +5,7 @@ from zulip_bots.game_handler import GameAdapter
 
 
 class ConnectFourMessageHandler:
-    tokens = [":blue_circle:", ":red_circle:"]
+    tokens = (":blue_circle:", ":red_circle:")
 
     def parse_board(self, board: Any) -> str:
         # Header for the top of the board

@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Final, Optional
 from unittest.mock import patch
 
 from typing_extensions import override
@@ -10,13 +10,13 @@ from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler
 class TestWitaiBot(BotTestCase, DefaultTests):
     bot_name = "witai"
 
-    MOCK_CONFIG_INFO = {
+    MOCK_CONFIG_INFO: Final = {
         "token": "12345678",
         "handler_location": "/Users/abcd/efgh",
         "help_message": "Qwertyuiop!",
     }
 
-    MOCK_WITAI_RESPONSE = {
+    MOCK_WITAI_RESPONSE: Final = {
         "_text": "What is your favorite food?",
         "entities": {"intent": [{"confidence": 1.0, "value": "favorite_food"}]},
     }

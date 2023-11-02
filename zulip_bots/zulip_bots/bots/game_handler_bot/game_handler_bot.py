@@ -4,7 +4,7 @@ from zulip_bots.game_handler import BadMoveError, GameAdapter
 
 
 class GameHandlerBotMessageHandler:
-    tokens = [":blue_circle:", ":red_circle:"]
+    tokens = (":blue_circle:", ":red_circle:")
 
     def parse_board(self, board: Any) -> str:
         return "foo"

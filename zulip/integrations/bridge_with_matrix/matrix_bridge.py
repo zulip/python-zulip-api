@@ -12,7 +12,7 @@ import urllib.request
 from collections import OrderedDict
 from concurrent.futures import ThreadPoolExecutor
 from io import BytesIO
-from typing import Any, Dict, List, Match, Optional, Set, Tuple, Type, Union
+from typing import Any, ClassVar, Dict, List, Match, Optional, Set, Tuple, Type, Union
 
 import nio
 from nio.responses import (
@@ -52,7 +52,7 @@ class MatrixToZulip:
     Matrix -> Zulip
     """
 
-    non_formatted_messages: Dict[Type[nio.Event], str] = {
+    non_formatted_messages: ClassVar[Dict[Type[nio.Event], str]] = {
         nio.StickerEvent: "sticker",
     }
 

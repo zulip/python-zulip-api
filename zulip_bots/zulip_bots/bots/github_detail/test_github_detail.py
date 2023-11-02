@@ -1,3 +1,5 @@
+from typing import Final
+
 from typing_extensions import override
 
 from zulip_bots.test_file_utils import get_bot_message_handler
@@ -6,8 +8,8 @@ from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler
 
 class TestGithubDetailBot(BotTestCase, DefaultTests):
     bot_name = "github_detail"
-    mock_config = {"owner": "zulip", "repo": "zulip"}
-    empty_config = {"owner": "", "repo": ""}
+    mock_config: Final = {"owner": "zulip", "repo": "zulip"}
+    empty_config: Final = {"owner": "", "repo": ""}
 
     # Overrides default test_bot_usage().
     @override

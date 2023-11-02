@@ -1,22 +1,24 @@
+from typing import Final
+
 from zulip_bots.test_lib import BotTestCase, DefaultTests
 
 
 class TestJiraBot(BotTestCase, DefaultTests):
     bot_name = "jira"
 
-    MOCK_CONFIG_INFO = {
+    MOCK_CONFIG_INFO: Final = {
         "username": "example@example.com",
         "password": "qwerty!123",
         "domain": "example.atlassian.net",
     }
 
-    MOCK_SCHEME_CONFIG_INFO = {
+    MOCK_SCHEME_CONFIG_INFO: Final = {
         "username": "example@example.com",
         "password": "qwerty!123",
         "domain": "http://example.atlassian.net",
     }
 
-    MOCK_DISPLAY_CONFIG_INFO = {
+    MOCK_DISPLAY_CONFIG_INFO: Final = {
         "username": "example@example.com",
         "password": "qwerty!123",
         "domain": "example.atlassian.net",

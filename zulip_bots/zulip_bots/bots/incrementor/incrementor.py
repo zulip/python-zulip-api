@@ -1,12 +1,12 @@
 # See readme.md for instructions on running this code.
 
-from typing import Dict
+from typing import Dict, Final
 
 from zulip_bots.lib import BotHandler, use_storage
 
 
 class IncrementorHandler:
-    META = {
+    META: Final = {
         "name": "Incrementor",
         "description": "Example bot to test the update_message() function.",
     }

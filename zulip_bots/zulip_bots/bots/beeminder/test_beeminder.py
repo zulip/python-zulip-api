@@ -1,3 +1,4 @@
+from typing import Final
 from unittest.mock import patch
 
 from requests.exceptions import ConnectionError
@@ -8,7 +9,7 @@ from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler
 
 class TestBeeminderBot(BotTestCase, DefaultTests):
     bot_name = "beeminder"
-    normal_config = {"auth_token": "XXXXXX", "username": "aaron", "goalname": "goal"}
+    normal_config: Final = {"auth_token": "XXXXXX", "username": "aaron", "goalname": "goal"}
 
     help_message = """
 You can add datapoints towards your beeminder goals \

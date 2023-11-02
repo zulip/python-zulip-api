@@ -14,6 +14,7 @@ import tempfile
 import textwrap
 import time
 from ctypes import POINTER, byref, c_char, c_int, c_ushort
+from enum import Enum, auto
 from pathlib import Path
 from queue import Queue
 from threading import Thread
@@ -29,8 +30,10 @@ from zulip import RandomExponentialBackoff
 DEFAULT_SITE = "https://api.zulip.com"
 
 
-class States:
-    Startup, ZulipToZephyr, ZephyrToZulip = list(range(3))
+class States(Enum):
+    Startup = auto()
+    ZulipToZephyr = auto()
+    ZephyrToZulip = auto()
 
 
 CURRENT_STATE = States.Startup

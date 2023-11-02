@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any, Final, List
 
 from zulip_bots.game_handler import GameAdapter, SamePlayerMoveError
 
@@ -52,7 +52,7 @@ class MerelsModel:
 
 
 class MerelsMessageHandler:
-    tokens = [":o_button:", ":cross_mark_button:"]
+    tokens = (":o_button:", ":cross_mark_button:")
 
     def parse_board(self, board: Any) -> str:
         return board
@@ -73,7 +73,7 @@ class MerelsHandler(GameAdapter):
     "@mention-bot".
     """
 
-    META = {
+    META: Final = {
         "name": "merels",
         "description": "Lets you play merels against any player.",
     }

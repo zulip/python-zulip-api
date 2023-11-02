@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Optional
+from typing import Dict, Final, Optional
 
 import requests
 
@@ -18,7 +18,7 @@ class StackOverflowHandler:
     the same stream that it was called from.
     """
 
-    META = {
+    META: Final = {
         "name": "StackOverflow",
         "description": "Searches Stack Overflow for a query and returns the top 3 articles.",
     }

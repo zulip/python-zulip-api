@@ -8,13 +8,13 @@ from zulip_bots.lib import BotHandler
 
 class FrontHandler:
     FRONT_API = "https://api2.frontapp.com/conversations/{}"
-    COMMANDS = [
+    COMMANDS = (
         ("archive", "Archive a conversation."),
         ("delete", "Delete a conversation."),
         ("spam", "Mark a conversation as spam."),
         ("open", "Restore a conversation."),
         ("comment <text>", "Leave a comment."),
-    ]
+    )
     CNV_ID_REGEXP = "cnv_(?P<id>[0-9a-z]+)"
     COMMENT_PREFIX = "comment "
 

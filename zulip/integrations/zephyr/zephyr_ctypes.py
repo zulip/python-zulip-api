@@ -32,10 +32,10 @@ sa_family_t = c_ushort
 
 
 class sockaddr(Structure):
-    _fields_ = [
+    _fields_ = (
         ("sa_family", sa_family_t),
         ("sa_data", c_char * 14),
-    ]
+    )
 
 
 # --- glibc/inet/netinet/in.h ---
@@ -45,34 +45,30 @@ in_addr_t = c_uint32
 
 
 class in_addr(Structure):
-    _fields_ = [
-        ("s_addr", in_addr_t),
-    ]
+    _fields_ = (("s_addr", in_addr_t),)
 
 
 class sockaddr_in(Structure):
-    _fields_ = [
+    _fields_ = (
         ("sin_family", sa_family_t),
         ("sin_port", in_port_t),
         ("sin_addr", in_addr),
         ("sin_zero", c_uint8 * 8),
-    ]
+    )
 
 
 class in6_addr(Structure):
-    _fields_ = [
-        ("s6_addr", c_uint8 * 16),
-    ]
+    _fields_ = (("s6_addr", c_uint8 * 16),)
 
 
 class sockaddr_in6(Structure):
-    _fields_ = [
+    _fields_ = (
         ("sin6_family", sa_family_t),
         ("sin6_port", in_port_t),
         ("sin6_flowinfo", c_uint32),
         ("sin6_addr", in6_addr),
         ("sin6_scope_id", c_uint32),
-    ]
+    )
 
 
 # --- glibc/stdlib/stdlib.h ---
@@ -93,32 +89,32 @@ ZNotice_Kind_t = c_int
 
 
 class _ZTimeval(Structure):
-    _fields_ = [
+    _fields_ = (
         ("tv_sec", c_int),
         ("tv_usec", c_int),
-    ]
+    )
 
 
 class ZUnique_Id_t(Structure):
-    _fields_ = [
+    _fields_ = (
         ("zuid_addr", in_addr),
         ("tv", _ZTimeval),
-    ]
+    )
 
 
 ZChecksum_t = c_uint
 
 
 class _ZSenderSockaddr(Union):
-    _fields_ = [
+    _fields_ = (
         ("sa", sockaddr),
         ("ip4", sockaddr_in),
         ("ip6", sockaddr_in6),
-    ]
+    )
 
 
 class ZNotice_t(Structure):
-    _fields_ = [
+    _fields_ = (
         ("z_packet", c_char_p),
         ("z_version", c_char_p),
         ("z_kind", ZNotice_Kind_t),
@@ -147,15 +143,15 @@ class ZNotice_t(Structure):
         ("z_message_len", c_int),
         ("z_num_hdr_fields", c_uint),
         ("z_hdr_fields", POINTER(c_char_p)),
-    ]
+    )
 
 
 class ZSubscription_t(Structure):
-    _fields_ = [
+    _fields_ = (
         ("zsub_recipient", c_char_p),
         ("zsub_class", c_char_p),
         ("zsub_classinst", c_char_p),
-    ]
+    )
 
 
 Code_t = c_int

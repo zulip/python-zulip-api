@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple
+from typing import Dict, Final, List, Tuple
 
 from zulip_bots.bots.game_of_fifteen.game_of_fifteen import GameOfFifteenModel
 from zulip_bots.game_handler import BadMoveError
@@ -68,7 +68,7 @@ class TestGameOfFifteenBot(BotTestCase, DefaultTests):
             "To make a move, type @-mention `move <tile1> <tile2> ...`",
         )
 
-    winning_board = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
+    winning_board: Final = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
 
     def test_game_of_fifteen_logic(self) -> None:
         def confirm_available_moves(

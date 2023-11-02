@@ -1,13 +1,13 @@
 import copy
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, Final, List, Tuple
 
 from zulip_bots.game_handler import BadMoveError, GameAdapter
 
 
 class GameOfFifteenModel:
-    final_board = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
+    final_board: Final = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
 
-    initial_board = [[8, 7, 6], [5, 4, 3], [2, 1, 0]]
+    initial_board: Final = [[8, 7, 6], [5, 4, 3], [2, 1, 0]]
 
     def __init__(self, board: Any = None) -> None:
         if board is not None:
@@ -81,7 +81,7 @@ class GameOfFifteenModel:
 
 
 class GameOfFifteenMessageHandler:
-    tiles = {
+    tiles: Final = {
         "0": ":grey_question:",
         "1": ":one:",
         "2": ":two:",

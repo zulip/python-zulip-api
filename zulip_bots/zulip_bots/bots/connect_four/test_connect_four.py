@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, Final, List
 
 from typing_extensions import override
 
@@ -99,7 +99,7 @@ class TestConnectFourBot(BotTestCase, DefaultTests):
 The first player to get 4 in a row wins!\n Good Luck!",
         )
 
-    blank_board = [
+    blank_board: Final = [
         [0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0],
@@ -108,7 +108,7 @@ The first player to get 4 in a row wins!\n Good Luck!",
         [0, 0, 0, 0, 0, 0, 0],
     ]
 
-    almost_win_board = [
+    almost_win_board: Final = [
         [0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0],
@@ -117,7 +117,7 @@ The first player to get 4 in a row wins!\n Good Luck!",
         [1, -1, 0, 0, 0, 0, 0],
     ]
 
-    almost_draw_board = [
+    almost_draw_board: Final = [
         [1, -1, 1, -1, 1, -1, 0],
         [0, 0, 0, 0, 0, 0, 1],
         [0, 0, 0, 0, 0, 0, -1],

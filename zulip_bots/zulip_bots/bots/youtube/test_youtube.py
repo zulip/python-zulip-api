@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Final
 from unittest.mock import patch
 
 from requests.exceptions import ConnectionError, HTTPError
@@ -10,7 +10,7 @@ from zulip_bots.test_lib import BotTestCase, DefaultTests, StubBotHandler
 
 class TestYoutubeBot(BotTestCase, DefaultTests):
     bot_name = "youtube"
-    normal_config: Dict[str, str] = {
+    normal_config: Final[Dict[str, str]] = {
         "key": "12345678",
         "number_of_results": "5",
         "video_region": "US",

@@ -5,7 +5,7 @@ import sys
 from contextlib import contextmanager
 from subprocess import PIPE, Popen
 from tempfile import mkdtemp
-from typing import Any, Awaitable, Callable, Iterator, List
+from typing import Any, Awaitable, Callable, Final, Iterator, List
 from unittest import TestCase, mock
 
 import nio
@@ -209,13 +209,13 @@ class MatrixBridgeMatrixToZulipTests(TestCase):
 
 class MatrixBridgeZulipToMatrixTests(TestCase):
     room = mock.MagicMock()
-    valid_zulip_config = dict(
+    valid_zulip_config: Final = dict(
         stream="some stream",
         topic="some topic",
         email="some@email",
         bridges={("some stream", "some topic"): room},
     )
-    valid_msg = dict(
+    valid_msg: Final = dict(
         sender_email="John@Smith.smith",  # must not be equal to config:email
         sender_id=42,
         type="stream",  # Can only mirror Zulip streams

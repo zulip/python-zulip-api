@@ -1,3 +1,4 @@
+from typing import Final
 from unittest.mock import patch
 
 from zulip_bots.bots.dropbox_share.test_util import (
@@ -75,7 +76,7 @@ def get_help() -> str:
 
 class TestDropboxBot(BotTestCase, DefaultTests):
     bot_name = "dropbox_share"
-    config_info = {"access_token": "1234567890"}
+    config_info: Final = {"access_token": "1234567890"}
 
     def test_bot_responds_to_empty_message(self):
         with self.mock_config_info(self.config_info):

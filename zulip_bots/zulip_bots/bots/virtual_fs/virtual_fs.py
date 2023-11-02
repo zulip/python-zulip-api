@@ -2,13 +2,13 @@
 
 import os
 import re
-from typing import Any, Dict, List, Set, Tuple, Union
+from typing import Any, Dict, Final, List, Set, Tuple, Union
 
 from zulip_bots.lib import BotHandler
 
 
 class VirtualFsHandler:
-    META = {
+    META: Final = {
         "name": "VirtualFs",
         "description": "Provides a simple, permanent file system to store and retrieve strings.",
     }
