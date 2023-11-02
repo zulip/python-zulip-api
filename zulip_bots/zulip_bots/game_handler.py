@@ -2,6 +2,7 @@ import json
 import logging
 import random
 import re
+import secrets
 from copy import deepcopy
 from typing import Any, Dict, Iterable, List, Sequence, Tuple
 
@@ -764,11 +765,8 @@ To move subjects, send your message again, otherwise join the game using the lin
         return True
 
     def generate_game_id(self) -> str:
-        id = ""
         valid_characters = "abcdefghijklmnopqrstuvwxyz0123456789"
-        for _i in range(6):
-            id += valid_characters[random.randrange(0, len(valid_characters))]
-        return id
+        return "".join(secrets.choice(valid_characters) for _i in range(6))
 
     def broadcast(self, game_id: str, content: str, include_private: bool = True) -> bool:
         if include_private:
