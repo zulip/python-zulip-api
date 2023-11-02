@@ -45,11 +45,8 @@ def main() -> None:
     bot_dir = os.path.dirname(bot_path)
     sys.path.insert(0, bot_dir)
 
-    try:
-        lib_module = import_module_from_source(bot_path.as_posix(), bot_name)
-        if lib_module is None:
-            raise OSError
-    except OSError:
+    lib_module = import_module_from_source(bot_path.as_posix(), bot_name)
+    if lib_module is None:
         print(f"Could not find and import bot '{bot_name}'")
         sys.exit(1)
 

@@ -21,11 +21,6 @@ class TeamNotFoundError(Exception):
         self.team = team
 
 
-class UnknownCommandSyntaxError(Exception):
-    def __init__(self, detail: str) -> None:
-        self.detail = detail
-
-
 class UnspecifiedProblemError(Exception):
     pass
 
@@ -114,6 +109,13 @@ def entries_list(team_name: str) -> str:
     return response
 
 
+def unknown_command_reply(detail: str) -> str:
+    return (
+        "Sorry, I don't understand what your trying to say. Use `@mention help` to see my help. "
+        + detail
+    )
+
+
 def create_entry(message: str) -> str:
     single_word_regex = re.compile("--team=([a-zA-Z0-9_]*)")
     multiword_regex = re.compile('"--team=([^"]*)"')
@@ -133,7 +135,7 @@ def create_entry(message: str) -> str:
         team = default_team
         new_message = message
     else:
-        raise UnknownCommandSyntaxError(
+        return unknown_command_reply(
             """I don't know which team you meant for me to create an entry under.
 Either set a default team or pass the `--team` flag.
 More information in my help"""
@@ -219,7 +221,7 @@ Below are some of the commands you can use, and what they do.
                 if len(message_content) > 2:
                     reply = team_info(" ".join(message_content[2:]))
                 else:
-                    raise UnknownCommandSyntaxError(
+                    reply = unknown_command_reply(
                         "You must specify the team in which you request information from."
                     )
             elif command in ["entries list", "list entries"]:
@@ -229,7 +231,7 @@ Below are some of the commands you can use, and what they do.
             elif command in ["help"]:
                 reply = self.usage()
             else:
-                raise UnknownCommandSyntaxError(
+                reply = unknown_command_reply(
                     "I can't understand the command you sent me :confused: "
                 )
         except TeamNotFoundError as e:
@@ -239,11 +241,6 @@ Below are some of the commands you can use, and what they do.
         except AuthenticationError:
             reply = "I can't currently authenticate with idonethis. "
             reply += "Can you check that your API key is correct? For more information see my documentation."
-        except UnknownCommandSyntaxError as e:
-            reply = (
-                "Sorry, I don't understand what your trying to say. Use `@mention help` to see my help. "
-                + e.detail
-            )
         except Exception:  # catches UnspecifiedProblemException, and other problems
             reply = "Oh dear, I'm having problems processing your request right now. Perhaps you could try again later :grinning:"
             logging.exception("Exception caught")
