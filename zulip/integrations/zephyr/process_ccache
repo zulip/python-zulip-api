@@ -30,7 +30,7 @@ try:
         template_data = template_data.replace(
             "--use-sessions", "--use-sessions --forward-mail-zephyrs"
         )
-except Exception:
+except FileNotFoundError:
     pass
 supervisor_path.write_text(template_data.replace("USERNAME", short_user))
 
