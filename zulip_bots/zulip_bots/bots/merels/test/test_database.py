@@ -1,7 +1,6 @@
+from zulip_bots.bots.merels.libraries import database, game_data
 from zulip_bots.simple_lib import SimpleStorage
 from zulip_bots.test_lib import BotTestCase, DefaultTests
-
-from ..libraries import database, game_data
 
 
 class DatabaseTest(BotTestCase, DefaultTests):

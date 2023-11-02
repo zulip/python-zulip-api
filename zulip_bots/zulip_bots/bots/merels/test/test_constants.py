@@ -1,6 +1,6 @@
 import unittest
 
-from ..libraries import constants
+from zulip_bots.bots.merels.libraries import constants
 
 
 class CheckIntegrity(unittest.TestCase):

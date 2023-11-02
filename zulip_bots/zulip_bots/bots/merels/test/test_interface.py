@@ -1,6 +1,6 @@
 import unittest
 
-from ..libraries import interface
+from zulip_bots.bots.merels.libraries import interface
 
 
 class BoardLayoutTest(unittest.TestCase):
