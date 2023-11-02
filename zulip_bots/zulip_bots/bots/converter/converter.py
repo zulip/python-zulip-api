@@ -11,9 +11,10 @@ from zulip_bots.lib import BotHandler
 def is_float(value: Any) -> bool:
     try:
         float(value)
-        return True
     except ValueError:
         return False
+
+    return True
 
 
 # Rounds the number 'x' to 'digits' significant digits.

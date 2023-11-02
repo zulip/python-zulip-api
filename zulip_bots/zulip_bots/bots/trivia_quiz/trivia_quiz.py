@@ -28,11 +28,11 @@ class TriviaQuizHandler:
         if query == "new":
             try:
                 start_new_quiz(message, bot_handler)
-                return
             except NotAvailableError:
                 bot_response = "Uh-Oh! Trivia service is down."
                 bot_handler.send_reply(message, bot_response)
-                return
+
+            return
         elif query.startswith("answer"):
             try:
                 (quiz_id, answer) = parse_answer(query)

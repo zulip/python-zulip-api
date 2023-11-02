@@ -577,11 +577,12 @@ def zephyr_init_autoretry() -> None:
             zephyr_port = c_ushort()
             zephyr_ctypes.check(zephyr_ctypes.ZOpenPort(byref(zephyr_port)))
             zephyr_ctypes.check(zephyr_ctypes.ZCancelSubscriptions(0))
-            backoff.succeed()
-            return
         except zephyr_ctypes.ZephyrError:
             logger.exception("Error initializing Zephyr library (retrying).  Traceback:")
             backoff.fail()
+        else:
+            backoff.succeed()
+            return
 
     quit_failed_initialization("Could not initialize Zephyr library, quitting!")
 
@@ -594,10 +595,11 @@ def zephyr_load_session_autoretry(session_path: str) -> None:
                 session = f.read()
             zephyr_ctypes.check(zephyr_ctypes.ZInitialize())
             zephyr_ctypes.check(zephyr_ctypes.ZLoadSession(session, len(session)))
-            return
         except zephyr_ctypes.ZephyrError:
             logger.exception("Error loading saved Zephyr session (retrying).  Traceback:")
             backoff.fail()
+        else:
+            return
 
     quit_failed_initialization("Could not load saved Zephyr session, quitting!")
 
@@ -620,13 +622,14 @@ def zephyr_subscribe_autoretry(sub: Tuple[str, str, str]) -> None:
                     0,
                 )
             )
-            backoff.succeed()
-            return
         except zephyr_ctypes.ZephyrError:
             # Probably a SERVNAK from the zephyr server, but log the
             # traceback just in case it's something else
             logger.exception("Error subscribing to personals (retrying).  Traceback:")
             backoff.fail()
+        else:
+            backoff.succeed()
+            return
 
     quit_failed_initialization("Could not subscribe to personals, quitting!")
 

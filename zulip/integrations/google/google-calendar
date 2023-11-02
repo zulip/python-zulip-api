@@ -102,9 +102,7 @@ def get_credentials() -> client.Credentials:
         credential_path = os.path.join(HOME_DIR, "google-credentials.json")
 
         store = Storage(credential_path)
-        credentials = store.get()
-
-        return credentials
+        return store.get()
     except client.Error:
         logging.exception("Error while trying to open the `google-credentials.json` file.")
         sys.exit(1)
