@@ -2,7 +2,7 @@ import html
 import json
 import random
 import re
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Tuple
 
 import requests
 
@@ -107,18 +107,6 @@ def get_trivia_payload() -> Dict[str, Any]:
     return payload
 
 
-def fix_quotes(s: str) -> Optional[str]:
-    # opentdb is nice enough to escape HTML for us, but
-    # we are sending this to code that does that already :)
-    #
-    # Meanwhile Python took until version 3.4 to have a
-    # simple html.unescape function.
-    try:
-        return html.unescape(s)
-    except Exception:
-        raise Exception("Please use python3.4 or later for this bot.")
-
-
 def get_quiz_from_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
     result = payload["results"][0]
     question = result["question"]
@@ -129,9 +117,9 @@ def get_quiz_from_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
     answers[correct_letter] = result["correct_answer"]
     for i in range(3):
         answers[letters[i + 1]] = result["incorrect_answers"][i]
-    answers = {letter: fix_quotes(answer) for letter, answer in answers.items()}
+    answers = {letter: html.unescape(answer) for letter, answer in answers.items()}
     quiz: Dict[str, Any] = dict(
-        question=fix_quotes(question),
+        question=html.unescape(question),
         answers=answers,
         answered_options=[],
         pending=True,
