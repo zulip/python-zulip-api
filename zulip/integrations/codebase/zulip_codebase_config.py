@@ -1,4 +1,7 @@
+import os
 from typing import Optional
+
+import platformdirs
 
 # Change these values to configure authentication for your codebase account
 # Note that this is the Codebase API Username, found in the Settings page
@@ -36,4 +39,4 @@ LOG_FILE: Optional[str] = None
 
 # This file is used to resume this mirror in case the script shuts down.
 # It is required and needs to be writeable.
-RESUME_FILE = "/var/tmp/zulip_codebase.state"
+RESUME_FILE = os.path.join(platformdirs.user_state_dir(), "zulip_codebase.state")

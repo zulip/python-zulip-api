@@ -1285,6 +1285,10 @@ or specify the --api-key-file option."""
         logger.error("\nnagios_path is required with nagios_class\n")
         sys.exit(1)
 
+    if options.use_sessions and options.session_path is None:
+        logger.error("--session-path is required with --use-sessions")
+        sys.exit(1)
+
     zulip_account_email = options.user + "@mit.edu"
 
     start_time = time.time()
@@ -1329,9 +1333,6 @@ or specify the --api-key-file option."""
         options.forward_from_zulip = False
     if options.forward_mail_zephyrs is None:
         options.forward_mail_zephyrs = subscribed_to_mail_messages()
-
-    if options.session_path is None:
-        options.session_path = f"/var/tmp/{options.user}"
 
     if options.forward_from_zulip:
         child_pid: Optional[int] = os.fork()
