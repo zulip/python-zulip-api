@@ -9,7 +9,6 @@ import platform
 import re
 import subprocess
 import sys
-import tempfile
 import traceback
 from pathlib import Path
 from typing import List
@@ -26,9 +25,11 @@ except ImportError:
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../"))
 
+import platformdirs
+
 import zulip
 
-temp_dir = "/var/tmp/" if os.name == "posix" else tempfile.gettempdir()
+state_dir = platformdirs.user_state_dir()
 
 
 def mkdir_p(path: str) -> None:
@@ -71,7 +72,7 @@ def process_lines(raw_lines: List[str], file_name: str) -> None:
 
 
 def process_logs() -> None:
-    data_file_path = os.path.join(temp_dir, "log2zulip.state")
+    data_file_path = os.path.join(state_dir, "log2zulip.state")
     mkdir_p(os.path.dirname(data_file_path))
     if not os.path.exists(data_file_path):
         Path(data_file_path).write_text("{}")
@@ -106,7 +107,7 @@ if __name__ == "__main__":
     parser.add_argument("--control-path", default="/etc/log2zulip.conf")
     args = parser.parse_args()
 
-    lock_path = os.path.join(temp_dir, "log2zulip.lock")
+    lock_path = os.path.join(state_dir, "log2zulip.lock")
     if os.path.exists(lock_path):
         # This locking code is here to protect against log2zulip,
         # running in a cron job, ending up with multiple copies
