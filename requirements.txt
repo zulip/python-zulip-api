@@ -3,7 +3,7 @@ twine
 mock
 pytest
 pytest-cov
-ruff~=0.1.3
+ruff~=0.1.4
 -e ./zulip
 -e ./zulip_bots
 -e ./zulip_botserver

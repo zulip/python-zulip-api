@@ -67,9 +67,7 @@ at syntax by: @mention-botname help"
                 return f"Error occured : {r.status_code}"  # Occures in case of unprocessable entity
         else:
             datapoint_link = f"https://www.beeminder.com/{username}/{goalname}"
-            return (
-                f"[Datapoint]({datapoint_link}) created."
-            )  # Handles the case of successful datapoint creation
+            return f"[Datapoint]({datapoint_link}) created."  # Handles the case of successful datapoint creation
     except ConnectionError:
         logging.exception("Error connecting to Beeminder")
         return "Uh-Oh, couldn't process the request \
