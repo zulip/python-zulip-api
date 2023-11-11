@@ -34,7 +34,7 @@ class IncidentHandler:
             start_new_incident(query, message, bot_handler)
         elif query.startswith("answer "):
             try:
-                (ticket_id, answer) = parse_answer(query)
+                ticket_id, answer = parse_answer(query)
             except InvalidAnswerError:
                 bot_response = "Invalid answer format"
                 bot_handler.send_reply(message, bot_response)

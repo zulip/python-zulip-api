@@ -35,7 +35,7 @@ class TriviaQuizHandler:
             return
         elif query.startswith("answer"):
             try:
-                (quiz_id, answer) = parse_answer(query)
+                quiz_id, answer = parse_answer(query)
             except InvalidAnswerError:
                 bot_response = "Invalid answer format"
                 bot_handler.send_reply(message, bot_response)

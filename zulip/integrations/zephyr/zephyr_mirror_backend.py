@@ -53,9 +53,9 @@ def make_zulip_client() -> zulip.Client:
 
 def to_zulip_username(zephyr_username: str) -> str:
     if "@" in zephyr_username:
-        (user, realm) = zephyr_username.split("@")
+        user, realm = zephyr_username.split("@")
     else:
-        (user, realm) = (zephyr_username, "ATHENA.MIT.EDU")
+        user, realm = (zephyr_username, "ATHENA.MIT.EDU")
     if realm.upper() == "ATHENA.MIT.EDU":
         # Hack to make ctl's fake username setup work :)
         if user.lower() == "golem":
@@ -65,7 +65,7 @@ def to_zulip_username(zephyr_username: str) -> str:
 
 
 def to_zephyr_username(zulip_username: str) -> str:
-    (user, realm) = zulip_username.split("@")
+    user, realm = zulip_username.split("@")
     if "|" not in user:
         # Hack to make ctl's fake username setup work :)
         if user.lower() == "ctl":
@@ -358,7 +358,7 @@ def process_loop(zulip_queue: "Queue[ZephyrDict]", log: Optional[IO[str]]) -> No
 
 def parse_zephyr_body(zephyr_data: str, notice_format: str) -> Tuple[str, str]:
     try:
-        (zsig, body) = zephyr_data.split("\x00", 1)
+        zsig, body = zephyr_data.split("\x00", 1)
         if notice_format in (
             "New transaction [$1] entered in $2\nFrom: $3 ($5)\nSubject: $4",
             "New transaction [$1] entered in $2\nFrom: $3\nSubject: $4",
@@ -374,7 +374,7 @@ def parse_zephyr_body(zephyr_data: str, notice_format: str) -> Tuple[str, str]:
                     fields[3],
                 )
     except ValueError:
-        (zsig, body) = ("", zephyr_data)
+        zsig, body = "", zephyr_data
     # Clean body of any null characters, since they're invalid in our protocol.
     body = body.replace("\x00", "")
     return (zsig, body)
@@ -448,7 +448,7 @@ def process_notice(
     notice: zephyr_ctypes.ZNotice_t, zulip_queue: "Queue[ZephyrDict]", log: Optional[IO[str]]
 ) -> None:
     assert notice.z_sender is not None
-    (zsig, body) = parse_zephyr_body(
+    zsig, body = parse_zephyr_body(
         notice.z_message[: notice.z_message_len].decode(errors="replace"),
         notice.z_default_format.decode(errors="replace"),
     )
@@ -852,7 +852,7 @@ Zulip users (like you) received it, Zephyr users did not.
         logger.debug("Would have forwarded: %r\n%s", zwrite_args, wrapped_content)
         return
 
-    (code, stderr) = send_authed_zephyr(zwrite_args, wrapped_content)
+    code, stderr = send_authed_zephyr(zwrite_args, wrapped_content)
     if code == 0 and stderr == "":
         return
     elif code == 0:
@@ -876,7 +876,7 @@ returned the following warning:
     ):
         # Retry sending the message unauthenticated; if that works,
         # just notify the user that they need to renew their tickets
-        (code, stderr) = send_unauthed_zephyr(zwrite_args, wrapped_content)
+        code, stderr = send_unauthed_zephyr(zwrite_args, wrapped_content)
         if code == 0:
             if options.ignore_expired_tickets:
                 return
@@ -1106,7 +1106,7 @@ def parse_zephyr_subs(verbose: bool = False) -> Set[Tuple[str, str, str]]:
         if len(line) == 0:
             continue
         try:
-            (cls, instance, recipient) = line.split(",")
+            cls, instance, recipient = line.split(",")
             cls = cls.replace("%me%", options.user)
             instance = instance.replace("%me%", options.user)
             recipient = recipient.replace("%me%", options.user)
@@ -1252,7 +1252,7 @@ if __name__ == "__main__":
 
     signal.signal(signal.SIGINT, die_gracefully)
 
-    (options, args) = parse_args()
+    options, args = parse_args()
 
     logger = open_logger()
     configure_logger(logger, "parent")

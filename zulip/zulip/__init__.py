@@ -743,7 +743,7 @@ class Client:
         # making a new long-polling request.
         while True:
             if queue_id is None:
-                (queue_id, last_event_id) = do_register()
+                queue_id, last_event_id = do_register()
 
             try:
                 res = self.get_events(queue_id=queue_id, last_event_id=last_event_id)

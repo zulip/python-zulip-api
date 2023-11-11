@@ -16,7 +16,7 @@ parser = optparse.OptionParser()
 parser.add_option("--verbose", dest="verbose", default=False, action="store_true")
 parser.add_option("--site", dest="site", default=None, action="store")
 parser.add_option("--sharded", default=False, action="store_true")
-(options, args) = parser.parse_args()
+options, args = parser.parse_args()
 
 mit_user = "tabbott/extra@ATHENA.MIT.EDU"
 
@@ -331,8 +331,8 @@ z_contents = [
     notice.z_message[: notice.z_message_len].split(b"\0")[1].decode(errors="replace")
     for notice in notices
 ]
-(h_key_counts, h_missing_z, h_missing_h, h_duplicates, h_success) = process_keys(h_contents)
-(z_key_counts, z_missing_z, z_missing_h, z_duplicates, z_success) = process_keys(z_contents)
+h_key_counts, h_missing_z, h_missing_h, h_duplicates, h_success = process_keys(h_contents)
+z_key_counts, z_missing_z, z_missing_h, z_duplicates, z_success = process_keys(z_contents)
 
 for notice in notices:
     zephyr_ctypes.ZFreeNotice(byref(notice))
@@ -350,7 +350,7 @@ for key in all_keys:
     if z_key_counts[key] == 1 and h_key_counts[key] == 1:
         continue
     if key in zhkeys:
-        (stream, test) = zhkeys[key]
+        stream, test = zhkeys[key]
         logger.warning(
             "%10s: z got %s, h got %s.  Sent via Zephyr(%s): class %s",
             key,
@@ -360,7 +360,7 @@ for key in all_keys:
             stream,
         )
     if key in hzkeys:
-        (stream, test) = hzkeys[key]
+        stream, test = hzkeys[key]
         logger.warning(
             "%10s: z got %s. h got %s.  Sent via Zulip(%s): class %s",
             key,

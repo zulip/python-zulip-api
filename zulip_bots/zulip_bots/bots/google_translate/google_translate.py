@@ -93,7 +93,7 @@ def get_translate_bot_response(message_content, config_file, author, all_languag
         split_text.append("")
     if len(split_text) != 3:
         return help_text
-    (text_to_translate, target_language, source_language) = split_text
+    text_to_translate, target_language, source_language = split_text
     text_to_translate = text_to_translate[1:]
     target_language = get_code_for_language(target_language, all_languages)
     if target_language == "":

@@ -372,7 +372,7 @@ option does not affect login credentials.""".replace("\n", " "),
 
     parser.add_option_group(jabber_group)
     parser.add_option_group(zulip.generate_option_group(parser, "zulip-"))
-    (options, args) = parser.parse_args()
+    options, args = parser.parse_args()
 
     logging.basicConfig(level=options.log_level, format="%(levelname)-8s %(message)s")
 

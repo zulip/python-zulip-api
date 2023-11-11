@@ -12,7 +12,7 @@ from typing import Optional
 sys.path[:0] = [os.path.dirname(__file__)]
 from zephyr_mirror_backend import parse_args
 
-(options, args) = parse_args()
+options, args = parse_args()
 
 
 def die(signal: int, frame: Optional[FrameType]) -> None:
