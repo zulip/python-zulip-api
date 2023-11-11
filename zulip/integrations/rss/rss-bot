@@ -227,7 +227,7 @@ for feed_url in feed_urls:
         )
         if (
             entry_time is not None
-            and (time.time() - calendar.timegm(entry_time)) > OLDNESS_THRESHOLD * 60 * 60 * 24
+            and time.time() - calendar.timegm(entry_time) > OLDNESS_THRESHOLD * 60 * 60 * 24
         ):
             # As a safeguard against misbehaving feeds, don't try to process
             # entries older than some threshold.
@@ -235,7 +235,7 @@ for feed_url in feed_urls:
         if entry_hash in old_feed_hashes:
             # We've already seen this. No need to process any older entries.
             break
-        if (not old_feed_hashes) and (len(new_hashes) >= 3):
+        if not old_feed_hashes and len(new_hashes) >= 3:
             # On a first run, pick up the 3 most recent entries. An RSS feed has
             # entries in reverse chronological order.
             break

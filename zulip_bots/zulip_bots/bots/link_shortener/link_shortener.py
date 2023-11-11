@@ -64,7 +64,7 @@ class LinkShortenerHandler:
 
         shortened_links = [self.shorten_link(link) for link in link_matches]
         link_pairs = [
-            (link_match + ": " + shortened_link)
+            link_match + ": " + shortened_link
             for link_match, shortened_link in zip(link_matches, shortened_links)
             if shortened_link != ""
         ]

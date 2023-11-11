@@ -40,7 +40,7 @@ class WeatherHandler:
             @**Weather Bot** Portland, Me
             """.strip()
 
-        if (message["content"] == "help") or (message["content"] == ""):
+        if message["content"] == "help" or message["content"] == "":
             response = help_content
         else:
             api_params = dict(q=message["content"], APPID=self.api_key)

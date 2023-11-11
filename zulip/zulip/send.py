@@ -77,7 +77,7 @@ def main() -> int:
     # Sanity check user data
     if len(options.recipients) != 0 and (options.stream or options.subject):
         parser.error("You cannot specify both a username and a stream/subject.")
-    if len(options.recipients) == 0 and (bool(options.stream) != bool(options.subject)):
+    if len(options.recipients) == 0 and bool(options.stream) != bool(options.subject):
         parser.error("Stream messages must have a subject")
     if len(options.recipients) == 0 and not (options.stream and options.subject):
         parser.error("You must specify a stream/subject or at least one recipient.")

@@ -34,8 +34,7 @@ class MerelsModel:
         data = game_data.GameData(merels.get_game_data(self.topic))
 
         return data.get_phase() > 1 and (
-            (mechanics.get_piece("X", data.grid()) <= 2)
-            or (mechanics.get_piece("O", data.grid()) <= 2)
+            mechanics.get_piece("X", data.grid()) <= 2 or mechanics.get_piece("O", data.grid()) <= 2
         )
 
     def make_move(self, move: str, player_number: int, computer_move: bool = False) -> Any:

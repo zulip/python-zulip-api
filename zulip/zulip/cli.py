@@ -60,7 +60,7 @@ def send_message(recipients: List[str], stream: str, subject: str, message: str)
     if len(recipients) != 0 and has_stream:
         click.echo("You cannot specify both a username and a stream/subject.")
         raise SystemExit(1)
-    if len(recipients) == 0 and (has_stream != has_subject):
+    if len(recipients) == 0 and has_stream != has_subject:
         click.echo("Stream messages must have a subject")
         raise SystemExit(1)
     if len(recipients) == 0 and not has_stream:

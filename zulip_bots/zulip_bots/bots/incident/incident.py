@@ -85,7 +85,7 @@ def generate_ticket_id(storage: Any) -> str:
     except KeyError:
         incident_num = 0
     incident_num += 1
-    incident_num = incident_num % (1000)
+    incident_num = incident_num % 1000
     storage.put("ticket_id", incident_num)
     ticket_id = "TICKET%04d" % (incident_num,)
     return ticket_id

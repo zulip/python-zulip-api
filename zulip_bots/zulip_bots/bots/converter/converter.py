@@ -62,10 +62,10 @@ def get_bot_converter_response(message: Dict[str, str], bot_handler: BotHandler)
     results = []
 
     for convert_index in convert_indexes:
-        if (convert_index + 1) < len(words) and words[convert_index + 1] == "help":
+        if convert_index + 1 < len(words) and words[convert_index + 1] == "help":
             results.append(utils.HELP_MESSAGE)
             continue
-        if (convert_index + 3) < len(words):
+        if convert_index + 3 < len(words):
             number = words[convert_index + 1]
             unit_from = utils.ALIASES.get(words[convert_index + 2], words[convert_index + 2])
             unit_to = utils.ALIASES.get(words[convert_index + 3], words[convert_index + 3])
@@ -132,7 +132,7 @@ def get_bot_converter_response(message: Dict[str, str], bot_handler: BotHandler)
 
     new_content = ""
     for idx, result in enumerate(results, 1):
-        new_content += ((str(idx) + ". conversion: ") if len(results) > 1 else "") + result + "\n"
+        new_content += (str(idx) + ". conversion: " if len(results) > 1 else "") + result + "\n"
 
     return new_content
 

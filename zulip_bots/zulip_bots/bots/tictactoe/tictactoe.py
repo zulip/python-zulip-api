@@ -194,8 +194,8 @@ class TicTacToeModel:
         move_coords = move_coords_str.split(",")
         # Subtraction must be done to convert to the right indices,
         # since computers start numbering at 0.
-        row = (int(move_coords[1])) - 1
-        column = (int(move_coords[0])) - 1
+        row = int(move_coords[1]) - 1
+        column = int(move_coords[0]) - 1
         if board[row][column] != 0:
             raise BadMoveError("Make sure your space hasn't already been filled.")
         board[row][column] = player_number + 1

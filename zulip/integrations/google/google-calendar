@@ -82,7 +82,7 @@ parser.add_argument(
 
 options = parser.parse_args()
 
-if not (options.zulip_email):
+if not options.zulip_email:
     parser.error("You must specify --user")
 
 zulip_client = zulip.init_from_options(options)

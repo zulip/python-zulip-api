@@ -83,7 +83,7 @@ class TestTrelloBot(BotTestCase, DefaultTests):
             with self.mock_http_conversation("get_lists"):
                 self.verify_reply(
                     "get-all-lists TEST",
-                    ("**Lists:**\n1. TEST_A\n  * TEST_1\n2. TEST_B\n  * TEST_2"),
+                    "**Lists:**\n1. TEST_A\n  * TEST_1\n2. TEST_B\n  * TEST_2",
                 )
 
     def test_command_exceptions(self) -> None:

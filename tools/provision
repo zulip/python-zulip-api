@@ -43,7 +43,7 @@ the Python version this command is executed with."""
     py_version = tuple(int(num) for num in py_version_list[0:2])
     venv_name = f"zulip-api-py{py_version[0]}-venv"
 
-    if py_version <= (3, 1) and (not options.force):
+    if py_version <= (3, 1) and not options.force:
         print(
             red
             + "Provision failed: Cannot create venv with outdated Python version ({}).\n"

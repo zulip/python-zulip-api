@@ -401,7 +401,7 @@ def make_loss_response(board: chess.Board, reason: str) -> str:
 
     Returns: The loss response string.
     """
-    return ("*{}* {}. **{}** wins!\n\n{}").format(
+    return "*{}* {}. **{}** wins!\n\n{}".format(
         "White" if board.turn else "Black",
         reason,
         "Black" if board.turn else "White",
@@ -418,7 +418,7 @@ def make_not_legal_response(board: chess.Board, move_san: str) -> str:
 
     Returns: The not-legal-move response string.
     """
-    return ("Sorry, the move *{}* isn't legal.\n\n{}\n\n\n{}").format(
+    return "Sorry, the move *{}* isn't legal.\n\n{}\n\n\n{}".format(
         move_san, make_str(board, board.turn), make_footer()
     )
 

@@ -62,16 +62,16 @@ class GameOfFifteenModel:
             if tile not in coordinates:
                 raise BadMoveError("You can only move tiles which exist in the board.")
             i, j = coordinates[tile]
-            if (j - 1) > -1 and board[i][j - 1] == 0:
+            if j - 1 > -1 and board[i][j - 1] == 0:
                 board[i][j - 1] = tile
                 board[i][j] = 0
-            elif (i - 1) > -1 and board[i - 1][j] == 0:
+            elif i - 1 > -1 and board[i - 1][j] == 0:
                 board[i - 1][j] = tile
                 board[i][j] = 0
-            elif (j + 1) < 3 and board[i][j + 1] == 0:
+            elif j + 1 < 3 and board[i][j + 1] == 0:
                 board[i][j + 1] = tile
                 board[i][j] = 0
-            elif (i + 1) < 3 and board[i + 1][j] == 0:
+            elif i + 1 < 3 and board[i + 1][j] == 0:
                 board[i + 1][j] = tile
                 board[i][j] = 0
             else:

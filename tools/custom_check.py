@@ -36,17 +36,6 @@ python_rules = RuleList(
             "good_lines": ["def foo (self):"],
             "bad_lines": ["def foo(self: Any):"],
         },
-        # This next check could have false positives, but it seems pretty
-        # rare; if we find any, they can be added to the exclude list for
-        # this rule.
-        {
-            "pattern": r" % [a-zA-Z0-9_.]*\)?$",
-            "description": "Used % comprehension without a tuple",
-        },
-        {
-            "pattern": r".*%s.* % \([a-zA-Z0-9_.]*\)$",
-            "description": "Used % comprehension without a tuple",
-        },
         {
             "pattern": r"__future__",
             "include_only": {"zulip_bots/zulip_bots/bots/"},

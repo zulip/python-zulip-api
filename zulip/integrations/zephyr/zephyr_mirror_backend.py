@@ -474,7 +474,7 @@ def process_notice(
     # Drop messages not to the listed subscriptions
     if is_personal and not options.forward_personals:
         return
-    if (zephyr_class.lower() not in current_zephyr_subs) and not is_personal:
+    if zephyr_class.lower() not in current_zephyr_subs and not is_personal:
         logger.debug("Skipping ... %s/%s/%s", zephyr_class, zephyr_instance, is_personal)
         return
     if notice.z_default_format.startswith(b"Zephyr error: See") or notice.z_default_format.endswith(
@@ -916,7 +916,7 @@ def maybe_forward_to_zephyr(message: Dict[str, Any], zulip_client: zulip.Client)
     # The key string can be used to direct any type of text.
     if message["sender_email"] == zulip_account_email:
         if not (
-            (message["type"] == "stream")
+            message["type"] == "stream"
             or (
                 message["type"] == "private"
                 and False

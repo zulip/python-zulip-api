@@ -152,7 +152,7 @@ def is_legal_move(v1, h1, v2, h2, turn, phase, grid):
     return (
         is_in_grid(v2, h2)
         and is_empty(v2, h2, grid)
-        and (not is_jump(v1, h1, v2, h2))
+        and not is_jump(v1, h1, v2, h2)
         and is_own_piece(v1, h1, turn, grid)
     )
 
