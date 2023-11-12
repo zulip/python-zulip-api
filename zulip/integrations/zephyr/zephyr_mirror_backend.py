@@ -259,7 +259,7 @@ def update_subscriptions() -> None:
     classes_to_subscribe = set()
     for stream in public_streams:
         zephyr_class = stream
-        if options.shard is not None and not hashlib.sha1(
+        if options.shard is not None and not hashlib.sha1(  # noqa: S324
             zephyr_class.encode("utf-8")
         ).hexdigest().startswith(options.shard):
             # This stream is being handled by a different zephyr_mirror job.

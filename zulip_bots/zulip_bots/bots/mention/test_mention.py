@@ -27,14 +27,14 @@ class TestMentionBot(BotTestCase, DefaultTests):
 
     def test_get_account_id(self) -> None:
         bot_test_instance = MentionHandler()
-        bot_test_instance.access_token = "TEST"
+        bot_test_instance.access_token = "TEST"  # noqa: S105
 
         with self.mock_http_conversation("get_account_id"):
             self.assertEqual(bot_test_instance.get_account_id(), "TEST")
 
     def test_get_alert_id(self) -> None:
         bot_test_instance = MentionHandler()
-        bot_test_instance.access_token = "TEST"
+        bot_test_instance.access_token = "TEST"  # noqa: S105
         bot_test_instance.account_id = "TEST"
 
         with self.mock_http_conversation("get_alert_id"):
@@ -42,7 +42,7 @@ class TestMentionBot(BotTestCase, DefaultTests):
 
     def test_get_mentions(self) -> None:
         bot_test_instance = MentionHandler()
-        bot_test_instance.access_token = "TEST"
+        bot_test_instance.access_token = "TEST"  # noqa: S105
         bot_test_instance.account_id = "TEST"
 
         with self.mock_http_conversation("get_mentions"):

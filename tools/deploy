@@ -112,7 +112,7 @@ def upload(options: argparse.Namespace) -> None:
     if not os.path.exists(file_path):
         print(f"upload: Could not find bot package at {file_path}.")
         sys.exit(1)
-    files = {"file": open(file_path, "rb")}
+    files = {"file": open(file_path, "rb")}  # noqa: SIM115
     headers = {"key": options.token}
     url = urllib.parse.urljoin(options.server, "bots/upload")
     response = requests.post(url, files=files, headers=headers)

@@ -221,7 +221,7 @@ def handle_bot() -> str:
 
 def main() -> None:
     options = parse_args()
-    global bots_config
+    global bots_config  # noqa: PLW0603
 
     if options.use_env_vars:
         bots_config = read_config_from_env_vars(options.bot_name)

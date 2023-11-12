@@ -128,7 +128,7 @@ class RandomExponentialBackoff(CountingBackoff):
         # Exponential growth with ratio sqrt(2); compute random delay
         # between x and 2x where x is growing exponentially
         delay_scale = int(2 ** (self.number_of_retries / 2.0 - 1)) + 1
-        delay = min(delay_scale + random.randint(1, delay_scale), self.delay_cap)
+        delay = min(delay_scale + random.randint(1, delay_scale), self.delay_cap)  # noqa: S311
         message = f"Sleeping for {delay}s [max {delay_scale * 2}] before retrying."
         try:
             logger.warning(message)

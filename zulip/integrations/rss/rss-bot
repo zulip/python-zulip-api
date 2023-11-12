@@ -156,7 +156,7 @@ def strip_tags(html: str) -> str:
 def compute_entry_hash(entry: Dict[str, Any]) -> str:
     entry_time = entry.get("published", entry.get("updated"))
     entry_id = entry.get("id", entry.get("link"))
-    return hashlib.md5((entry_id + str(entry_time)).encode()).hexdigest()
+    return hashlib.md5((entry_id + str(entry_time)).encode()).hexdigest()  # noqa: S324
 
 
 def unwrap_text(body: str) -> str:

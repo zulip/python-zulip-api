@@ -31,7 +31,7 @@ sa_family_t = c_ushort
 # --- glibc/sysdeps/unix/sysv/linux/bits/socket.h ---
 
 
-class sockaddr(Structure):
+class sockaddr(Structure):  # noqa: N801
     _fields_ = (
         ("sa_family", sa_family_t),
         ("sa_data", c_char * 14),
@@ -44,11 +44,11 @@ in_port_t = c_uint16
 in_addr_t = c_uint32
 
 
-class in_addr(Structure):
+class in_addr(Structure):  # noqa: N801
     _fields_ = (("s_addr", in_addr_t),)
 
 
-class sockaddr_in(Structure):
+class sockaddr_in(Structure):  # noqa: N801
     _fields_ = (
         ("sin_family", sa_family_t),
         ("sin_port", in_port_t),
@@ -57,11 +57,11 @@ class sockaddr_in(Structure):
     )
 
 
-class in6_addr(Structure):
+class in6_addr(Structure):  # noqa: N801
     _fields_ = (("s6_addr", c_uint8 * 16),)
 
 
-class sockaddr_in6(Structure):
+class sockaddr_in6(Structure):  # noqa: N801
     _fields_ = (
         ("sin6_family", sa_family_t),
         ("sin6_port", in_port_t),
@@ -95,7 +95,7 @@ class _ZTimeval(Structure):
     )
 
 
-class ZUnique_Id_t(Structure):
+class ZUnique_Id_t(Structure):  # noqa: N801
     _fields_ = (
         ("zuid_addr", in_addr),
         ("tv", _ZTimeval),
@@ -113,7 +113,7 @@ class _ZSenderSockaddr(Union):
     )
 
 
-class ZNotice_t(Structure):
+class ZNotice_t(Structure):  # noqa: N801
     _fields_ = (
         ("z_packet", c_char_p),
         ("z_version", c_char_p),
@@ -146,7 +146,7 @@ class ZNotice_t(Structure):
     )
 
 
-class ZSubscription_t(Structure):
+class ZSubscription_t(Structure):  # noqa: N801
     _fields_ = (
         ("zsub_recipient", c_char_p),
         ("zsub_class", c_char_p),

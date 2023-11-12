@@ -366,7 +366,7 @@ class ExternalBotHandler:
         filepath = os.path.normpath(filepath)
         abs_filepath = os.path.join(self._root_dir, filepath)
         if abs_filepath.startswith(self._root_dir):
-            return open(abs_filepath)
+            return open(abs_filepath)  # noqa: SIM115
         else:
             raise PermissionError(
                 f'Cannot open file "{abs_filepath}". Bots may only access '

@@ -839,7 +839,7 @@ class GameInstance:
         self.stream = stream
         self.model = deepcopy(self.game_adapter.model())
         self.board = self.model.current_board
-        self.turn = random.randrange(0, len(players)) - 1
+        self.turn = random.randrange(0, len(players)) - 1  # noqa: S311
         self.current_draw: Dict[str, bool] = {}
         self.current_messages: List[str] = []
         self.is_changing_subject = False

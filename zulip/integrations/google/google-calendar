@@ -27,7 +27,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../../"))
 import zulip
 
 SCOPES = "https://www.googleapis.com/auth/calendar.readonly"
-CLIENT_SECRET_FILE = "client_secret.json"
+CLIENT_SECRET_FILE = "client_secret.json"  # noqa: S105
 APPLICATION_NAME = "Zulip"
 HOME_DIR = os.path.expanduser("~")
 

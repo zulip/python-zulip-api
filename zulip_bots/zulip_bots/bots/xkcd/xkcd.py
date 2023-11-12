@@ -109,7 +109,7 @@ def fetch_xkcd_query(mode: int, comic_id: Optional[str] = None) -> Dict[str, str
                 raise XkcdServerError
 
             latest_id = latest.json()["num"]
-            random_id = random.randint(1, latest_id)
+            random_id = random.randint(1, latest_id)  # noqa: S311
             url = XKCD_TEMPLATE_URL % (str(random_id),)
 
         elif mode == XkcdBotCommand.COMIC_ID:  # Fetch specific comic strip by id number.

@@ -51,7 +51,7 @@ class BotServerTests(BotServerTestCase):
                 message={"content": "@**test** test message"},
                 bot_email="helloworld-bot@zulip.com",
                 trigger="mention",
-                token="abcd1234",
+                token="abcd1234",  # noqa: S106
             ),
             expected_response="beep boop",
             check_success=True,
@@ -79,7 +79,7 @@ class BotServerTests(BotServerTestCase):
                 message={"content": "@**test** test message"},
                 bot_email="helloworld-bot@zulip.com",
                 trigger="mention",
-                token="abcd1234",
+                token="abcd1234",  # noqa: S106
             ),
             expected_response="beep boop",
             bots_config=bots_config,
@@ -119,7 +119,7 @@ class BotServerTests(BotServerTestCase):
                 message={"content": "@**test** test message"},
                 bot_email="helloworld-bot@zulip.com",
                 trigger="mention",
-                token="wrongtoken",
+                token="wrongtoken",  # noqa: S106
             ),
             check_success=False,
         )
@@ -149,7 +149,7 @@ class BotServerTests(BotServerTestCase):
                     message={"content": "@**test** test message"},
                     bot_email="helloworld-bot@zulip.com",
                     trigger="mention",
-                    token="abcd1234",
+                    token="abcd1234",  # noqa: S106
                 ),
                 bots_config=bots_config,
             )

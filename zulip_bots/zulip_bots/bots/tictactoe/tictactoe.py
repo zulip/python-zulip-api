@@ -104,7 +104,7 @@ class TicTacToeModel:
                 board[1][1] = 2
             # If user played first in the center, the computer should move in the corner. It doesn't matter which corner.
             else:
-                location = random.choice(corner_locations)
+                location = random.choice(corner_locations)  # noqa: S311
                 row = location[0]
                 col = location[1]
                 board[row][col] = 2
@@ -156,16 +156,16 @@ class TicTacToeModel:
             blank_set = set(blanks)
             blank_list = list(blank_set)
             if blank_list == []:
-                location = random.choice(blank_locations)
+                location = random.choice(blank_locations)  # noqa: S311
             else:
-                location = random.choice(blank_list)
+                location = random.choice(blank_list)  # noqa: S311
             row = location[0]
             col = location[1]
             board[row][col] = 2
             return board
 
         else:
-            location = random.choice(blank_locations)
+            location = random.choice(blank_locations)  # noqa: S311
             row = location[0]
             col = location[1]
             board[row][col] = 2

@@ -148,7 +148,7 @@ More information in my help"""
 
 class IDoneThisHandler:
     def initialize(self, bot_handler: BotHandler) -> None:
-        global api_key, default_team
+        global api_key, default_team  # noqa: PLW0603
         self.config_info = bot_handler.get_config_info("idonethis")
         if "api_key" in self.config_info:
             api_key = self.config_info["api_key"]

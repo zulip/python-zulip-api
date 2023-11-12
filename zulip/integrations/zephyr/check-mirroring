@@ -64,7 +64,7 @@ if options.sharded:
     for stream, test in test_streams:
         if stream == "message":
             continue
-        assert hashlib.sha1(stream.encode("utf-8")).hexdigest().startswith(test)
+        assert hashlib.sha1(stream.encode("utf-8")).hexdigest().startswith(test)  # noqa: S324
 else:
     test_streams = [
         ("message", "p"),
