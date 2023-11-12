@@ -6,9 +6,8 @@ from .libraries import database, game, game_data, mechanics
 
 
 class Storage:
-    data = {}
-
     def __init__(self, topic_name):
+        self.data = {}
         self.data[topic_name] = '["X", 0, 0, "NNNNNNNNNNNNNNNNNNNNNNNN", "", 0]'
 
     def put(self, topic_name, value: str):
