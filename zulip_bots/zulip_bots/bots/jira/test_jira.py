@@ -1,5 +1,7 @@
 from typing import Final
 
+from typing_extensions import override
+
 from zulip_bots.test_lib import BotTestCase, DefaultTests
 
 
@@ -260,7 +262,7 @@ Jira Bot:
         with self.mock_config_info(self.MOCK_CONFIG_INFO):
             self.verify_reply("help", self.MOCK_HELP_RESPONSE)
 
-    # This overrides the default one in `BotTestCase`.
+    @override
     def test_bot_responds_to_empty_message(self) -> None:
         with self.mock_config_info(self.MOCK_CONFIG_INFO):
             self.verify_reply("", self.MOCK_NOTHING_RESPONSE)

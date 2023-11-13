@@ -2,6 +2,7 @@ from typing import Final
 from unittest.mock import patch
 
 from requests.exceptions import ConnectionError
+from typing_extensions import override
 
 from zulip_bots.test_lib import BotTestCase, DefaultTests
 
@@ -17,6 +18,7 @@ You can send messages to any Flock user associated with your account from Zulip.
 *Syntax*: **@botname to: message** where `to` is **firstName** of recipient.
 """
 
+    @override
     def test_bot_responds_to_empty_message(self) -> None:
         self.verify_reply("", self.help_message)
 

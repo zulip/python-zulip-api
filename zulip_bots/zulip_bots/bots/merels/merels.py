@@ -1,5 +1,7 @@
 from typing import Any, Final, List
 
+from typing_extensions import override
+
 from zulip_bots.game_handler import GameAdapter, SamePlayerMoveError
 
 from .libraries import database, game, game_data, mechanics
@@ -76,6 +78,7 @@ class MerelsHandler(GameAdapter):
         "description": "Lets you play merels against any player.",
     }
 
+    @override
     def usage(self) -> str:
         return game.get_info()
 
