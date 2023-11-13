@@ -213,8 +213,8 @@ class ExternalBotHandler:
     def __init__(
         self,
         client: Client,
-        root_dir: str,
-        bot_details: Dict[str, Any],
+        root_dir: Optional[str],
+        bot_details: Optional[Dict[str, Any]],
         bot_config_file: Optional[str] = None,
         bot_config_parser: Optional[configparser.ConfigParser] = None,
     ) -> None:
@@ -363,6 +363,7 @@ class ExternalBotHandler:
         return self._client.upload_file(file)
 
     def open(self, filepath: str) -> IO[str]:
+        assert self._root_dir is not None
         filepath = os.path.normpath(filepath)
         abs_filepath = os.path.join(self._root_dir, filepath)
         if abs_filepath.startswith(self._root_dir):
@@ -434,8 +435,8 @@ def prepare_message_handler(bot: str, bot_handler: BotHandler, bot_lib_module: A
 def run_message_handler_for_bot(
     lib_module: Any,
     quiet: bool,
-    config_file: str,
-    bot_config_file: str,
+    config_file: Optional[str],
+    bot_config_file: Optional[str],
     bot_name: str,
     bot_source: str,
 ) -> Any:
@@ -459,6 +460,7 @@ def run_message_handler_for_bot(
     try:
         client = Client(config_file=config_file, client=client_name)
     except configparser.Error as e:
+        assert config_file is not None
         display_config_file_errors(str(e), config_file)
         sys.exit(1)
 

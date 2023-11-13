@@ -21,8 +21,6 @@ exclude = [
     # fully annotate their bots.
     "zulip_bots/zulip_bots/bots",
     "zulip_bots/zulip_bots/bots_unmaintained",
-    # Excluded out of laziness:
-    "zulip_bots/zulip_bots/tests/test_lib.py",
 ]
 
 # These files will be included even if excluded by a rule above.

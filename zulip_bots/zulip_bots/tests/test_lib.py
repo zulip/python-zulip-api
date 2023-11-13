@@ -1,8 +1,11 @@
 import io
+from typing import IO, Any, Callable, Dict, List, Optional, Set, Tuple, cast
 from unittest import TestCase
 from unittest.mock import ANY, MagicMock, create_autospec, patch
 
+from zulip import Client
 from zulip_bots.lib import (
+    BotHandler,
     ExternalBotHandler,
     StateHandler,
     extract_query_without_mention,
@@ -12,10 +15,10 @@ from zulip_bots.lib import (
 
 
 class FakeClient:
-    def __init__(self, *args, **kwargs):
-        self.storage = dict()
+    def __init__(self, *args: object, **kwargs: object) -> None:
+        self.storage: Dict[str, str] = dict()
 
-    def get_profile(self):
+    def get_profile(self) -> Dict[str, Any]:
         return dict(
             user_id="alice",
             full_name="Alice",
@@ -23,7 +26,7 @@ class FakeClient:
             id=42,
         )
 
-    def update_storage(self, payload):
+    def update_storage(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         new_data = payload["storage"]
         self.storage.update(new_data)
 
@@ -31,45 +34,45 @@ class FakeClient:
             result="success",
         )
 
-    def get_storage(self, request):
+    def get_storage(self, request: Dict[str, Any]) -> Dict[str, Any]:
         return dict(
             result="success",
             storage=self.storage,
         )
 
-    def send_message(self, message):
+    def send_message(self, message: Dict[str, Any]) -> Dict[str, Any]:
         return dict(
             result="success",
         )
 
-    def upload_file(self, file):
+    def upload_file(self, file: IO[Any]) -> None:
         pass
 
 
 class FakeBotHandler:
-    def usage(self):
+    def usage(self) -> str:
         return """
             This is a fake bot handler that is used
             to spec BotHandler mocks.
             """
 
-    def handle_message(self, message, bot_handler):
+    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
         pass
 
 
 class LibTest(TestCase):
-    def test_basics(self):
-        client = FakeClient()
+    def test_basics(self) -> None:
+        client = cast(Client, FakeClient())
 
         handler = ExternalBotHandler(
             client=client, root_dir=None, bot_details=None, bot_config_file=None
         )
 
-        message = None
+        message: Dict[str, Any] = {}
         handler.send_message(message)
 
-    def test_state_handler(self):
-        client = FakeClient()
+    def test_state_handler(self) -> None:
+        client = cast(Client, FakeClient())
 
         state_handler = StateHandler(client)
         state_handler.put("key", [1, 2, 3])
@@ -81,7 +84,7 @@ class LibTest(TestCase):
         val = state_handler.get("key")
         self.assertEqual(val, [1, 2, 3])
 
-    def test_state_handler_by_mock(self):
+    def test_state_handler_by_mock(self) -> None:
         client = MagicMock()
 
         state_handler = StateHandler(client)
@@ -109,8 +112,8 @@ class LibTest(TestCase):
         client.get_storage.assert_not_called()
         self.assertEqual(val, [5])
 
-    def test_react(self):
-        client = FakeClient()
+    def test_react(self) -> None:
+        client = cast(Client, FakeClient())
         handler = ExternalBotHandler(
             client=client, root_dir=None, bot_details=None, bot_config_file=None
         )
@@ -121,18 +124,18 @@ class LibTest(TestCase):
             "emoji_name": "wave",
             "reaction_type": "unicode_emoji",
         }
-        client.add_reaction = MagicMock()
+        client.add_reaction = MagicMock()  # type: ignore[method-assign]
         handler.react(message, emoji_name)
         client.add_reaction.assert_called_once_with(dict(expected))
 
-    def test_send_reply(self):
-        client = FakeClient()
+    def test_send_reply(self) -> None:
+        client = cast(Client, FakeClient())
         profile = client.get_profile()
         handler = ExternalBotHandler(
             client=client, root_dir=None, bot_details=None, bot_config_file=None
         )
         to = {"id": 43}
-        expected = [
+        expected: List[Tuple[Dict[str, Any], Dict[str, Any], Optional[str]]] = [
             (
                 {"type": "private", "display_recipient": [to]},
                 {"type": "private", "to": [to["id"]]},
@@ -151,18 +154,18 @@ class LibTest(TestCase):
         ]
         response_text = "Response"
         for test in expected:
-            client.send_message = MagicMock()
+            client.send_message = MagicMock()  # type: ignore[method-assign]
             handler.send_reply(test[0], response_text, test[2])
             client.send_message.assert_called_once_with(
                 dict(test[1], content=response_text, widget_content=test[2])
             )
 
-    def test_content_and_full_content(self):
-        client = FakeClient()
+    def test_content_and_full_content(self) -> None:
+        client = cast(Client, FakeClient())
         client.get_profile()
         ExternalBotHandler(client=client, root_dir=None, bot_details=None, bot_config_file=None)
 
-    def test_run_message_handler_for_bot(self):
+    def test_run_message_handler_for_bot(self) -> None:
         with patch("zulip_bots.lib.Client", new=FakeClient) as fake_client:
             mock_lib_module = MagicMock()
             # __file__ is not mocked by MagicMock(), so we assign a mock value manually.
@@ -170,8 +173,13 @@ class LibTest(TestCase):
             mock_bot_handler = create_autospec(FakeBotHandler)
             mock_lib_module.handler_class.return_value = mock_bot_handler
 
-            def call_on_each_event_mock(self, callback, event_types=None, narrow=None):
-                def test_message(message, flags):
+            def call_on_each_event_mock(
+                self: FakeClient,
+                callback: Callable[[Dict[str, Any]], None],
+                event_types: Optional[List[str]] = None,
+                narrow: Optional[List[List[str]]] = None,
+            ) -> None:
+                def test_message(message: Dict[str, Any], flags: Set[str]) -> None:
                     event = {"message": message, "flags": flags, "type": "message"}
                     callback(event)
 
@@ -188,8 +196,8 @@ class LibTest(TestCase):
                     message=expected_message, bot_handler=ANY
                 )
 
-            fake_client.call_on_each_event = call_on_each_event_mock.__get__(
-                fake_client, fake_client.__class__
+            fake_client.call_on_each_event = call_on_each_event_mock.__get__(  # type: ignore[attr-defined]
+                fake_client, type(fake_client)
             )
             run_message_handler_for_bot(
                 lib_module=mock_lib_module,
@@ -200,25 +208,25 @@ class LibTest(TestCase):
                 bot_source="bot code location",
             )
 
-    def test_upload_file(self):
+    def test_upload_file(self) -> None:
         client, handler = self._create_client_and_handler_for_file_upload()
         file = io.BytesIO(b"binary")
 
         handler.upload_file(file)
 
-        client.upload_file.assert_called_once_with(file)
+        client.upload_file.assert_called_once_with(file)  # type: ignore[attr-defined]
 
-    def test_upload_file_from_path(self):
+    def test_upload_file_from_path(self) -> None:
         client, handler = self._create_client_and_handler_for_file_upload()
         file = io.BytesIO(b"binary")
 
         with patch("builtins.open", return_value=file):
             handler.upload_file_from_path("file.txt")
 
-        client.upload_file.assert_called_once_with(file)
+        client.upload_file.assert_called_once_with(file)  # type: ignore[attr-defined]
 
-    def test_extract_query_without_mention(self):
-        client = FakeClient()
+    def test_extract_query_without_mention(self) -> None:
+        client = cast(Client, FakeClient())
         handler = ExternalBotHandler(
             client=client, root_dir=None, bot_details=None, bot_config_file=None
         )
@@ -231,12 +239,12 @@ class LibTest(TestCase):
         message = {"content": "Not at start @**Alice|alice** Hello World"}
         self.assertEqual(extract_query_without_mention(message, handler), None)
 
-    def test_is_private_message_but_not_group_pm(self):
-        client = FakeClient()
+    def test_is_private_message_but_not_group_pm(self) -> None:
+        client = cast(Client, FakeClient())
         handler = ExternalBotHandler(
             client=client, root_dir=None, bot_details=None, bot_config_file=None
         )
-        message = {}
+        message: Dict[str, Any] = {}
         message["display_recipient"] = "some stream"
         message["type"] = "stream"
         self.assertFalse(is_private_message_but_not_group_pm(message, handler))
@@ -249,9 +257,9 @@ class LibTest(TestCase):
         message["display_recipient"] = [{"email": "a1@b.com"}, {"email": "a2@b.com"}]
         self.assertFalse(is_private_message_but_not_group_pm(message, handler))
 
-    def _create_client_and_handler_for_file_upload(self):
-        client = FakeClient()
-        client.upload_file = MagicMock()
+    def _create_client_and_handler_for_file_upload(self) -> Tuple[Client, ExternalBotHandler]:
+        client = cast(Client, FakeClient())
+        client.upload_file = MagicMock()  # type: ignore[method-assign]
 
         handler = ExternalBotHandler(
             client=client, root_dir=None, bot_details=None, bot_config_file=None
