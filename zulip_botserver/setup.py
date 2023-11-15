@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-ZULIP_BOTSERVER_VERSION = "0.8.2"
+ZULIP_BOTSERVER_VERSION = "0.9.0"
 
 with open("README.md") as fh:
     long_description = fh.read()
