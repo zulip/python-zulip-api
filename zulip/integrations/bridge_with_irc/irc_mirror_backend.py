@@ -1,3 +1,4 @@
+import logging
 import multiprocessing as mp
 import sys
 from typing import Any, Dict, Optional
@@ -141,3 +142,6 @@ class IRCBot(irc.bot.SingleServerIRCBot):
             except ValueError:
                 return
             self.dcc_connect(address, port)
+
+    def on_error(self, c: ServerConnection, e: Event) -> None:
+        logging.error("error from server: %s", e.target)
