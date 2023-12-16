@@ -1488,6 +1488,15 @@ class Client:
         """
         return self.call_endpoint(url=f"users/me/{stream_id}/topics", method="GET")
 
+    def get_stream_email_address(self, stream_id: int) -> Dict[str, Any]:
+        """
+        Example usage:
+
+        >>> client.get_stream_email_address(stream_id=1)
+        {'result': 'success', 'msg': '', 'email': 'username@example.com'}
+        """
+        return self.call_endpoint(url=f"streams/{stream_id}/email_address", method="GET")
+
     def get_user_groups(self) -> Dict[str, Any]:
         """
         Example usage:
