@@ -60,7 +60,6 @@ class SlackBridge:
         )
 
         # slack-specific
-        self.channel = self.slack_config["channel"]
         self.slack_client = rtm
         # Spawn a non-websocket client for getting the users
         # list and for posting messages in Slack.
