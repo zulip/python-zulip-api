@@ -53,11 +53,17 @@ class SlackBridge:
         }
 
         # zulip-specific
-        self.zulip_client = zulip.Client(
-            email=self.zulip_config["email"],
-            api_key=self.zulip_config["api_key"],
-            site=self.zulip_config["site"],
-        )
+        def zulip_client_constructor() -> zulip.Client:
+            return zulip.Client(
+                email=self.zulip_config["email"],
+                api_key=self.zulip_config["api_key"],
+                site=self.zulip_config["site"],
+            )
+
+        self.zulip_client = zulip_client_constructor()
+        # Temporary workaround until
+        # https://github.com/zulip/python-zulip-api/issues/761 is fixed.
+        self.zulip_client_constructor = zulip_client_constructor
 
         # slack-specific
         self.slack_client = rtm
@@ -121,7 +127,7 @@ class SlackBridge:
                 subject=zulip_endpoint["topic"],
                 content=content,
             )
-            self.zulip_client.send_message(msg_data)
+            self.zulip_client_constructor().send_message(msg_data)
 
         self.slack_client.start()
 
