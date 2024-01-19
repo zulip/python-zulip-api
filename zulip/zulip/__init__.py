@@ -1591,6 +1591,18 @@ class Client:
             request=request,
         )
 
+    def get_message_read_receipts(self, message_id: int) -> Dict[str, Any]:
+        """
+        Example usage:
+
+        >>> client.get_message_read_receipts(42)
+        {'result': 'success', 'msg': '', 'user_ids': [42]}
+        """
+        return self.call_endpoint(
+            url=f"messages/{message_id}/read_receipts",
+            method="GET",
+        )
+
     def create_user(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
         See examples/create-user for example usage.
