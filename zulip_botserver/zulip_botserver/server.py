@@ -254,7 +254,7 @@ def main() -> None:
     app.config["BOTS_LIB_MODULES"] = bots_lib_modules
     app.config["BOT_HANDLERS"] = bot_handlers
     app.config["MESSAGE_HANDLERS"] = message_handlers
-    app.run(host=options.hostname, port=int(options.port), debug=True)
+    app.run(host=options.hostname, port=int(options.port))
 
 
 if __name__ == "__main__":
