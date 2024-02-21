@@ -3,12 +3,12 @@ twine
 mock
 pytest
 pytest-cov
-ruff~=0.1.4
+ruff~=0.2.2
 -e ./zulip
 -e ./zulip_bots
 -e ./zulip_botserver
-git+https://github.com/zulip/zulint@61fe2ec73e272396152d293fbf07926120e42f38#egg=zulint==1.0.0
-mypy==1.6.1
+git+https://github.com/zulip/zulint@417b4e4971fdd5ca8e84847f1391b657b188631a#egg=zulint==1.0.0
+mypy==1.8.0
 types-beautifulsoup4
 types-httplib2
 types-python-dateutil

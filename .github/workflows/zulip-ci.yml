@@ -50,12 +50,12 @@ jobs:
 
     steps:
       - name: "Check out python-zulip-api"
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           path: api
 
       - name: "Check out Zulip server ${{ matrix.server_version }}"
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: zulip/zulip
           ref: ${{ matrix.server_version }}
