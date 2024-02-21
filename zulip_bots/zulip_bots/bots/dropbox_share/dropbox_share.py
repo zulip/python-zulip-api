@@ -210,10 +210,8 @@ def dbx_search(client: Any, query: str, folder: str, max_results: str) -> str:
     try:
         result = client.files_search(folder, query, max_results=int(max_results))
         msg_list = []
-        count = 0
         for entry in result.matches:
             file_info = entry.metadata
-            count += 1
             msg_list += [" - " + URL.format(name=file_info.name, path=file_info.path_lower)]
         msg = "\n".join(msg_list)
 
