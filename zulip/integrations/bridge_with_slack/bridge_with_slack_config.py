@@ -13,8 +13,8 @@ config = {
     "channel_mapping": {
         # Slack channel; must be channel ID
         "C5Z5N7R8A": {
-            # Zulip stream
-            "stream": "test here",
+            # Zulip channel
+            "channel": "test here",
             # Zulip topic
             "topic": "<- slack-bridge",
         },

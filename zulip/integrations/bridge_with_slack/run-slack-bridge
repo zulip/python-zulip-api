@@ -8,13 +8,11 @@ import traceback
 from typing import Any, Callable, Dict, Optional, Tuple
 
 import bridge_with_slack_config
-import slack_sdk
-from slack_sdk.rtm_v2 import RTMClient
+from slack_sdk.web.client import WebClient
 
 import zulip
 
 # change these templates to change the format of displayed message
-ZULIP_MESSAGE_TEMPLATE = "**{username}**: {message}"
 SLACK_MESSAGE_TEMPLATE = "<{username}> {message}"
 
 StreamTopicT = Tuple[str, str]
@@ -41,15 +39,26 @@ def get_slack_channel_for_zulip_message(
     return zulip_to_slack_map[stream_topic]
 
 
+def check_token_access(token: str) -> None:
+    if token.startswith("xoxp-"):
+        print(
+            "--- Warning! ---\n"
+            "You entered a Slack user token, please copy the token under\n"
+            "'Bot User OAuth Token' which starts with 'xoxb-...'."
+        )
+        sys.exit(1)
+    elif token.startswith("xoxb-"):
+        return
+
+
 class SlackBridge:
     def __init__(self, config: Dict[str, Any]) -> None:
         self.config = config
         self.zulip_config = config["zulip"]
         self.slack_config = config["slack"]
 
-        self.slack_to_zulip_map: Dict[str, Dict[str, str]] = config["channel_mapping"]
         self.zulip_to_slack_map: Dict[StreamTopicT, str] = {
-            (z["stream"], z["topic"]): s for s, z in config["channel_mapping"].items()
+            (z["channel"], z["topic"]): s for s, z in config["channel_mapping"].items()
         }
 
         # zulip-specific
@@ -65,24 +74,15 @@ class SlackBridge:
         # https://github.com/zulip/python-zulip-api/issues/761 is fixed.
         self.zulip_client_constructor = zulip_client_constructor
 
-        # slack-specific
-        self.slack_client = rtm
         # Spawn a non-websocket client for getting the users
         # list and for posting messages in Slack.
-        self.slack_webclient = slack_sdk.WebClient(token=self.slack_config["token"])
+        self.slack_webclient = WebClient(token=self.slack_config["token"])
 
     def wrap_slack_mention_with_bracket(self, zulip_msg: Dict[str, Any]) -> None:
         words = zulip_msg["content"].split(" ")
         for w in words:
             if w.startswith("@"):
                 zulip_msg["content"] = zulip_msg["content"].replace(w, "<" + w + ">")
-
-    def replace_slack_id_with_name(self, msg: Dict[str, Any]) -> None:
-        words = msg["text"].split(" ")
-        for w in words:
-            if w.startswith("<@") and w.endswith(">"):
-                _id = w[2:-1]
-                msg["text"] = msg["text"].replace(_id, self.slack_id_to_name[_id])
 
     def zulip_to_slack(self) -> Callable[[Dict[str, Any]], None]:
         def _zulip_to_slack(msg: Dict[str, Any]) -> None:
@@ -101,36 +101,6 @@ class SlackBridge:
 
         return _zulip_to_slack
 
-    def run_slack_listener(self) -> None:
-        members = self.slack_webclient.users_list()["members"]
-        # See also https://api.slack.com/changelog/2017-09-the-one-about-usernames
-        self.slack_id_to_name: Dict[str, str] = {
-            u["id"]: u["profile"].get("display_name", u["profile"]["real_name"]) for u in members
-        }
-        self.slack_name_to_id = {v: k for k, v in self.slack_id_to_name.items()}
-
-        @rtm.on("message")
-        def slack_to_zulip(client: RTMClient, event: Dict[str, Any]) -> None:
-            if event["channel"] not in self.slack_to_zulip_map:
-                return
-            user_id = event["user"]
-            user = self.slack_id_to_name[user_id]
-            from_bot = user == self.slack_config["username"]
-            if from_bot:
-                return
-            self.replace_slack_id_with_name(event)
-            content = ZULIP_MESSAGE_TEMPLATE.format(username=user, message=event["text"])
-            zulip_endpoint = self.slack_to_zulip_map[event["channel"]]
-            msg_data = dict(
-                type="stream",
-                to=zulip_endpoint["stream"],
-                subject=zulip_endpoint["topic"],
-                content=content,
-            )
-            self.zulip_client_constructor().send_message(msg_data)
-
-        self.slack_client.start()
-
 
 if __name__ == "__main__":
     usage = """run-slack-bridge
@@ -142,6 +112,8 @@ if __name__ == "__main__":
     sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
     parser = argparse.ArgumentParser(usage=usage)
 
+    args = parser.parse_args()
+
     config: Dict[str, Any] = bridge_with_slack_config.config
     if "channel_mapping" not in config:
         print(
@@ -150,11 +122,10 @@ if __name__ == "__main__":
         )
         sys.exit(1)
 
+    check_token_access(config["slack"]["token"])
+
     print("Starting slack mirroring bot")
     print("MAKE SURE THE BOT IS SUBSCRIBED TO THE RELEVANT ZULIP STREAM(S) & SLACK CHANNEL(S)!")
-
-    # We have to define rtm outside of SlackBridge because the rtm variable is used as a method decorator.
-    rtm = RTMClient(token=config["slack"]["token"])
 
     backoff = zulip.RandomExponentialBackoff(timeout_success_equivalent=300)
     while backoff.keep_going():
@@ -164,14 +135,14 @@ if __name__ == "__main__":
             zp = threading.Thread(
                 target=sb.zulip_client.call_on_each_message, args=(sb.zulip_to_slack(),)
             )
-            sp = threading.Thread(target=sb.run_slack_listener, args=())
             print("Starting message handler on Zulip client")
             zp.start()
-            print("Starting message handler on Slack client")
-            sp.start()
 
+            print(
+                "Make sure your Slack Webhook integration is running\n"
+                "to receive messages from Slack."
+            )
             zp.join()
-            sp.join()
         except Exception:
             traceback.print_exc()
         backoff.fail()
