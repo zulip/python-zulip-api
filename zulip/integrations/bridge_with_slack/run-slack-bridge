@@ -84,12 +84,18 @@ class SlackBridge:
             if w.startswith("@"):
                 zulip_msg["content"] = zulip_msg["content"].replace(w, "<" + w + ">")
 
+    def is_message_from_slack(self, msg: Dict[str, Any]) -> bool:
+        # Check whether or not this message is from Slack to prevent
+        # them from being tossed back to Zulip.
+        return msg["sender_email"] == self.zulip_config.get("email")
+
     def zulip_to_slack(self) -> Callable[[Dict[str, Any]], None]:
         def _zulip_to_slack(msg: Dict[str, Any]) -> None:
             slack_channel = get_slack_channel_for_zulip_message(
                 msg, self.zulip_to_slack_map, self.zulip_config["email"]
             )
-            if slack_channel is not None:
+
+            if slack_channel is not None and not self.is_message_from_slack(msg):
                 self.wrap_slack_mention_with_bracket(msg)
                 slack_text = SLACK_MESSAGE_TEMPLATE.format(
                     username=msg["sender_full_name"], message=msg["content"]
