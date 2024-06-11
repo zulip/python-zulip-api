@@ -1,33 +1,51 @@
 # Slack <--> Zulip bridge
 
-This is a bridge between Slack and Zulip.
+This integration is a bridge with Slack, delivering messages from
+Zulip into Slack. It is designed for bidirectional bridging, with the
+[Slack integration](https://zulip.com/integrations/doc/slack) used to
+deliver messages from Slack into Zulip.
+
+Note that using these integrations together for bidirectional bridging
+requires the updated version of the Slack integration included in
+Zulip 9.4+.
 
 ## Usage
 
 ### 1. Zulip endpoint
-1. Create a generic Zulip bot, with a full name like `Slack Bot`.
-2. (Important) Subscribe the bot user to the Zulip stream you'd like to bridge your Slack
-   channel into.
-3. In the `zulip` section of the configuration file, enter the bot's `zuliprc`
-   details (`email`, `api_key`, and `site`).
-4. In the same section, also enter the Zulip `stream` and `topic`.
+
+1. Create a generic Zulip bot, with a full name like `Slack Bridge`.
+
+2. [Subscribe](https://zulip.com/help/manage-user-channel-subscriptions#subscribe-a-user-to-a-channel)
+   the bot user to the Zulip channel(s) you'd like to bridge with
+   Slack.
+
+3. Create a [Slack webhook integration bot](https://zulip.com/integrations/doc/slack)
+   to get messages from Slack to Zulip. Make sure to follow the additional instruction
+   for setting up a Slack bridge.
+
+4. In the `zulip` section of the `bridge_with_slack_config.py`
+   configuration file, the bot's `zuliprc` details (`email`,
+   `api_key`, and `site`).
+
+5. In the `channel_mapping` section, enter the Zulip `channel` and
+   `topic` that you'd like to use for each Slack channel.  Make sure
+   that they match the same `channel` and `topic` you configured in
+   steps 2 and 3.
 
 ### 2. Slack endpoint
-1. Make sure Websocket isn't blocked in the computer where you run this bridge.
-   Test it at https://www.websocket.org/echo.html.
-2. Go to https://api.slack.com/apps?new_classic_app=1 and create a new classic
-   app (note: must be a classic app). Choose a bot name that will be put into
-   bridge_with_slack_config.py, e.g. "zulip_mirror". In the process of doing
-   this, you need to add oauth token scope. Simply choose `bot`. Slack will say
-   that this is a legacy scope, but we still need to use it anyway. The reason
-   why we need the legacy scope is because otherwise the RTM API wouldn't work.
-   We might remove the RTM API usage in newer version of this bot. Make sure to
-   install the app to the workspace. When successful, you should see a token
-   that starts with "xoxb-...". There is also a token that starts with
-   "xoxp-...", we need the "xoxb-..." one.
-3. Go to "App Home", click the button "Add Legacy Bot User".
-4. (Important) Make sure the bot is subscribed to the channel. You can do this by typing e.g. `/invite @zulip_mirror` in the relevant channel.
-5. In the `slack` section of the Zulip-Slack bridge configuration file, enter the bot name (e.g. "zulip_mirror") and token, and the channel ID (note: must be ID, not name).
+
+1. Go to the [Slack Apps menu](https://api.slack.com/apps) and open the same Slack app
+   that you used to set up the Slack Webhook integration previously.
+
+2. Navigate to the "OAuth & Permissions" menu and scroll down to the "Scopes"
+   section in the same page. Make sure "Bot Token Scopes" includes: `chat:write`
+
+3. Next, also in the same menu find and note down the "Bot User OAuth Token".
+   It starts with "xoxb-..." and not "xoxp".
+
+4. In the `slack` section of `bridge_with_slack_config.py`, enter the
+   bot name (e.g "slack_bridge"), token (e.g xoxb-...), and the
+   channel ID (note: must be ID, not name).
 
 ### Running the bridge
 
