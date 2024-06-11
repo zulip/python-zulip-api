@@ -89,7 +89,8 @@ class SlackBridge:
             slack_channel = get_slack_channel_for_zulip_message(
                 msg, self.zulip_to_slack_map, self.zulip_config["email"]
             )
-            if slack_channel is not None:
+            is_from_slack = msg["sender_email"] == self.zulip_config.get("integration_bot_email")
+            if slack_channel is not None and not is_from_slack:
                 self.wrap_slack_mention_with_bracket(msg)
                 slack_text = SLACK_MESSAGE_TEMPLATE.format(
                     username=msg["sender_full_name"], message=msg["content"]
