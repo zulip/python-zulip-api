@@ -8,13 +8,11 @@ import traceback
 from typing import Any, Callable, Dict, Optional, Tuple
 
 import bridge_with_slack_config
-from slack_sdk.rtm_v2 import RTMClient
 from slack_sdk.web.client import WebClient
 
 import zulip
 
 # change these templates to change the format of displayed message
-ZULIP_MESSAGE_TEMPLATE = "**{username}**: {message}"
 SLACK_MESSAGE_TEMPLATE = "<{username}> {message}"
 
 StreamTopicT = Tuple[str, str]
@@ -47,7 +45,6 @@ class SlackBridge:
         self.zulip_config = config["zulip"]
         self.slack_config = config["slack"]
 
-        self.slack_to_zulip_map: Dict[str, Dict[str, str]] = config["channel_mapping"]
         self.zulip_to_slack_map: Dict[StreamTopicT, str] = {
             (z["channel"], z["topic"]): s for s, z in config["channel_mapping"].items()
         }
@@ -65,8 +62,6 @@ class SlackBridge:
         # https://github.com/zulip/python-zulip-api/issues/761 is fixed.
         self.zulip_client_constructor = zulip_client_constructor
 
-        # slack-specific
-        self.slack_client = rtm
         # Spawn a non-websocket client for getting the users
         # list and for posting messages in Slack.
         self.slack_webclient = WebClient(token=self.slack_config["token"])
@@ -76,13 +71,6 @@ class SlackBridge:
         for w in words:
             if w.startswith("@"):
                 zulip_msg["content"] = zulip_msg["content"].replace(w, "<" + w + ">")
-
-    def replace_slack_id_with_name(self, msg: Dict[str, Any]) -> None:
-        words = msg["text"].split(" ")
-        for w in words:
-            if w.startswith("<@") and w.endswith(">"):
-                _id = w[2:-1]
-                msg["text"] = msg["text"].replace(_id, self.slack_id_to_name[_id])
 
     def zulip_to_slack(self) -> Callable[[Dict[str, Any]], None]:
         def _zulip_to_slack(msg: Dict[str, Any]) -> None:
@@ -102,36 +90,6 @@ class SlackBridge:
 
         return _zulip_to_slack
 
-    def run_slack_listener(self) -> None:
-        members = self.slack_webclient.users_list()["members"]
-        # See also https://api.slack.com/changelog/2017-09-the-one-about-usernames
-        self.slack_id_to_name: Dict[str, str] = {
-            u["id"]: u["profile"].get("display_name", u["profile"]["real_name"]) for u in members
-        }
-        self.slack_name_to_id = {v: k for k, v in self.slack_id_to_name.items()}
-
-        @rtm.on("message")
-        def slack_to_zulip(client: RTMClient, event: Dict[str, Any]) -> None:
-            if event["channel"] not in self.slack_to_zulip_map:
-                return
-            user_id = event["user"]
-            user = self.slack_id_to_name[user_id]
-            from_bot = user == self.slack_config["username"]
-            if from_bot:
-                return
-            self.replace_slack_id_with_name(event)
-            content = ZULIP_MESSAGE_TEMPLATE.format(username=user, message=event["text"])
-            zulip_endpoint = self.slack_to_zulip_map[event["channel"]]
-            msg_data = dict(
-                type="stream",
-                to=zulip_endpoint["channel"],
-                subject=zulip_endpoint["topic"],
-                content=content,
-            )
-            self.zulip_client_constructor().send_message(msg_data)
-
-        self.slack_client.start()
-
 
 if __name__ == "__main__":
     usage = """run-slack-bridge
@@ -142,9 +100,7 @@ if __name__ == "__main__":
 
     sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
     parser = argparse.ArgumentParser(usage=usage)
-    parser.add_argument(
-        "--legacy", action="store_true", help="Run the bridge using the legacy Slack RTM API"
-    )
+
     args = parser.parse_args()
 
     config: Dict[str, Any] = bridge_with_slack_config.config
@@ -158,10 +114,6 @@ if __name__ == "__main__":
     print("Starting slack mirroring bot")
     print("MAKE SURE THE BOT IS SUBSCRIBED TO THE RELEVANT ZULIP STREAM(S) & SLACK CHANNEL(S)!")
 
-    # We have to define rtm outside of SlackBridge because the rtm variable is used as a method decorator.
-    # the RTM API is a legacy Slack SDK, we keep using them only to provide backwards compitability.
-    rtm = RTMClient(token=config["slack"]["token"])
-
     backoff = zulip.RandomExponentialBackoff(timeout_success_equivalent=300)
     while backoff.keep_going():
         try:
@@ -173,23 +125,11 @@ if __name__ == "__main__":
             print("Starting message handler on Zulip client")
             zp.start()
 
-            if args.legacy:
-                sp = threading.Thread(target=sb.run_slack_listener, args=())
-                print(
-                    "Warning! Running on legacy Slack SDK\n"
-                    "Starting message handler on Slack client"
-                )
-                sp.start()
-                sp.join()
-                zp.join()
-            else:
-                print(
-                    "Warning! if you haven't moved to the new Slack app,\n"
-                    "please run the script with the --legacy argument.\n"
-                    "Make sure your Slack Webhook integration is running\n"
-                    "to receive messages from Slack."
-                )
-                zp.join()
+            print(
+                "Make sure your Slack Webhook integration is running\n"
+                "to receive messages from Slack."
+            )
+            zp.join()
         except Exception:
             traceback.print_exc()
         backoff.fail()
