@@ -123,8 +123,8 @@ def load_lib_modules(available_bots: List[str]) -> Dict[str, ModuleType]:
             _, bots_lib_module[bot] = import_module_from_zulip_bot_registry(bot)
             if bots_lib_module[bot] is None:
                 error_message = (
-                    f'Error: Bot "{bot}" doesn\'t exist. Please make sure '
-                    "you have set up the botserverrc file correctly.\n"
+                    f'Error: Bot "{bot}" doesn\'t exist or the file cannot be imported. Please make sure '
+                    "you have set up the botserverrc file correctly and that the file runs without errors.\n"
                 )
                 if bot == "api":
                     error_message += (
