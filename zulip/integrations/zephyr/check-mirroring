@@ -300,6 +300,11 @@ if "error" in res["result"]:
     logging.error(res["msg"])
     print_status_and_exit(1)
 messages = [event["message"] for event in res["events"]]
+for m in messages:
+    if m.get("stream_id") is None:
+        # Non-stream messages can't have a retention policy, so clean
+        # them up so they don't pile up
+        zulip_client.delete_message(m["id"])
 logger.info("Finished receiving Zulip messages!")
 
 receive_zephyrs()
