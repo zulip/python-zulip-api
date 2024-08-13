@@ -554,6 +554,8 @@ def send_zulip_worker(zulip_queue: "Queue[ZephyrDict]", zulip_client: zulip.Clie
     while True:
         zeph = zulip_queue.get()
         try:
+            if zeph["content"] == "":
+                continue
             res = send_zulip(zulip_client, zeph)
             if res.get("result") != "success":
                 logger.error("Error relaying zephyr:\n%s\n%s", zeph, res)
