@@ -548,7 +548,8 @@ class Client:
             pass
 
         if vendor == "Linux":
-            vendor, vendor_version, dummy = distro.linux_distribution()
+            vendor = distro.name()
+            vendor_version = distro.version()
         elif vendor == "Windows":
             vendor_version = platform.win32_ver()[1]
         elif vendor == "Darwin":
