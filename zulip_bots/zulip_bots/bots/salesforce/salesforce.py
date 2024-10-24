@@ -4,7 +4,10 @@ import logging
 import re
 from typing import Any, Collection, Dict, List
 
-import simple_salesforce
+# Upstream issue with simple_salesforce
+# https://github.com/simple-salesforce/simple-salesforce/issues/723
+from simple_salesforce import Salesforce  # type: ignore[attr-defined]
+from simple_salesforce.exceptions import SalesforceAuthenticationFailed
 
 from zulip_bots.bots.salesforce.utils import commands, default_query, link_query, object_types
 from zulip_bots.lib import BotHandler
@@ -73,9 +76,7 @@ def format_result(
     return output
 
 
-def query_salesforce(
-    arg: str, salesforce: simple_salesforce.Salesforce, command: Dict[str, Any]
-) -> str:
+def query_salesforce(arg: str, salesforce: Salesforce, command: Dict[str, Any]) -> str:
     arg = arg.strip()
     qarg = arg.split(" -", 1)[0]
     split_args: List[str] = []
@@ -164,12 +165,12 @@ class SalesforceHandler:
     def initialize(self, bot_handler: BotHandler) -> None:
         self.config_info = bot_handler.get_config_info("salesforce")
         try:
-            self.sf = simple_salesforce.Salesforce(
+            self.sf = Salesforce(
                 username=self.config_info["username"],
                 password=self.config_info["password"],
                 security_token=self.config_info["security_token"],
             )
-        except simple_salesforce.exceptions.SalesforceAuthenticationFailed as err:
+        except SalesforceAuthenticationFailed as err:
             bot_handler.quit(f"Failed to log in to Salesforce. {err.code} {err.message}")
 
     def handle_message(self, message: Dict[str, Any], bot_handler: BotHandler) -> None:
