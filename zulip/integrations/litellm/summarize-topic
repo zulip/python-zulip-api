@@ -1,0 +1,130 @@
+#!/usr/bin/env python3
+
+import argparse
+import os
+import sys
+import urllib.parse
+from configparser import ConfigParser
+
+from litellm import completion  # type: ignore[import-not-found]
+
+import zulip
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--url",
+        type=str,
+        help="The URL to fetch content from",
+        default="https://chat.zulip.org/#narrow/stream/101-design/topic/more.20user.20indicators",
+    )
+    parser.add_argument(
+        "--model",
+        type=str,
+        help="The model name to use for summarization",
+        default="huggingface/meta-llama/Meta-Llama-3-8B-Instruct",
+    )
+    parser.add_argument(
+        "--max-tokens",
+        type=int,
+        help="The maximum tokens permitted in the response",
+        default=100,
+    )
+    parser.add_argument(
+        "--max-messages",
+        type=int,
+        help="The maximum number of messages fetched from the server",
+        default=100,
+    )
+    parser.add_argument(
+        "--verbose",
+        type=bool,
+        help="Print verbose debugging output",
+        default=False,
+    )
+    args = parser.parse_args()
+
+    config_file = zulip.get_default_config_filename()
+    if not config_file:
+        print("Could not find the Zulip configuration file. Please read the provided README.")
+        sys.exit()
+
+    client = zulip.Client(config_file=config_file)
+
+    config = ConfigParser()
+    # Make config parser case sensitive otherwise API keys will be lowercased
+    # which is not supported by litellm.
+    # https://docs.python.org/3/library/configparser.html#configparser.ConfigParser.optionxform
+    config.optionxform = str  # type: ignore[assignment, method-assign]
+
+    with open(config_file) as f:
+        config.read_file(f, config_file)
+
+    # Set all the keys in `litellm` as environment variables.
+    for key in config["litellm"]:
+        if args.verbose:
+            print("Setting key:", key)
+        os.environ[key] = config["litellm"][key]
+
+    url = args.url
+    model = args.model
+
+    base_url, narrow_hash = url.split("#")
+    narrow_hash_terms = narrow_hash.split("/")
+    channel = narrow_hash_terms[2].split("-")[1]
+    topic = narrow_hash_terms[4]
+    channel = urllib.parse.unquote(channel.replace(".", "%"))
+    topic = urllib.parse.unquote(topic.replace(".", "%"))
+
+    narrow = [
+        {"operator": "channel", "operand": channel},
+        {"operator": "topic", "operand": topic},
+    ]
+
+    request = {
+        "anchor": "newest",
+        "num_before": args.max_messages,
+        "num_after": 0,
+        "narrow": narrow,
+        # Fetch raw Markdown, not HTML
+        "apply_markdown": False,
+    }
+    result = client.get_messages(request)
+    if result["result"] == "error":
+        print("Failed fetching message history", result)
+        sys.exit(1)
+    messages = result["messages"]
+
+    if len(messages) == 0:
+        print("No messages in conversation to summarize")
+        sys.exit(0)
+
+    formatted_messages = [
+        {"content": f"{message['sender_full_name']}: {message['content']}", "role": "user"}
+        for message in messages
+    ]
+
+    # Provide a instruction if using an `Instruct` model.
+    if "Instruct" in model:
+        formatted_messages.append(
+            {
+                "content": """
+Summarize the above content within 90 words.
+""",
+                "role": "user",
+            }
+        )
+
+    # Send formatted messages to the LLM model for summarization
+    response = completion(
+        max_tokens=args.max_tokens,
+        model=model,
+        messages=formatted_messages,
+    )
+
+    print("Summarized conversation URL:", url)
+    print(
+        f"Used {response['usage']['total_tokens']} tokens to summarize {len(formatted_messages)} Zulip messages."
+    )
+    print()
+    print(response["choices"][0]["message"]["content"])
