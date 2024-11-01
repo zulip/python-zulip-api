@@ -177,7 +177,8 @@ def send_zulip(entry: Any, feed_name: str) -> Dict[str, Any]:
     if opts.unwrap:
         body = unwrap_text(body)
 
-    content = f"**[{entry.title}]({entry.link})**\n{strip_tags(body)}\n{entry.link}"
+    title = f"**[{entry.title}]({entry.link})**\n" if hasattr(entry, "title") else ""
+    content = f"{title}{strip_tags(body)}\n{entry.link}"
 
     if opts.math:
         content = content.replace("$", "$$")
