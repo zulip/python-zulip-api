@@ -3,7 +3,7 @@ from typing import Any, Dict
 
 import requests
 
-from zulip_bots.lib import BotHandler
+from zulip_bots.lib import AbstractBotHandler
 
 
 class FrontHandler:
@@ -24,7 +24,7 @@ class FrontHandler:
             Front Bot, `front.conf` must be set up. See `doc.md` for more details.
             """
 
-    def initialize(self, bot_handler: BotHandler) -> None:
+    def initialize(self, bot_handler: AbstractBotHandler) -> None:
         config = bot_handler.get_config_info("front")
         api_key = config.get("api_key")
         if not api_key:
@@ -32,14 +32,14 @@ class FrontHandler:
 
         self.auth = "Bearer " + api_key
 
-    def help(self, bot_handler: BotHandler) -> str:
+    def help(self, bot_handler: AbstractBotHandler) -> str:
         response = ""
         for command, description in self.COMMANDS:
             response += f"`{command}` {description}\n"
 
         return response
 
-    def archive(self, bot_handler: BotHandler) -> str:
+    def archive(self, bot_handler: AbstractBotHandler) -> str:
         response = requests.patch(
             self.FRONT_API.format(self.conversation_id),
             headers={"Authorization": self.auth},
@@ -51,7 +51,7 @@ class FrontHandler:
 
         return "Conversation was archived."
 
-    def delete(self, bot_handler: BotHandler) -> str:
+    def delete(self, bot_handler: AbstractBotHandler) -> str:
         response = requests.patch(
             self.FRONT_API.format(self.conversation_id),
             headers={"Authorization": self.auth},
@@ -63,7 +63,7 @@ class FrontHandler:
 
         return "Conversation was deleted."
 
-    def spam(self, bot_handler: BotHandler) -> str:
+    def spam(self, bot_handler: AbstractBotHandler) -> str:
         response = requests.patch(
             self.FRONT_API.format(self.conversation_id),
             headers={"Authorization": self.auth},
@@ -75,7 +75,7 @@ class FrontHandler:
 
         return "Conversation was marked as spam."
 
-    def restore(self, bot_handler: BotHandler) -> str:
+    def restore(self, bot_handler: AbstractBotHandler) -> str:
         response = requests.patch(
             self.FRONT_API.format(self.conversation_id),
             headers={"Authorization": self.auth},
@@ -87,7 +87,7 @@ class FrontHandler:
 
         return "Conversation was restored."
 
-    def comment(self, bot_handler: BotHandler, **kwargs: Any) -> str:
+    def comment(self, bot_handler: AbstractBotHandler, **kwargs: Any) -> str:
         response = requests.post(
             self.FRONT_API.format(self.conversation_id) + "/comments",
             headers={"Authorization": self.auth},
@@ -99,7 +99,7 @@ class FrontHandler:
 
         return "Comment was sent."
 
-    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: AbstractBotHandler) -> None:
         command = message["content"]
 
         result = re.search(self.CNV_ID_REGEXP, message["subject"])

@@ -2,7 +2,7 @@ import json
 import re
 from typing import Any, Dict, Tuple
 
-from zulip_bots.lib import BotHandler
+from zulip_bots.lib import AbstractBotHandler
 
 QUESTION = "How should we handle this?"
 
@@ -28,7 +28,7 @@ class IncidentHandler:
             glue code here should be pretty portable.
             """
 
-    def handle_message(self, message: Dict[str, Any], bot_handler: BotHandler) -> None:
+    def handle_message(self, message: Dict[str, Any], bot_handler: AbstractBotHandler) -> None:
         query = message["content"]
         if query.startswith("new "):
             start_new_incident(query, message, bot_handler)
@@ -46,7 +46,9 @@ class IncidentHandler:
             bot_handler.send_reply(message, bot_response)
 
 
-def start_new_incident(query: str, message: Dict[str, Any], bot_handler: BotHandler) -> None:
+def start_new_incident(
+    query: str, message: Dict[str, Any], bot_handler: AbstractBotHandler
+) -> None:
     # Here is where we would enter the incident in some sort of backend
     # system.  We just simulate everything by having an incident id that
     # we generate here.

@@ -1,7 +1,7 @@
 # See readme.md for instructions on running this code.
 from typing import Dict
 
-from zulip_bots.lib import BotHandler
+from zulip_bots.lib import AbstractBotHandler
 
 
 class HelpHandler:
@@ -15,7 +15,7 @@ class HelpHandler:
             your Zulip instance.
             """
 
-    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: AbstractBotHandler) -> None:
         help_content = "Info on Zulip can be found here:\nhttps://github.com/zulip/zulip"
         bot_handler.send_reply(message, help_content)
 

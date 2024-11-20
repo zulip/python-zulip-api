@@ -2,7 +2,7 @@ from typing import Dict
 
 import requests
 
-from zulip_bots.lib import BotHandler
+from zulip_bots.lib import AbstractBotHandler
 
 
 class SusiHandler:
@@ -38,7 +38,7 @@ class SusiHandler:
     ```
         """
 
-    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: AbstractBotHandler) -> None:
         msg = message["content"]
         if msg in ("help", ""):
             bot_handler.send_reply(message, self.usage())

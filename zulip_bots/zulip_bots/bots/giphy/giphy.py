@@ -5,7 +5,7 @@ import requests
 from requests.exceptions import ConnectionError, HTTPError
 
 from zulip_bots.custom_exceptions import ConfigValidationError
-from zulip_bots.lib import BotHandler
+from zulip_bots.lib import AbstractBotHandler
 
 GIPHY_TRANSLATE_API = "http://api.giphy.com/v1/gifs/translate"
 GIPHY_RANDOM_API = "http://api.giphy.com/v1/gifs/random"
@@ -44,10 +44,10 @@ class GiphyHandler:
                 )
             raise ConfigValidationError(error_message) from e
 
-    def initialize(self, bot_handler: BotHandler) -> None:
+    def initialize(self, bot_handler: AbstractBotHandler) -> None:
         self.config_info = bot_handler.get_config_info("giphy")
 
-    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: AbstractBotHandler) -> None:
         bot_response = get_bot_giphy_response(message, bot_handler, self.config_info)
         bot_handler.send_reply(message, bot_response)
 
@@ -82,7 +82,7 @@ def get_url_gif_giphy(keyword: str, api_key: str) -> Union[int, str]:
 
 
 def get_bot_giphy_response(
-    message: Dict[str, str], bot_handler: BotHandler, config_info: Dict[str, str]
+    message: Dict[str, str], bot_handler: AbstractBotHandler, config_info: Dict[str, str]
 ) -> str:
     # Each exception has a specific reply should "gif_url" return a number.
     # The bot will post the appropriate message for the error.

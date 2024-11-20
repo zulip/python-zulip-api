@@ -6,7 +6,7 @@ from typing import Dict
 import html2text
 import requests
 
-from zulip_bots.lib import BotHandler
+from zulip_bots.lib import AbstractBotHandler
 
 
 class DefineHandler:
@@ -27,7 +27,7 @@ class DefineHandler:
             messages with @mention-bot.
             """
 
-    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: AbstractBotHandler) -> None:
         original_content = message["content"].strip()
         bot_response = self.get_bot_define_response(original_content)
 

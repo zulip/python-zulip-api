@@ -2,7 +2,7 @@
 
 from typing import Dict, Final
 
-from zulip_bots.lib import BotHandler, use_storage
+from zulip_bots.lib import AbstractBotHandler, use_storage
 
 
 class IncrementorHandler:
@@ -19,13 +19,13 @@ class IncrementorHandler:
         is @-mentioned, this number will be incremented in the same message.
         """
 
-    def initialize(self, bot_handler: BotHandler) -> None:
+    def initialize(self, bot_handler: AbstractBotHandler) -> None:
         storage = bot_handler.storage
         if not storage.contains("number") or not storage.contains("message_id"):
             storage.put("number", 0)
             storage.put("message_id", None)
 
-    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: AbstractBotHandler) -> None:
         with use_storage(bot_handler.storage, ["number"]) as storage:
             num = storage.get("number")
 

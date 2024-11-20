@@ -92,7 +92,7 @@ class BotStorage(Protocol):
 
 class CachedStorage:
     def __init__(self, parent_storage: BotStorage, init_data: Dict[str, Any]) -> None:
-        # CachedStorage is implemented solely for the context manager of any BotHandler.
+        # CachedStorage is implemented solely for the context manager of any AbstractBotHandler.
         # It has a parent_storage that is responsible of communicating with the database
         #   1. when certain data is not cached;
         #   2. when the data need to be flushed to the database.
@@ -176,7 +176,7 @@ def use_storage(storage: BotStorage, keys: List[str]) -> Iterator[BotStorage]:
     cache.flush()
 
 
-class BotHandler(Protocol):
+class AbstractBotHandler(Protocol):
     user_id: int
     email: str
     full_name: str
@@ -378,7 +378,9 @@ class ExternalBotHandler:
         sys.exit(message)
 
 
-def extract_query_without_mention(message: Dict[str, Any], client: BotHandler) -> Optional[str]:
+def extract_query_without_mention(
+    message: Dict[str, Any], client: AbstractBotHandler
+) -> Optional[str]:
     """
     If the bot is the first @mention in the message, then this function returns
     the stripped message with the bot's @mention removed.  Otherwise, it returns None.
@@ -398,7 +400,7 @@ def extract_query_without_mention(message: Dict[str, Any], client: BotHandler) -
 
 
 def is_private_message_but_not_group_pm(
-    message_dict: Dict[str, Any], current_user: BotHandler
+    message_dict: Dict[str, Any], current_user: AbstractBotHandler
 ) -> bool:
     """
     Checks whether a message dict represents a PM from another user.
@@ -422,7 +424,7 @@ def display_config_file_errors(error_msg: str, config_file: str) -> None:
     print(f"\nMore details here:\n\n{error_msg}\n")
 
 
-def prepare_message_handler(bot: str, bot_handler: BotHandler, bot_lib_module: Any) -> Any:
+def prepare_message_handler(bot: str, bot_handler: AbstractBotHandler, bot_lib_module: Any) -> Any:
     message_handler = bot_lib_module.handler_class()
     if hasattr(message_handler, "validate_config"):
         config_data = bot_handler.get_config_info(bot)

@@ -5,7 +5,7 @@ from typing import Dict, List
 import requests
 from bs4 import BeautifulSoup, Tag
 
-from zulip_bots.lib import BotHandler
+from zulip_bots.lib import AbstractBotHandler
 
 
 def google_search(keywords: str) -> List[Dict[str, str]]:
@@ -83,7 +83,7 @@ class GoogleSearchHandler:
             @mentioned-bot.
             """
 
-    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: AbstractBotHandler) -> None:
         original_content = message["content"]
         result = get_google_result(original_content)
         bot_handler.send_reply(message, result)

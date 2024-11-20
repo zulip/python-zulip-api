@@ -6,7 +6,7 @@ from typing import Any, Callable, Dict, Optional
 
 import wit
 
-from zulip_bots.lib import BotHandler
+from zulip_bots.lib import AbstractBotHandler
 
 
 class WitaiHandler:
@@ -16,7 +16,7 @@ class WitaiHandler:
         Wit.ai bot, `witai.conf` must be set up. See `doc.md` for more details.
         """
 
-    def initialize(self, bot_handler: BotHandler) -> None:
+    def initialize(self, bot_handler: AbstractBotHandler) -> None:
         config = bot_handler.get_config_info("witai")
 
         token = config.get("token")
@@ -37,7 +37,7 @@ class WitaiHandler:
 
         self.client = wit.Wit(token)
 
-    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: AbstractBotHandler) -> None:
         if message["content"] == "" or message["content"] == "help":
             bot_handler.send_reply(message, self.help_message)
             return

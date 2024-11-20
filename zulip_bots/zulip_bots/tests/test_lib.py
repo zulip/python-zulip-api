@@ -5,7 +5,7 @@ from unittest.mock import ANY, MagicMock, create_autospec, patch
 
 from zulip import Client
 from zulip_bots.lib import (
-    BotHandler,
+    AbstractBotHandler,
     ExternalBotHandler,
     StateHandler,
     extract_query_without_mention,
@@ -53,10 +53,10 @@ class FakeBotHandler:
     def usage(self) -> str:
         return """
             This is a fake bot handler that is used
-            to spec BotHandler mocks.
+            to spec AbstractBotHandler mocks.
             """
 
-    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: AbstractBotHandler) -> None:
         pass
 
 
