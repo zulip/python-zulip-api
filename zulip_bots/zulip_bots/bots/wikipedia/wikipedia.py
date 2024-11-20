@@ -3,7 +3,7 @@ from typing import Dict, Final
 
 import requests
 
-from zulip_bots.lib import BotHandler
+from zulip_bots.lib import AbstractBotHandler
 
 # See readme.md for instructions on running this code.
 
@@ -33,11 +33,13 @@ class WikipediaHandler:
             should preface searches with "@mention-bot".
             @mention-bot <name of article>"""
 
-    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: AbstractBotHandler) -> None:
         bot_response = self.get_bot_wiki_response(message, bot_handler)
         bot_handler.send_reply(message, bot_response)
 
-    def get_bot_wiki_response(self, message: Dict[str, str], bot_handler: BotHandler) -> str:
+    def get_bot_wiki_response(
+        self, message: Dict[str, str], bot_handler: AbstractBotHandler
+    ) -> str:
         """This function returns the URLs of the requested topic."""
 
         help_text = "Please enter your search term after {}"

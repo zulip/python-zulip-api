@@ -4,7 +4,7 @@ from typing import Dict, List, Optional, Tuple, Union
 import requests
 from requests.exceptions import ConnectionError, HTTPError
 
-from zulip_bots.lib import BotHandler
+from zulip_bots.lib import AbstractBotHandler
 
 commands_list = ("list", "top", "help")
 
@@ -28,7 +28,7 @@ class YoutubeHandler:
         " * @mention-bot list funny dogs"
     )
 
-    def initialize(self, bot_handler: BotHandler) -> None:
+    def initialize(self, bot_handler: AbstractBotHandler) -> None:
         self.config_info = bot_handler.get_config_info("youtube")
         # Check if API key is valid. If it is not valid, don't run the bot.
         try:
@@ -44,7 +44,7 @@ class YoutubeHandler:
         except ConnectionError:
             logging.warning("Bad connection")
 
-    def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
+    def handle_message(self, message: Dict[str, str], bot_handler: AbstractBotHandler) -> None:
         if message["content"] == "" or message["content"] == "help":
             bot_handler.send_reply(message, self.help_content)
         else:

@@ -10,7 +10,7 @@ from unittest import mock
 import importlib_metadata as metadata
 from typing_extensions import override
 
-from zulip_bots.lib import BotHandler
+from zulip_bots.lib import AbstractBotHandler
 from zulip_botserver import server
 from zulip_botserver.input_parameters import parse_args
 
@@ -19,7 +19,7 @@ from .server_test_lib import BotServerTestCase
 
 class BotServerTests(BotServerTestCase):
     class MockMessageHandler:
-        def handle_message(self, message: Dict[str, str], bot_handler: BotHandler) -> None:
+        def handle_message(self, message: Dict[str, str], bot_handler: AbstractBotHandler) -> None:
             assert message == {"key": "test message"}
 
     class MockLibModule:

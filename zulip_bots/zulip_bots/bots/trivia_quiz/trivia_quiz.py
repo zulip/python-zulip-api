@@ -6,7 +6,7 @@ from typing import Any, Dict, Tuple
 
 import requests
 
-from zulip_bots.lib import BotHandler
+from zulip_bots.lib import AbstractBotHandler
 
 
 class NotAvailableError(Exception):
@@ -23,7 +23,7 @@ class TriviaQuizHandler:
             This plugin will give users a trivia question from
             the open trivia database at opentdb.com."""
 
-    def handle_message(self, message: Dict[str, Any], bot_handler: BotHandler) -> None:
+    def handle_message(self, message: Dict[str, Any], bot_handler: AbstractBotHandler) -> None:
         query = message["content"]
         if query == "new":
             try:
@@ -59,11 +59,11 @@ class TriviaQuizHandler:
         bot_handler.send_reply(message, bot_response)
 
 
-def get_quiz_from_id(quiz_id: str, bot_handler: BotHandler) -> str:
+def get_quiz_from_id(quiz_id: str, bot_handler: AbstractBotHandler) -> str:
     return bot_handler.storage.get(quiz_id)
 
 
-def start_new_quiz(message: Dict[str, Any], bot_handler: BotHandler) -> None:
+def start_new_quiz(message: Dict[str, Any], bot_handler: AbstractBotHandler) -> None:
     quiz = get_trivia_quiz()
     quiz_id = generate_quiz_id(bot_handler.storage)
     bot_response = format_quiz_for_markdown(quiz_id, quiz)
@@ -188,7 +188,7 @@ Q: {question}
     return content
 
 
-def update_quiz(quiz: Dict[str, Any], quiz_id: str, bot_handler: BotHandler) -> None:
+def update_quiz(quiz: Dict[str, Any], quiz_id: str, bot_handler: AbstractBotHandler) -> None:
     bot_handler.storage.put(quiz_id, json.dumps(quiz))
 
 
@@ -203,7 +203,11 @@ def build_response(is_correct: bool, num_answers: int) -> str:
 
 
 def handle_answer(
-    quiz: Dict[str, Any], option: str, quiz_id: str, bot_handler: BotHandler, sender_name: str
+    quiz: Dict[str, Any],
+    option: str,
+    quiz_id: str,
+    bot_handler: AbstractBotHandler,
+    sender_name: str,
 ) -> Tuple[bool, str]:
     answer = quiz["answers"][quiz["correct_letter"]]
     is_new_answer = option not in quiz["answered_options"]

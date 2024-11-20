@@ -4,7 +4,7 @@ import os
 import re
 from typing import Any, Dict, Final, List, Set, Tuple, Union
 
-from zulip_bots.lib import BotHandler
+from zulip_bots.lib import AbstractBotHandler
 
 
 class VirtualFsHandler:
@@ -16,7 +16,7 @@ class VirtualFsHandler:
     def usage(self) -> str:
         return get_help()
 
-    def handle_message(self, message: Dict[str, Any], bot_handler: BotHandler) -> None:
+    def handle_message(self, message: Dict[str, Any], bot_handler: AbstractBotHandler) -> None:
         command = message["content"]
         if command == "":
             command = "help"
