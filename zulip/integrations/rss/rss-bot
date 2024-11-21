@@ -92,6 +92,14 @@ parser.add_argument(
     help="Convert $ to $$ (for KaTeX processing)",
     default=False,
 )
+parser.add_argument(
+    "--max-batch-size",
+    dest="max_batch_size",
+    type=int,
+    help="The maximum number of messages to send at once",
+    default=3,
+    action="store",
+)
 
 opts = parser.parse_args()
 
@@ -239,9 +247,9 @@ for feed_url in feed_urls:
         if entry_hash in old_feed_hashes:
             # We've already seen this. No need to process any older entries.
             break
-        if not old_feed_hashes and len(new_hashes) >= 3:
-            # On a first run, pick up the 3 most recent entries. An RSS feed has
-            # entries in reverse chronological order.
+        if not old_feed_hashes and len(new_hashes) >= opts.max_batch_size:
+            # On a first run, pick up the n (= opts.max_batch_size) most recent entries.
+            # An RSS feed has entries in reverse chronological order.
             break
 
         response: Dict[str, Any] = send_zulip(entry, feed_name)
