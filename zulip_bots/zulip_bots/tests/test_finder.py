@@ -29,4 +29,3 @@ class FinderTestCase(TestCase):
             self.assertEqual(result, "Using standard library importlib.metadata")
             self.assertEqual(metadata("some_package"), "mocked_metadata")
             mock_metadata.assert_called_once_with("some_package")
-            
