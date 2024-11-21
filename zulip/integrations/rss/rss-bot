@@ -209,10 +209,12 @@ client: zulip.Client = zulip.Client(
 first_message = True
 
 for feed_url in feed_urls:
-    feed_file = os.path.join(opts.data_dir, urllib.parse.urlparse(feed_url).netloc)  # Type: str
+    feed_hashes_file = os.path.join(
+        opts.data_dir, urllib.parse.urlparse(feed_url).netloc
+    )  # Type: str
 
     try:
-        with open(feed_file) as f:
+        with open(feed_hashes_file) as f:
             old_feed_hashes = {line.strip(): True for line in f.readlines()}
     except OSError:
         old_feed_hashes = {}
@@ -256,7 +258,7 @@ for feed_url in feed_urls:
         new_hashes.append(entry_hash)
         first_message = False
 
-    with open(feed_file, "a") as f:
+    with open(feed_hashes_file, "a") as f:
         for hash in new_hashes:
             f.write(hash + "\n")
 
