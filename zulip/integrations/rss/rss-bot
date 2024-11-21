@@ -221,6 +221,7 @@ for feed_url in feed_urls:
 
     new_hashes: List[str] = []
     data = feedparser.parse(feed_url)
+    feed_name: str = data.feed.title or feed_url
 
     for entry in data.entries:
         entry_hash = compute_entry_hash(entry)
@@ -242,8 +243,6 @@ for feed_url in feed_urls:
             # On a first run, pick up the 3 most recent entries. An RSS feed has
             # entries in reverse chronological order.
             break
-
-        feed_name: str = data.feed.title or feed_url
 
         response: Dict[str, Any] = send_zulip(entry, feed_name)
         if response["result"] != "success":
