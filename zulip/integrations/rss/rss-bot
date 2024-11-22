@@ -23,7 +23,6 @@ import zulip
 
 VERSION = "0.9"
 RSS_DATA_DIR = os.path.expanduser(os.path.join("~", ".cache", "zulip-rss"))
-OLDNESS_THRESHOLD = 30
 
 usage = """Usage: Send summaries of RSS entries for your favorite feeds to Zulip.
 
@@ -98,6 +97,14 @@ parser.add_argument(
     type=int,
     help="The maximum number of messages to send at once",
     default=3,
+    action="store",
+)
+parser.add_argument(
+    "--earliest-entry-age",
+    dest="earliest_entry_age",
+    type=int,
+    help="The earliest date (relative to today) you want to process entries from (in days)",
+    default=30,
     action="store",
 )
 
@@ -239,7 +246,7 @@ for feed_url in feed_urls:
         )
         if (
             entry_time is not None
-            and time.time() - calendar.timegm(entry_time) > OLDNESS_THRESHOLD * 60 * 60 * 24
+            and time.time() - calendar.timegm(entry_time) > opts.earliest_entry_age * 60 * 60 * 24
         ):
             # As a safeguard against misbehaving feeds, don't try to process
             # entries older than some threshold.
