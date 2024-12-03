@@ -42,12 +42,11 @@ setup(
         "License :: OSI Approved :: Apache Software License",
         "Topic :: Communications :: Chat",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
     ],
-    python_requires=">=3.8",
+    python_requires=">=3.9",
     url="https://www.zulip.org/",
     project_urls={
         "Source": "https://github.com/zulip/python-zulip-api/",
