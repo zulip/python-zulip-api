@@ -17,12 +17,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Focal ships with Python 3.8.10.
-          - docker_image: zulip/ci:focal
-            name: Ubuntu 20.04 (Python 3.8, backend)
-            os: focal
-            legacy_client_interface: "3"
-            server_version: refs/tags/3.2
           # Bullseye ships with Python 3.9.2.
           - docker_image: zulip/ci:bullseye
             name: Debian 11 (Python 3.9, backend)
