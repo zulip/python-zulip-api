@@ -35,11 +35,6 @@ class DuplicateRegisteredBotNameError(Exception):
 
 
 def import_module_from_zulip_bot_registry(name: str) -> Tuple[str, Optional[ModuleType]]:
-    # Prior to Python 3.10, calling importlib.metadata.entry_points returns a
-    # SelectableGroups object when no parameters is given. Currently we use
-    # the importlib_metadata library for compatibility, but we need to migrate
-    # to the built-in library when we start to adapt Python 3.10.
-    # https://importlib-metadata.readthedocs.io/en/latest/using.html#entry-points
     registered_bots = metadata.entry_points(group="zulip_bots.registry")
     matching_bots = [bot for bot in registered_bots if bot.name == name]
 

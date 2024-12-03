@@ -35,6 +35,12 @@ jobs:
             os: bookworm
             legacy_client_interface: "7"
             server_version: refs/tags/7.0
+          # Ubuntu 24.04 ships with Python 3.12.3.
+          - docker_image: zulip/ci:noble
+            name: Ubuntu 24.04 (Python 3.12, backend)
+            os: noble
+            legacy_client_interface: "8"
+            server_version: refs/tags/8.5
 
     runs-on: ubuntu-latest
     name: ${{ matrix.name }} (Zulip ${{matrix.server_version}})
