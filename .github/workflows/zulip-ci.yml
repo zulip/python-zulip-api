@@ -29,6 +29,12 @@ jobs:
             os: jammy
             legacy_client_interface: "6"
             server_version: refs/tags/6.0
+          # Debian 12 ships with Python 3.11.2.
+          - docker_image: zulip/ci:bookworm
+            name: Debian 12 (Python 3.11, backend + documentation)
+            os: bookworm
+            legacy_client_interface: "7"
+            server_version: refs/tags/7.0
 
     runs-on: ubuntu-latest
     name: ${{ matrix.name }} (Zulip ${{matrix.server_version}})
