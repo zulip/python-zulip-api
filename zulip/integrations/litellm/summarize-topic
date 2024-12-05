@@ -71,9 +71,8 @@ if __name__ == "__main__":
 
     base_url, narrow_hash = url.split("#")
     narrow_hash_terms = narrow_hash.split("/")
-    channel = narrow_hash_terms[2].split("-")[1]
+    channel = int(narrow_hash_terms[2].split("-")[0])
     topic = narrow_hash_terms[4]
-    channel = urllib.parse.unquote(channel.replace(".", "%"))
     topic = urllib.parse.unquote(topic.replace(".", "%"))
 
     narrow = [
