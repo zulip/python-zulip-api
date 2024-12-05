@@ -2,13 +2,17 @@ import importlib
 import importlib.abc
 import importlib.util
 import os
+import sys
 from pathlib import Path
 from types import ModuleType
 from typing import Any, Optional, Tuple
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
-import importlib_metadata as metadata
+if sys.version_info >= (3, 10):
+    from importlib.metadata import metadata  # Python 3.10+ standard library
+else:
+    from importlib_metadata import metadata  # External package for Python < 3.10
 
 
 def import_module_from_source(path: str, name: str) -> Any:
