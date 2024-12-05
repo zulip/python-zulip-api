@@ -5,10 +5,30 @@ import os
 import sys
 import urllib.parse
 from configparser import ConfigParser
+import json
 
 from litellm import completion  # type: ignore[import-not-found]
 
 import zulip
+
+def format_conversation(result):
+    # Note: Including timestamps seems to have no impact; including reactions
+    # makes the results worse.
+    zulip_messages = result["messages"]
+    if len(zulip_messages) == 0:
+        print("No messages in conversation to summarize")
+        sys.exit(0)
+
+    zulip_messages_list = [{"sender": message['sender_full_name'],
+                            "content": message['content']} for message in zulip_messages]
+    return json.dumps(zulip_messages_list)
+
+def make_message(content, role="user"):
+    return {"content": content,
+            "role": role}
+
+def get_max_summary_length(conversation_length):
+    return min(6, 4 + int((conversation_length-10)/10))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -16,19 +36,19 @@ if __name__ == "__main__":
         "--url",
         type=str,
         help="The URL to fetch content from",
-        default="https://chat.zulip.org/#narrow/stream/101-design/topic/more.20user.20indicators",
+        default="https://chat.zulip.org/#narrow/channel/101-design/topic/buddy.20list.20style.20switcher",
     )
     parser.add_argument(
         "--model",
         type=str,
         help="The model name to use for summarization",
-        default="huggingface/meta-llama/Meta-Llama-3-8B-Instruct",
+        default="huggingface/meta-llama/Llama-3.1-70B-Instruct",
     )
     parser.add_argument(
         "--max-tokens",
         type=int,
         help="The maximum tokens permitted in the response",
-        default=100,
+        default=300,
     )
     parser.add_argument(
         "--max-messages",
@@ -92,38 +112,25 @@ if __name__ == "__main__":
     if result["result"] == "error":
         print("Failed fetching message history", result)
         sys.exit(1)
-    messages = result["messages"]
 
-    if len(messages) == 0:
-        print("No messages in conversation to summarize")
-        sys.exit(0)
+    conversation_length = len(result['messages'])
+    max_summary_length = get_max_summary_length(conversation_length)
 
-    formatted_messages = [
-        {"content": f"{message['sender_full_name']}: {message['content']}", "role": "user"}
-        for message in messages
-    ]
+    print("Conversation URL:", url)
+    print(f"Max summary length: {max_summary_length}")
 
-    # Provide a instruction if using an `Instruct` model.
-    if "Instruct" in model:
-        formatted_messages.append(
-            {
-                "content": """
-Summarize the above content within 90 words.
-""",
-                "role": "user",
-            }
-        )
+    intro = f"The following is a chat conversation in the Zulip team chat app. channel: {channel}, topic: {topic}"
+    formatted_conversation = format_conversation(result)
+    prompt = f"Succinctly summarize this conversation based only on the information provided, in up to {max_summary_length} sentences, for someone who is familiar with the context. Mention key conclusions and actions, if any. Refer to specific people as appropriate. Don't use an intro phrase."
+    messages = [make_message(intro, "system"), make_message(formatted_conversation), make_message(prompt)]
 
     # Send formatted messages to the LLM model for summarization
     response = completion(
         max_tokens=args.max_tokens,
         model=model,
-        messages=formatted_messages,
+        messages=messages,
     )
 
-    print("Summarized conversation URL:", url)
-    print(
-        f"Used {response['usage']['total_tokens']} tokens to summarize {len(formatted_messages)} Zulip messages."
-    )
+    print(f"Used {response['usage']['completion_tokens']} completion tokens to summarize {conversation_length} Zulip messages ({response['usage']['prompt_tokens']} prompt tokens).")
     print()
     print(response["choices"][0]["message"]["content"])
