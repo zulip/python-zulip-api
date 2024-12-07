@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
 
 import argparse
+import json
 import os
 import sys
 import urllib.parse
 from configparser import ConfigParser
-import json
+from typing import Any, Dict
 
 from litellm import completion  # type: ignore[import-not-found]
 
 import zulip
 
-def format_conversation(result):
+
+def format_conversation(result: Dict[str, Any]) -> str:
     # Note: Including timestamps seems to have no impact; including reactions
     # makes the results worse.
     zulip_messages = result["messages"]
@@ -19,16 +21,20 @@ def format_conversation(result):
         print("No messages in conversation to summarize")
         sys.exit(0)
 
-    zulip_messages_list = [{"sender": message['sender_full_name'],
-                            "content": message['content']} for message in zulip_messages]
+    zulip_messages_list = [
+        {"sender": message["sender_full_name"], "content": message["content"]}
+        for message in zulip_messages
+    ]
     return json.dumps(zulip_messages_list)
 
-def make_message(content, role="user"):
-    return {"content": content,
-            "role": role}
 
-def get_max_summary_length(conversation_length):
-    return min(6, 4 + int((conversation_length-10)/10))
+def make_message(content: str, role: str = "user") -> Dict[str, str]:
+    return {"content": content, "role": role}
+
+
+def get_max_summary_length(conversation_length: int) -> int:
+    return min(6, 4 + int((conversation_length - 10) / 10))
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -113,7 +119,7 @@ if __name__ == "__main__":
         print("Failed fetching message history", result)
         sys.exit(1)
 
-    conversation_length = len(result['messages'])
+    conversation_length = len(result["messages"])
     max_summary_length = get_max_summary_length(conversation_length)
 
     print("Conversation URL:", url)
@@ -122,7 +128,11 @@ if __name__ == "__main__":
     intro = f"The following is a chat conversation in the Zulip team chat app. channel: {channel}, topic: {topic}"
     formatted_conversation = format_conversation(result)
     prompt = f"Succinctly summarize this conversation based only on the information provided, in up to {max_summary_length} sentences, for someone who is familiar with the context. Mention key conclusions and actions, if any. Refer to specific people as appropriate. Don't use an intro phrase."
-    messages = [make_message(intro, "system"), make_message(formatted_conversation), make_message(prompt)]
+    messages = [
+        make_message(intro, "system"),
+        make_message(formatted_conversation),
+        make_message(prompt),
+    ]
 
     # Send formatted messages to the LLM model for summarization
     response = completion(
@@ -131,6 +141,8 @@ if __name__ == "__main__":
         messages=messages,
     )
 
-    print(f"Used {response['usage']['completion_tokens']} completion tokens to summarize {conversation_length} Zulip messages ({response['usage']['prompt_tokens']} prompt tokens).")
+    print(
+        f"Used {response['usage']['completion_tokens']} completion tokens to summarize {conversation_length} Zulip messages ({response['usage']['prompt_tokens']} prompt tokens)."
+    )
     print()
     print(response["choices"][0]["message"]["content"])
