@@ -1,3 +1,4 @@
+setuptools
 crayons
 twine
 mock

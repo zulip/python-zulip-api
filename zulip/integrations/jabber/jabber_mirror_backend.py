@@ -26,7 +26,7 @@
 import logging
 import optparse
 import sys
-from configparser import SafeConfigParser
+from configparser import ConfigParser
 
 # The following is a table showing which kinds of messages are handled by the
 # mirror in each mode:
@@ -385,10 +385,10 @@ option does not affect login credentials.""".replace("\n", " "),
     else:
         config_file = options.zulip_config_file
 
-    config = SafeConfigParser()
+    config = ConfigParser()
     try:
         with open(config_file) as f:
-            config.readfp(f, config_file)
+            config.read_file(f, config_file)
     except OSError:
         pass
     for option in (
