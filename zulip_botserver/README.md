@@ -19,6 +19,7 @@ The format for a configuration file is:
     email=helloworld-bot@zulip.com
     site=http://localhost
     token=abcd1234
+    bot-config-file=helloworld.conf
 
 Is passed `--use-env-vars` instead of `--config-file`, the
 configuration can instead be provided via the `ZULIP_BOTSERVER_CONFIG`
