@@ -55,7 +55,6 @@ google-calendar --calendar calendarID@example.calendar.google.com
     )
 )
 
-
 parser.add_argument(
     "--interval",
     dest="interval",
