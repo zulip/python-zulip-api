@@ -12,21 +12,18 @@ import time
 from typing import List, Optional, Set, Tuple
 
 import dateutil.parser
-import httplib2
 import pytz
-from oauth2client import client
-from oauth2client.file import Storage
 
 try:
-    from googleapiclient import discovery
+    from google.oauth2.credentials import Credentials  # type: ignore[import-not-found]
+    from googleapiclient.discovery import build
 except ImportError:
-    logging.exception("Install google-api-python-client")
+    logging.exception("Install google-api-python-client and google-auth-oauthlib")
     sys.exit(1)
-
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../"))
 import zulip
 
-SCOPES = "https://www.googleapis.com/auth/calendar.readonly"
+SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
 CLIENT_SECRET_FILE = "client_secret.json"  # noqa: S105
 APPLICATION_NAME = "Zulip"
 HOME_DIR = os.path.expanduser("~")
@@ -88,7 +85,7 @@ if not options.zulip_email:
 zulip_client = zulip.init_from_options(options)
 
 
-def get_credentials() -> client.Credentials:
+def get_credentials() -> Credentials:
     """Gets valid user credentials from storage.
 
     If nothing has been stored, or if the stored credentials are invalid,
@@ -100,22 +97,20 @@ def get_credentials() -> client.Credentials:
     """
     try:
         credential_path = os.path.join(HOME_DIR, "google-credentials.json")
-
-        store = Storage(credential_path)
-        return store.get()
-    except client.Error:
+        credentials = Credentials.from_authorized_user_file(credential_path, SCOPES)
+    except ValueError:
         logging.exception("Error while trying to open the `google-credentials.json` file.")
         sys.exit(1)
     except OSError:
         logging.error("Run the get-google-credentials script from this directory first.")
         sys.exit(1)
+    else:
+        return credentials
 
 
 def populate_events() -> Optional[None]:
-    credentials = get_credentials()
-    creds = credentials.authorize(httplib2.Http())
-    service = discovery.build("calendar", "v3", http=creds)
-
+    creds = get_credentials()
+    service = build("calendar", "v3", credentials=creds)
     now = datetime.datetime.now(pytz.utc).isoformat()
     feed = (
         service.events()
