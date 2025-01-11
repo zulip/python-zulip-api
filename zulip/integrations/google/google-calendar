@@ -81,6 +81,7 @@ if not options.zulip_email:
 
 zulip_client = zulip.init_from_options(options)
 
+
 def get_credentials() -> Credentials:
     """Gets valid user credentials from storage.
 
@@ -110,6 +111,7 @@ def get_credentials() -> Credentials:
             token.write(creds.to_json())
 
     return creds
+
 
 def populate_events() -> Optional[None]:
     credentials = get_credentials()
