@@ -1,14 +1,23 @@
-from typing import Any, List, Tuple
+from typing import Any, List, Tuple,Dict
 
 from zulip_bots.game_handler import GameInstance
+from typing_extensions import override
 from zulip_bots.test_lib import BotTestCase, DefaultTests
 
-from .libraries.constants import EMPTY_BOARD
+from zulip_bots.bots.merels.libraries.constants import EMPTY_BOARD
+
 
 
 class TestMerelsBot(BotTestCase, DefaultTests):
     bot_name = "merels"
 
+    @override
+    def make_request_message(
+        self, content: str, user: str = "foo@example.com", user_name: str = "foo"
+    ) -> Dict[str, str]:
+        message = dict(sender_email=user, content=content, sender_full_name=user_name)
+        return message
+    
     def test_no_command(self):
         message = dict(
             content="magic", type="stream", sender_email="boo@email.com", sender_full_name="boo"
@@ -17,6 +26,58 @@ class TestMerelsBot(BotTestCase, DefaultTests):
         self.assertEqual(
             res["content"], "You are not in a game at the moment. Type `help` for help."
         )
+
+    def verify_response(
+        self,
+        request: str,
+        expected_response: str,
+        response_number: int,
+        user: str = "foo@example.com",
+    ) -> None:
+        """
+        This function serves a similar purpose
+        to BotTestCase.verify_dialog, but allows
+        for multiple responses to be validated,
+        and for mocking of the bot's internal data
+        """
+
+        bot, bot_handler = self._get_handlers()
+        message = self.make_request_message(request, user)
+        bot_handler.reset_transcript()
+
+        bot.handle_message(message, bot_handler)
+
+        responses = [message for (method, message) in bot_handler.transcript]
+
+        first_response = responses[response_number]
+        self.assertEqual(expected_response, first_response["content"])
+
+    def help_message(self) -> str:
+        return """** Connect Four Bot Help:**
+*Preface all commands with @**test-bot***
+* To start a game in a stream (*recommended*), type
+`start game`
+* To start a game against another player, type
+`start game with @<player-name>`
+* To play game with the current number of players, type
+`play game`
+* To quit a game at any time, type
+`quit`
+* To end a game with a draw, type
+`draw`
+* To forfeit a game, type
+`forfeit`
+* To see the leaderboard, type
+`leaderboard`
+* To withdraw an invitation, type
+`cancel game`
+* To see rules of this game, type
+`rules`
+* To make your move during a game, type
+```move <column-number>``` or ```<column-number>```"""
+
+    
+        
 
     # FIXME: Add tests for computer moves
     # FIXME: Add test lib for game_handler
@@ -30,6 +91,7 @@ class TestMerelsBot(BotTestCase, DefaultTests):
         self.assertEqual(
             message_handler.alert_move_message("foo", "moved right"), "foo :moved right"
         )
+        self.verify_response("help", self.help_message(), 0)
 
     # Test to see if the attributes exist
     def test_has_attributes(self) -> None:
