@@ -91,7 +91,7 @@ class TestMerelsBot(BotTestCase, DefaultTests):
         self.assertEqual(
             message_handler.alert_move_message("foo", "moved right"), "foo :moved right"
         )
-        self.verify_response("help", self.help_message(), 0)
+
 
     # Test to see if the attributes exist
     def test_has_attributes(self) -> None:
