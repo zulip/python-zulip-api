@@ -17,7 +17,7 @@ class TestMerelsBot(BotTestCase, DefaultTests):
     ) -> Dict[str, str]:
         message = dict(sender_email=user, content=content, sender_full_name=user_name)
         return message
-    
+
     def test_no_command(self):
         message = dict(
             content="magic", type="stream", sender_email="boo@email.com", sender_full_name="boo"
@@ -76,8 +76,8 @@ class TestMerelsBot(BotTestCase, DefaultTests):
 * To make your move during a game, type
 ```move <column-number>``` or ```<column-number>```"""
 
-    
-        
+
+
 
     # FIXME: Add tests for computer moves
     # FIXME: Add test lib for game_handler
