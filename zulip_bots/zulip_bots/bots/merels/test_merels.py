@@ -1,11 +1,10 @@
-from typing import Any, List, Tuple,Dict
+from typing import Any, Dict, List, Tuple
 
-from zulip_bots.game_handler import GameInstance
 from typing_extensions import override
-from zulip_bots.test_lib import BotTestCase, DefaultTests
 
 from zulip_bots.bots.merels.libraries.constants import EMPTY_BOARD
-
+from zulip_bots.game_handler import GameInstance
+from zulip_bots.test_lib import BotTestCase, DefaultTests
 
 
 class TestMerelsBot(BotTestCase, DefaultTests):
