@@ -18,7 +18,7 @@ from zulip_bots.provision import provision_bot
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-def normalize_args()-> None:
+def normalize_args() -> None:
     """Replaces various dash variations in arguments with standard options."""
     dash_variations = r"[\u002D\u2010\u2011\u2012\u2013\u2014\u2015]"
     for i, arg in enumerate(sys.argv):
