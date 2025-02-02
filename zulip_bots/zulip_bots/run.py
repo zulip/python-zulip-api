@@ -3,8 +3,8 @@
 import argparse
 import logging
 import os
-import sys
 import re
+import sys
 from typing import Optional
 
 from zulip_bots import finder
@@ -17,6 +17,7 @@ from zulip_bots.provision import provision_bot
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
+
 def normalize_args():
     """Replaces various dash variations in arguments with standard options."""
     dash_variations = r"[\u002D\u2010\u2011\u2012\u2013\u2014\u2015]"
@@ -25,20 +26,22 @@ def normalize_args():
             sys.argv[i] = "--config-file"
         elif re.match(rf"^{dash_variations}c$", arg):
             sys.argv[i] = "-c"
-        elif re.match(rf"^{dash_variations}{{2}}bot{dash_variations}config{dash_variations}file$", arg):
+        elif re.match(
+            rf"^{dash_variations}{{2}}bot{dash_variations}config{dash_variations}file$", arg
+        ):
             sys.argv[i] = "--bot-config-file"
         elif re.match(rf"^{dash_variations}c$", arg):
             sys.argv[i] = "-b"
         elif re.match(rf"^{dash_variations}{{2}}force$", arg):
             sys.argv[i] = "--force"
         elif re.match(rf"^{dash_variations}{{2}}registry$", arg):
-            sys.argv[i]='--registry'
+            sys.argv[i] = "--registry"
         elif re.match(rf"^{dash_variations}r$", arg):
             sys.argv[i] = "-r"
         elif re.match(rf"^{dash_variations}{{2}}provision$", arg):
-            sys.argv[i]='--provision'
+            sys.argv[i] = "--provision"
 
-            
+
 def parse_args() -> argparse.Namespace:
     normalize_args()  # Fix arguments before parsing
     usage = """
