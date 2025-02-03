@@ -53,27 +53,27 @@ class TestMerelsBot(BotTestCase, DefaultTests):
 
     def help_message(self) -> str:
         return """** Connect Four Bot Help:**
-*Preface all commands with @**test-bot***
-* To start a game in a stream (*recommended*), type
-`start game`
-* To start a game against another player, type
-`start game with @<player-name>`
-* To play game with the current number of players, type
-`play game`
-* To quit a game at any time, type
-`quit`
-* To end a game with a draw, type
-`draw`
-* To forfeit a game, type
-`forfeit`
-* To see the leaderboard, type
-`leaderboard`
-* To withdraw an invitation, type
-`cancel game`
-* To see rules of this game, type
-`rules`
-* To make your move during a game, type
-```move <column-number>``` or ```<column-number>```"""
+        *Preface all commands with @**test-bot***
+        * To start a game in a stream (*recommended*), type
+         `start game`
+        * To start a game against another player, type
+         `start game with @<player-name>`
+        * To play game with the current number of players, type
+         `play game`
+        * To quit a game at any time, type
+         `quit`
+        * To end a game with a draw, type
+         `draw`
+        * To forfeit a game, type
+         `forfeit`
+        * To see the leaderboard, type
+         `leaderboard`
+        * To withdraw an invitation, type
+         `cancel game`
+        * To see rules of this game, type
+         `rules`
+        * To make your move during a game, type
+         ```move <column-number>``` or ```<column-number>```"""
 
 
 
