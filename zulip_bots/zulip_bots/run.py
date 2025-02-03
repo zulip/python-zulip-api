@@ -19,7 +19,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 def normalize_args() -> None:
-    """Replaces various dash variations in arguments with standard options."""
+    """Replaces various dash variations in arguments with standard options in command lines interfaces."""
     dash_variations = r"[\u002D\u2010\u2011\u2012\u2013\u2014\u2015]"
     for i, arg in enumerate(sys.argv):
         if re.match(rf"^{dash_variations}{{2}}config{dash_variations}file$", arg):
