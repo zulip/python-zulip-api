@@ -52,7 +52,8 @@ class TestMerelsBot(BotTestCase, DefaultTests):
         self.assertEqual(expected_response, first_response["content"])
 
     def help_message(self) -> str:
-        return """** Connect Four Bot Help:**
+        return """
+        ** Merels Bot Help:**
         *Preface all commands with @**test-bot***
         * To start a game in a stream (*recommended*), type
          `start game`
@@ -73,7 +74,8 @@ class TestMerelsBot(BotTestCase, DefaultTests):
         * To see rules of this game, type
          `rules`
         * To make your move during a game, type
-         ```move <column-number>``` or ```<column-number>```"""
+         ```move <column-number>``` or ```<column-number>```
+         """
 
 
 
@@ -85,10 +87,10 @@ class TestMerelsBot(BotTestCase, DefaultTests):
     # Player Color, Start Message, Moving Message
     def test_static_responses(self) -> None:
         model, message_handler = self._get_game_handlers()
-        self.assertNotEqual(message_handler.get_player_color(0), None)
-        self.assertNotEqual(message_handler.game_start_message(), None)
+        self.assertNotEqual(message_handler.get_player_color(0),None)
+        self.assertNotEqual(message_handler.game_start_message(),None)
         self.assertEqual(
-            message_handler.alert_move_message("foo", "moved right"), "foo :moved right"
+            message_handler.alert_move_message("foo","moved right"),"foo :moved right"
         )
 
 
