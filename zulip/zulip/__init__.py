@@ -510,7 +510,9 @@ class Client:
         server_settings = self.get_server_settings()
         self.zulip_version: Optional[str] = server_settings.get("zulip_version")
         self.feature_level: int = server_settings.get("zulip_feature_level", 0)
-        assert self.zulip_version is not None
+        # Optional: Handle absence of `zulip_version` without assertion
+        if self.zulip_version is None:
+            logger.warning("Zulip version not found. The client may not be fully compatible.")
 
     def ensure_session(self) -> None:
         # Check if the session has been created already, and return
