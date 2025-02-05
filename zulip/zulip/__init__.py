@@ -588,7 +588,6 @@ class Client:
         self.ensure_session()
         assert self.session is not None
 
-        
         headers = {
             "Connection": "keep-alive" if keep_alive else "close",
             "Keep-Alive": "timeout=120, max=100",  # Keep connection alive
@@ -621,8 +620,13 @@ class Client:
 
             except requests.exceptions.ConnectionError:
                 query_state["failures"] += 1
-                logging.warning("Connection lost. Retrying %d/%d in %.1f seconds...", attempt + 1, max_retries, retry_delay)
-                
+                logging.warning(
+                    "Connection lost. Retrying %d/%d in %.1f seconds...",
+                    attempt + 1,
+                    max_retries,
+                    retry_delay,
+                )
+
                 # Reset the session to establish a new connection
                 self.session.close()
                 self.ensure_session()
@@ -660,7 +664,7 @@ class Client:
                     print("Success!")
                 else:
                     print("Failed!")
-            
+
         while True:
             try:
                 kwarg = "params" if method == "GET" else "data"
