@@ -565,6 +565,9 @@ class Client:
         longpolling: bool = False,
         files: Optional[List[IO[Any]]] = None,
         timeout: Optional[float] = None,
+        max_retries: int = 3,  # Max retry attempts
+        retry_delay: float = 2.0,  # Delay between retries
+        keep_alive: bool = True,  # Enable keep-alive mechanism
     ) -> Dict[str, Any]:
         if files is None:
             files = []
@@ -585,11 +588,51 @@ class Client:
         self.ensure_session()
         assert self.session is not None
 
+        
+        headers = {
+            "Connection": "keep-alive" if keep_alive else "close",
+            "Keep-Alive": "timeout=120, max=100",  # Keep connection alive
+        }
+
         query_state: Dict[str, Any] = {
             "had_error_retry": False,
             "request": request,
             "failures": 0,
         }
+
+        for attempt in range(max_retries):
+            try:
+                if method.upper() == "GET":
+                    response = self.session.get(
+                        url, params=request, timeout=request_timeout, headers=headers
+                    )
+                elif method.upper() == "POST":
+                    response = self.session.post(
+                        url, data=request, files=req_files, timeout=request_timeout, headers=headers
+                    )
+
+                response_data = response.json()
+
+                if response.status_code == 200:
+                    return response_data
+                else:
+                    logging.error("API error: %s", response_data)
+                    return response_data  # No retry on API-level errors
+
+            except requests.exceptions.ConnectionError:
+                query_state["failures"] += 1
+                logging.warning("Connection lost. Retrying %d/%d in %.1f seconds...", attempt + 1, max_retries, retry_delay)
+                
+                # Reset the session to establish a new connection
+                self.session.close()
+                self.ensure_session()
+
+                time.sleep(retry_delay)
+            except requests.exceptions.RequestException as e:
+                logging.error("Request failed: %s", str(e))
+                return {"result": "error", "msg": str(e)}
+
+        logging.error("Failed after %d retries.", max_retries)
 
         def error_retry(error_string: str) -> bool:
             if not self.retry_on_errors or query_state["failures"] >= 10:
@@ -617,7 +660,7 @@ class Client:
                     print("Success!")
                 else:
                     print("Failed!")
-
+            
         while True:
             try:
                 kwarg = "params" if method == "GET" else "data"
