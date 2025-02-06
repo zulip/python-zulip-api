@@ -181,9 +181,7 @@ def send_reminders() -> Optional[None]:
     else:
         message = "Reminder:\n\n" + "\n".join("* " + m for m in messages)
 
-    zulip_client.send_message(
-        dict(type="private", to=options.zulip_email, sender=options.zulip_email, content=message)
-    )
+    zulip_client.send_message(dict(type="private", to=options.zulip_email, content=message))
 
     sent.update(keys)
 
