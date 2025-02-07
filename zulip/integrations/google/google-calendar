@@ -40,13 +40,14 @@ class Event(TypedDict):
     description: str
     organizer: str
     hangout_link: str
+    reminder: int
 
 
 # Our cached view of the calendar, updated periodically.
 events: List[Event] = []
 
-# Unique keys for events we've already sent, so we don't remind twice.
-sent: Set[Tuple[int, datetime.datetime]] = set()
+# Unique keys for reminders we've already sent, so we don't remind twice.
+sent: Set[Tuple[int, datetime.datetime, int]] = set()
 
 sys.path.append(os.path.dirname(__file__))
 
@@ -73,12 +74,11 @@ google-calendar --calendar calendarID@example.calendar.google.com
 
 
 parser.add_argument(
-    "--interval",
-    dest="interval",
-    default=30,
+    "--override",
+    dest="override",
     type=int,
     action="store",
-    help="Minutes before event for reminder [default: 30]",
+    help="Override the reminder time for all events.",
     metavar="MINUTES",
 )
 
@@ -125,13 +125,12 @@ def get_credentials() -> Credentials:
 def populate_events() -> Optional[None]:
     creds = get_credentials()
     service = build("calendar", "v3", credentials=creds)
-    now = datetime.datetime.now(pytz.utc).isoformat()
     feed = (
         service.events()
         .list(
             calendarId=options.calendarID,
-            timeMin=now,
-            maxResults=5,
+            timeMin=datetime.datetime.now(pytz.utc).isoformat(),
+            timeMax=datetime.datetime.now(pytz.utc).isoformat().split("T")[0] + "T23:59:59Z",
             singleEvents=True,
             orderBy="startTime",
         )
@@ -162,6 +161,9 @@ def populate_events() -> Optional[None]:
             # of the tzinfo base class.
             start = calendar_timezone.localize(start_naive)
             end = calendar_timezone.localize(end_naive)
+        now = datetime.datetime.now(tz=start.tzinfo)
+        if start < now:
+            continue
         id = event["id"]
         summary = event.get("summary", "(No Title)")
         html_link = event["htmlLink"]
@@ -176,7 +178,25 @@ def populate_events() -> Optional[None]:
             else event["organizer"].get("displayName", event["organizer"]["email"])
         )
         hangout_link = event.get("hangoutLink", "")
-        events.append(
+        reminders = event["reminders"]
+        # If the user has specified an override, we use that for all events.
+        # If the event uses the calendar's default reminders, we use that.
+        # If the event has overrides on Google Calendar, we use that.
+        # If none of the above, we don't set a reminder.
+        if options.override:
+            reminder_minutes = [options.override]
+        elif reminders.get("useDefault"):
+            calendar_list = service.calendarList().get(calendarId=options.calendarID).execute()
+            reminder_minutes = (
+                [reminder["minutes"] for reminder in calendar_list["defaultReminders"]]
+                if calendar_list.get("defaultReminders")
+                else []
+            )
+        elif reminders.get("overrides"):
+            reminder_minutes = [reminder["minutes"] for reminder in reminders["overrides"]]
+        else:
+            reminder_minutes = []
+        events.extend(
             {
                 "id": id,
                 "start": start,
@@ -188,7 +208,9 @@ def populate_events() -> Optional[None]:
                 "description": description,
                 "organizer": organizer,
                 "hangout_link": hangout_link,
+                "reminder": reminder,
             }
+            for reminder in reminder_minutes
         )
 
 
@@ -218,21 +240,30 @@ def event_to_message(event: Event) -> str:
 
 
 def send_reminders() -> Optional[None]:
-    messages = []
+    messages: List[str] = []
     keys = set()
-    now = datetime.datetime.now(tz=pytz.utc)
-
-    for event in events:
-        dt = event["start"] - now
-        if dt.days == 0 and dt.seconds < 60 * options.interval:
-            # The unique key includes the start time, because of
-            # repeating events.
-            key = (event["id"], event["start"])
+    # Sort events by the time of the reminder.
+    events.sort(
+        key=lambda event: (event["start"] - datetime.timedelta(minutes=event["reminder"])),
+        reverse=True,
+    )
+    # Iterate through the events and send reminders for those whose reminder time has come or passed and remove them from the list.
+    # The instant a reminder's time is greater than the current time, we stop sending reminders and break out of the loop.
+    while len(events):
+        event = events[-1]
+        now = datetime.datetime.now(tz=event["start"].tzinfo)
+        dt = event["start"] - datetime.timedelta(minutes=event["reminder"])
+        if dt <= now:
+            key = (event["id"], event["start"], event["reminder"])
             if key not in sent:
                 line = event_to_message(event)
                 print("Sending reminder:", line)
-                messages.append(line)
+                messages = [line, *messages]
                 keys.add(key)
+                events.pop()
+        else:
+            break
+
     if not messages:
         return
 
