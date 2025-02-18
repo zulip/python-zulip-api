@@ -31,6 +31,7 @@ sys.path.append(os.path.dirname(__file__))
 
 usage = r"""google-calendar [--config-file PATH_TO_ZULIPRC_OF_BOT]
                        [--interval MINUTES] [--calendar CALENDAR_ID]
+                       [--channel CHANNEL_NAME] [--topic TOPIC_NAME]
 
     This integration can be used to send Zulip messages as reminders for upcoming events from your Google Calendar.
 
@@ -51,6 +52,15 @@ parser.add_argument(
     dest="calendar_id",
     default="primary",
     help="The ID of the calendar you want to receive reminders from. By default, the primary calendar is used.",
+)
+parser.add_argument(
+    "--channel",
+    help="The channel to which to send the reminders to. By default, messages are sent to the DMs of the bot owner.",
+)
+parser.add_argument(
+    "--topic",
+    help="The topic to which to send the reminders to. Ignored if --channel is unspecified. 'calendar-reminders' is used as the default topic name.",
+    default="calendar-reminders",
 )
 options = parser.parse_args()
 
@@ -162,13 +172,18 @@ def send_reminders() -> Optional[None]:
         message = "Reminder:\n\n" + "\n".join("* " + m for m in messages)
 
     user_profile = zulip_client.get_profile()
-    result = zulip_client.send_message(
-        {
-            "type": "direct",
-            "to": [user_profile.get("bot_owner_id") or user_profile["email"]],
-            "content": message,
-        }
-    )
+    if options.channel is not None:
+        result = zulip_client.send_message(
+            {"type": "stream", "to": options.channel, "topic": options.topic, "content": message}
+        )
+    else:
+        result = zulip_client.send_message(
+            {
+                "type": "direct",
+                "to": [user_profile.get("bot_owner_id") or user_profile["email"]],
+                "content": message,
+            }
+        )
     if result["result"] != "success":
         logging.error("Error sending zulip message: %s: %s", result.get("code"), result.get("msg"))
     sent.update(keys)
