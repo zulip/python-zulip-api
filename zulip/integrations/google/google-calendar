@@ -11,13 +11,6 @@ from typing import List, Optional, Set, Tuple
 import dateutil.parser
 import pytz
 
-try:
-    from google.oauth2.credentials import Credentials
-    from googleapiclient.discovery import build
-except ImportError:
-    logging.exception("Install the required python packages from requirements.txt first.")
-    sys.exit(1)
-
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../"))
 import zulip
 
@@ -49,7 +42,7 @@ usage = r"""google-calendar --user EMAIL [--interval MINUTES] [--calendar CALEND
     For more information, see https://zulip.com/integrations/doc/google-calendar.
 """
 
-parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage))
+parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage), allow_provisioning=True)
 parser.add_argument(
     "--interval",
     default=30,
@@ -64,10 +57,23 @@ parser.add_argument(
 )
 options = parser.parse_args()
 
+zulip_client = zulip.init_from_options(options)
+
+# Import dependencies only after parsing command-line args,
+# as the --provision flag can be used to install the dependencies.
+try:
+    from google.oauth2.credentials import Credentials
+    from googleapiclient.discovery import build
+except ImportError:
+    logging.exception(
+        "You have unsatisfied dependencies. Install all missing dependencies with %(command)s --provision",
+        {"command": sys.argv[0]},
+    )
+    sys.exit(1)
+
+
 if not options.zulip_email:
     parser.error("You must specify --user")
-
-zulip_client = zulip.init_from_options(options)
 
 
 def get_credentials() -> Credentials:
