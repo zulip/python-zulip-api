@@ -18,7 +18,6 @@ SCOPES = ["https://www.googleapis.com/auth/calendar.events.readonly"]
 # File containing user's access and refresh tokens for Google application requests.
 # If it does not exist, e.g., first run, it is generated on user authorization.
 TOKENS_FILE = "google-tokens.json"
-CLIENT_SECRET_FILE = "client_secret.json"  # noqa: S105
 HOME_DIR = os.path.expanduser("~")
 
 # Our cached view of the calendar, updated periodically.
