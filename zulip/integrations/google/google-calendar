@@ -29,7 +29,7 @@ sent: Set[Tuple[int, datetime.datetime]] = set()
 
 sys.path.append(os.path.dirname(__file__))
 
-usage = r"""google-calendar --user EMAIL [--interval MINUTES] [--calendar CALENDAR_ID]
+usage = r"""google-calendar [--interval MINUTES] [--calendar CALENDAR_ID]
 
     This integration can be used to send Zulip messages as reminders for upcoming events from your Google Calendar.
 
@@ -69,9 +69,6 @@ except ImportError:
     )
     sys.exit(1)
 
-
-if not options.zulip_email:
-    parser.error("You must specify --user")
 if options.verbose:
     logging.getLogger().setLevel(logging.INFO)
 
@@ -166,7 +163,7 @@ def send_reminders() -> Optional[None]:
         message = "Reminder:\n\n" + "\n".join("* " + m for m in messages)
 
     result = zulip_client.send_message(
-        {"type": "direct", "to": [options.zulip_email], "content": message}
+        {"type": "direct", "to": [zulip_client.get_profile()["email"]], "content": message}
     )
     if result["result"] != "success":
         logging.error("Error sending zulip message: %s: %s", result.get("code"), result.get("msg"))
