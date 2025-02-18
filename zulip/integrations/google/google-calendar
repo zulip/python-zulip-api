@@ -29,13 +29,12 @@ sent: Set[Tuple[int, datetime.datetime]] = set()
 
 sys.path.append(os.path.dirname(__file__))
 
-usage = r"""google-calendar [--interval MINUTES] [--calendar CALENDAR_ID]
+usage = r"""google-calendar [--config-file PATH_TO_ZULIPRC_OF_BOT]
+                       [--interval MINUTES] [--calendar CALENDAR_ID]
 
     This integration can be used to send Zulip messages as reminders for upcoming events from your Google Calendar.
 
-    Specify your Zulip API credentials and server in a ~/.zuliprc file, or using the options.
-
-    This integration should be run on your local machine, as your API key is accessible to local users through the command line.
+    Create a generic bot on Zulip, download its zuliprc file, and use the --config-file option to specify the path to your bot's zuliprc.
 
     For more information, see https://zulip.com/integrations/doc/google-calendar.
 """
@@ -162,8 +161,13 @@ def send_reminders() -> Optional[None]:
     else:
         message = "Reminder:\n\n" + "\n".join("* " + m for m in messages)
 
+    user_profile = zulip_client.get_profile()
     result = zulip_client.send_message(
-        {"type": "direct", "to": [zulip_client.get_profile()["email"]], "content": message}
+        {
+            "type": "direct",
+            "to": [user_profile.get("bot_owner_id") or user_profile["email"]],
+            "content": message,
+        }
     )
     if result["result"] != "success":
         logging.error("Error sending zulip message: %s: %s", result.get("code"), result.get("msg"))
