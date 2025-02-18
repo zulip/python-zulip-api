@@ -173,8 +173,11 @@ def send_reminders() -> Optional[None]:
     else:
         message = "Reminder:\n\n" + "\n".join("* " + m for m in messages)
 
-    zulip_client.send_message({"type": "direct", "to": [options.zulip_email], "content": message})
-
+    result = zulip_client.send_message(
+        {"type": "direct", "to": [options.zulip_email], "content": message}
+    )
+    if result["result"] != "success":
+        logging.error("Error sending zulip message: %s: %s", result.get("code"), result.get("msg"))
     sent.update(keys)
 
 
