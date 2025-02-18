@@ -22,6 +22,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../../"))
 import zulip
 
 SCOPES = ["https://www.googleapis.com/auth/calendar.events.readonly"]
+# File containing user's access and refresh tokens for Google application requests.
+# If it does not exist, e.g., first run, it is generated on user authorization.
+TOKENS_FILE = "google-credentials.json"
 CLIENT_SECRET_FILE = "client_secret.json"  # noqa: S105
 HOME_DIR = os.path.expanduser("~")
 
@@ -93,10 +96,10 @@ def get_credentials() -> Credentials:
         Credentials, the obtained credential.
     """
     try:
-        credential_path = os.path.join(HOME_DIR, "google-credentials.json")
+        credential_path = os.path.join(HOME_DIR, TOKENS_FILE)
         return Credentials.from_authorized_user_file(credential_path, SCOPES)
     except ValueError:
-        logging.exception("Error while trying to open the `google-credentials.json` file.")
+        logging.exception("Error while trying to open the %s file.", TOKENS_FILE)
         sys.exit(1)
     except OSError:
         logging.error("Run the get-google-credentials script from this directory first.")
