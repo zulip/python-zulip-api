@@ -16,10 +16,18 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../../"))
 import zulip
 
 SCOPES = ["https://www.googleapis.com/auth/calendar.events.readonly"]
+HOME_DIR = os.path.expanduser("~")
+
 # File containing user's access and refresh tokens for Google application requests.
 # If it does not exist, e.g., first run, it is generated on user authorization.
 TOKENS_FILE = "google-tokens.json"
-HOME_DIR = os.path.expanduser("~")
+TOKENS_PATH = os.path.join(HOME_DIR, TOKENS_FILE)
+
+# The client secret file identifies the application requesting the client's data,
+# and is required for the OAuth flow to fetch the tokens.
+# It needs to be downloaded from Google, by the user.
+CLIENT_SECRET_FILE = "client_secret.json"  # noqa: S105
+CLIENT_SECRET_PATH = os.path.join(HOME_DIR, CLIENT_SECRET_FILE)
 
 # Our cached view of the calendar, updated periodically.
 events: List[Tuple[int, datetime.datetime, str]] = []
@@ -32,6 +40,8 @@ sys.path.append(os.path.dirname(__file__))
 usage = r"""google-calendar [--config-file PATH_TO_ZULIPRC_OF_BOT]
                        [--interval MINUTES] [--calendar CALENDAR_ID]
                        [--channel CHANNEL_NAME] [--topic TOPIC_NAME]
+                       [--client-secret-file PATH_TO_CLIENT_SECRET_FILE]
+                       [--tokens-file PATH_TO_GOOGLE_TOKENS_FILE]
                        [-n] [--noauth_local_webserver]
 
     This integration can be used to send Zulip messages as reminders for upcoming events from your Google Calendar.
@@ -62,6 +72,18 @@ parser.add_argument(
     "--topic",
     help="The topic to which to send the reminders to. Ignored if --channel is unspecified. 'calendar-reminders' is used as the default topic name.",
     default="calendar-reminders",
+)
+parser.add_argument(
+    "--client-secret-file",
+    help="The path to the file containing the client secret for the Google Calendar API. By default, the client secret file is assumed to be at {CLIENT_SECRET_PATH}.",
+    default=CLIENT_SECRET_PATH,
+    dest="client_secret_path",
+)
+parser.add_argument(
+    "--tokens-file",
+    help=f"The path to the file containing the tokens for the Google Calendar API. By default, the tokens file is generated at {TOKENS_PATH} after the first run.",
+    default=TOKENS_PATH,
+    dest="tokens_path",
 )
 parser.add_argument(
     "-n",
@@ -97,9 +119,10 @@ def get_credentials() -> Credentials:
     needing to be refreshed using the refresh token.
     """
     try:
-        tokens_path = os.path.join(HOME_DIR, TOKENS_FILE)
         fetch_creds = runpy.run_path("./get-google-credentials")["get_credentials"]
-        return fetch_creds(tokens_path, SCOPES, options.noauth_local_webserver)
+        return fetch_creds(
+            options.tokens_path, options.client_secret_path, SCOPES, options.noauth_local_webserver
+        )
     except Exception:
         logging.exception("Error getting google credentials")
         sys.exit(1)
