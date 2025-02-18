@@ -50,27 +50,18 @@ usage = r"""google-calendar --user EMAIL [--interval MINUTES] [--calendar CALEND
 """
 
 parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage))
-
-
 parser.add_argument(
     "--interval",
-    dest="interval",
     default=30,
     type=int,
-    action="store",
     help="Minutes before event for reminder [default: 30]",
-    metavar="MINUTES",
 )
-
 parser.add_argument(
     "--calendar",
-    dest="calendarID",
+    dest="calendar_id",
     default="primary",
-    type=str,
-    action="store",
-    help="Calendar ID for the calendar you want to receive reminders from.",
+    help="The ID of the calendar you want to receive reminders from. By default, the primary calendar is used.",
 )
-
 options = parser.parse_args()
 
 if not options.zulip_email:
@@ -108,7 +99,7 @@ def populate_events() -> Optional[None]:
     feed = (
         service.events()
         .list(
-            calendarId=options.calendarID,
+            calendarId=options.calendar_id,
             timeMin=now,
             maxResults=5,
             singleEvents=True,
