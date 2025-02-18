@@ -36,26 +36,20 @@ sent: Set[Tuple[int, datetime.datetime]] = set()
 
 sys.path.append(os.path.dirname(__file__))
 
-parser = zulip.add_default_arguments(
-    argparse.ArgumentParser(
-        r"""
+usage = r"""google-calendar --user EMAIL [--interval MINUTES] [--calendar CALENDAR_ID]
 
-google-calendar --calendar calendarID@example.calendar.google.com
+    This integration can be used to send Zulip messages as reminders for upcoming events from your Google Calendar.
 
-    This integration can be used to send yourself reminders, on Zulip, of Google Calendar Events.
+    Specify your Zulip API credentials and server in a ~/.zuliprc file, or using the options.
 
-    Specify your Zulip API credentials and server in a ~/.zuliprc file or using the options.
+    Before running this integration, make sure you download the client secret file from Google, and run the get-google-credentials script to give Zulip read access to your Google Calendar.
 
-    Before running this integration make sure you run the get-google-credentials file to give Zulip
-    access to certain aspects of your Google Account.
+    This integration should be run on your local machine, as your API key is accessible to local users through the command line.
 
-    This integration should be run on your local machine. Your API key and other information are
-    revealed to local users through the command line.
-
-    Depends on: google-api-python-client
+    For more information, see https://zulip.com/integrations/doc/google-calendar.
 """
-    )
-)
+
+parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage))
 
 
 parser.add_argument(
