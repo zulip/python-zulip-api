@@ -4,6 +4,7 @@ import datetime
 import itertools
 import logging
 import os
+import runpy
 import sys
 import time
 from typing import List, Optional, Set, Tuple
@@ -33,8 +34,6 @@ usage = r"""google-calendar --user EMAIL [--interval MINUTES] [--calendar CALEND
     This integration can be used to send Zulip messages as reminders for upcoming events from your Google Calendar.
 
     Specify your Zulip API credentials and server in a ~/.zuliprc file, or using the options.
-
-    Before running this integration, make sure you download the client secret file from Google, and run the get-google-credentials script to give Zulip read access to your Google Calendar.
 
     This integration should be run on your local machine, as your API key is accessible to local users through the command line.
 
@@ -78,23 +77,17 @@ if options.verbose:
 
 
 def get_credentials() -> Credentials:
-    """Gets valid user credentials from storage.
+    """Fetches credentials using the get-google-credentials script.
 
-    If nothing has been stored, or if the stored credentials are invalid,
-    an exception is thrown and the user is informed to run the script in this directory to get
-    credentials.
-
-    Returns:
-        Credentials, the obtained credential.
+    Needs to call get-google-credentials everytime, because the auth token expires every hour,
+    needing to be refreshed using the refresh token.
     """
     try:
         tokens_path = os.path.join(HOME_DIR, TOKENS_FILE)
-        return Credentials.from_authorized_user_file(tokens_path, SCOPES)
-    except ValueError:
-        logging.exception("Error while trying to open the %s file.", TOKENS_FILE)
-        sys.exit(1)
-    except OSError:
-        logging.error("Run the get-google-credentials script from this directory first.")
+        fetch_creds = runpy.run_path("./get-google-credentials")["get_credentials"]
+        return fetch_creds(tokens_path, SCOPES)
+    except Exception:
+        logging.exception("Error getting google credentials")
         sys.exit(1)
 
 
