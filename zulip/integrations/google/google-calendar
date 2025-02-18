@@ -74,6 +74,8 @@ except ImportError:
 
 if not options.zulip_email:
     parser.error("You must specify --user")
+if options.verbose:
+    logging.getLogger().setLevel(logging.INFO)
 
 
 def get_credentials() -> Credentials:
@@ -159,7 +161,7 @@ def send_reminders() -> Optional[None]:
                     line = f"{summary} is today."
                 else:
                     line = "{} starts at {}".format(summary, start.strftime("%H:%M"))
-                print("Sending reminder:", line)
+                logging.info("Sending reminder: %s", line)
                 messages.append(line)
                 keys.add(key)
 
