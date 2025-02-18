@@ -21,7 +21,7 @@ except ImportError:
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../"))
 import zulip
 
-SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
+SCOPES = ["https://www.googleapis.com/auth/calendar.events.readonly"]
 CLIENT_SECRET_FILE = "client_secret.json"  # noqa: S105
 HOME_DIR = os.path.expanduser("~")
 
