@@ -233,34 +233,7 @@ def populate_events() -> Optional[None]:
             events.append((event["id"], start, "(No Title)"))
 
 
-def send_reminders() -> Optional[None]:
-    messages = []
-    keys = set()
-    now = datetime.datetime.now(tz=pytz.utc)
-
-    for id, start, summary in events:
-        dt = start - now
-        if dt.days == 0 and dt.seconds < 60 * calendar_options.interval:
-            # The unique key includes the start time, because of
-            # repeating events.
-            key = (id, start)
-            if key not in sent:
-                if start.hour == 0 and start.minute == 0:
-                    line = f"{summary} is today."
-                else:
-                    line = "{} starts at {}".format(summary, start.strftime("%H:%M"))
-                logging.info("Sending reminder: %s", line)
-                messages.append(line)
-                keys.add(key)
-
-    if not messages:
-        return
-
-    if len(messages) == 1:
-        message = "Reminder: " + messages[0]
-    else:
-        message = "Reminder:\n\n" + "\n".join("* " + m for m in messages)
-
+def send_reminder_message(message: str, key: Tuple[str, datetime.datetime]) -> None:
     user_profile = zulip_client.get_profile()
     if calendar_options.channel is not None:
         result = zulip_client.send_message(
@@ -281,7 +254,24 @@ def send_reminders() -> Optional[None]:
         )
     if result["result"] != "success":
         logging.error("Error sending zulip message: %s: %s", result.get("code"), result.get("msg"))
-    sent.update(keys)
+    sent.add(key)
+
+
+def send_reminders() -> Optional[None]:
+    now = datetime.datetime.now(tz=pytz.utc)
+
+    for id, start, summary in events:
+        dt = start - now
+        if dt.days == 0 and dt.seconds < 60 * calendar_options.interval:
+            # The unique key includes the start time due to repeating events.
+            key = (id, start)
+            if key not in sent:
+                if start.hour == 0 and start.minute == 0:
+                    message = f"{summary} is today."
+                else:
+                    message = "{} starts at {}".format(summary, start.strftime("%H:%M"))
+                logging.info("Sending reminder: %s", message)
+                send_reminder_message(message, key)
 
 
 # Loop forever
