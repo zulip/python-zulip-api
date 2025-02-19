@@ -44,10 +44,10 @@ class GoogleCalendarOptions:
 
 
 # Our cached view of the calendar, updated periodically.
-events: List[Tuple[int, datetime.datetime, str]] = []
+events: List[Tuple[str, datetime.datetime, str]] = []
 
 # Unique keys for events we've already sent, so we don't remind twice.
-sent: Set[Tuple[int, datetime.datetime]] = set()
+sent: Set[Tuple[str, datetime.datetime]] = set()
 
 sys.path.append(os.path.dirname(__file__))
 
