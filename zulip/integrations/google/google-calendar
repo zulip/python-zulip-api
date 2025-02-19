@@ -7,6 +7,8 @@ import os
 import runpy
 import sys
 import time
+from configparser import ConfigParser
+from dataclasses import dataclass
 from typing import List, Optional, Set, Tuple
 
 import dateutil.parser
@@ -28,6 +30,18 @@ TOKENS_PATH = os.path.join(HOME_DIR, TOKENS_FILE)
 # It needs to be downloaded from Google, by the user.
 CLIENT_SECRET_FILE = "client_secret.json"  # noqa: S105
 CLIENT_SECRET_PATH = os.path.join(HOME_DIR, CLIENT_SECRET_FILE)
+
+
+@dataclass
+class GoogleCalendarOptions:
+    calendar_id: str = "primary"
+    interval: int = 30
+    channel: Optional[str] = None
+    topic: str = "calendar-reminders"
+    noauth_local_webserver: bool = False
+    tokens_path: str = TOKENS_PATH
+    client_secret_path: str = CLIENT_SECRET_PATH
+
 
 # Our cached view of the calendar, updated periodically.
 events: List[Tuple[int, datetime.datetime, str]] = []
@@ -54,14 +68,12 @@ usage = r"""google-calendar [--config-file PATH_TO_ZULIPRC_OF_BOT]
 parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage), allow_provisioning=True)
 parser.add_argument(
     "--interval",
-    default=30,
     type=int,
     help="Minutes before event for reminder [default: 30]",
 )
 parser.add_argument(
     "--calendar",
     dest="calendar_id",
-    default="primary",
     help="The ID of the calendar you want to receive reminders from. By default, the primary calendar is used.",
 )
 parser.add_argument(
@@ -71,30 +83,77 @@ parser.add_argument(
 parser.add_argument(
     "--topic",
     help="The topic to which to send the reminders to. Ignored if --channel is unspecified. 'calendar-reminders' is used as the default topic name.",
-    default="calendar-reminders",
 )
 parser.add_argument(
     "--client-secret-file",
     help="The path to the file containing the client secret for the Google Calendar API. By default, the client secret file is assumed to be at {CLIENT_SECRET_PATH}.",
-    default=CLIENT_SECRET_PATH,
     dest="client_secret_path",
 )
 parser.add_argument(
     "--tokens-file",
     help=f"The path to the file containing the tokens for the Google Calendar API. By default, the tokens file is generated at {TOKENS_PATH} after the first run.",
-    default=TOKENS_PATH,
     dest="tokens_path",
 )
 parser.add_argument(
     "-n",
     "--noauth_local_webserver",
     action="store_true",
-    default=False,
     help="The default authorization process runs a local web server, which requires a browser on the same machine. For non-interactive environments and machines without browser access, e.g., remote servers, this option allows manual authorization. The authorization URL is printed, which the user can copy into a browser, copy the resulting authorization code, and paste back into the command line.",
 )
-options = parser.parse_args()
+commandline_options = parser.parse_args()
+if commandline_options.verbose:
+    logging.getLogger().setLevel(logging.INFO)
 
-zulip_client = zulip.init_from_options(options)
+
+valid_keys = list(GoogleCalendarOptions.__dataclass_fields__.keys())
+
+
+def load_config_options(config_path: Optional[str]) -> GoogleCalendarOptions:
+    if config_path is None:
+        config_path = zulip.get_default_config_filename()
+    assert config_path is not None
+    if not os.path.exists(config_path):
+        logging.info("No config file found at %s", config_path)
+        return GoogleCalendarOptions()
+
+    logging.info("Loading Google Calendar configuration from %s", config_path)
+    config = ConfigParser()
+    try:
+        config.read(config_path)
+    except Exception:
+        logging.exception("Error reading config file %s", config_path)
+
+    section = "google-calendar"
+    config_values = {}
+    if section in config:
+        for key, value in config[section].items():
+            if key in valid_keys:
+                expected_type = GoogleCalendarOptions.__annotations__[key]
+                config_values[key] = True if expected_type == bool else expected_type(value)
+                logging.info("Setting key: %s to %s", key, config_values[key])
+            else:
+                logging.warning(
+                    "Unknown key %s in section %s of config file %s", key, section, config_path
+                )
+    return GoogleCalendarOptions(**config_values)
+
+
+def update_calendar_options_from_commandline_args(
+    calendar_options: GoogleCalendarOptions, commandline_options: argparse.Namespace
+) -> None:
+    for key, value in commandline_options.__dict__.items():
+        # Boolean arguments (store-true) have a default value of False when not passed in.
+        # So, we ignore them, to prevent overwriting the config file option that is set.
+        if key in valid_keys and value is not None and value is not False:
+            setattr(calendar_options, key, value)
+
+
+# Calendar options can be passed in from the command line or via zuliprc.
+# The command line options override the zuliprc options.
+calendar_options = load_config_options(commandline_options.zulip_config_file)
+update_calendar_options_from_commandline_args(calendar_options, commandline_options)
+
+zulip_client = zulip.init_from_options(commandline_options)
 
 # Import dependencies only after parsing command-line args,
 # as the --provision flag can be used to install the dependencies.
@@ -108,9 +167,6 @@ except ImportError:
     )
     sys.exit(1)
 
-if options.verbose:
-    logging.getLogger().setLevel(logging.INFO)
-
 
 def get_credentials() -> Credentials:
     """Fetches credentials using the get-google-credentials script.
@@ -121,7 +177,10 @@ def get_credentials() -> Credentials:
     try:
         fetch_creds = runpy.run_path("./get-google-credentials")["get_credentials"]
         return fetch_creds(
-            options.tokens_path, options.client_secret_path, SCOPES, options.noauth_local_webserver
+            calendar_options.tokens_path,
+            calendar_options.client_secret_path,
+            SCOPES,
+            calendar_options.noauth_local_webserver,
         )
     except Exception:
         logging.exception("Error getting google credentials")
@@ -136,7 +195,7 @@ def populate_events() -> Optional[None]:
     feed = (
         service.events()
         .list(
-            calendarId=options.calendar_id,
+            calendarId=calendar_options.calendar_id,
             timeMin=now,
             maxResults=5,
             singleEvents=True,
@@ -181,7 +240,7 @@ def send_reminders() -> Optional[None]:
 
     for id, start, summary in events:
         dt = start - now
-        if dt.days == 0 and dt.seconds < 60 * options.interval:
+        if dt.days == 0 and dt.seconds < 60 * calendar_options.interval:
             # The unique key includes the start time, because of
             # repeating events.
             key = (id, start)
@@ -203,9 +262,14 @@ def send_reminders() -> Optional[None]:
         message = "Reminder:\n\n" + "\n".join("* " + m for m in messages)
 
     user_profile = zulip_client.get_profile()
-    if options.channel is not None:
+    if calendar_options.channel is not None:
         result = zulip_client.send_message(
-            {"type": "stream", "to": options.channel, "topic": options.topic, "content": message}
+            {
+                "type": "stream",
+                "to": calendar_options.channel,
+                "topic": calendar_options.topic,
+                "content": message,
+            }
         )
     else:
         result = zulip_client.send_message(
