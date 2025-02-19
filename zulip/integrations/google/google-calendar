@@ -9,7 +9,7 @@ import sys
 import time
 from configparser import ConfigParser
 from dataclasses import dataclass
-from typing import List, Optional, Set, Tuple
+from typing import List, Optional, Set, Tuple, TypedDict
 
 import dateutil.parser
 import pytz
@@ -43,8 +43,14 @@ class GoogleCalendarOptions:
     client_secret_path: str = CLIENT_SECRET_PATH
 
 
+class Event(TypedDict):
+    id: str
+    start: datetime.datetime
+    summary: str
+
+
 # Our cached view of the calendar, updated periodically.
-events: List[Tuple[str, datetime.datetime, str]] = []
+events: List[Event] = []
 
 # Unique keys for events we've already sent, so we don't remind twice.
 sent: Set[Tuple[str, datetime.datetime]] = set()
@@ -227,10 +233,21 @@ def populate_events() -> Optional[None]:
             # of the tzinfo base class.
             start = calendar_timezone.localize(start_naive)
 
-        try:
-            events.append((event["id"], start, event["summary"]))
-        except KeyError:
-            events.append((event["id"], start, "(No Title)"))
+        events.append(
+            {
+                "id": event["id"],
+                "start": start,
+                "summary": event.get("summary", "(No Title)"),
+            }
+        )
+
+
+def construct_message_from_event(event: Event) -> str:
+    if event["start"].hour == 0 and event["start"].minute == 0:
+        message = f"{event["summary"]} is today."
+    else:
+        message = "{} starts at {}".format(event["summary"], event["start"].strftime("%H:%M"))
+    return message
 
 
 def send_reminder_message(message: str, key: Tuple[str, datetime.datetime]) -> None:
@@ -260,16 +277,13 @@ def send_reminder_message(message: str, key: Tuple[str, datetime.datetime]) -> N
 def send_reminders() -> Optional[None]:
     now = datetime.datetime.now(tz=pytz.utc)
 
-    for id, start, summary in events:
-        dt = start - now
+    for event in events:
+        dt = event["start"] - now
         if dt.days == 0 and dt.seconds < 60 * calendar_options.interval:
             # The unique key includes the start time due to repeating events.
-            key = (id, start)
+            key = (event["id"], event["start"])
             if key not in sent:
-                if start.hour == 0 and start.minute == 0:
-                    message = f"{summary} is today."
-                else:
-                    message = "{} starts at {}".format(summary, start.strftime("%H:%M"))
+                message = construct_message_from_event(event)
                 logging.info("Sending reminder: %s", message)
                 send_reminder_message(message, key)
 
