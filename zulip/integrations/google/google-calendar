@@ -46,7 +46,13 @@ class GoogleCalendarOptions:
 class Event(TypedDict):
     id: str
     start: datetime.datetime
+    end: datetime.datetime
+    html_link: str
+    # The following fields are optional, and may not be present in all events.
     summary: str
+    description: str
+    location: str
+    hangout_link: str
 
 
 # Our cached view of the calendar, updated periodically.
@@ -234,16 +240,30 @@ def populate_events() -> Optional[None]:
             {
                 "id": event["id"],
                 "start": get_start_or_end(event, "start"),
+                "end": get_start_or_end(event, "end"),
                 "summary": event.get("summary", "(No Title)"),
+                "description": event.get("description", ""),
+                "html_link": event["htmlLink"],
+                "location": event.get("location", ""),
+                "hangout_link": event.get("hangoutLink", ""),
             }
         )
 
 
 def construct_message_from_event(event: Event) -> str:
-    if event["start"].hour == 0 and event["start"].minute == 0:
-        message = f"{event["summary"]} is today."
-    else:
-        message = "{} starts at {}".format(event["summary"], event["start"].strftime("%H:%M"))
+    time_period = (
+        "today"
+        if event["start"].hour == 0 and event["start"].minute == 0
+        else f"""scheduled from {event["start"].strftime('%H:%M')} to {event["end"].strftime('%H:%M')}"""
+    )
+    location = f""", at {event["location"]},""" if event["location"] else ""
+    description = f"""\n> {event["description"]}\n""" if event["description"] else ""
+    google_meet_link = (
+        f"""\n[Join call]({event["hangout_link"]}).""" if event["hangout_link"] else ""
+    )
+
+    message = f"""[{event["summary"]}]({event["html_link"]}){location} is {time_period}.{description}{google_meet_link}"""
+
     return message
 
 
