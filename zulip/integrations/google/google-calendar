@@ -41,6 +41,7 @@ class GoogleCalendarOptions:
     noauth_local_webserver: bool = False
     tokens_path: str = TOKENS_PATH
     client_secret_path: str = CLIENT_SECRET_PATH
+    format_message: Optional[str] = None
 
 
 class Event(TypedDict):
@@ -69,6 +70,7 @@ usage = r"""google-calendar [--config-file PATH_TO_ZULIPRC_OF_BOT]
                        [--client-secret-file PATH_TO_CLIENT_SECRET_FILE]
                        [--tokens-file PATH_TO_GOOGLE_TOKENS_FILE]
                        [-n] [--noauth_local_webserver]
+                       [-f MESSAGE_TEMPLATE] [--format-message MESSAGE_TEMPLATE]
 
     This integration can be used to send Zulip messages as reminders for upcoming events from your Google Calendar.
 
@@ -111,6 +113,11 @@ parser.add_argument(
     "--noauth_local_webserver",
     action="store_true",
     help="The default authorization process runs a local web server, which requires a browser on the same machine. For non-interactive environments and machines without browser access, e.g., remote servers, this option allows manual authorization. The authorization URL is printed, which the user can copy into a browser, copy the resulting authorization code, and paste back into the command line.",
+)
+parser.add_argument(
+    "-f",
+    "--format-message",
+    help="A Python f-string to use to format the markdown message template. This option overrides the default message template. The f-string can use the following variables: start, end, title, description, calendar_link, location, google_meet_link.\nNote that the title, description, location, and google_meet_link variables are optional for Google Calendar events, and hence may be empty. Empty fields are displayed as {No title}, {No description}, {No location}, and {No link} in the message template.",
 )
 commandline_options = parser.parse_args()
 if commandline_options.verbose:
@@ -251,6 +258,19 @@ def populate_events() -> Optional[None]:
 
 
 def construct_message_from_event(event: Event) -> str:
+    if calendar_options.format_message:
+        message = calendar_options.format_message.format(
+            start=event["start"].strftime("%Y-%m-%d %H:%M"),
+            end=event["end"].strftime("%Y-%m-%d %H:%M"),
+            title=event["summary"],
+            description=event["description"] or "{No description}",
+            calendar_link=event["html_link"],
+            location=event["location"] or "{No location}",
+            google_meet_link=event["hangout_link"] or "{No link}",
+        )
+        decoded_message = bytes(message, "utf-8").decode("unicode_escape")
+        return decoded_message
+
     time_period = (
         "today"
         if event["start"].hour == 0 and event["start"].minute == 0
