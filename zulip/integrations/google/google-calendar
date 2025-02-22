@@ -41,14 +41,14 @@ class Event(TypedDict):
     description: str
     organizer: str
     hangout_link: str
-    reminder: int
+    reminder: int  # Minutes before the event to send a reminder.
 
 
 # Our cached view of the calendar, updated periodically.
 events: List[Event] = []
 
 # Unique keys for reminders we've already sent, so we don't remind twice.
-sent: Set[Tuple[int, datetime.datetime, int]] = set()
+sent: Set[Tuple[int, int]] = set()
 
 sys.path.append(os.path.dirname(__file__))
 
@@ -261,7 +261,7 @@ def send_reminders() -> Optional[None]:
         now = datetime.datetime.now(tz=event["start"].tzinfo)
         dt = event["start"] - datetime.timedelta(minutes=event["reminder"])
         if dt <= now:
-            key = (event["id"], event["start"], event["reminder"])
+            key = (event["id"], event["reminder"])
             if key not in sent:
                 line = event_to_message(event)
                 print("Sending reminder:", line)
