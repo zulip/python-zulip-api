@@ -15,6 +15,7 @@ import dateutil.parser
 import pytz
 
 try:
+    from google.auth.exceptions import RefreshError  # type: ignore[import-not-found]
     from google.oauth2.credentials import Credentials  # type: ignore[import-not-found]
     from googleapiclient.discovery import build
 except ImportError:
@@ -125,17 +126,23 @@ def get_credentials() -> Credentials:
 def populate_events() -> Optional[None]:
     creds = get_credentials()
     service = build("calendar", "v3", credentials=creds)
-    feed = (
-        service.events()
-        .list(
-            calendarId=options.calendarID,
-            timeMin=datetime.datetime.now(pytz.utc).isoformat(),
-            timeMax=datetime.datetime.now(pytz.utc).isoformat().split("T")[0] + "T23:59:59Z",
-            singleEvents=True,
-            orderBy="startTime",
+    try:
+        feed = (
+            service.events()
+            .list(
+                calendarId=options.calendarID,
+                timeMin=datetime.datetime.now(pytz.utc).isoformat(),
+                timeMax=datetime.datetime.now(pytz.utc).isoformat().split("T")[0] + "T23:59:59Z",
+                singleEvents=True,
+                orderBy="startTime",
+            )
+            .execute()
         )
-        .execute()
-    )
+    except RefreshError:
+        logging.error(
+            "The credentials have expired. Generate a new client_secret.json file and run the get-google-credentials script."
+        )
+        sys.exit(1)
     events.clear()
     for event in feed["items"]:
         try:
