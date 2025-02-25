@@ -90,8 +90,8 @@ def send_bot_message(oldrev: str, newrev: str, refname: str) -> None:
 
     message_data = {
         "type": "stream",
-        "to": destination["stream"],
-        "subject": destination["subject"],
+        "to": destination.get("channel", destination.get("stream")),
+        "topic": destination.get("topic", destination.get("subject")),
         "content": message,
     }
     client.send_message(message_data)
