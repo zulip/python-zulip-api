@@ -31,6 +31,14 @@ client = zulip.Client(
     client="ZulipGit/" + VERSION,
 )
 
+log_file_path = os.path.join(os.path.dirname(__file__), "../post-receive.log")
+
+
+def log_error(message: str) -> None:
+    print(message, file=sys.stderr)
+    with open(log_file_path, "a") as log_file:
+        log_file.write(f"{message}\n")
+
 
 def git_repository_name() -> str:
     path, name = os.path.split(os.getcwd())
@@ -94,7 +102,9 @@ def send_bot_message(oldrev: str, newrev: str, refname: str) -> None:
         "topic": destination.get("topic", destination.get("subject")),
         "content": message,
     }
-    client.send_message(message_data)
+    response = client.send_message(message_data)
+    if response["result"] == "error":
+        log_error(f"Failed to send Zulip message: {response['msg']}")
 
 
 for ln in sys.stdin:
