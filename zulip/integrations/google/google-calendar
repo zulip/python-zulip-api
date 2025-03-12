@@ -14,8 +14,8 @@ from typing import List, Optional, Set, Tuple
 import dateutil.parser
 import httplib2
 import pytz
-from oauth2client import client
-from oauth2client.file import Storage
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
 
 try:
     from googleapiclient import discovery
@@ -88,7 +88,7 @@ if not options.zulip_email:
 zulip_client = zulip.init_from_options(options)
 
 
-def get_credentials() -> client.Credentials:
+def get_credentials() -> Credentials:
     """Gets valid user credentials from storage.
 
     If nothing has been stored, or if the stored credentials are invalid,
@@ -101,9 +101,19 @@ def get_credentials() -> client.Credentials:
     try:
         credential_path = os.path.join(HOME_DIR, "google-credentials.json")
 
-        store = Storage(credential_path)
-        return store.get()
-    except client.Error:
+        if os.path.exists(credential_path):
+            # Load credentials from the file
+            credentials = Credentials.from_authorized_user_file(credential_path, SCOPES)
+        else:
+            # Run the OAuth flow to get new credentials
+            flow = InstalledAppFlow.from_client_secrets_file(CLIENT_SECRET_FILE, SCOPES)
+            credentials = flow.run_local_server(port=0)
+            # Save the credentials for the next run
+            with open(credential_path, "w") as token:
+                token.write(credentials.to_json())
+
+        return credentials
+    except FileNotFoundError:
         logging.exception("Error while trying to open the `google-credentials.json` file.")
         sys.exit(1)
     except OSError:
@@ -113,8 +123,7 @@ def get_credentials() -> client.Credentials:
 
 def populate_events() -> Optional[None]:
     credentials = get_credentials()
-    creds = credentials.authorize(httplib2.Http())
-    service = discovery.build("calendar", "v3", http=creds)
+    service = discovery.build("calendar", "v3", credentials=credentials)
 
     now = datetime.datetime.now(pytz.utc).isoformat()
     feed = (
