@@ -77,7 +77,6 @@ module = [
     "slack_sdk.*",
     "sleekxmpp.*",
     "trac.*",
-    "twitter.*",
     "wit.*",
 ]
 ignore_missing_imports = true
