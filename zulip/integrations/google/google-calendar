@@ -12,21 +12,16 @@ import time
 from typing import List, Optional, Set, Tuple
 
 import dateutil.parser
-import httplib2
 import pytz
-from oauth2client import client
-from oauth2client.file import Storage
-
-try:
-    from googleapiclient import discovery
-except ImportError:
-    logging.exception("Install google-api-python-client")
-    sys.exit(1)
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../"))
 import zulip
 
-SCOPES = "https://www.googleapis.com/auth/calendar.readonly"
+SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
 CLIENT_SECRET_FILE = "client_secret.json"  # noqa: S105
 APPLICATION_NAME = "Zulip"
 HOME_DIR = os.path.expanduser("~")
@@ -88,33 +83,40 @@ if not options.zulip_email:
 zulip_client = zulip.init_from_options(options)
 
 
-def get_credentials() -> client.Credentials:
+def get_credentials() -> Credentials:
     """Gets valid user credentials from storage.
 
     If nothing has been stored, or if the stored credentials are invalid,
-    an exception is thrown and the user is informed to run the script in this directory to get
-    credentials.
+    the user will be prompted to authenticate.
 
     Returns:
         Credentials, the obtained credential.
     """
-    try:
-        credential_path = os.path.join(HOME_DIR, "google-credentials.json")
+    credential_path = os.path.join(HOME_DIR, "google-credentials.json")
+    creds = None
 
-        store = Storage(credential_path)
-        return store.get()
-    except client.Error:
-        logging.exception("Error while trying to open the `google-credentials.json` file.")
-        sys.exit(1)
-    except OSError:
-        logging.error("Run the get-google-credentials script from this directory first.")
-        sys.exit(1)
+    # Load credentials from file if they exist
+    if os.path.exists(credential_path):
+        creds = Credentials.from_authorized_user_file(credential_path, SCOPES)
+
+    # If there are no (valid) credentials available, prompt the user to log in.
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(CLIENT_SECRET_FILE, SCOPES)
+            creds = flow.run_local_server(port=0)
+
+        # Save the credentials for the next run
+        with open(credential_path, "w") as token:
+            token.write(creds.to_json())
+
+    return creds
 
 
 def populate_events() -> Optional[None]:
     credentials = get_credentials()
-    creds = credentials.authorize(httplib2.Http())
-    service = discovery.build("calendar", "v3", http=creds)
+    service = build("calendar", "v3", credentials=credentials)
 
     now = datetime.datetime.now(pytz.utc).isoformat()
     feed = (
