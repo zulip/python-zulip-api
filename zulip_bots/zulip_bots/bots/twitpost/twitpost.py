@@ -23,7 +23,7 @@ class TwitpostBot:
 
     def initialize(self, bot_handler: AbstractBotHandler) -> None:
         self.config_info = bot_handler.get_config_info("twitter")
-        auth = tweepy.OAuthHandler(
+        auth = tweepy.OAuth1UserHandler(
             self.config_info["consumer_key"], self.config_info["consumer_secret"]
         )
         auth.set_access_token(
