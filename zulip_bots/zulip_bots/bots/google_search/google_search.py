@@ -18,7 +18,7 @@ def google_search(keywords: str) -> List[Dict[str, str]]:
     # Gets all search URLs
     search = soup.find(id="search")
     assert isinstance(search, Tag)
-    anchors = search.findAll("a")
+    anchors = search.find_all("a")
     results = []
 
     for a in anchors:
