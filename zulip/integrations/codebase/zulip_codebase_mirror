@@ -47,7 +47,7 @@ user_agent = "Codebase To Zulip Mirroring script (zulip-devel@googlegroups.com)"
 # find some form of JSON loader/dumper, with a preference order for speed.
 json_implementations = ["ujson", "cjson", "simplejson", "json"]
 
-while len(json_implementations):
+while json_implementations:
     try:
         json = __import__(json_implementations.pop(0))
         break
@@ -125,11 +125,8 @@ def handle_event(event: Dict[str, Any]) -> None:
         else:
             if new_ref:
                 branch = f"new branch {branch}"
-            content = "{} pushed {} commit(s) to {} in project {}:\n\n".format(
-                actor_name,
-                num_commits,
-                branch,
-                project,
+            content = (
+                f"{actor_name} pushed {num_commits} commit(s) to {branch} in project {project}:\n\n"
             )
             for commit in raw_props.get("commits"):
                 ref = commit.get("ref")
@@ -162,11 +159,8 @@ def handle_event(event: Dict[str, Any]) -> None:
 
         content = ""
         if body is not None and len(body) > 0:
-            content = "{} added a comment to ticket [#{}]({}):\n\n~~~ quote\n{}\n\n".format(
-                actor_name,
-                num,
-                url,
-                body,
+            content = (
+                f"{actor_name} added a comment to ticket [#{num}]({url}):\n\n~~~ quote\n{body}\n\n"
             )
 
         if "status_id" in changes:
@@ -228,15 +222,7 @@ def handle_event(event: Dict[str, Any]) -> None:
 
         subject = f"Deployment to {environment}"
 
-        content = "{} deployed [{}]({}) [through]({}) [{}]({}) to the **{}** environment.".format(
-            actor_name,
-            start_ref,
-            start_ref_url,
-            between_url,
-            end_ref,
-            end_ref_url,
-            environment,
-        )
+        content = f"{actor_name} deployed [{start_ref}]({start_ref_url}) [through]({between_url}) [{end_ref}]({end_ref_url}) to the **{environment}** environment."
         if servers is not None:
             content += "\n\nServers deployed to: %s" % (
                 ", ".join(f"`{server}`" for server in servers)
