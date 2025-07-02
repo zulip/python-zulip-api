@@ -6,6 +6,7 @@
 # `hg push`). See https://zulip.com/integrations for installation instructions.
 
 import sys
+from email.utils import parseaddr
 
 from mercurial import repository as repo
 from mercurial import ui
@@ -13,6 +14,15 @@ from mercurial import ui
 import zulip
 
 VERSION = "0.9"
+
+
+def parse_user(user: str) -> str:
+    """
+    Extract the name from user string, or fall back to email or raw string
+    if the user string is not in the form "Jane Doe <email@example.com>".
+    """
+    name, email = parseaddr(user)
+    return name or email or user.strip()
 
 
 def format_summary_line(
@@ -23,10 +33,11 @@ def format_summary_line(
     information about the changeset and links to the changelog if a
     web URL has been configured:
 
-    Jane Doe <jane@example.com> pushed 1 commit to default (170:e494a5be3393):
+    Jane Doe pushed 1 commit to default (170:e494a5be3393):
     """
     revcount = tip - base
     plural = "s" if revcount > 1 else ""
+    display_user = parse_user(user)
 
     if web_url:
         shortlog_base_url = web_url.rstrip("/") + "/shortlog/"
@@ -35,7 +46,7 @@ def format_summary_line(
     else:
         formatted_commit_count = f"{revcount} commit{plural}"
 
-    return f"**{user}** pushed {formatted_commit_count} to **{branch}** (`{tip}:{node[:12]}`):\n\n"
+    return f"**{display_user}** pushed {formatted_commit_count} to **{branch}** (`{tip}:{node[:12]}`):\n\n"
 
 
 def format_commit_lines(web_url: str, repo: repo, base: int, tip: int) -> str:
