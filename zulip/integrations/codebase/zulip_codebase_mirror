@@ -121,13 +121,11 @@ def handle_event(event: Dict[str, Any]) -> None:
         subject = f"Push to {branch} on {project}"
 
         if deleted_ref:
-            content = f"{actor_name} deleted branch {branch} from {project}"
+            content = f"{actor_name} deleted branch `{branch}` from {project}"
         else:
             if new_ref:
-                branch = f"new branch {branch}"
-            content = (
-                f"{actor_name} pushed {num_commits} commit(s) to {branch} in project {project}:\n\n"
-            )
+                branch = f"new branch `{branch}`"
+            content = f"{actor_name} pushed {num_commits} commit(s) to `{branch}` in project {project}:\n\n"
             for commit in raw_props.get("commits"):
                 ref = commit.get("ref")
                 url = make_url(f"projects/{project_link}/repositories/{repo_link}/commit/{ref}")
