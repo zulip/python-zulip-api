@@ -60,6 +60,19 @@ def create_pipe_event(
     return _pipe_event
 
 
+def run_direction(from_bot: Dict[str, Any], to_bot: Dict[str, Any], stream_wide: bool) -> None:
+    """
+    Child-process entrypoint. Each child constructs its own clients so no Session
+    objects are ever inherited or pickled.
+    """
+    from_client = zulip.Client(
+        email=from_bot["email"], api_key=from_bot["api_key"], site=from_bot["site"]
+    )
+    to_client = zulip.Client(email=to_bot["email"], api_key=to_bot["api_key"], site=to_bot["site"])
+    pipe_event = create_pipe_event(to_client, from_bot, to_bot, stream_wide)
+    from_client.call_on_each_event(pipe_event, ["message"])
+
+
 if __name__ == "__main__":
     usage = """run-interrealm-bridge [--stream]
 
@@ -78,16 +91,12 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     options = interrealm_bridge_config.config
-
     bot1 = options["bot_1"]
     bot2 = options["bot_2"]
-    client1 = zulip.Client(email=bot1["email"], api_key=bot1["api_key"], site=bot1["site"])
-    client2 = zulip.Client(email=bot2["email"], api_key=bot2["api_key"], site=bot2["site"])
-    # A bidirectional tunnel
-    pipe_event1 = create_pipe_event(client2, bot1, bot2, args.stream)
-    p1 = mp.Process(target=client1.call_on_each_event, args=(pipe_event1, ["message"]))
-    pipe_event2 = create_pipe_event(client1, bot2, bot1, args.stream)
-    p2 = mp.Process(target=client2.call_on_each_event, args=(pipe_event2, ["message"]))
+
+    ctx = mp.get_context("spawn")
+    p1 = ctx.Process(target=run_direction, args=(bot1, bot2, args.stream))
+    p2 = ctx.Process(target=run_direction, args=(bot2, bot1, args.stream))
     p1.start()
     p2.start()
     print("Listening...")
