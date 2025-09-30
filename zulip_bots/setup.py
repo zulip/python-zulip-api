@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-ZULIP_BOTS_VERSION = "0.9.0"
+ZULIP_BOTS_VERSION = "0.9.1"
 IS_PYPA_PACKAGE = False
 
 
