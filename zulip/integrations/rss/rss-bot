@@ -209,7 +209,8 @@ client: zulip.Client = zulip.Client(
 first_message = True
 
 for feed_url in feed_urls:
-    feed_file = os.path.join(opts.data_dir, urllib.parse.urlparse(feed_url).netloc)  # Type: str
+    feed_url_hash = '-'+hashlib.shake_128(feed_url.encode()).hexdigest(4)
+    feed_file = os.path.join(opts.data_dir, urllib.parse.urlparse(feed_url).netloc+feed_url_hash)  # Type: str
 
     try:
         with open(feed_file) as f:
