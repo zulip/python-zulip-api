@@ -1,9 +1,9 @@
 # See readme.md for instructions on running this code.
 import logging
 import string
+import subprocess
 from typing import Dict
 
-import html2text
 import requests
 
 from zulip_bots.lib import AbstractBotHandler
@@ -66,8 +66,11 @@ class DefineHandler:
                     # Show definitions line by line.
                     for d in definitions:
                         example = d["example"] if d["example"] else "*No example available.*"
+                        example_text = subprocess.check_output(
+                            ["html2text", "--unicode-snob"], input=example, text=True
+                        )
                         response += "\n" + "* (**{}**) {}\n&nbsp;&nbsp;{}".format(
-                            d["type"], d["definition"], html2text.html2text(example)
+                            d["type"], d["definition"], example_text
                         )
 
             except Exception:
