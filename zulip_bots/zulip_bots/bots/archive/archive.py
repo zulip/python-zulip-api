@@ -3,7 +3,9 @@ Note: this bot was written by Kimi K2.
 """
 
 import re
+
 import waybackpy
+
 
 class ArchiveBotHandler:
     def usage(self) -> str:
@@ -29,5 +31,6 @@ class ArchiveBotHandler:
 
         if replies:
             bot_handler.send_reply(message, "\n".join(replies))
+
 
 handler_class = ArchiveBotHandler
