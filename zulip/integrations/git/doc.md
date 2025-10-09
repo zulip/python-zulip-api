@@ -51,4 +51,4 @@ In `{{ config_file_path }}`, you can set:
 - The message format used in your Zulip notifications by updating the
   `format_commit_message` function.
 
-[other-integrations]: ../version-control
+[other-integrations]: /integrations/version-control
