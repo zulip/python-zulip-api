@@ -1,27 +1,47 @@
-It is easy to send Zulips on SVN commits, by configuring a
-post-commit hook. To do this:
+# Zulip Subversion Integration
 
-1. {!create-channel.md!}
+Get Zulip notifications for your {{ integration_display_name }} commits by
+configuring a `post-commit` hook!
 
-1. {!download-python-bindings.md!}
+{start_tabs}
 
-1. Install `pysvn`. On Linux, you can install the `python-svn`
-   package. On other platforms, you can install a binary or from
-   source by following the [instructions on the pysvn website][1].
+1.  {!create-an-incoming-webhook.md!}
 
-   [1]: http://pysvn.tigris.org/project_downloads.html
+1.  {!download-python-bindings.md!}
 
-1. {!change-zulip-config-file.md!}
+1.  {!install-requirements.md!}
 
-1. Copy `integrations/svn/zulip_svn_config.py` and
-   `integrations/svn/post-commit` from the API bindings directory
-   to the `hooks` subdirectory of your SVN repository.
+1.  If your {{ integration_display_name }} server and your Zulip server are
+    on the same machine, symlink the `post-commit` hook of your
+    {{ integration_display_name }} repository in your
+    {{ integration_display_name }} server by running:
 
-1. The default stream used by this post-commit hook is `commits`; if
-   you’d prefer a different stream, change it now in
-   `zulip_svn_config.py`. Make sure that everyone interested in getting
-   these post-commit Zulips is subscribed to that stream!
+    `ln -s {{ integration_path }}/post-commit your-repo/hooks/post-commit`
+
+    Otherwise, copy the `post-commit` hook to your
+    {{ integration_display_name }} repository's `/hooks` directory.
+
+    The `post-commit` hook is triggered after every commit.
+
+1.  {!change-zulip-config-file.md!}
+
+1.  Copy the config file to the same directory as the `post-commit` hook.
+
+    `cp {{ config_file_path }} your-repo/hooks`
+
+{end_tabs}
 
 {!congrats.md!}
 
 ![SVN commit bot message](/static/images/integrations/svn/001.png)
+
+### Configuration options
+
+You can configure the channel and topic where notifications are sent by
+updating the `commit_notice_destination` function in
+`{{ config_file_path }}`. By default, notifications are sent to the
+**#commits** channel with the repository as the topic name.
+
+### Related documentation
+
+- [`post-commit` Repository Hook](https://svnbook.red-beard.com/en/1.7/svn.ref.svn.c.post-commit.html)
