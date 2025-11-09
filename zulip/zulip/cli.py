@@ -51,7 +51,16 @@ def log_exit(response: Dict[str, Any]) -> None:
     help="Allows the user to specify a subject for the message.",
 )
 @click.option("--message", "-m", required=True)
-def send_message(recipients: List[str], stream: str, subject: str, message: str) -> None:
+@click.option(
+    "--type",
+    "-t",
+    "message_type",
+    default="private",
+    help="Message type: 'stream', 'private', or 'direct'.",
+)
+def send_message(
+    recipients: List[str], stream: str, subject: str, message: str, message_type: str
+) -> None:
     """Sends a message and optionally prints status about the same."""
 
     # Sanity check user data
@@ -61,26 +70,44 @@ def send_message(recipients: List[str], stream: str, subject: str, message: str)
         click.echo("You cannot specify both a username and a stream/subject.")
         raise SystemExit(1)
     if len(recipients) == 0 and has_stream != has_subject:
-        click.echo("Stream messages must have a subject")
+        click.echo("Stream messages must have a subject.")
         raise SystemExit(1)
     if len(recipients) == 0 and not has_stream:
         click.echo("You must specify a stream/subject or at least one recipient.")
         raise SystemExit(1)
 
-    message_data: Dict[str, Any]
+    # Normalize message type
+    if message_type not in ("stream", "private", "direct"):
+        click.echo("Invalid message type. Use 'stream', 'private', or 'direct'.")
+        raise SystemExit(1)
+
+    # Determine type
     if has_stream:
-        message_data = {
+        message_data: Dict[str, Any] = {
             "type": "stream",
             "content": message,
             "subject": subject,
             "to": stream,
         }
     else:
+        # Default to "direct" if explicitly given, else private
         message_data = {
-            "type": "private",
+            "type": "direct" if message_type == "direct" else "private",
             "content": message,
             "to": recipients,
         }
+
+    # Backward compatibility: convert "direct" → "private" if server doesn’t support feature level 174+
+    if message_data["type"] == "direct":
+        try:
+            if client.server_feature_level() < 174:
+                log.info(
+                    "Server does not support 'direct' message type; falling back to 'private'."
+                )
+                message_data["type"] = "private"
+        except Exception:
+            # Fallback: assume older server
+            message_data["type"] = "private"
 
     if message_data["type"] == "stream":
         log.info(
@@ -89,7 +116,8 @@ def send_message(recipients: List[str], stream: str, subject: str, message: str)
             message_data["subject"],
         )
     else:
-        log.info("Sending message to %s... ", message_data["to"])
+        log.info("Sending %r message to %s... ", message_data["type"], message_data["to"])
+
     response = client.send_message(message_data)
     log_exit(response)
 
@@ -121,11 +149,6 @@ def delete_message(message_id: int) -> None:
     log_exit(response)
 
 
-# TODO
-# https://zulip.com/api/get-messages
-# https://zulip.com/api/construct-narrow
-
-
 @cli.command()
 @click.argument("message_id", type=int)
 @click.argument("emoji_name")
@@ -154,24 +177,12 @@ def remove_reaction(message_id: int, emoji_name: str) -> None:
     log_exit(response)
 
 
-# TODO
-# https://zulip.com/api/render-message
-# https://zulip.com/api/get-raw-message
-# https://zulip.com/api/check-narrow-matches
-
-
 @cli.command()
 @click.argument("message_id", type=int)
 def get_message_history(message_id: int) -> None:
-    """Fetch the message edit history of a previously edited message.
-    Note that edit history may be disabled in some organizations; see https://zulip.com/help/view-a-messages-edit-history.
-    """
+    """Fetch the message edit history of a previously edited message."""
     response = client.get_message_history(message_id)
     log_exit(response)
-
-
-# TODO
-# https://zulip.com/api/update-message-flags
 
 
 @cli.command()
@@ -179,9 +190,6 @@ def mark_all_as_read() -> None:
     """Marks all of the current user's unread messages as read."""
     response = client.mark_all_as_read()
     log_exit(response)
-
-
-# Streams API
 
 
 @cli.command()
