@@ -4,7 +4,6 @@ import sys
 from typing import Any, Dict, List
 
 import click
-
 import zulip
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
@@ -97,10 +96,10 @@ def send_message(
             "to": recipients,
         }
 
-    # Backward compatibility: convert "direct" → "private" if server doesn’t support feature level 174+
+    # Backward compatibility: convert "direct" → "private" if server doesn't support feature level 174+
     if message_data["type"] == "direct":
         try:
-            if client.server_feature_level() < 174:
+            if client.server_feature_level() < 174:  # type: ignore[attr-defined]
                 log.info(
                     "Server does not support 'direct' message type; falling back to 'private'."
                 )
