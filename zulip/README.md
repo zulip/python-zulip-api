@@ -94,6 +94,15 @@ keys: msg, result.  For successful calls, result will be "success" and
 msg will be the empty string.  On error, result will be "error" and
 msg will describe what went wrong.
 
+#### Rate Limiting
+
+The Zulip API client automatically handles rate limiting errors (`RATE_LIMIT_HIT`). When a rate limit error is encountered:
+
+1. If the server provides a `Retry-After` header, the client will pause for the specified number of seconds and then retry the request.
+2. If no `Retry-After` header is provided, the client will use an exponential backoff strategy to retry the request.
+
+This automatic handling ensures that your application doesn't need to implement its own rate limit handling logic.
+
 #### Examples
 
 The API bindings package comes with several nice example scripts that
