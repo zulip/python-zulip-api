@@ -36,6 +36,10 @@ Note that Zulip also offers integrations for [GitHub](./github),
 
 {end_tabs}
 
+{!congrats.md!}
+
+![](/static/images/integrations/git/001.png)
+
 ### Configuration options
 
 In `{{ config_file_path }}`, you can set:
