@@ -37,6 +37,8 @@ def get_deployment_details() -> Dict[str, str]:
         url=os.environ["OPENSHIFT_APP_DNS"],
         branch=splits[2],
         commit_id=splits[3],
+        dep_id=splits[1],
+        dep_time=splits[0],
     )
 
 
