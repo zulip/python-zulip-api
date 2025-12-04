@@ -11,6 +11,7 @@ import traceback
 import types
 import urllib.parse
 from configparser import ConfigParser
+from datetime import datetime
 from typing import (
     IO,
     Any,
@@ -351,6 +352,12 @@ def validate_boolean_field(field: Optional[str]) -> Union[bool, None]:
         return None
 
 
+def datetime_to_global_time(dt: datetime) -> str:
+    if dt.tzinfo is None:
+        raise TimeZoneMissingError(f"Datetime {dt} does not have a time zone.")
+    return f"<time:{dt.isoformat(timespec='seconds')}>"
+
+
 class ZulipError(Exception):
     pass
 
@@ -364,6 +371,10 @@ class MissingURLError(ZulipError):
 
 
 class UnrecoverableNetworkError(ZulipError):
+    pass
+
+
+class TimeZoneMissingError(ZulipError):
     pass
 
 
