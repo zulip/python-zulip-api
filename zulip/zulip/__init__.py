@@ -35,6 +35,13 @@ __version__ = "0.9.1"
 # Ensure the Python version is supported
 assert sys.version_info >= (3, 6)
 
+if sys.version_info < (3, 11):
+    from backports.datetime_fromisoformat import (
+        datetime_fromisoformat as datetime_fromisoformat,  # noqa: PLC0414
+    )
+else:
+    datetime_fromisoformat = datetime.fromisoformat
+
 logger = logging.getLogger(__name__)
 
 API_VERSTRING = "v1/"

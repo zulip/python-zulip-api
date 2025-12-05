@@ -64,6 +64,7 @@ setup(
         ],
     },
     install_requires=[
+        "backports-datetime-fromisoformat; python_version < '3.11'",
         "requests[security]>=0.12.1",
         "distro",
         "click",
