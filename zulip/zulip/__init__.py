@@ -1642,7 +1642,6 @@ class Client:
             method="PUT",
             request=request,
         )
-    
     def remove_storage(self, request: Dict[str, Any]) -> Dict[str, Any]:
         """
         Example usage:
