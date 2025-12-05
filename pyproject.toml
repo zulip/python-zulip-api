@@ -60,6 +60,7 @@ warn_unreachable = true
 [[tool.mypy.overrides]]
 module = [
     "apiai.*",
+    "backports.datetime_fromisoformat.*",
     "feedparser.*",
     "gitlint.*",
     "google.auth.*",
