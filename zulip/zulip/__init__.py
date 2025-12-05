@@ -1646,7 +1646,6 @@ class Client:
     def remove_storage(self, request: Dict[str, Any]) -> Dict[str, Any]:
         """
         Example usage:
-
         >>> client.remove_storage({'keys': ["entry 1"]})
         {'result': 'success', 'msg': ''}
         """
