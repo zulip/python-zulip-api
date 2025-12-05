@@ -1653,7 +1653,6 @@ class Client:
             method="DELETE",
             request=request,
         )
-
     def get_storage(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
         Example usage:
