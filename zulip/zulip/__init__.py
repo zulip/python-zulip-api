@@ -1642,6 +1642,7 @@ class Client:
             method="PUT",
             request=request,
         )
+
     def remove_storage(self, request: Dict[str, Any]) -> Dict[str, Any]:
         """
         Example usage:
@@ -1653,6 +1654,7 @@ class Client:
             method="DELETE",
             request=request,
         )
+
     def get_storage(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
         Example usage:
