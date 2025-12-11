@@ -11,7 +11,7 @@ class TestMerelsBot(BotTestCase, DefaultTests):
     bot_name = "merels"
 
     def test_no_command(self) -> None:
-        # Sanity: out-of-game message for random content.
+        # Out-of-game message for arbitrary input.
         message = dict(
             content="magic", type="stream", sender_email="boo@email.com", sender_full_name="boo"
         )
@@ -21,17 +21,52 @@ class TestMerelsBot(BotTestCase, DefaultTests):
         )
 
     def test_parse_board_identity_empty_board(self) -> None:
-        # parse_board is identity for Merels; verify with the canonical empty board.
+        # Merels parse_board is identity; verify with the canonical empty board.
         bot, _ = self._get_handlers()
         self.assertEqual(bot.game_message_handler.parse_board(EMPTY_BOARD), EMPTY_BOARD)
 
 
-class TestMerelsAdapter(BotTestCase, DefaultTests):
-    """
-    Adapter-focused tests mirroring connect_four, kept in this file to
-    keep Merels tests cohesive. Assert on stable fragments to avoid brittle
-    exact-string matches.
-    """
+class GameAdapterTestLib:
+    """Small helpers for driving GameAdapter-based bots in tests."""
+
+    def send(
+        self,
+        bot,
+        bot_handler,
+        content: str,
+        *,
+        user: str = "foo@example.com",
+        user_name: str = "foo",
+    ) -> None:
+        bot.handle_message(
+            self.make_request_message(content, user=user, user_name=user_name),
+            bot_handler,
+        )
+
+    def replies(self, bot_handler):
+        # Return the bot message 'content' fields from the transcript.
+        return [m["content"] for (_method, m) in bot_handler.transcript]
+
+    def send_and_collect(
+        self,
+        bot,
+        bot_handler,
+        content: str,
+        *,
+        user: str = "foo@example.com",
+        user_name: str = "foo",
+    ):
+        bot_handler.reset_transcript()
+        self.send(bot, bot_handler, content, user=user, user_name=user_name)
+        return self.replies(bot_handler)
+
+
+# Note: Merels has no vs-computer mode (in merels.py, supports_computer=False).
+# If computer mode is added in the future, add adapter-level tests here.
+
+
+class TestMerelsAdapter(BotTestCase, DefaultTests, GameAdapterTestLib):
+    """Adapter-focused tests (mirrors connect_four); use stable fragment assertions."""
 
     bot_name = "merels"
 
@@ -39,7 +74,7 @@ class TestMerelsAdapter(BotTestCase, DefaultTests):
     def make_request_message(
         self, content: str, user: str = "foo@example.com", user_name: str = "foo"
     ) -> Dict[str, str]:
-        # Provide stream metadata; GameAdapter reads message["type"], topic, etc.
+        # Provide stream metadata consumed by GameAdapter.
         return {
             "sender_email": user,
             "sender_full_name": user_name,
@@ -59,7 +94,7 @@ class TestMerelsAdapter(BotTestCase, DefaultTests):
         self.assertTrue(responses, "No bot response to 'help'")
         help_text = responses[0]["content"]
 
-        # Stable fragments; resilient to copy tweaks.
+        # Assert on stable fragments to avoid brittle exact matches.
         self.assertIn("Merels Bot Help", help_text)
         self.assertIn("start game", help_text)
         self.assertIn("play game", help_text)
@@ -104,12 +139,12 @@ class TestMerelsAdapter(BotTestCase, DefaultTests):
     def test_message_handler_helpers(self) -> None:
         bot, _ = self._get_handlers()
 
-        # parse_board returns the given board representation.
+        # Identity parse_board.
         self.assertEqual(
             bot.game_message_handler.parse_board("sample_board_repr"), "sample_board_repr"
         )
 
-        # Token color is one of the two known emoji.
+        # Token color in allowed set.
         self.assertIn(
             bot.game_message_handler.get_player_color(0),
             (":o_button:", ":cross_mark_button:"),
@@ -123,4 +158,40 @@ class TestMerelsAdapter(BotTestCase, DefaultTests):
         self.assertEqual(
             bot.game_message_handler.alert_move_message("foo", "move 1,1"),
             "foo :move 1,1",
+        )
+
+    def test_move_after_join_invokes_make_move_and_replies(self) -> None:
+        """
+        After start/join, Merels begins in placement (Phase 1). Use 'put v,h'
+        and assert the adapter emits an acknowledgement. Try both players to
+        avoid assuming turn order.
+        """
+        bot, bot_handler = self._get_handlers()
+
+        # Start 2P game.
+        _ = self.send_and_collect(
+            bot, bot_handler, "start game", user="foo@example.com", user_name="foo"
+        )
+        _ = self.send_and_collect(bot, bot_handler, "join", user="bar@example.com", user_name="bar")
+
+        # Stable oracles from the handler's formatter.
+        ack_foo = bot.game_message_handler.alert_move_message("foo", "put 1,1")
+        ack_bar = bot.game_message_handler.alert_move_message("bar", "put 1,1")
+
+        # Try current player first (unknown), then the other.
+        contents_foo = self.send_and_collect(
+            bot, bot_handler, "put 1,1", user="foo@example.com", user_name="foo"
+        )
+        joined = " ".join(contents_foo)
+
+        if (ack_foo not in joined) and (ack_bar not in joined) and (":put 1,1" not in joined):
+            contents_bar = self.send_and_collect(
+                bot, bot_handler, "put 1,1", user="bar@example.com", user_name="bar"
+            )
+            joined += " " + " ".join(contents_bar)
+
+        # Assert the adapter produced a placement acknowledgement.
+        self.assertTrue(
+            any(h in joined for h in (":put 1,1", ack_foo, ack_bar)),
+            f"No placement acknowledgement found in: {joined}",
         )
