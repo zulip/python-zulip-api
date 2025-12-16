@@ -615,10 +615,7 @@ class Client:
             if self.verbose:
                 if not query_state["had_error_retry"]:
                     sys.stdout.write(
-                        "zulip API({}): connection error{} -- retrying.".format(
-                            url.split(API_VERSTRING, 2)[0],
-                            error_string,
-                        )
+                        f"zulip API({url.split(API_VERSTRING, 2)[0]}): connection error{error_string} -- retrying."
                     )
                     query_state["had_error_retry"] = True
                 else:
@@ -1657,6 +1654,28 @@ class Client:
             url="bot_storage",
             method="GET",
             request=request,
+        )
+
+    def remove_storage(self, request: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Remove entries from the bot's storage.
+
+        Example:
+            >>> client.update_storage({'storage': {'a': '1', 'b': '2'}})
+            >>> client.remove_storage({'keys': ['a']})
+            >>> client.get_storage()
+            {'result': 'success', 'storage': {'b': '2'}, 'msg': ''}
+
+        Keyword args:
+            keys (List[str]): Keys to remove from storage.
+
+        Returns:
+            Dict[str, Any]: Standard Zulip API response dict.
+        """
+        return self.call_endpoint(
+            url="bot_storage",
+            method="DELETE",
+            request=request or {},
         )
 
     def set_typing_status(self, request: Dict[str, Any]) -> Dict[str, Any]:
