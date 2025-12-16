@@ -781,6 +781,13 @@ class Client:
                 # TODO: Make this use our backoff library
                 time.sleep(1)
                 continue
+            # Fail fast on clearly misconfigured clients to avoid silent retries.
+            if res.get("result") == "error":
+                code = res.get("code")
+                if code in ("UNAUTHORIZED", "BAD_REQUEST"):
+                    # UNAUTHORIZED -> bad/expired credentials
+                    # BAD_REQUEST  -> invalid parameters (often bad narrow)
+                    raise ZulipError(f"{code}: {res.get('msg', '')}")
 
             if "error" in res["result"]:
                 if res["result"] == "http-error":
