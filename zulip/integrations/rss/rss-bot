@@ -234,13 +234,14 @@ for feed_url in feed_urls:
             # entries older than some threshold.
             continue
         if entry_hash in old_feed_hashes:
-            # We've already seen this. No need to process any older entries.
-            break
-        if not old_feed_hashes and len(new_hashes) >= 3:
-            # On a first run, pick up the 3 most recent entries. An RSS feed has
-            # entries in reverse chronological order.
-            break
+            # We've already processed this entry; skip it but continue scanning
+            # the feed, since entries may not be ordered newest-first.
+            continue
 
+        if not old_feed_hashes and len(new_hashes) >= 3:
+            # On a first run, limit how many entries we post, but continue scanning
+            # the feed to record newer entries that may appear later.
+            continue
         feed_name: str = data.feed.title or feed_url
 
         response: Dict[str, Any] = send_zulip(entry, feed_name)
