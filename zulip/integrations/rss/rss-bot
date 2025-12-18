@@ -226,8 +226,6 @@ client: zulip.Client = zulip.Client(
     client="ZulipRSS/" + VERSION,
 )
 
-first_message = True
-
 for feed_url in feed_urls:
     feed_hashes_file = os.path.join(
         opts.data_dir, urllib.parse.urlparse(feed_url).netloc
@@ -239,7 +237,7 @@ for feed_url in feed_urls:
     except OSError:
         old_feed_hashes = {}
 
-    new_hashes: List[str] = []
+    unhashed_entries: List[tuple[Any, str, float]] = []
     data = feedparser.parse(feed_url)
     feed_name: str = data.feed.title or feed_url
     # Safeguard to not process older entries in unordered feeds
@@ -249,32 +247,32 @@ for feed_url in feed_urls:
         entry_hash = compute_entry_hash(entry)
         entry_time, is_time_tagged = get_entry_time(entry)
         if (is_time_tagged and entry_time < entry_threshold) or entry_hash in old_feed_hashes:
-            # As a safeguard against misbehaving feeds, don't try to process
-            # entries older than some threshold.
             continue
-        if entry_hash in old_feed_hashes:
-            # We've already seen this. No need to process any older entries.
-            break
-        if not old_feed_hashes and len(new_hashes) >= opts.max_batch_size:
-            # On a first run, pick up the n (= opts.max_batch_size) most recent entries.
-            # An RSS feed has entries in reverse chronological order.
-            break
+        unhashed_entries.append((entry, entry_hash, entry_time))
 
-        response: Dict[str, Any] = send_zulip(entry, feed_name)
-        if response["result"] != "success":
-            logger.error("Error processing %s", feed_url)
-            logger.error("%s", response)
-            if first_message:
-                # This is probably some fundamental problem like the stream not
-                # existing or something being misconfigured, so bail instead of
-                # getting the same error for every RSS entry.
-                log_error_and_exit("Failed to process first message")
-        # Go ahead and move on -- perhaps this entry is corrupt.
-        new_hashes.append(entry_hash)
-        first_message = False
+    # We process all entries to support unordered feeds,
+    # but post only the latest ones in chronological order.
+    sorted_entries = sorted(unhashed_entries, key=lambda x: x[2])[-opts.max_batch_size :]
 
     with open(feed_hashes_file, "a") as f:
-        for hash in new_hashes:
-            f.write(hash + "\n")
+        for entry_tuple in sorted_entries:
+            entry, entry_hash, _ = entry_tuple
 
-    logger.info("Sent zulips for %d %s entries", len(new_hashes), feed_url)
+            response: Dict[str, Any] = send_zulip(entry, feed_name)
+            if response["result"] != "success":
+                logger.error("Error processing %s", feed_url)
+                logger.error("%s", response)
+                if not old_feed_hashes and entry_tuple == sorted_entries[0]:
+                    # This is probably some fundamental problem like the stream not
+                    # existing or something being misconfigured, so bail instead of
+                    # getting the same error for every RSS entry.
+                    log_error_and_exit("Failed to process first message")
+            # Go ahead and move on -- perhaps this entry is corrupt.
+            f.write(entry_hash + "\n")
+
+    logger.info(
+        "Processed %d entries from %s and sent %d zulips",
+        len(unhashed_entries),
+        feed_url,
+        len(sorted_entries),
+    )
