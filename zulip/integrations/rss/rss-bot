@@ -14,7 +14,7 @@ import sys
 import time
 import urllib.parse
 from html.parser import HTMLParser
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List
 
 import feedparser
 from typing_extensions import override
@@ -187,6 +187,11 @@ def elide_subject(subject: str) -> str:
     return subject
 
 
+def get_entry_time(entry: Any) -> tuple[float, bool]:
+    entry_time = entry.get("published_parsed", entry.get("updated_parsed"))
+    return (calendar.timegm(entry_time), True) if entry_time else (float("-inf"), False)
+
+
 def send_zulip(entry: Any, feed_name: str) -> Dict[str, Any]:
     body: str = entry.summary
     if opts.unwrap:
@@ -237,17 +242,13 @@ for feed_url in feed_urls:
     new_hashes: List[str] = []
     data = feedparser.parse(feed_url)
     feed_name: str = data.feed.title or feed_url
+    # Safeguard to not process older entries in unordered feeds
+    entry_threshold = time.time() - opts.earliest_entry_age * 60 * 60 * 24
 
     for entry in data.entries:
         entry_hash = compute_entry_hash(entry)
-        # An entry has either been published or updated.
-        entry_time: Optional[Tuple[int, int]] = entry.get(
-            "published_parsed", entry.get("updated_parsed")
-        )
-        if (
-            entry_time is not None
-            and time.time() - calendar.timegm(entry_time) > opts.earliest_entry_age * 60 * 60 * 24
-        ):
+        entry_time, is_time_tagged = get_entry_time(entry)
+        if (is_time_tagged and entry_time < entry_threshold) or entry_hash in old_feed_hashes:
             # As a safeguard against misbehaving feeds, don't try to process
             # entries older than some threshold.
             continue
