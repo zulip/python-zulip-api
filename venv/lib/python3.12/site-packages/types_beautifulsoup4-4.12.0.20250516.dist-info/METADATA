@@ -1,0 +1,53 @@
+Metadata-Version: 2.4
+Name: types-beautifulsoup4
+Version: 4.12.0.20250516
+Summary: Typing stubs for beautifulsoup4
+License-Expression: Apache-2.0
+Project-URL: Homepage, https://github.com/python/typeshed
+Project-URL: GitHub, https://github.com/python/typeshed
+Project-URL: Changes, https://github.com/typeshed-internal/stub_uploader/blob/main/data/changelogs/beautifulsoup4.md
+Project-URL: Issue tracker, https://github.com/python/typeshed/issues
+Project-URL: Chat, https://gitter.im/python/typing
+Classifier: Programming Language :: Python :: 3
+Classifier: Typing :: Stubs Only
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: types-html5lib
+Dynamic: license-file
+
+## Typing stubs for beautifulsoup4
+
+This is a [PEP 561](https://peps.python.org/pep-0561/)
+type stub package for the [`beautifulsoup4`](https://git.launchpad.net/beautifulsoup/tree) package.
+It can be used by type-checking tools like
+[mypy](https://github.com/python/mypy/),
+[pyright](https://github.com/microsoft/pyright),
+[pytype](https://github.com/google/pytype/),
+[Pyre](https://pyre-check.org/),
+PyCharm, etc. to check code that uses `beautifulsoup4`. This version of
+`types-beautifulsoup4` aims to provide accurate annotations for
+`beautifulsoup4==4.12.*`.
+
+*Note:* The `beautifulsoup4` package includes type annotations or type stubs
+since version 4.13.0. Please uninstall the `types-beautifulsoup4`
+package if you use this or a newer version.
+
+
+This stub package is marked as [partial](https://peps.python.org/pep-0561/#partial-stub-packages).
+If you find that annotations are missing, feel free to contribute and help complete them.
+
+
+This package is part of the [typeshed project](https://github.com/python/typeshed).
+All fixes for types and metadata should be contributed there.
+See [the README](https://github.com/python/typeshed/blob/main/README.md)
+for more details. The source for this package can be found in the
+[`stubs/beautifulsoup4`](https://github.com/python/typeshed/tree/main/stubs/beautifulsoup4)
+directory.
+
+This package was tested with
+mypy 1.15.0,
+pyright 1.1.400,
+and pytype 2024.10.11.
+It was generated from typeshed commit
+[`126768408a69b7a3a09b7d3992970b289f92937e`](https://github.com/python/typeshed/commit/126768408a69b7a3a09b7d3992970b289f92937e).

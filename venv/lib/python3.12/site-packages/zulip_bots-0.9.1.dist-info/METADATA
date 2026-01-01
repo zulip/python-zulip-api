@@ -1,0 +1,64 @@
+Metadata-Version: 2.4
+Name: zulip_bots
+Version: 0.9.1
+Summary: Zulip's Bot framework
+Home-page: https://www.zulip.org/
+Author: Zulip Open Source Project
+Author-email: zulip-devel@googlegroups.com
+Project-URL: Source, https://github.com/zulip/python-zulip-api/
+Project-URL: Documentation, https://zulip.com/api
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Web Environment
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Topic :: Communications :: Chat
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Requires-Dist: pip
+Requires-Dist: zulip
+Requires-Dist: html2text
+Requires-Dist: lxml
+Requires-Dist: BeautifulSoup4
+Requires-Dist: typing_extensions>=4.5.0
+Requires-Dist: importlib-metadata>=3.6
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: project-url
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# Zulip bots
+
+This directory contains the source code for the `zulip_bots` PyPI package.
+
+The Zulip documentation has guides on [using Zulip's bot system](
+https://chat.zulip.org/api/running-bots)
+and [writing your own bots](
+https://chat.zulip.org/api/writing-bots).
+
+## Directory structure
+
+```shell
+zulip_bots  # This directory
+├───zulip_bots  # `zulip_bots` package.
+│   ├───bots/  # Actively maintained and tested bots.
+│   ├───game_handler.py  # Handles game-related bots.
+│   ├───lib.py  # Backbone of run.py
+│   ├───provision.py  # Creates a development environment.
+│   ├───run.py  # Used to run bots.
+│   ├───simple_lib.py  # Used for terminal testing.
+│   ├───test_lib.py  # Backbone for bot unit tests.
+│   ├───test_run.py  # Unit tests for run.py
+│   └───bot_shell.py  # Used to test bots in the command line.
+└───setup.py  # Script for packaging.
+```

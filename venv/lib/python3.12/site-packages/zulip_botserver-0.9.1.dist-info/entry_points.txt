@@ -1,0 +1,2 @@
+[console_scripts]
+zulip-botserver = zulip_botserver.server:main

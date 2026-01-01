@@ -1,0 +1,44 @@
+Metadata-Version: 2.1
+Name: unpaddedbase64
+Version: 2.1.0
+Summary: Encode and decode Base64 without "=" padding
+Home-page: https://github.com/matrix-org/python-unpaddedbase64
+License: Apache-2.0
+Keywords: base64
+Author: The Matrix.org Foundation C.I.C.
+Requires-Python: >=3.6,<4.0
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Project-URL: Issue Tracker, https://github.com/matrix-org/python-unpaddedbase64/issues
+Description-Content-Type: text/x-rst
+
+Unpadded Base64
+===============
+
+Encode and decode Base64 without "=" padding.
+
+`RFC 4648`_ specifies that Base64 should be padded to a multiple of 4 bytes
+using "=" characters. However many protocols choose to omit the "=" padding.
+
+.. _`RFC 4648`: https://tools.ietf.org/html/rfc4648
+
+Installing
+----------
+
+.. code:: bash
+
+   python3 -m pip install unpaddedbase64
+
+Using
+-----
+
+.. code:: python
+
+    import unpaddedbase64
+    assert (unpaddedbase64.encode_base64(b'\x00')) == 'AA'
+    assert (unpaddedbase64.decode_base64('AA')) == b'\x00'
+

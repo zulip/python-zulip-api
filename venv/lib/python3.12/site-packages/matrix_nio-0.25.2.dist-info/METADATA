@@ -1,0 +1,144 @@
+Metadata-Version: 2.1
+Name: matrix-nio
+Version: 0.25.2
+Summary: A Python Matrix client library, designed according to sans I/O principles.
+Author-email: Damir Jelić <poljar@termina.org.uk>, Paarth Shah <mail@shahpaarth.com>
+License: Internet Systems Consortium license
+        ===================================
+        
+        Copyright (c) `2018`, `Damir Jelić <poljar@termina.org.uk>`
+        
+        Permission to use, copy, modify, and/or distribute this software for any purpose
+        with or without fee is hereby granted, provided that the above copyright notice
+        and this permission notice appear in all copies.
+        
+        THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+        REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+        FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+        INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS
+        OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+        TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
+        THIS SOFTWARE.
+        
+Project-URL: Source, https://github.com/matrix-nio/matrix-nio
+Project-URL: Documentation, https://matrix-nio.readthedocs.io/en/latest/
+Requires-Python: >=3.8.0
+Description-Content-Type: text/markdown
+License-File: LICENSE.md
+Requires-Dist: aiohttp ~=3.10
+Requires-Dist: aiofiles ~=24.1
+Requires-Dist: h11 ~=0.14
+Requires-Dist: h2 ~=4.0
+Requires-Dist: jsonschema ~=4.14
+Requires-Dist: unpaddedbase64 ~=2.1
+Requires-Dist: pycryptodome ~=3.10
+Requires-Dist: aiohttp-socks ~=0.8
+Provides-Extra: dev
+Requires-Dist: matrix-nio[e2e] ; extra == 'dev'
+Requires-Dist: aioresponses ~=0.7 ; extra == 'dev'
+Requires-Dist: hpack ~=4.0 ; extra == 'dev'
+Requires-Dist: hyperframe ~=6.0 ; extra == 'dev'
+Requires-Dist: hypothesis ~=6.8 ; extra == 'dev'
+Requires-Dist: faker ~=8.0 ; extra == 'dev'
+Requires-Dist: mypy ~=1.11 ; extra == 'dev'
+Requires-Dist: mypy-extensions ~=1.0 ; extra == 'dev'
+Requires-Dist: pre-commit ; extra == 'dev'
+Requires-Dist: pytest ~=8.2 ; extra == 'dev'
+Requires-Dist: pytest-asyncio ~=0.24 ; extra == 'dev'
+Requires-Dist: pytest-aiohttp ~=0.3 ; extra == 'dev'
+Requires-Dist: pytest-benchmark ~=4.0 ; extra == 'dev'
+Requires-Dist: pytest-cov ~=2.11 ; extra == 'dev'
+Requires-Dist: pytest-flake8 ~=1.2 ; extra == 'dev'
+Provides-Extra: docs
+Requires-Dist: matrix-nio[dev] ; extra == 'docs'
+Requires-Dist: setuptools >=61.0 ; extra == 'docs'
+Requires-Dist: sphinx ~=7.4 ; extra == 'docs'
+Requires-Dist: sphinx-autodoc-typehints ~=2.1 ; extra == 'docs'
+Requires-Dist: sphinx-mdinclude >=0.5 ; extra == 'docs'
+Requires-Dist: sphinx-rtd-theme ~=2.0 ; extra == 'docs'
+Provides-Extra: e2e
+Requires-Dist: atomicwrites ~=1.4 ; extra == 'e2e'
+Requires-Dist: cachetools ~=5.3 ; extra == 'e2e'
+Requires-Dist: peewee ~=3.14 ; extra == 'e2e'
+Requires-Dist: python-olm ~=3.2 ; extra == 'e2e'
+
+nio
+===
+
+[![Build Status](https://img.shields.io/github/actions/workflow/status/matrix-nio/matrix-nio/tests.yml?branch=main&style=flat-square)](https://github.com/matrix-nio/matrix-nio/actions)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/matrix-nio?style=flat-square)](https://pypi.org/project/matrix-nio/)
+[![codecov](https://img.shields.io/codecov/c/github/matrix-nio/matrix-nio/master.svg?style=flat-square)](https://codecov.io/gh/matrix-nio/matrix-nio)
+[![license](https://img.shields.io/badge/license-ISC-blue.svg?style=flat-square)](https://github.com/matrix-nio/matrix-nio/blob/master/LICENSE.md)
+[![Documentation Status](https://readthedocs.org/projects/matrix-nio/badge/?version=latest&style=flat-square)](https://matrix-nio.readthedocs.io/en/latest/?badge=latest)
+[![#nio](https://img.shields.io/badge/matrix-%23nio:matrix.org-blue.svg?style=flat-square)](https://matrix.to/#/!JiiOHXrIUCtcOJsZCa:matrix.org?via=matrix.org&via=maunium.net&via=t2l.io)
+
+nio is a multilayered [Matrix](https://matrix.org/) client library. The
+underlying base layer doesn't do any network IO on its own, but on top of that
+is a full-fledged batteries-included asyncio layer using
+[aiohttp](https://github.com/aio-libs/aiohttp/). File IO is only done if you
+enable end-to-end encryption (E2EE).
+
+Documentation
+-------------
+
+The full API documentation for nio can be found at
+[https://matrix-nio.readthedocs.io](https://matrix-nio.readthedocs.io/en/latest/#api-documentation)
+
+Features
+--------
+
+nio has most of the features you'd expect in a Matrix library, but it's still a work in progress.
+
+- ✅ transparent end-to-end encryption (EE2E)
+- ✅ encrypted file uploads & downloads
+- ✅ space parents/children
+- ✅ manual and emoji verification
+- ✅ custom [authentication types](https://matrix.org/docs/spec/client_server/r0.6.0#id183)
+- ✅ threading support
+- ✅ well-integrated type system
+- ✅ knocking, kick, ban and unban
+- ✅ typing notifications
+- ✅ message redaction
+- ✅ token based login
+- ✅ user registration
+- ✅ read receipts
+- ✅ live syncing
+- ✅ `m.reaction`s
+- ✅ `m.tag`s
+- ❌ cross-signing support
+- ❌ server-side key backups (room key backup, "Secure Backup")
+- ❌ user deactivation ([#112](https://github.com/matrix-nio/matrix-nio/issues/112))
+- ❌ in-room emoji verification
+
+Installation
+------------
+
+To install nio, simply use pip:
+
+```bash
+$ pip install matrix-nio
+```
+
+Note that this installs nio without end-to-end encryption support. For e2ee
+support, python-olm is needed which requires the
+[libolm](https://gitlab.matrix.org/matrix-org/olm) C library (version 3.x).
+On Debian and Ubuntu one can use `apt-get` to install package `libolm-dev`.
+On Fedora one can use `dnf` to install package `libolm-devel`.
+On MacOS one can use [brew](https://brew.sh/) to install package `libolm`.
+Make sure version 3 is installed.
+
+After libolm has been installed, the e2ee enabled version of nio can be
+installed using pip:
+
+```bash
+$ pip install matrix-nio[e2e]
+```
+
+Additionally, a docker image with the e2ee enabled version of nio is provided in
+the `docker/` directory.
+
+Examples
+--------
+
+For examples of how to use nio, and how others are using it,
+[read the docs](https://matrix-nio.readthedocs.io/en/latest/examples.html)

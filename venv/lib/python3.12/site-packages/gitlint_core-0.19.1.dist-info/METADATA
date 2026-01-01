@@ -1,0 +1,64 @@
+Metadata-Version: 2.1
+Name: gitlint-core
+Version: 0.19.1
+Summary: Git commit message linter written in python, checks your commit messages for style.
+Project-URL: Homepage, https://jorisroovers.github.io/gitlint
+Project-URL: Documentation, https://jorisroovers.github.io/gitlint
+Project-URL: Source, https://github.com/jorisroovers/gitlint/tree/main/gitlint-core
+Project-URL: Changelog, https://github.com/jorisroovers/gitlint/blob/main/CHANGELOG.md
+Author: Joris Roovers
+License-Expression: MIT
+License-File: LICENSE
+Keywords: git,gitlint,lint
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+Classifier: Topic :: Software Development :: Quality Assurance
+Classifier: Topic :: Software Development :: Testing
+Requires-Python: >=3.7
+Requires-Dist: arrow>=1
+Requires-Dist: click>=8
+Requires-Dist: importlib-metadata>=1.0; python_version < '3.8'
+Requires-Dist: sh>=1.13.0; sys_platform != 'win32'
+Provides-Extra: trusted-deps
+Requires-Dist: arrow==1.2.3; extra == 'trusted-deps'
+Requires-Dist: click==8.1.3; extra == 'trusted-deps'
+Requires-Dist: sh==1.14.3; sys_platform != 'win32' and extra == 'trusted-deps'
+Description-Content-Type: text/markdown
+
+# Gitlint-core
+
+# gitlint: [jorisroovers.github.io/gitlint](http://jorisroovers.github.io/gitlint/) #
+
+[![Tests](https://github.com/jorisroovers/gitlint/workflows/Tests%20and%20Checks/badge.svg)](https://github.com/jorisroovers/gitlint/actions?query=workflow%3A%22Tests+and+Checks%22)
+[![Coverage Status](https://coveralls.io/repos/github/jorisroovers/gitlint/badge.svg?branch=fix-coveralls)](https://coveralls.io/github/jorisroovers/gitlint?branch=fix-coveralls)
+[![PyPi Package](https://img.shields.io/pypi/v/gitlint.png)](https://pypi.python.org/pypi/gitlint)
+![Supported Python Versions](https://img.shields.io/pypi/pyversions/gitlint.svg)
+
+Git commit message linter written in python, checks your commit messages for style.
+
+**See [jorisroovers.github.io/gitlint](http://jorisroovers.github.io/gitlint/) for full documentation.**
+
+<a href="http://jorisroovers.github.io/gitlint/" target="_blank">
+<img src="https://raw.githubusercontent.com/jorisroovers/gitlint/main/docs/images/readme-gitlint.png" />
+</a>
+
+## Contributing ##
+All contributions are welcome and very much appreciated!
+
+**I'm [looking for contributors](https://github.com/jorisroovers/gitlint/issues/134) that are interested in taking a more active co-maintainer role as it's becoming increasingly difficult for me to find time to maintain gitlint. Please leave a comment in [#134](https://github.com/jorisroovers/gitlint/issues/134) if you're interested!**
+
+See [jorisroovers.github.io/gitlint/contributing](http://jorisroovers.github.io/gitlint/contributing) for details on
+how to get started - it's easy!
+
+We maintain a [loose project plan on Github Projects](https://github.com/users/jorisroovers/projects/1/views/1).
