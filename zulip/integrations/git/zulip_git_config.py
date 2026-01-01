@@ -38,7 +38,7 @@ def commit_notice_destination(repo: str, branch: str, commit: str) -> Optional[D
 #
 # return '!avatar(%s) [%s](https://example.com/commits/%s)\n' % (author, subject, commit_id)
 def format_commit_message(author: str, subject: str, commit_id: str) -> str:
-    return f"!avatar({author}) {subject}\n"
+    return f"{author}: {subject}\n" # Removed the deprecaed !avatar here (1)
 
 
 ## If properly installed, the Zulip API should be in your import

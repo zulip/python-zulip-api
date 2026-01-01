@@ -47,7 +47,7 @@ def git_commit_range(oldrev: str, newrev: str) -> str:
         if hasattr(config, "format_commit_message"):
             commits += config.format_commit_message(author_email, subject, commit_id)
         else:
-            commits += f"!avatar({author_email}) {subject}\n"
+            commits += f"{author_email}: {subject}\n" # Removed deprecated !avatar here (2)
     return commits
 
 
