@@ -1,77 +1,103 @@
-# Zulip API
+# Zulip Python API 🚀
 
 [![Build status](https://github.com/zulip/python-zulip-api/workflows/build/badge.svg)](
 https://github.com/zulip/python-zulip-api/actions?query=branch%3Amain+workflow%3Abuild)
 [![Coverage status](https://img.shields.io/codecov/c/github/zulip/python-zulip-api)](
 https://codecov.io/gh/zulip/python-zulip-api)
 
-This repository contains the source code for Zulip's PyPI packages:
+## What is this?
 
-* `zulip`: [PyPI package](https://pypi.python.org/pypi/zulip/)
-  for Zulip's API bindings.
-* `zulip_bots`: [PyPI package](https://pypi.python.org/pypi/zulip-bots)
-  for Zulip's bots and bots API.
-* `zulip_botserver`: [PyPI package](https://pypi.python.org/pypi/zulip-botserver)
-  for Zulip's Flask Botserver.
+This repository contains Python packages for interacting with [Zulip](https://zulip.com/), an open-source team chat platform.
 
-The source code is written in *Python 3*.
+**Three main packages:**
+- **`zulip`** - API bindings to send messages and interact with Zulip
+- **`zulip_bots`** - Framework to build and run chatbots
+- **`zulip_botserver`** - Server for hosting multiple bots
 
-## Development
+> 💡 **New to open source?** This is a beginner-friendly project perfect for your first contribution!
 
-This is part of the Zulip open source project; see the
-[contributing guide](https://zulip.readthedocs.io/en/latest/overview/contributing.html)
-and [commit guidelines](https://zulip.readthedocs.io/en/latest/contributing/version-control.html).
+---
 
-1. Fork and clone the Git repo, and set upstream to zulip/python-zulip-api:
-   ```
-   git clone https://github.com/<your_username>/python-zulip-api.git
-   cd python-zulip-api
-   git remote add upstream https://github.com/zulip/python-zulip-api.git
-   git fetch upstream
-   ```
+## ⚡ Quick Start (5 minutes)
 
-2. Make sure you have [pip](https://pip.pypa.io/en/stable/installing/).
+### Prerequisites
+- Python 3.7+ installed
+- Git installed
+- ~200MB disk space
 
-3. Run:
-   ```
-   python3 ./tools/provision
-   ```
-   This sets up a virtual Python environment in `zulip-api-py<your_python_version>-venv`,
-   where `<your_python_version>` is your default version of Python. If you would like to specify
-   a different Python version, run
-   ```
-   python3 ./tools/provision -p <path_to_your_python_version>
-   ```
+### Step 1: Clone the repo
+```bash
+git clone https://github.com/YOUR_USERNAME/python-zulip-api.git
+cd python-zulip-api
+git remote add upstream https://github.com/zulip/python-zulip-api.git
+```
 
-4. If that succeeds, it will end with printing the following command:
-   ```
-   source /.../python-zulip-api/.../activate
-   ```
-   You can run this command to enter the virtual environment.
-   You'll want to run this in each new shell before running commands from `python-zulip-api`.
+### Step 2: Run setup (one command!)
+```bash
+python3 ./tools/provision
+```
 
-5. Once you've entered the virtualenv, you should see something like this on the terminal:
-   ```
-   (zulip-api-py3-venv) user@pc ~/python-zulip-api $
-   ```
-   You should now be able to run any commands/tests/etc. in this
-   virtual environment.
+This will:
+- Create a Python virtual environment
+- Install all dependencies
+- Set up the project automatically
 
-### Running tests
+### Step 3: Activate the environment
+After setup completes, copy and run the activation command shown in your terminal. It will look something like:
+```bash
+source zulip-api-py3-venv/bin/activate
+```
 
-You can run all the tests with:
+✅ **Done!** You're ready to develop.
 
-`pytest`
+---
 
-or test individual packages with `pytest zulip`, `pytest zulip_bots`,
-or `pytest zulip_botserver` (see the [pytest
-documentation](https://docs.pytest.org/en/latest/how-to/usage.html)
-for more options).
+## 🛠️ Common Commands
 
-To run the linter, type:
+### Run all tests
+```bash
+pytest
+```
 
-`./tools/lint`
+### Run tests for specific package
+```bash
+pytest zulip           # Test the main zulip package
+pytest zulip_bots      # Test the bots package
+pytest zulip_botserver # Test the botserver
+```
 
-To check the type annotations, run:
+### Check code style
+```bash
+./tools/lint
+```
 
-`./tools/run-mypy`
+### Check type annotations
+```bash
+./tools/run-mypy
+```
+
+---
+
+## 📖 Next Steps
+
+- **Want to contribute?** → Read [CONTRIBUTING.md](CONTRIBUTING.md)
+- **Learn the codebase?** → Check out individual README files in each package folder
+- **Need help?** → See the [main Zulip contributing guide](https://zulip.readthedocs.io/en/latest/overview/contributing.html)
+
+---
+
+## 📝 Project Structure
+
+```
+zulip/                 # Main API client
+zulip_bots/            # Bot framework
+zulip_botserver/       # Bot server
+tools/                 # Helper scripts (provision, lint, etc.)
+```
+
+---
+
+## 💬 Questions?
+
+- Open an issue on GitHub
+- Ask in [Zulip's development community](https://chat.zulip.org/)
