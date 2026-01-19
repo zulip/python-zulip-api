@@ -6,7 +6,8 @@ Welcome! We're excited to have you contribute. This guide will help you make you
 
 No worries! Here's the path:
 
-1. **Set up the project** → Follow the [README.md](README.md) quick start (5 minutes)
+1. **Set up the project** → Follow the README quick start (5 minutes).
+    See <README.md>.
 2. **Find an issue** → Look for issues labeled `good first issue` or `newcomer-friendly`
 3. **Make your change** → Edit code, run tests, ensure everything works
 4. **Submit a PR** → Push to GitHub and create a pull request
@@ -42,23 +43,24 @@ git checkout -b fix/issue-name-here
 Edit the files you need to change. Some common areas:
 - **Documentation fixes?** → Edit `.md` files or docstrings
 - **Bug fix?** → Find the relevant `.py` file
-- **New feature?** → Check the package structure in [README.md](README.md)
+- **New feature?** → Check the package structure in README.  
+    See <README.md>.
 
 ### Step 5: Test Your Changes
 ```bash
 # Run all tests
-pytest
+`pytest`
 
 # Run tests for specific package
-pytest zulip
-pytest zulip_bots
-pytest zulip_botserver
+`pytest zulip`  # Test the main zulip package
+`pytest zulip_bots`  # Test the bots package
+`pytest zulip_botserver`  # Test the Botserver
 
 # Check code style
-./tools/lint
+`./tools/lint`
 
 # Check type annotations
-./tools/run-mypy
+`./tools/run-mypy`
 ```
 
 ✅ **All tests passing?** Great! Move to the next step.
@@ -90,7 +92,7 @@ Then:
 ```
 Fixes #123
 
-This PR fixes the issue where the bot server wouldn't start on Python 3.10.
+This PR fixes the issue where the Botserver wouldn't start on Python 3.10.
 
 Changes:
 - Updated version check in server.py
