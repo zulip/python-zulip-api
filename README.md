@@ -80,8 +80,8 @@ pytest
 
 ## 📖 Next Steps
 
-- **Want to contribute?** → Read the CONTRIBUTING guide.  
-	See <CONTRIBUTING.md>
+- **Want to contribute?** → Read the CONTRIBUTING guide.
+	See <CONTRIBUTING.md>.
 - **Learn the codebase?** → Check out individual README files in each package folder
 - **Need help?** → See the [main Zulip contributing guide](https://zulip.readthedocs.io/en/latest/overview/contributing.html)
 

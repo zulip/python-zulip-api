@@ -43,7 +43,7 @@ git checkout -b fix/issue-name-here
 Edit the files you need to change. Some common areas:
 - **Documentation fixes?** → Edit `.md` files or docstrings
 - **Bug fix?** → Find the relevant `.py` file
-- **New feature?** → Check the package structure in README.  
+- **New feature?** → Check the package structure in README.
     See <README.md>.
 
 ### Step 5: Test Your Changes
@@ -169,11 +169,11 @@ Related PR: #120
 def get_user_message(user_id: int, limit: int = 10) -> list[str]:
     """
     Fetch messages from a user.
-    
+
     Args:
         user_id: The ID of the user
         limit: Maximum number of messages to fetch (default: 10)
-    
+
     Returns:
         A list of message strings
     """
