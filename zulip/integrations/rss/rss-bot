@@ -239,7 +239,7 @@ for feed_url in feed_urls:
 
     unhashed_entries: List[tuple[Any, str, float]] = []
     data = feedparser.parse(feed_url)
-    feed_name: str = data.feed.title or feed_url
+    feed_name: str = getattr(data.feed, "title", None) or feed_url
     # Safeguard to not process older entries in unordered feeds
     entry_threshold = time.time() - opts.earliest_entry_age * 60 * 60 * 24
 
