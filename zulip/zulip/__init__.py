@@ -851,11 +851,15 @@ class Client:
         """
         return self.call_endpoint(url="messages/matches_narrow", method="GET", request=request)
 
-    def get_raw_message(self, message_id: int) -> Dict[str, str]:
+    def get_raw_message(self, message_id: int, apply_markdown: bool = True) -> Dict[str, str]:
         """
         See examples/get-raw-message for example usage
         """
-        return self.call_endpoint(url=f"messages/{message_id}", method="GET")
+        return self.call_endpoint(
+            url=f"messages/{message_id}",
+            method="GET",
+            request={"apply_markdown": apply_markdown},
+        )
 
     def send_message(self, message_data: Dict[str, Any]) -> Dict[str, Any]:
         """

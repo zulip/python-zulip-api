@@ -13,8 +13,9 @@ Example: get-raw-message 42
 
 parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage))
 parser.add_argument("message_id", type=int)
+parser.add_argument("--apply_markdown", action="store_false")
 options = parser.parse_args()
 
 client = zulip.init_from_options(options)
 
-print(client.get_raw_message(options.message_id))
+print(client.get_raw_message(options.message_id, apply_markdown=options.apply_markdown))
