@@ -1752,6 +1752,27 @@ class Client:
             request=request,
         )
 
+    def reply_on_each_stream_mention(self, handle_message: Callable[[str], None], verbose=False):
+        def callback(msg):
+            if msg["type"] != "stream":
+                return
+            if verbose:
+                print("Processing", msg)
+
+            content = handle_message(msg)
+            if verbose:
+                print("sending", msg["content"])
+            request = {
+                "type": "stream",
+                "to": msg["display_recipient"],
+                "topic": msg["subject"],
+                "content": content,
+            }
+            self.send_message(request)
+
+        narrow = [["is", "mentioned"]]
+        self.call_on_each_message(callback, narrow=narrow)
+
 
 class ZulipStream:
     """
