@@ -501,7 +501,7 @@ class Client:
             )
             self.tls_verification: Union[bool, str] = False
         elif cert_bundle is not None:
-            if not os.path.isfile(cert_bundle):
+            if not os.path.exists(cert_bundle):
                 raise ConfigNotFoundError(f"tls bundle '{cert_bundle}' does not exist")
             self.tls_verification = cert_bundle
         else:
