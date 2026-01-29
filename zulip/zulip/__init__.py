@@ -705,6 +705,26 @@ class Client:
                     "status_code": res.status_code,
                 }
 
+            # Handle rate limiting automatically
+            if json_result.get("result") == "error" and json_result.get("code") == "RATE_LIMIT_HIT":
+                retry_after = None
+                # Check for Retry-After header (in seconds)
+                if "Retry-After" in res.headers:
+                    try:
+                        retry_after = int(res.headers["Retry-After"])
+                    except (ValueError, TypeError):
+                        pass
+                
+                # If we have a valid retry_after value, sleep and retry
+                if retry_after and retry_after > 0:
+                    if self.verbose:
+                        print(f"Rate limit hit. Retrying after {retry_after} seconds...")
+                    time.sleep(retry_after)
+                    continue
+                # If no valid retry_after header, use a default backoff
+                elif error_retry(" (rate limited)"):
+                    continue
+
             end_error_retry(True)
             return json_result
 
