@@ -1647,6 +1647,18 @@ class Client:
             request=request,
         )
 
+    def remove_storage(self, request: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Example usage:
+        >>> client.remove_storage({'keys': ["entry 1"]})
+        {'result': 'success', 'msg': ''}
+        """
+        return self.call_endpoint(
+            url="bot_storage",
+            method="DELETE",
+            request=request,
+        )
+
     def get_storage(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
         Example usage:
