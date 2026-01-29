@@ -758,8 +758,8 @@ class Client:
 
         queue_id = None
         # Make long-polling requests with `get_events`. Once a request
-        # has received an answer, pass it to the callback and before
-        # making a new long-polling request.
+        # has received an answer, pass it to the callback before making
+        # a new long-polling request.
         while True:
             if queue_id is None:
                 queue_id, last_event_id = do_register()
