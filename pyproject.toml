@@ -68,6 +68,7 @@ module = [
     "google_auth_oauthlib.*",
     "googleapiclient.*",
     "irc.*",
+    "markdownify.*",
     "mercurial.*",
     "nio.*",
     "oauth2client.*",
