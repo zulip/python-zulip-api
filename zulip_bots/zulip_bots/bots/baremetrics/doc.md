@@ -20,11 +20,7 @@ To do this, follow the given steps:
 3. Open up `zulip_bots/bots/baremetrics/baremetrics.conf` in an editor and
    change the value of the `<api_key>` attribute to the noted `Live API Key`.
 
-## Developer Notes
-
-Be sure to add the command and its description to their respective lists (named `commands` and `descriptions`)
-so that it can be displayed with the other available commands using `@<botname> list-commands`. Also modify
-the `test_list_commands_command` in `test_baremetrics.py`.
+Run this bot as described in [here](https://zulip.com/api/running-bots#running-a-bot).
 
 ## Links
 
@@ -35,7 +31,5 @@ the `test_list_commands_command` in `test_baremetrics.py`.
 ## Usage
 
 `@Baremetrics list-commands` - This command gives a list of all available commands along with short
-short descriptions.
-
-Example:
+descriptions. Example usage: `@Baremetrics list-commands`:
 ![](assets/list-commands.png)
