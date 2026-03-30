@@ -36,9 +36,9 @@ def commit_notice_destination(repo: str, branch: str, commit: str) -> Optional[D
 # common customization is to include a link to the commit in your
 # graphical repository viewer, e.g.
 #
-# return '!avatar(%s) [%s](https://example.com/commits/%s)\n' % (author, subject, commit_id)
+# return '* [%s](https://example.com/commits/%s) (by %s)\n' % (subject, commit_id, author)
 def format_commit_message(author: str, subject: str, commit_id: str) -> str:
-    return f"!avatar({author}) {subject}\n"
+    return f"* {subject} (by {author})\n"
 
 
 ## If properly installed, the Zulip API should be in your import
