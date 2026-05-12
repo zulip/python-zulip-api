@@ -1633,6 +1633,7 @@ class Client:
             request=request,
         )
 
+    # See https://zulip.com/api/update-bot-storage
     def update_storage(self, request: Dict[str, Any]) -> Dict[str, Any]:
         """
         Example usage:
@@ -1647,6 +1648,7 @@ class Client:
             request=request,
         )
 
+    # See https://zulip.com/api/get-bot-storage
     def get_storage(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
         Example usage:
