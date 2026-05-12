@@ -1665,6 +1665,23 @@ class Client:
             request=request,
         )
 
+    # See https://zulip.com/api/remove-bot-storage
+    def remove_storage(self, request: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """
+        Example usage:
+
+        >>> client.update_storage({'storage': {"entry 1": "value 1", "entry 2": "value 2"}})
+        >>> client.remove_storage({'keys': ["entry 1"]})
+        {'result': 'success', 'msg': ''}
+        >>> client.remove_storage()
+        {'result': 'success', 'msg': ''}
+        """
+        return self.call_endpoint(
+            url="bot_storage",
+            method="DELETE",
+            request=request,
+        )
+
     def set_typing_status(self, request: Dict[str, Any]) -> Dict[str, Any]:
         """
         Example usage:
