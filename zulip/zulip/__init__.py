@@ -5,6 +5,8 @@ import optparse
 import os
 import platform
 import random
+import shlex
+import subprocess
 import sys
 import time
 import traceback
@@ -380,6 +382,8 @@ class MissingURLError(ZulipError):
 class UnrecoverableNetworkError(ZulipError):
     pass
 
+class APIKeyRetrievalError(ZulipError):
+    pass
 
 class TimeZoneMissingError(ZulipError):
     pass
@@ -390,6 +394,7 @@ class Client:
         self,
         email: Optional[str] = None,
         api_key: Optional[str] = None,
+        passcmd: Optional[str] = None,
         config_file: Optional[str] = None,
         verbose: bool = False,
         retry_on_errors: bool = True,
@@ -442,8 +447,29 @@ class Client:
             config = ConfigParser()
             with open(config_file) as f:
                 config.read_file(f, config_file)
-            if api_key is None:
+            if api_key is None and config.has_option("api", "key"):
                 api_key = config.get("api", "key")
+            if passcmd is None and config.has_option("api", "passcmd"):
+                passcmd = config.get("api", "passcmd")
+                malicious_chars = {";", "|", "&", ">", "<", "`", "$", "\\", "\n", "\r"}
+                if any(char in passcmd for char in malicious_chars):
+                    raise APIKeyRetrievalError(
+                        f"Invalid characters detected in passcmd: {passcmd!r}"
+                    )
+                try:
+                    cmd_parts = shlex.split(passcmd)
+                except ValueError as err:
+                    raise APIKeyRetrievalError(
+                        f"Failed to parse passcmd '{passcmd}': {err!s}"
+                    ) from err
+                try:
+                    result = subprocess.run(cmd_parts, capture_output=True, check=True)
+                    api_key = result.stdout.decode().strip()
+                except subprocess.CalledProcessError as err:
+                    raise APIKeyRetrievalError(
+                        f'Failed to retrieve API key using passcmd "{passcmd}".'
+                        f"Command exited with return code {err.returncode}."
+                    ) from err
             if email is None:
                 email = config.get("api", "email")
             if site is None and config.has_option("api", "site"):
