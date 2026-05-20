@@ -35,7 +35,9 @@ class StubBotHandler:
         return self.message_server.send(response_message)
 
     def react(self, message: Dict[str, Any], emoji_name: str) -> Dict[str, Any]:
-        return self.message_server.add_reaction(emoji_name)
+        return self.message_server.add_reaction(
+            dict(message_id=message["id"], emoji_name=emoji_name, reaction_type="unicode_emoji")
+        )
 
     def update_message(self, message: Dict[str, Any]) -> None:
         self.message_server.update(message)
@@ -126,6 +128,7 @@ class BotTestCase(unittest.TestCase):
             sender_full_name="Foo Test User",
             sender_id="123",
             content=content,
+            id=0,
         )
         return message
 
