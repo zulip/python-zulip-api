@@ -1,0 +1,22 @@
+{
+    "request": {
+        "api_url": "https://api.coinbase.com/v2/prices/BTC-USD/spot",
+        "params": {
+            "date": "2022-04-16"
+        }
+    },
+    "response": {
+        "meta": {
+            "status": 200
+        },
+        "data": {
+            "amount": 40554.6,
+            "base" : "BTC",
+            "currency": "USD"
+        }
+    },
+    "response-headers": {
+        "status": 200,
+        "content-type": "application/json; charset=utf-8"
+    }
+}
