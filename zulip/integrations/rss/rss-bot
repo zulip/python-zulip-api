@@ -13,10 +13,12 @@ import re
 import sys
 import time
 import urllib.parse
+from collections.abc import Callable
 from html.parser import HTMLParser
 from typing import Any, Dict, List
 
 import feedparser
+from markdownify import markdownify
 from typing_extensions import override
 
 import zulip
@@ -106,6 +108,19 @@ parser.add_argument(
     help="The earliest date (relative to today) you want to process entries from (in days)",
     default=30,
     action="store",
+)
+body = parser.add_mutually_exclusive_group()
+body.add_argument(
+    "--strip",
+    dest="strip",
+    action="store_true",
+    help="Strip HTML tags from body",
+)
+body.add_argument(
+    "--markdownify",
+    dest="strip",
+    action="store_false",
+    help="Convert body from HTML to Markdown",
 )
 
 opts = parser.parse_args()
@@ -198,7 +213,12 @@ def send_zulip(entry: Any, feed_name: str) -> Dict[str, Any]:
         body = unwrap_text(body)
 
     title = f"**[{entry.title}]({entry.link})**\n" if hasattr(entry, "title") else ""
-    content = f"{title}{strip_tags(body)}\n{entry.link}"
+
+    def md(html: str) -> str:
+        return markdownify(html, escape_underscores=False)
+
+    convert: Callable[[str], str] = strip_tags if opts.strip else md
+    content = f"{title}{convert(body)}\n{entry.link}"
 
     if opts.math:
         content = content.replace("$", "$$")
