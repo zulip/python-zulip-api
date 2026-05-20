@@ -5,6 +5,7 @@ import optparse
 import os
 import platform
 import random
+import subprocess
 import sys
 import time
 import traceback
@@ -293,24 +294,30 @@ def generate_option_group(parser: optparse.OptionParser, prefix: str = "") -> op
 def init_from_options(options: Any, client: Optional[str] = None) -> "Client":
     if getattr(options, "provision", False):
         requirements_path = os.path.abspath(os.path.join(sys.path[0], "requirements.txt"))
-        try:
-            import pip
-        except ImportError:
-            traceback.print_exc()
-            print(
-                "Module `pip` is not installed. To install `pip`, follow the instructions here: "
-                "https://pip.pypa.io/en/stable/installing/"
+        current_python_executable = os.path.abspath(sys.executable)
+        provisioning_exit_code = subprocess.call(
+            [
+                current_python_executable,
+                "-m",
+                "pip",
+                "install",
+                "--upgrade",
+                "--requirement",
+                requirements_path,
+            ]
+        )
+        provisioning_succeeded = provisioning_exit_code == 0
+        color_green = "\033[92m"
+        color_red = "\033[91m"
+        print(
+            "{text_color}Dependency provisioning {status_text} for {script}.{end_color}".format(
+                text_color=color_green if provisioning_succeeded else color_red,
+                end_color="\033[0m",
+                script=os.path.splitext(os.path.basename(sys.argv[0]))[0],
+                status_text="succeeded" if provisioning_succeeded else "failed",
             )
-            sys.exit(1)
-        if not pip.main(["install", "--upgrade", "--requirement", requirements_path]):
-            print(
-                "{color_green}You successfully provisioned the dependencies for {script}.{end_color}".format(
-                    color_green="\033[92m",
-                    end_color="\033[0m",
-                    script=os.path.splitext(os.path.basename(sys.argv[0]))[0],
-                )
-            )
-            sys.exit(0)
+        )
+        sys.exit(provisioning_exit_code)
 
     if options.zulip_client is not None:
         client = options.zulip_client
