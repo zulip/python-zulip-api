@@ -154,10 +154,7 @@ def main() -> None:
             lib_module = finder.import_module_by_name(args.bot)
             if lib_module:
                 bot_name = lib_module.__name__
-                bot_source = "named module"
-                if args.provision:
-                    print("ERROR: Could not load bot's module for '{}'. Exiting now.")
-                    sys.exit(1)
+                
 
     if lib_module is None:
         print("ERROR: Could not load bot module. Exiting now.")
