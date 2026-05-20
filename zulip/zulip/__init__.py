@@ -600,9 +600,6 @@ class Client:
 
         req_files = [(f.name, f) for f in files]
 
-        self.ensure_session()
-        assert self.session is not None
-
         query_state: Dict[str, Any] = {
             "had_error_retry": False,
             "request": request,
@@ -637,6 +634,9 @@ class Client:
                     print("Failed!")
 
         while True:
+            self.ensure_session()
+            assert self.session is not None
+
             try:
                 kwarg = "params" if method == "GET" else "data"
 
@@ -686,6 +686,9 @@ class Client:
                     raise UnrecoverableNetworkError(
                         "cannot connect to server " + self.base_url
                     ) from e
+                if self.session is not None:
+                    self.session.close()
+                    self.session = None
 
                 if error_retry(""):
                     continue
