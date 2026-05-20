@@ -48,6 +48,16 @@ jobs:
     runs-on: ubuntu-latest
     name: ${{ matrix.name }} (Zulip ${{matrix.server_version}})
     container: ${{ matrix.docker_image }}
+    services:
+      rabbitmq:
+        image: rabbitmq:3.13
+        ports:
+          - 5672:5672
+        options: >-
+          --health-cmd "rabbitmq-diagnostics -q ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
     env:
       # GitHub Actions sets HOME to /github/home which causes
       # problem later in provison and frontend test that runs
@@ -56,6 +66,8 @@ jobs:
       # /home/github/.pgpass and setting home to `/home/github/`
       # ensures it written there because we write it to ~/.pgpass.
       HOME: /home/github/
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: "5672"
 
     steps:
       - name: "Check out python-zulip-api"
@@ -72,13 +84,12 @@ jobs:
 
       - name: Install dependencies
         run: |
+          sudo apt-get update
+          sudo apt-get install -y rabbitmq-server
+          sudo rabbitmq-server -detached
+          sleep 10
           cd server
-          # This is the main setup job for the test suite
           ./tools/ci/setup-backend --skip-dev-db-build
-
-          # Cleaning caches is mostly unnecessary in GitHub Actions, because
-          # most builds don't get to write to the cache.
-          # scripts/lib/clean_unused_caches.py --verbose --threshold 0
 
       - name: Replace dependency with the latest python-zulip-api
         run: |
