@@ -1,8 +1,8 @@
 #
 from typing import Dict, Optional
 
-# Name of the stream to send notifications to, default is "commits"
-STREAM_NAME = "commits"
+# Name of the channel to send notifications to, default is "commits"
+CHANNEL_NAME = "commits"
 
 # Change these values to configure authentication for the plugin
 ZULIP_USER = "git-bot@example.com"
@@ -17,16 +17,16 @@ ZULIP_API_KEY = "0123456789abcdef0123456789abcdef"
 # * branch = the name of the branch that was pushed to
 # * commit = the commit id
 #
-# Returns a dictionary encoding the stream and subject to send the
+# Returns a dictionary encoding the channel and topic to send the
 # notification to (or None to send no notification).
 #
 # The default code below will send every commit pushed to "main" to
-# * stream "commits"
+# * channel "commits"
 # * topic "main"
 # And similarly for branch "test-post-receive" (for use when testing).
 def commit_notice_destination(repo: str, branch: str, commit: str) -> Optional[Dict[str, str]]:
     if branch in ["main", "master", "test-post-receive"]:
-        return dict(stream=STREAM_NAME, subject=f"{branch}")
+        return dict(channel=CHANNEL_NAME, topic=f"{branch}")
 
     # Return None for cases where you don't want a notice sent
     return None
