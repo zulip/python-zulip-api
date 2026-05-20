@@ -5,45 +5,51 @@
 #
 
 import argparse
+import configparser
 import sys
 import traceback
+from typing import Tuple
 
 import zulip
 
-usage = """./irc-mirror.py --irc-server=IRC_SERVER --channel=<CHANNEL> --nick-prefix=<NICK> --stream=<STREAM> [optional args]
-
-Example:
-
-./irc-mirror.py --irc-server=127.0.0.1 --channel='#test' --nick-prefix=username --stream='test' --topic='#mypy'
-
---stream is a Zulip stream.
---topic is a Zulip topic, is optionally specified, defaults to "IRC".
-Optional arguments:
---nickserv-pw is a password for the nickserv.
---sasl-password is a password for SASL authentication.
-
-Specify your Zulip API credentials and server in a ~/.zuliprc file or using the options.
-
-Note that "_zulip" will be automatically appended to the IRC nick provided
+usage = """./irc-mirror.py --config irc_mirror.conf
 """
+
+
+class BridgeConfigError(Exception):
+    pass
+
+
+def read_configuration(
+    config_file: str,
+) -> Tuple[configparser.SectionProxy, configparser.SectionProxy]:
+    config: configparser.ConfigParser = configparser.ConfigParser()
+    config.read(config_file)
+
+    config_irc = config["irc"]
+    for required in ["host", "port", "nickname", "channel"]:
+        if required not in config_irc:
+            raise BridgeConfigError(f"Missing required configuration: {required}")
+    config_zulip = config["api"]
+    for required in ["stream", "topic"]:
+        if required not in config_zulip:
+            raise BridgeConfigError(f"Missing required configuration: {required}")
+
+    return config_irc, config_zulip
+
 
 if __name__ == "__main__":
     parser = zulip.add_default_arguments(
         argparse.ArgumentParser(usage=usage), allow_provisioning=True
     )
-    parser.add_argument("--irc-server", default=None)
-    parser.add_argument("--port", default=6667)
-    parser.add_argument("--nick-prefix", default=None)
-    parser.add_argument("--channel", default=None)
-    parser.add_argument("--stream", default="general")
-    parser.add_argument("--topic", default="IRC")
-    parser.add_argument("--nickserv-pw", default="")
-    parser.add_argument("--sasl-password", default=None)
+    parser.add_argument(
+        "-c", "--config", required=False, help="Path to the config file for the bridge."
+    )
 
     options = parser.parse_args()
     # Setting the client to irc_mirror is critical for this to work
     options.client = "irc_mirror"
-    zulip_client = zulip.init_from_options(options)
+    zulip_client = zulip.Client(config_file=options.config)
     try:
         from irc_mirror_backend import IRCBot
     except ImportError:
@@ -54,19 +60,17 @@ if __name__ == "__main__":
         )
         sys.exit(1)
 
-    if options.irc_server is None or options.nick_prefix is None or options.channel is None:
-        parser.error("Missing required argument")
+    config_irc, config_zulip = read_configuration(options.config)
 
-    nickname = options.nick_prefix + "_zulip"
     bot = IRCBot(
         zulip_client,
-        options.stream,
-        options.topic,
-        options.channel,
-        nickname,
-        options.irc_server,
-        options.nickserv_pw,
-        options.port,
-        sasl_password=options.sasl_password,
+        config_zulip["stream"],
+        config_zulip["topic"],
+        config_irc["channel"],
+        config_irc["nickname"],
+        config_irc["host"],
+        config_irc.get("nickserv_password", ""),
+        int(config_irc["port"]),
+        sasl_password=config_irc.get("sasl_password", None),
     )
     bot.start()
