@@ -27,7 +27,8 @@ Specify your Zulip API credentials and server in a ~/.zuliprc file or using the 
 Note that "_zulip" will be automatically appended to the IRC nick provided
 """
 
-if __name__ == "__main__":
+
+def main() -> None:
     parser = zulip.add_default_arguments(
         argparse.ArgumentParser(usage=usage), allow_provisioning=True
     )
@@ -45,7 +46,7 @@ if __name__ == "__main__":
     options.client = "irc_mirror"
     zulip_client = zulip.init_from_options(options)
     try:
-        from irc_mirror_backend import IRCBot
+        from .irc_mirror_backend import IRCBot # type: ignore[import-untyped]
     except ImportError:
         traceback.print_exc()
         print(
@@ -70,3 +71,7 @@ if __name__ == "__main__":
         sasl_password=options.sasl_password,
     )
     bot.start()
+
+
+if __name__ == "__main__":
+    main()

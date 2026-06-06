@@ -89,7 +89,15 @@ class IRCBot(irc.bot.SingleServerIRCBot):
             for line in msg["content"].split("\n"):
                 send(line)
 
-        z2i = mp.Process(target=self.zulip_client.call_on_each_message, args=(forward_to_irc,))
+        def forward_zulip_to_irc() -> None:
+            # Create a new client so the child doesn't share the parent's SSL
+            # sockets after forking in 'mp.Process'.
+            self.zulip_client.session.close()
+            self.zulip_client.session = None
+            self.zulip_client.ensure_session()
+            self.zulip_client.call_on_each_message(forward_to_irc)
+
+        z2i = mp.Process(target=forward_zulip_to_irc)
         z2i.start()
 
     def on_privmsg(self, c: ServerConnection, e: Event) -> None:
