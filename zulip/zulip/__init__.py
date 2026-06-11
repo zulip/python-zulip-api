@@ -1218,7 +1218,7 @@ class Client:
         Example usage:
 
         >>> client.get_user_presence('iago@zulip.com')
-        {'presence': {'website': {'timestamp': 1486799122, 'status': 'active'}}, 'result': 'success', 'msg': ''}
+        {'result': 'success', 'msg': '', 'presence': {'active_timestamp': 1656958520, 'idle_timestamp': 1656958530, 'website': {...}, 'aggregated': {...}}, 'server_timestamp': 1656958540.123}
         """
         return self.call_endpoint(
             url=f"users/{email}/presence",
