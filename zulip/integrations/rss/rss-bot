@@ -21,6 +21,9 @@ from typing_extensions import override
 
 import zulip
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from rss_feeds import parse_feed_file_lines
+
 VERSION = "0.9"
 RSS_DATA_DIR = os.path.expanduser(os.path.join("~", ".cache", "zulip-rss"))
 
@@ -214,7 +217,7 @@ def send_zulip(entry: Any, feed_name: str) -> Dict[str, Any]:
 
 try:
     with open(opts.feed_file) as f:
-        feed_urls: List[str] = [feed.strip() for feed in f.readlines()]
+        feed_urls = parse_feed_file_lines(f.readlines())
 except OSError:
     log_error_and_exit(f"Unable to read feed file at {opts.feed_file}.")
 
