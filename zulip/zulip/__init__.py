@@ -385,6 +385,31 @@ class TimeZoneMissingError(ZulipError):
     pass
 
 
+def _parse_retry_after_seconds(res: requests.Response) -> float:
+    """Return how long to wait after a 429, from JSON or the Retry-After header.
+
+    Zulip documents `retry-after` on RATE_LIMIT_HIT responses:
+    https://zulip.com/api/rest-error-handling#rate-limit-exceeded
+    """
+    wait: Optional[float] = None
+    try:
+        payload = res.json()
+        if isinstance(payload, dict) and payload.get("retry-after") is not None:
+            wait = float(payload["retry-after"])
+    except (TypeError, ValueError, json.JSONDecodeError):
+        wait = None
+    if wait is None:
+        header = res.headers.get("Retry-After")
+        if header is not None:
+            try:
+                wait = float(header)
+            except (TypeError, ValueError):
+                wait = None
+    if wait is None or wait < 0:
+        wait = 1.0
+    return wait
+
+
 class Client:
     def __init__(
         self,
@@ -393,6 +418,7 @@ class Client:
         config_file: Optional[str] = None,
         verbose: bool = False,
         retry_on_errors: bool = True,
+        auto_retry_rate_limits: bool = False,
         site: Optional[str] = None,
         client: Optional[str] = None,
         cert_bundle: Optional[str] = None,
@@ -491,6 +517,7 @@ class Client:
             self.base_url += "/api"
         self.base_url += "/"
         self.retry_on_errors = retry_on_errors
+        self.auto_retry_rate_limits = auto_retry_rate_limits
         self.client_name = client
 
         if insecure:
@@ -607,6 +634,7 @@ class Client:
             "had_error_retry": False,
             "request": request,
             "failures": 0,
+            "rate_limit_retries": 0,
         }
 
         def error_retry(error_string: str) -> bool:
@@ -654,6 +682,23 @@ class Client:
                 )
 
                 self.has_connected = True
+
+                # Opt-in: sleep for retry-after (plus a little jitter) and
+                # retry RATE_LIMIT_HIT. Default off so callers that cannot
+                # block are unchanged. Cap retries so a tight limit cannot
+                # pin a client to the server's allowed rate forever.
+                if (
+                    res.status_code == 429
+                    and self.auto_retry_rate_limits
+                    and query_state["rate_limit_retries"] < 10
+                ):
+                    wait = _parse_retry_after_seconds(res)
+                    wait += random.uniform(0.05, 0.5)  # noqa: S311
+                    if self.verbose:
+                        print(f"Rate limit hit; retrying after {wait:.2f}s.")
+                    query_state["rate_limit_retries"] += 1
+                    time.sleep(wait)
+                    continue
 
                 # On 50x errors, try again after a short sleep
                 if str(res.status_code).startswith("5") and error_retry(
