@@ -8,7 +8,7 @@ ruff~=0.2.2
 -e ./zulip
 -e ./zulip_bots
 -e ./zulip_botserver
-git+https://github.com/zulip/zulint@417b4e4971fdd5ca8e84847f1391b657b188631a#egg=zulint==1.0.0
+git+https://github.com/zulip/zulint@417b4e4971fdd5ca8e84847f1391b657b188631a#egg=zulint
 mypy==1.8.0
 types-httplib2
 types-python-dateutil
