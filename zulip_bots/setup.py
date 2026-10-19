@@ -1,18 +1,10 @@
 from setuptools import find_packages, setup
 
 ZULIP_BOTS_VERSION = "0.9.1"
-IS_PYPA_PACKAGE = False
-
-
 package_data = {
-    "": ["doc.md", "*.conf", "assets/*"],
+    "": ["doc.md", "*.conf"],
     "zulip_bots": ["py.typed"],
 }
-
-# IS_PYPA_PACKAGE should be set to True before making a PyPA release.
-if not IS_PYPA_PACKAGE:
-    package_data[""].append("fixtures/*.json")
-    package_data[""].append("logo.*")
 
 with open("README.md") as fh:
     long_description = fh.read()
@@ -56,6 +48,6 @@ setup(
         "typing_extensions>=4.5.0",
         "importlib-metadata>=3.6",
     ],
-    packages=find_packages(),
+    packages=find_packages(exclude=["*.test", "*.test.*"]),
     package_data=package_data,
 )
