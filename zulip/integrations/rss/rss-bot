@@ -214,7 +214,7 @@ def send_zulip(entry: Any, feed_name: str) -> Dict[str, Any]:
 
 try:
     with open(opts.feed_file) as f:
-        feed_urls: List[str] = [feed.strip() for feed in f.readlines()]
+        feed_urls: List[str] = [feed.strip() for feed in f.readlines() if feed.strip() and not feed.strip().startswith("#")]
 except OSError:
     log_error_and_exit(f"Unable to read feed file at {opts.feed_file}.")
 
