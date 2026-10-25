@@ -889,10 +889,11 @@ class Client:
         """
         See examples/edit-message for example usage.
         """
+        request = {k: v for k, v in message_data.items() if k != "message_id"}
         return self.call_endpoint(
             url="messages/%d" % (message_data["message_id"],),
             method="PATCH",
-            request=message_data,
+            request=request,
         )
 
     def delete_message(self, message_id: int) -> Dict[str, Any]:
@@ -966,10 +967,11 @@ class Client:
         })
         {'result': 'success', 'msg': ''}
         """
+        request = {k: v for k, v in reaction_data.items() if k != "message_id"}
         return self.call_endpoint(
             url="messages/{}/reactions".format(reaction_data["message_id"]),
             method="POST",
-            request=reaction_data,
+            request=request,
         )
 
     def remove_reaction(self, reaction_data: Dict[str, Any]) -> Dict[str, Any]:
@@ -984,10 +986,11 @@ class Client:
         })
         {'msg': '', 'result': 'success'}
         """
+        request = {k: v for k, v in reaction_data.items() if k != "message_id"}
         return self.call_endpoint(
             url="messages/{}/reactions".format(reaction_data["message_id"]),
             method="DELETE",
-            request=reaction_data,
+            request=request,
         )
 
     def get_realm_emoji(self) -> Dict[str, Any]:
