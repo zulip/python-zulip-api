@@ -733,6 +733,59 @@ class Client:
             timeout=timeout,
         )
 
+    def fetch_upload(self, path: str) -> requests.Response:
+        """Download an uploaded file using the bot's authentication credentials.
+
+        Unlike `call_endpoint`, this method does NOT prepend ``/api/v1/`` to
+        the path.  Use it to fetch content from endpoints such as::
+
+            /user_uploads/<realm_id>/<filename>          (direct download)
+            /user_uploads/temporary/<token>/<filename>  (temporary access URL)
+
+        Both URL forms are produced by the Zulip server when a file is attached
+        to a message.  The path can be obtained directly from the markdown link
+        in a message, e.g.::
+
+            path = re.fullmatch(
+                r'\\s*\\[([^\\[\\]]*)\\]\\((/user_uploads/[^\\(\\)]*)\\)\\s*',
+                message['content'],
+            ).group(2)
+            response = client.fetch_upload(path)
+            file_bytes = response.content
+
+        :param path: A relative path starting with ``/`` (e.g.
+            ``/user_uploads/1/ab/filename.png``) *or* a fully-qualified URL
+            on the same Zulip server.
+        :returns: A :class:`requests.Response` object.  The caller should
+            inspect ``response.status_code`` before reading ``response.content``.
+        :raises requests.exceptions.RequestException: On network errors.
+        """
+        # Build the server root URL by stripping the '/api/' suffix that
+        # __init__ appends to self.base_url.  For example:
+        #   self.base_url == 'https://chat.example.com/api/'
+        #   server_root  == 'https://chat.example.com'
+        server_root = self.base_url
+        if server_root.endswith("/api/"):
+            server_root = server_root[: -len("/api/")]
+        else:
+            # Defensive fallback: strip any trailing slashes.
+            server_root = server_root.rstrip("/")
+
+        # Accept both a relative path ('/user_uploads/...') and a full URL on
+        # the same server.  If the caller already has an absolute URL we use it
+        # directly so we don't accidentally mangle it.
+        if path.startswith(("http://", "https://")):
+            target_url = path
+        else:
+            # Ensure exactly one slash between the root and the path.
+            target_url = server_root + "/" + path.lstrip("/")
+
+        self.ensure_session()
+        assert self.session is not None
+
+        response = self.session.get(target_url, timeout=15.0)
+        return response
+
     def call_on_each_event(
         self,
         callback: Callable[[Dict[str, Any]], None],
