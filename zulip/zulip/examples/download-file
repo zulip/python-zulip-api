@@ -1,0 +1,69 @@
+#!/usr/bin/env python3
+"""download-file -- Download a Zulip uploaded file using bot credentials.
+
+Usage:
+    download-file --path /user_uploads/2/ab/somefilename.png --output ./downloaded.png
+
+The --path argument accepts the relative URL that appears inside Zulip message
+markdown links, e.g.:
+
+    [cat.png](/user_uploads/2/ab/cat.png)
+
+Specify your Zulip API credentials and server in a ~/.zuliprc file or using
+the standard --site / --api-key options.
+"""
+
+import argparse
+import sys
+
+import zulip
+
+usage = """download-file [options] --path /user_uploads/...
+
+Download a file that was uploaded to Zulip, authenticating as a bot.
+
+Example:
+    download-file --path /user_uploads/2/ab/cat.png --output ./cat.png
+
+Specify your Zulip API credentials and server in a ~/.zuliprc file or using the options.
+"""
+
+parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage))
+parser.add_argument(
+    "--path",
+    required=True,
+    help=(
+        "Relative path of the uploaded file, as it appears in message markdown "
+        "(e.g. /user_uploads/2/ab/filename.png)."
+    ),
+)
+parser.add_argument(
+    "--output",
+    required=False,
+    default=None,
+    help=(
+        "Local path where the downloaded file should be saved.  "
+        "Defaults to the basename of --path in the current directory."
+    ),
+)
+
+options = parser.parse_args()
+client = zulip.init_from_options(options)
+
+print(f"Downloading: {options.path}")
+response = client.fetch_upload(options.path)
+
+if response.status_code != 200:
+    print(
+        f"Error: server returned HTTP {response.status_code}",
+        file=sys.stderr,
+    )
+    sys.exit(1)
+
+# Determine the output filename.
+output_path = options.output or options.path.rstrip("/").rsplit("/", 1)[-1]
+
+with open(output_path, "wb") as f:
+    f.write(response.content)
+
+print(f"Saved {len(response.content)} bytes to: {output_path}")
