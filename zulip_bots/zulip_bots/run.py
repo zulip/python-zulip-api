@@ -156,7 +156,7 @@ def main() -> None:
                 bot_name = lib_module.__name__
                 bot_source = "named module"
                 if args.provision:
-                    print("ERROR: Could not load bot's module for '{}'. Exiting now.")
+                    print(f"ERROR: Could not load bot's module for '{args.bot}'. Exiting now.")
                     sys.exit(1)
 
     if lib_module is None:
