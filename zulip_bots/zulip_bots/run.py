@@ -4,6 +4,7 @@ import argparse
 import logging
 import os
 import sys
+from pathlib import Path
 from typing import Optional
 
 from zulip_bots import finder
@@ -111,6 +112,28 @@ def exit_gracefully_if_bot_config_file_does_not_exist(bot_config_file: Optional[
         sys.exit(1)
 
 
+def print_bot_not_found_error(bot: str, registry: bool) -> None:
+    if registry:
+        print(
+            f'ERROR: Could not find a bot named "{bot}" in the zulip_bots registry.\n'
+            "Make sure the package that provides it is installed. Exiting now."
+        )
+        return
+
+    bundled_bot_path = Path(finder.current_dir, "bots", bot, bot + ".py")
+    print(
+        f"""ERROR: Could not load bot module for "{bot}". Looked for:
+  - a file at {os.path.abspath(bot)}
+  - {bundled_bot_path} (one of the bots included with zulip_bots)
+  - a Python module named "{bot}" that can be imported from PYTHONPATH
+
+If you wrote this bot yourself, try passing the path to its .py file, e.g.:
+    zulip-run-bot path/to/{Path(bot).stem}.py --config-file ~/zuliprc
+
+Exiting now."""
+    )
+
+
 def main() -> None:
     args = parse_args()
 
@@ -156,11 +179,11 @@ def main() -> None:
                 bot_name = lib_module.__name__
                 bot_source = "named module"
                 if args.provision:
-                    print("ERROR: Could not load bot's module for '{}'. Exiting now.")
+                    print(f"ERROR: Could not load bot's module for '{args.bot}'. Exiting now.")
                     sys.exit(1)
 
     if lib_module is None:
-        print("ERROR: Could not load bot module. Exiting now.")
+        print_bot_not_found_error(args.bot, args.registry)
         sys.exit(1)
 
     if not args.quiet:
