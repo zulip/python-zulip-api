@@ -144,6 +144,35 @@ class TestDefaultArguments(TestCase):
         self.assertIn("'bot.module.name'", output.getvalue())
         self.assertNotIn("{}", output.getvalue())
 
+    @patch("os.path.isfile", return_value=False)
+    def test_bot_not_found_error_suggests_passing_path(
+        self, mock_os_path_isfile: mock.Mock
+    ) -> None:
+        output = io.StringIO()
+        with patch("sys.argv", ["zulip-run-bot", "mybot", "--config-file", "/path/to/config"]):
+            with patch("zulip_bots.finder.import_module_by_name", return_value=None):
+                with redirect_stdout(output), self.assertRaises(SystemExit):
+                    zulip_bots.run.main()
+
+        error = output.getvalue()
+        self.assertIn('Could not load bot module for "mybot"', error)
+        self.assertIn(str(Path("bots", "mybot", "mybot.py")), error)
+        self.assertIn("PYTHONPATH", error)
+        self.assertIn("zulip-run-bot path/to/mybot.py", error)
+
+    def test_bot_not_found_in_registry_error(self) -> None:
+        output = io.StringIO()
+        with patch(
+            "sys.argv", ["zulip-run-bot", "mybot", "--config-file", "/path/to/config", "-r"]
+        ):
+            with patch("zulip_bots.finder.metadata.entry_points", return_value=()):
+                with redirect_stdout(output), self.assertRaises(SystemExit):
+                    zulip_bots.run.main()
+
+        self.assertIn(
+            'Could not find a bot named "mybot" in the zulip_bots registry', output.getvalue()
+        )
+
 
 class TestBotLib(TestCase):
     def test_extract_query_without_mention(self) -> None:
