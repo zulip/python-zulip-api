@@ -86,7 +86,7 @@ Additional examples:
 
     client.send_message({'type': 'stream', 'content': 'Zulip rules!',
                          'subject': 'feedback', 'to': ['support']})
-    client.send_message({'type': 'private', 'content': 'Zulip rules!',
+    client.send_message({'type': 'direct', 'content': 'Zulip rules!',
                          'to': ['user1@example.com', 'user2@example.com']})
 
 send_message() returns a dict guaranteed to contain the following
