@@ -750,6 +750,10 @@ class Client:
                 else:
                     res = self.register(event_types, narrow, **kwargs)
                 if "error" in res["result"]:
+                    code = res.get("code")
+                    if code in ("UNAUTHORIZED", "BAD_REQUEST"):
+                        msg = res.get("msg") or ""
+                        raise ZulipError(f"{code}: {msg}".strip(": "))
                     if self.verbose:
                         print("Server returned error:\n{}".format(res["msg"]))
                     time.sleep(1)
@@ -783,9 +787,13 @@ class Client:
                 continue
 
             if "error" in res["result"]:
+                code = res.get("code")
                 if res["result"] == "http-error":
                     if self.verbose:
                         print("HTTP error fetching events -- probably a server restart")
+                elif code in ("UNAUTHORIZED", "BAD_REQUEST"):
+                    msg = res.get("msg") or ""
+                    raise ZulipError(f"{code}: {msg}".strip(": "))
                 else:
                     if self.verbose:
                         print("Server returned error:\n{}".format(res["msg"]))
@@ -793,9 +801,7 @@ class Client:
                     # BAD_EVENT_QUEUE_ID check, but we check for the
                     # old string to support legacy Zulip servers.  We
                     # should remove that legacy check in 2019.
-                    if res.get("code") == "BAD_EVENT_QUEUE_ID" or res["msg"].startswith(
-                        "Bad event queue id:"
-                    ):
+                    if code == "BAD_EVENT_QUEUE_ID" or res["msg"].startswith("Bad event queue id:"):
                         # Our event queue went away, probably because
                         # we were asleep or the server restarted
                         # abnormally.  We may have missed some
