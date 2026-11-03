@@ -865,9 +865,16 @@ class Client:
         """
         See examples/send-message for example usage.
         """
+        request = dict(message_data)
+        if request.get("type") == "direct" and self.feature_level < 174:
+            # Zulip server support for "direct" as the message type for
+            # direct/private messages was added at API feature level 174.
+            # For older servers, translate to "private".
+            request["type"] = "private"
+
         return self.call_endpoint(
             url="messages",
-            request=message_data,
+            request=request,
         )
 
     def upload_file(self, file: IO[Any]) -> Dict[str, Any]:

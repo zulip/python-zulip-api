@@ -15,7 +15,11 @@ parser = zulip.add_default_arguments(argparse.ArgumentParser(usage=usage))
 parser.add_argument("recipients", nargs="+")
 parser.add_argument("--subject", default="test")
 parser.add_argument("--message", default="test message")
-parser.add_argument("--type", default="private")
+parser.add_argument(
+    "--type",
+    default="direct",
+    help="Message type: 'direct' (or 'private') for direct messages, or 'stream' (default: direct)",
+)
 options = parser.parse_args()
 
 client = zulip.init_from_options(options)
