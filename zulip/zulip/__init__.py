@@ -181,7 +181,7 @@ def add_default_arguments(
         action="store",
         dest="zulip_config_file",
         help="""Location of an ini file containing the above
-                            information. (default ~/.zuliprc)""",
+                            information. (default: ./zuliprc, ./.zuliprc, or ~/.zuliprc)""",
     )
     group.add_argument("-v", "--verbose", action="store_true", help="Provide detailed output.")
     group.add_argument(
@@ -245,7 +245,7 @@ def generate_option_group(parser: optparse.OptionParser, prefix: str = "") -> op
         f"--{prefix}config-file",
         action="store",
         dest="zulip_config_file",
-        help="Location of an ini file containing the\nabove information. (default ~/.zuliprc)",
+        help="Location of an ini file containing the\nabove information. (default: ./zuliprc, ./.zuliprc, or ~/.zuliprc)",
     )
     group.add_option("-v", "--verbose", action="store_true", help="Provide detailed output.")
     group.add_option(
@@ -331,6 +331,10 @@ def init_from_options(options: Any, client: Optional[str] = None) -> "Client":
 
 
 def get_default_config_filename() -> Optional[str]:
+    for filename in ("zuliprc", ".zuliprc"):
+        if os.path.isfile(filename):
+            return os.path.abspath(filename)
+
     if os.environ.get("HOME") is None:
         return None
 
