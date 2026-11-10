@@ -15,7 +15,8 @@ config = {
         "C5Z5N7R8A": {
             # Zulip channel
             "channel": "test here",
-            # Zulip topic
+            # Zulip topic. Use "{channel_name}" to substitute the Slack channel name,
+            # e.g. "{channel_name}" or "slack: {channel_name}". If omitted, defaults to "{channel_name}".
             "topic": "<- slack-bridge",
         },
     },
