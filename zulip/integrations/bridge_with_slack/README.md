@@ -28,9 +28,12 @@ Zulip 9.4+.
    `api_key`, and `site`).
 
 5. In the `channel_mapping` section, enter the Zulip `channel` and
-   `topic` that you'd like to use for each Slack channel.  Make sure
-   that they match the same `channel` and `topic` you configured in
-   steps 2 and 3.
+   `topic` that you'd like to use for each Slack channel. You can use
+   `{channel_name}` in `topic` (e.g. `topic: "{channel_name}"` or
+   `topic: "slack: {channel_name}"`) to automatically substitute the
+   Slack channel name as the topic. If `topic` is omitted, it defaults
+   to `"{channel_name}"`. Make sure that they match the same `channel`
+   and `topic` you configured in steps 2 and 3.
 
 ### 2. Slack endpoint
 
@@ -38,7 +41,9 @@ Zulip 9.4+.
    that you used to set up the Slack Webhook integration previously.
 
 2. Navigate to the "OAuth & Permissions" menu and scroll down to the "Scopes"
-   section in the same page. Make sure "Bot Token Scopes" includes: `chat:write`
+   section in the same page. Make sure "Bot Token Scopes" includes: `chat:write`.
+   If using the `{channel_name}` option, also include `channels:read` (and
+   `groups:read` for private channels).
 
 3. Next, also in the same menu find and note down the "Bot User OAuth Token".
    It starts with "xoxb-..." and not "xoxp".
