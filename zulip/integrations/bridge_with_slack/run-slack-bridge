@@ -64,9 +64,10 @@ class SlackBridge:
         # zulip-specific
         def zulip_client_constructor() -> zulip.Client:
             return zulip.Client(
-                email=self.zulip_config["email"],
-                api_key=self.zulip_config["api_key"],
-                site=self.zulip_config["site"],
+                config_file=self.zulip_config.get("config_file"),
+                email=self.zulip_config.get("email"),
+                api_key=self.zulip_config.get("api_key"),
+                site=self.zulip_config.get("site"),
             )
 
         self.zulip_client = zulip_client_constructor()
@@ -87,12 +88,14 @@ class SlackBridge:
     def is_message_from_slack(self, msg: Dict[str, Any]) -> bool:
         # Check whether or not this message is from Slack to prevent
         # them from being tossed back to Zulip.
-        return msg["sender_email"] == self.zulip_config.get("email")
+        bot_email = self.zulip_config.get("email") or self.zulip_client.email
+        return msg["sender_email"] == bot_email
 
     def zulip_to_slack(self) -> Callable[[Dict[str, Any]], None]:
         def _zulip_to_slack(msg: Dict[str, Any]) -> None:
+            bot_email = self.zulip_config.get("email") or self.zulip_client.email
             slack_channel = get_slack_channel_for_zulip_message(
-                msg, self.zulip_to_slack_map, self.zulip_config["email"]
+                msg, self.zulip_to_slack_map, bot_email
             )
 
             if slack_channel is not None and not self.is_message_from_slack(msg):

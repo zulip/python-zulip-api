@@ -2,9 +2,12 @@
 
 from typing import Optional
 
-# Change these constants to configure the plugin:
+# Either provide the path to a zuliprc file:
+# ZULIP_CONFIG_FILE: Optional[str] = "~/zuliprc"
+# Or change these constants to configure authentication directly:
 ZULIP_USER = "trac-bot@example.com"
 ZULIP_API_KEY = "0123456789abcdef0123456789abcdef"
+ZULIP_CONFIG_FILE: Optional[str] = None
 STREAM_FOR_NOTIFICATIONS = "trac"
 TRAC_BASE_TICKET_URL = "https://trac.example.com/ticket"
 

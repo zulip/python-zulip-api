@@ -19,8 +19,12 @@ CODEBASE_ROOT_URL = "https://YOUR_COMPANY.codebasehq.com"
 CODEBASE_INITIAL_HISTORY_HOURS = 12
 
 # Change these values to configure Zulip authentication for the plugin
+# Either specify the path to a zuliprc file:
+# ZULIP_CONFIG_FILE: Optional[str] = "~/zuliprc"
+# Or change these values to configure authentication directly:
 ZULIP_USER = "codebase-bot@example.com"
 ZULIP_API_KEY = "0123456789abcdef0123456789abcdef"
+ZULIP_CONFIG_FILE: Optional[str] = None
 
 # The streams to send commit information and ticket information to
 ZULIP_COMMITS_STREAM_NAME = "codebase"
