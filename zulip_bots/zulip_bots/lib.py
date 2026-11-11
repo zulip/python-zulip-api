@@ -191,6 +191,9 @@ class AbstractBotHandler(Protocol):
     def react(self, message: Dict[str, Any], emoji_name: str) -> Dict[str, Any]:
         ...
 
+    def remove_reaction(self, message: Dict[str, Any], emoji_name: str) -> Dict[str, Any]:
+        ...
+
     def send_message(self, message: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         ...
 
@@ -268,6 +271,11 @@ class ExternalBotHandler:
 
     def react(self, message: Dict[str, Any], emoji_name: str) -> Dict[str, Any]:
         return self._client.add_reaction(
+            dict(message_id=message["id"], emoji_name=emoji_name, reaction_type="unicode_emoji")
+        )
+
+    def remove_reaction(self, message: Dict[str, Any], emoji_name: str) -> Dict[str, Any]:
+        return self._client.remove_reaction(
             dict(message_id=message["id"], emoji_name=emoji_name, reaction_type="unicode_emoji")
         )
 

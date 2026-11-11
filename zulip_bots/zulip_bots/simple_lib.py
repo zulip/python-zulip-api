@@ -36,6 +36,9 @@ class MockMessageServer:
     def add_reaction(self, reaction_data: object) -> Dict[str, Any]:
         return dict(result="success", msg="", uri=f"https://server/messages/{uuid4()}/reactions")
 
+    def remove_reaction(self, reaction_data: object) -> Dict[str, Any]:
+        return dict(result="success", msg="")
+
     def update(self, message: Dict[str, Any]) -> None:
         self.messages[message["message_id"]] = message
 
@@ -62,6 +65,15 @@ class TerminalBotHandler:
         """
         print("""The bot reacts to message #{}: {}""".format(message["id"], emoji_name))
         return self.message_server.add_reaction(
+            dict(message_id=message["id"], emoji_name=emoji_name, reaction_type="unicode_emoji")
+        )
+
+    def remove_reaction(self, message: Dict[str, Any], emoji_name: str) -> Dict[str, Any]:
+        """
+        Mock removing an emoji reaction and print it in the terminal.
+        """
+        print(f"The bot removes reaction from message #{message['id']}: {emoji_name}")
+        return self.message_server.remove_reaction(
             dict(message_id=message["id"], emoji_name=emoji_name, reaction_type="unicode_emoji")
         )
 

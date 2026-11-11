@@ -37,6 +37,9 @@ class StubBotHandler:
     def react(self, message: Dict[str, Any], emoji_name: str) -> Dict[str, Any]:
         return self.message_server.add_reaction(emoji_name)
 
+    def remove_reaction(self, message: Dict[str, Any], emoji_name: str) -> Dict[str, Any]:
+        return self.message_server.remove_reaction(emoji_name)
+
     def update_message(self, message: Dict[str, Any]) -> None:
         self.message_server.update(message)
 
