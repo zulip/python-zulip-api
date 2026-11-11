@@ -12,6 +12,7 @@ from zulip_bots.lib import (
     is_private_message_but_not_group_pm,
     run_message_handler_for_bot,
 )
+from zulip_bots.simple_lib import MockMessageServer, TerminalBotHandler
 
 
 class FakeClient:
@@ -127,6 +128,29 @@ class LibTest(TestCase):
         client.add_reaction = MagicMock()  # type: ignore[method-assign]
         handler.react(message, emoji_name)
         client.add_reaction.assert_called_once_with(dict(expected))
+
+    def test_remove_reaction(self) -> None:
+        client = cast(Client, FakeClient())
+        handler = ExternalBotHandler(
+            client=client, root_dir=None, bot_details=None, bot_config_file=None
+        )
+        emoji_name = "wave"
+        message = {"id": 10}
+        expected = {
+            "message_id": message["id"],
+            "emoji_name": "wave",
+            "reaction_type": "unicode_emoji",
+        }
+        client.remove_reaction = MagicMock()  # type: ignore[method-assign]
+        handler.remove_reaction(message, emoji_name)
+        client.remove_reaction.assert_called_once_with(dict(expected))
+
+    def test_terminal_bot_handler_remove_reaction(self) -> None:
+        server = MockMessageServer()
+        handler = TerminalBotHandler(bot_config_file=None, message_server=server)
+        with patch("sys.stdout", new=io.StringIO()):
+            res = handler.remove_reaction(message={"id": 15}, emoji_name="tada")
+        self.assertEqual(res, {"result": "success", "msg": ""})
 
     def test_send_reply(self) -> None:
         client = cast(Client, FakeClient())
