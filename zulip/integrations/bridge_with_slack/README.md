@@ -24,7 +24,8 @@ Zulip 9.4+.
    for setting up a Slack bridge.
 
 4. In the `zulip` section of the `bridge_with_slack_config.py`
-   configuration file, the bot's `zuliprc` details (`email`,
+   configuration file, provide the path to your bot's `zuliprc` file
+   via `config_file`, or enter the bot's credentials directly (`email`,
    `api_key`, and `site`).
 
 5. In the `channel_mapping` section, enter the Zulip `channel` and

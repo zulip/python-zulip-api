@@ -1,5 +1,8 @@
 config = {
     "zulip": {
+        # Either specify the path to a zuliprc file:
+        # "config_file": "~/zuliprc",
+        # Or specify credentials explicitly:
         "email": "zulip-bot@email.com",
         "api_key": "put api key here",
         "site": "https://chat.zulip.org",

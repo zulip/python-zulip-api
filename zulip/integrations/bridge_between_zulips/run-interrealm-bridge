@@ -66,9 +66,18 @@ def run_direction(from_bot: Dict[str, Any], to_bot: Dict[str, Any], stream_wide:
     objects are ever inherited or pickled.
     """
     from_client = zulip.Client(
-        email=from_bot["email"], api_key=from_bot["api_key"], site=from_bot["site"]
+        config_file=from_bot.get("config_file"),
+        email=from_bot.get("email"),
+        api_key=from_bot.get("api_key"),
+        site=from_bot.get("site"),
     )
-    to_client = zulip.Client(email=to_bot["email"], api_key=to_bot["api_key"], site=to_bot["site"])
+    to_client = zulip.Client(
+        config_file=to_bot.get("config_file"),
+        email=to_bot.get("email"),
+        api_key=to_bot.get("api_key"),
+        site=to_bot.get("site"),
+    )
+
     pipe_event = create_pipe_event(to_client, from_bot, to_bot, stream_wide)
     from_client.call_on_each_event(pipe_event, ["message"])
 

@@ -7,6 +7,7 @@
 
 import sys
 from email.utils import parseaddr
+from typing import Optional
 
 from mercurial import repository as repo
 from mercurial import ui
@@ -75,14 +76,24 @@ def format_commit_lines(web_url: str, repo: repo, base: int, tip: int) -> str:
 
 
 def send_zulip(
-    email: str, api_key: str, site: str, stream: str, subject: str, content: str
+    email: Optional[str],
+    api_key: Optional[str],
+    site: Optional[str],
+    config_file: Optional[str],
+    stream: str,
+    subject: str,
+    content: str,
 ) -> None:
     """
     Send a message to Zulip using the provided credentials, which should be for
     a bot in most cases.
     """
     client = zulip.Client(
-        email=email, api_key=api_key, site=site, client="ZulipMercurial/" + VERSION
+        config_file=config_file,
+        email=email,
+        api_key=api_key,
+        site=site,
+        client="ZulipMercurial/" + VERSION,
     )
 
     message_data = {
@@ -142,12 +153,13 @@ def hook(ui: ui, repo: repo, **kwargs: str) -> None:
     base = repo[node].rev()
     tip = len(repo)
 
+    config_file = get_config(ui, "config_file")
     email = get_config(ui, "email")
     api_key = get_config(ui, "api_key")
     site = get_config(ui, "site")
 
-    if not (email and api_key):
-        ui.warn("Zulip: missing email or api_key configurations\n")
+    if not config_file and not (email and api_key):
+        ui.warn("Zulip: missing config_file or email/api_key configurations\n")
         ui.warn("in the [zulip] section of your .hg/hgrc.\n")
         sys.exit(1)
 
@@ -166,4 +178,4 @@ def hook(ui: ui, repo: repo, **kwargs: str) -> None:
     ui.debug("Sending to Zulip:\n")
     ui.debug(content + "\n")
 
-    send_zulip(email, api_key, site, stream, subject, content)
+    send_zulip(email, api_key, site, config_file, stream, subject, content)

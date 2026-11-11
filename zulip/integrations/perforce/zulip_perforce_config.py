@@ -1,9 +1,12 @@
 from typing import Dict, Optional
 
-# Change these values to configure authentication for the plugin
+# Either provide the path to a zuliprc file:
+# ZULIP_CONFIG_FILE: Optional[str] = "~/zuliprc"
+# Or change these values to configure authentication directly:
 ZULIP_USER = "p4-bot@example.com"
 ZULIP_API_KEY = "0123456789abcdef0123456789abcdef"
 ZULIP_SITE = "https://zulip.example.com"
+ZULIP_CONFIG_FILE: Optional[str] = None
 
 # Set this to True to silently drop messages if the destination stream
 # does not exist. This prevents the warnings from Zulip's Notification Bot

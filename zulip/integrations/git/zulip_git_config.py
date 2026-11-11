@@ -4,9 +4,12 @@ from typing import Dict, Optional
 # Name of the stream to send notifications to, default is "commits"
 STREAM_NAME = "commits"
 
-# Change these values to configure authentication for the plugin
+# Either specify the path to a zuliprc file:
+# ZULIP_CONFIG_FILE: Optional[str] = "~/zuliprc"
+# Or change these values to configure authentication directly:
 ZULIP_USER = "git-bot@example.com"
 ZULIP_API_KEY = "0123456789abcdef0123456789abcdef"
+ZULIP_CONFIG_FILE: Optional[str] = None
 
 
 # commit_notice_destination() lets you customize where commit notices

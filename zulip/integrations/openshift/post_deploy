@@ -18,9 +18,10 @@ if config.ZULIP_API_PATH is not None:
 import zulip
 
 client = zulip.Client(
-    email=config.ZULIP_USER,
-    site=config.ZULIP_SITE,
-    api_key=config.ZULIP_API_KEY,
+    config_file=getattr(config, "ZULIP_CONFIG_FILE", None),
+    email=getattr(config, "ZULIP_USER", None),
+    site=getattr(config, "ZULIP_SITE", None),
+    api_key=getattr(config, "ZULIP_API_KEY", None),
     client="ZulipOpenShift/" + VERSION,
 )
 
