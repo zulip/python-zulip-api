@@ -385,6 +385,10 @@ class TimeZoneMissingError(ZulipError):
     pass
 
 
+class AuthenticationError(ZulipError):
+    pass
+
+
 class Client:
     def __init__(
         self,
@@ -399,6 +403,7 @@ class Client:
         insecure: Optional[bool] = None,
         client_cert: Optional[str] = None,
         client_cert_key: Optional[str] = None,
+        check_credentials: bool = False,
     ) -> None:
         if client is None:
             client = _default_client()
@@ -529,6 +534,9 @@ class Client:
         self.zulip_version: Optional[str] = server_settings.get("zulip_version")
         self.feature_level: int = server_settings.get("zulip_feature_level", 0)
         assert self.zulip_version is not None
+
+        if check_credentials:
+            self.check_credentials()
 
     def ensure_session(self) -> None:
         # Check if the session has been created already, and return
@@ -1212,6 +1220,39 @@ class Client:
             method="GET",
             request=request,
         )
+
+    def check_credentials(self) -> Dict[str, Any]:
+        """Verify that the client's credentials authenticate with the Zulip server.
+
+        Makes a lightweight request to the authenticated `GET /users/me` endpoint.
+        Returns the user profile dictionary on success.
+        Raises `AuthenticationError` if authentication fails (e.g. invalid API key or email),
+        or `ZulipError` for other unexpected failures.
+        """
+        response = self.get_profile()
+        if response.get("result") == "error":
+            code = response.get("code")
+            msg = response.get("msg", "Unknown error")
+            if (
+                code == "INVALID_API_KEY"
+                or "Invalid API key" in msg
+                or "Invalid credentials" in msg
+            ):
+                raise AuthenticationError(f"Authentication failed: {msg}")
+            raise ZulipError(f"Credential check failed: {msg}")
+        elif response.get("result") == "http-error":
+            status_code = response.get("status_code")
+            if status_code == 401:
+                raise AuthenticationError("Authentication failed: HTTP 401 Unauthorized")
+            raise ZulipError(f"HTTP error during credential check: {status_code}")
+        return response
+
+    def ping(self) -> Dict[str, Any]:
+        """Quickly check connection and credentials with the Zulip server.
+
+        Alias for `check_credentials()`.
+        """
+        return self.check_credentials()
 
     def get_user_presence(self, email: str) -> Dict[str, Any]:
         """
