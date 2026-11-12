@@ -345,6 +345,60 @@ def get_default_config_filename() -> Optional[str]:
     return config_file
 
 
+def zulip_env_vars_are_present() -> bool:
+    """Check if all necessary environment variables for Zulip API credentials are set."""
+    if os.environ.get("ZULIP_EMAIL") is None:
+        return False
+    if os.environ.get("ZULIP_API_KEY") is None:
+        return False
+    return os.environ.get("ZULIP_SITE") is not None
+
+
+def exit_gracefully_if_zulip_config_is_missing(
+    config_file: Optional[str] = None, allow_default_config: bool = True
+) -> None:
+    error_msg = None
+
+    if config_file is not None:
+        expanded_config_file = os.path.abspath(os.path.expanduser(config_file))
+        if os.path.exists(expanded_config_file):
+            return
+        else:
+            error_msg = f"ERROR: {config_file} does not exist."
+    elif zulip_env_vars_are_present():
+        return
+    elif allow_default_config:
+        env_config = os.environ.get("ZULIP_CONFIG")
+        if env_config is not None:
+            expanded_env = os.path.abspath(os.path.expanduser(env_config))
+            if os.path.exists(expanded_env):
+                return
+            else:
+                error_msg = f"ERROR: {env_config} does not exist."
+        else:
+            default_config = get_default_config_filename()
+            if default_config is not None and os.path.exists(default_config):
+                return
+            error_msg = "ERROR: You did not supply a Zulip config file."
+    else:
+        error_msg = "ERROR: You did not supply a Zulip config file."
+
+    if error_msg:
+        print("\n")
+        print(error_msg)
+        print(
+            """
+            You may need to download a config file from the Zulip app, or
+            if you have already done that, you need to specify the file
+            location correctly on the command line.
+
+            If you don't want to use a config file, you must set
+            these env vars: ZULIP_EMAIL, ZULIP_API_KEY, ZULIP_SITE.
+        """
+        )
+        sys.exit(1)
+
+
 def validate_boolean_field(field: Optional[str]) -> Union[bool, None]:
     if not isinstance(field, str):
         return None

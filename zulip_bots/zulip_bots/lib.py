@@ -12,6 +12,7 @@ from typing import IO, Any, Dict, Iterator, List, Optional, Set
 
 from typing_extensions import Protocol
 
+import zulip
 from zulip import Client, ZulipError
 
 
@@ -33,21 +34,8 @@ def get_bots_directory_path() -> str:
 
 
 def zulip_env_vars_are_present() -> bool:
-    # We generally require a Zulip config file, but if
-    # the user supplies the correct environment vars, we
-    # waive the requirement.  This can be helpful for
-    # containers like Heroku that prefer env vars to config
-    # files.
-    if os.environ.get("ZULIP_EMAIL") is None:
-        return False
-    if os.environ.get("ZULIP_API_KEY") is None:
-        return False
-    if os.environ.get("ZULIP_SITE") is None:
-        return False
-
-    # If none of the absolutely critical env vars are
-    # missing, we can proceed without a config file.
-    return True
+    # Retained for backwards compatibility; delegated to core zulip library.
+    return zulip.zulip_env_vars_are_present()
 
 
 class RateLimit:
