@@ -6,11 +6,11 @@ import os
 import sys
 from typing import Optional
 
+import zulip
 from zulip_bots import finder
 from zulip_bots.lib import (
     NoBotConfigError,
     run_message_handler_for_bot,
-    zulip_env_vars_are_present,
 )
 from zulip_bots.provision import provision_bot
 
@@ -62,36 +62,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def exit_gracefully_if_zulip_config_is_missing(config_file: Optional[str]) -> None:
-    error_msg = None
-
-    if config_file:
-        if os.path.exists(config_file):
-            # We're good.  (There may be problems with the config file,
-            # but we'll catch those later.
-            return
-        else:
-            error_msg = f"ERROR: {config_file} does not exist."
-
-    elif zulip_env_vars_are_present():
-        return
-    else:
-        error_msg = "ERROR: You did not supply a Zulip config file."
-
-    if error_msg:
-        print("\n")
-        print(error_msg)
-        print(
-            """
-            You may need to download a config file from the Zulip app, or
-            if you have already done that, you need to specify the file
-            location correctly on the command line.
-
-            If you don't want to use a config file, you must set
-            these env vars: ZULIP_EMAIL, ZULIP_API_KEY, ZULIP_SITE.
-        """
-        )
-
-        sys.exit(1)
+    zulip.exit_gracefully_if_zulip_config_is_missing(config_file, allow_default_config=False)
 
 
 def exit_gracefully_if_bot_config_file_does_not_exist(bot_config_file: Optional[str]) -> None:
