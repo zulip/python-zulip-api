@@ -8,6 +8,7 @@ import traceback
 from typing import Any, Callable, Dict, Optional, Tuple
 
 import bridge_with_slack_config
+from slack_markdown import zulip_to_slack_markdown
 from slack_sdk.web.client import WebClient
 
 import zulip
@@ -79,10 +80,7 @@ class SlackBridge:
         self.slack_webclient = WebClient(token=self.slack_config["token"])
 
     def wrap_slack_mention_with_bracket(self, zulip_msg: Dict[str, Any]) -> None:
-        words = zulip_msg["content"].split(" ")
-        for w in words:
-            if w.startswith("@"):
-                zulip_msg["content"] = zulip_msg["content"].replace(w, "<" + w + ">")
+        zulip_msg["content"] = zulip_to_slack_markdown(zulip_msg["content"])
 
     def is_message_from_slack(self, msg: Dict[str, Any]) -> bool:
         # Check whether or not this message is from Slack to prevent
