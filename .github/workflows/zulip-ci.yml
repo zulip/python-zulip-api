@@ -20,12 +20,15 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Bullseye ships with Python 3.9.2.
-          - docker_image: zulip/ci:bullseye
-            name: Debian 11 (Python 3.9, backend)
-            os: bullseye
-            legacy_client_interface: "4"
-            server_version: refs/tags/4.0
+          # NOTE: the Debian 11 (bullseye) Zulip 4.0 job was removed in
+          # this workflow because bullseye is EOL: its packages were
+          # removed from deb.debian.org (apt 404) and bullseye-pgdg is
+          # likewise gone from apt.postgresql.org, so the job fails in the
+          # dependency-install step before any code is built or tested.
+          # Every recent PR failed this job regardless of content.  Re-add
+          # it if the ci:bullseye image is rebuilt against
+          # archive.debian.org and a PGDG replacement, or replace it with
+          # the oldest supported Zulip server release.
           # Ubuntu 22.04 ships with Python 3.10.6.
           - docker_image: zulip/ci:jammy
             name: Ubuntu 22.04 (Python 3.10, backend)
