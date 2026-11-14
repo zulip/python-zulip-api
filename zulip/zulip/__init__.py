@@ -876,6 +876,63 @@ class Client:
         """
         return self.call_endpoint(url="user_uploads", files=[file])
 
+    def fetch_upload(self, url: str, timeout: Optional[float] = None) -> bytes:
+        """
+        Download a file previously uploaded to the Zulip server.
+
+        `url` may be either a path (e.g. "/user_uploads/1/abc123/file.png",
+        as it appears in message content) or a full URL. Unlike
+        `call_endpoint`, this does not prepend "/api/v1/", because
+        GET /api/v1/user_uploads/... only returns a temporary access
+        URL for the file, rather than the file itself.
+
+        Example usage:
+
+        >>> content = client.fetch_upload("/user_uploads/1/abc123/file.png")
+        >>> content[:4]
+        b'\\x89PNG'
+
+        Returns the raw bytes of the file. Raises ZulipError if the
+        server returns an HTTP error status.
+        """
+        url = url.strip()
+
+        if url.startswith(("http://", "https://")):
+            parsed_url = urllib.parse.urlparse(url)
+            path = parsed_url.path
+            if path.startswith("/api/v1/"):
+                path = path[len("/api/v1") :]
+            download_url = urllib.parse.urlunparse(
+                (parsed_url.scheme, parsed_url.netloc, path, "", parsed_url.query, "")
+            )
+        else:
+            path = url.lstrip("/")
+            if path.startswith("api/v1/"):
+                path = path[len("api/v1/") :]
+            # self.base_url is "<site>/api/"; uploaded files are served
+            # from the site root, without the "/api/" prefix.
+            site_url = self.base_url[: -len("api/")]
+            download_url = urllib.parse.urljoin(site_url, path)
+
+        request_timeout = timeout or 15.0
+
+        self.ensure_session()
+        assert self.session is not None
+
+        try:
+            res = self.session.request(
+                "GET",
+                download_url,
+                timeout=request_timeout,
+            )
+        except requests.exceptions.ConnectionError as e:
+            raise UnrecoverableNetworkError("cannot connect to server " + self.base_url) from e
+
+        if res.status_code != 200:
+            raise ZulipError(f"Error fetching upload: HTTP {res.status_code} from {download_url}")
+
+        return res.content
+
     def get_attachments(self) -> Dict[str, Any]:
         """
         Example usage:
