@@ -20,7 +20,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Bullseye ships with Python 3.9.2.
+          # Bullseye ships with Python 3.9.2.  Bullseye is EOL and its
+          # packages were removed from deb.debian.org, so we point apt at
+          # the Debian archive (see the archive-mirror setup step below).
           - docker_image: zulip/ci:bullseye
             name: Debian 11 (Python 3.9, backend)
             os: bullseye
@@ -69,6 +71,21 @@ jobs:
           repository: zulip/zulip
           ref: ${{ matrix.server_version }}
           path: server
+
+      - name: "Rewrite apt sources to the Debian and PGDG archives (bullseye is EOL)"
+        if: matrix.os == 'bullseye'
+        run: |
+          sudo sed -i \
+            -e 's|deb.debian.org/debian-security|archive.debian.org/debian-security|g' \
+            -e 's|security.debian.org/debian-security|archive.debian.org/debian-security|g' \
+            -e 's|deb.debian.org/debian|archive.debian.org/debian|g' \
+            /etc/apt/sources.list
+          # Point the server's provision script at the archived PGDG repo;
+          # bullseye-pgdg no longer exists on apt.postgresql.org.
+          sed -i 's|apt.postgresql.org|apt-archive.postgresql.org|' server/scripts/lib/setup-apt-repo
+          # semgrep==0.50.1 was removed from PyPI; it is a lint-only
+          # dependency and is not needed to run the API tests.
+          sed -i '/^semgrep==/,/^    # via/d' server/requirements/dev.txt
 
       - name: Install dependencies
         run: |
