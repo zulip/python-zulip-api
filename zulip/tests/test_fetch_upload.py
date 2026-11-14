@@ -40,6 +40,24 @@ class TestFetchUpload:
         )
         assert result == b"file contents"
 
+    def test_absolute_url_on_other_origin_rejected(self) -> None:
+        client = make_client()
+        client.ensure_session()
+        assert client.session is not None
+        with patch.object(client.session, "get") as mock_get:
+            with pytest.raises(ZulipError):
+                client.fetch_upload("https://evil.example.com/user_uploads/1/file.pdf")
+        mock_get.assert_not_called()
+
+    def test_absolute_url_with_different_scheme_rejected(self) -> None:
+        client = make_client()
+        client.ensure_session()
+        assert client.session is not None
+        with patch.object(client.session, "get") as mock_get:
+            with pytest.raises(ZulipError):
+                client.fetch_upload("http://zulip.example.com/user_uploads/1/file.pdf")
+        mock_get.assert_not_called()
+
     def test_root_relative_path_resolved_against_server_root(self) -> None:
         client = make_client()
         client.ensure_session()

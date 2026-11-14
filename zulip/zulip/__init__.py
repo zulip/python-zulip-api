@@ -882,23 +882,36 @@ class Client:
 
         Accepts the `/user_uploads/...` path returned as the `url`
         field by `upload_file()`, a `/user_uploads/temporary/...`
-        token URL, or any absolute `http(s)` URL pointing at a Zulip
-        server.  Unlike `call_endpoint()` (which always requests a
-        `/api/v1/` path), this method is not tied to the API prefix:
+        token URL, or an absolute `http(s)` URL on this Zulip server.
+        Unlike `call_endpoint()` (which always requests a `/api/v1/`
+        path), this method is not tied to the API prefix:
         `GET /api/v1/user_uploads/...` returns a JSON temporary-access
         URL rather than the file, so downloads have to go to the
         unprefixed path.
+
+        Absolute URLs on other origins are rejected, because the
+        authenticated session would otherwise send the bot's API key
+        to a third-party host.
 
         `timeout` is the request timeout in seconds; defaults to 90,
         like long-polling requests.
 
         Returns the file contents as bytes.
         """
+        server_root = self.base_url.removesuffix("/api/")
+        server_origin = urllib.parse.urlsplit(server_root)
         if url_or_path.startswith(("http://", "https://")):
+            parsed = urllib.parse.urlsplit(url_or_path)
+            if (parsed.scheme.lower(), parsed.netloc.lower()) != (
+                server_origin.scheme.lower(),
+                server_origin.netloc.lower(),
+            ):
+                raise ZulipError(
+                    f"fetch_upload() requires an absolute URL on {server_root!r}; refusing to send credentials elsewhere"
+                )
             url = url_or_path
         elif url_or_path.startswith("/"):
             # Absolute path on the Zulip server root, e.g. /user_uploads/...
-            server_root = self.base_url.removesuffix("/api/")
             url = server_root + url_or_path
         else:
             raise ZulipError(
