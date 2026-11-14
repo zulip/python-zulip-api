@@ -20,15 +20,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # NOTE: the Debian 11 (bullseye) Zulip 4.0 job was removed in
-          # this workflow because bullseye is EOL: its packages were
-          # removed from deb.debian.org (apt 404) and bullseye-pgdg is
-          # likewise gone from apt.postgresql.org, so the job fails in the
-          # dependency-install step before any code is built or tested.
-          # Every recent PR failed this job regardless of content.  Re-add
-          # it if the ci:bullseye image is rebuilt against
-          # archive.debian.org and a PGDG replacement, or replace it with
-          # the oldest supported Zulip server release.
+          # Bullseye ships with Python 3.9.2.  Bullseye is EOL and its
+          # packages were removed from deb.debian.org, so we point apt at
+          # the Debian archive (see the archive-mirror setup step below).
+          - docker_image: zulip/ci:bullseye
+            name: Debian 11 (Python 3.9, backend)
+            os: bullseye
+            legacy_client_interface: "4"
+            server_version: refs/tags/4.0
           # Ubuntu 22.04 ships with Python 3.10.6.
           - docker_image: zulip/ci:jammy
             name: Ubuntu 22.04 (Python 3.10, backend)
@@ -72,6 +71,18 @@ jobs:
           repository: zulip/zulip
           ref: ${{ matrix.server_version }}
           path: server
+
+      - name: "Rewrite apt sources to the Debian and PGDG archives (bullseye is EOL)"
+        if: matrix.os == 'bullseye'
+        run: |
+          sed -i \
+            -e 's|deb.debian.org/debian-security|archive.debian.org/debian-security|g' \
+            -e 's|security.debian.org/debian-security|archive.debian.org/debian-security|g' \
+            -e 's|deb.debian.org/debian|archive.debian.org/debian|g' \
+            /etc/apt/sources.list
+          # Point the server's provision script at the archived PGDG repo;
+          # bullseye-pgdg no longer exists on apt.postgresql.org.
+          sed -i 's|apt.postgresql.org|apt-archive.postgresql.org|' server/scripts/lib/setup-apt-repo
 
       - name: Install dependencies
         run: |
