@@ -893,12 +893,22 @@ class Client:
         b'\\x89PNG'
 
         Returns the raw bytes of the file. Raises ZulipError if the
-        server returns an HTTP error status.
+        server returns an HTTP error status, or if a full URL is given
+        for a host other than this client's Zulip server (so the
+        bot's credentials are never sent to an external host).
         """
         url = url.strip()
 
         if url.startswith(("http://", "https://")):
             parsed_url = urllib.parse.urlparse(url)
+            # Never send the bot's HTTP Basic Auth credentials to an
+            # external host: only fetch from this client's Zulip server.
+            realm_netloc = urllib.parse.urlparse(self.base_url).netloc
+            if parsed_url.netloc != realm_netloc:
+                raise ZulipError(
+                    "fetch_upload only supports URLs on this Zulip server "
+                    f"({realm_netloc}), not {parsed_url.netloc}"
+                )
             path = parsed_url.path
             if path.startswith("/api/v1/"):
                 path = path[len("/api/v1") :]

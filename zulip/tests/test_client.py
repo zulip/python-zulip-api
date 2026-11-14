@@ -104,6 +104,13 @@ class TestFetchUpload(TestCase):
             timeout=5.0,
         )
 
+    def test_fetch_upload_rejects_absolute_url_on_other_host(self) -> None:
+        # The bot's credentials must never be sent to an external host,
+        # e.g. a link extracted from user message markdown.
+        with self.assertRaises(ZulipError):
+            self.client.fetch_upload("https://evil.example.com/user_uploads/1/abc/file.png")
+        self.mock_session.request.assert_not_called()
+
     def test_fetch_upload_http_error(self) -> None:
         self.mock_session.request.return_value = self.mock_response(status_code=404)
         with self.assertRaises(ZulipError):
