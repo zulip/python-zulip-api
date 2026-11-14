@@ -393,6 +393,7 @@ class Client:
         config_file: Optional[str] = None,
         verbose: bool = False,
         retry_on_errors: bool = True,
+        auto_retry_rate_limits: bool = False,
         site: Optional[str] = None,
         client: Optional[str] = None,
         cert_bundle: Optional[str] = None,
@@ -491,6 +492,7 @@ class Client:
             self.base_url += "/api"
         self.base_url += "/"
         self.retry_on_errors = retry_on_errors
+        self.auto_retry_rate_limits = auto_retry_rate_limits
         self.client_name = client
 
         if insecure:
@@ -654,6 +656,19 @@ class Client:
                 )
 
                 self.has_connected = True
+
+                # On Rate Limit (429) errors, retry after the delay the server asked us to wait
+                if res.status_code == 429 and self.auto_retry_rate_limits:
+                    try:
+                        wait_time = float(res.headers.get("Retry-After", 1.0))
+                    except (ValueError, TypeError):
+                        wait_time = 1.0
+                    if self.verbose:
+                        print(
+                            f"Rate limit hit! Sleeping for {wait_time} seconds before retrying..."
+                        )
+                    time.sleep(wait_time)
+                    continue
 
                 # On 50x errors, try again after a short sleep
                 if str(res.status_code).startswith("5") and error_retry(
