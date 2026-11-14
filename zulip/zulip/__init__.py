@@ -29,6 +29,7 @@ from typing import (
 import distro
 import requests
 from typing_extensions import Literal, override
+from urllib3.util.retry import Retry
 
 __version__ = "0.9.1"
 
@@ -552,6 +553,24 @@ class Client:
         session.verify = self.tls_verification
         session.cert = client_cert
         session.headers.update({"User-agent": self.get_user_agent()})
+        # Networks often silently drop idle TCP connections, so the next
+        # request over a pooled keep-alive connection can fail with a
+        # connection error even though the server is healthy.  Retry this
+        # class of error transparently instead of failing the request.
+        # All methods, including POST, are retried since the request is
+        # never delivered over the stale connection.
+        retries = Retry(
+            total=3,
+            connect=3,
+            read=3,
+            status=0,
+            backoff_factor=0.5,
+            allowed_methods=None,
+            raise_on_status=False,
+        )
+        adapter = requests.adapters.HTTPAdapter(max_retries=retries)
+        session.mount("http://", adapter)
+        session.mount("https://", adapter)
         self.session = session
 
     def get_user_agent(self) -> str:
