@@ -75,7 +75,7 @@ jobs:
       - name: "Rewrite apt sources to the Debian and PGDG archives (bullseye is EOL)"
         if: matrix.os == 'bullseye'
         run: |
-          sed -i \
+          sudo sed -i \
             -e 's|deb.debian.org/debian-security|archive.debian.org/debian-security|g' \
             -e 's|security.debian.org/debian-security|archive.debian.org/debian-security|g' \
             -e 's|deb.debian.org/debian|archive.debian.org/debian|g' \
