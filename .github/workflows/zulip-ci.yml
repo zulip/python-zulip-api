@@ -83,6 +83,9 @@ jobs:
           # Point the server's provision script at the archived PGDG repo;
           # bullseye-pgdg no longer exists on apt.postgresql.org.
           sed -i 's|apt.postgresql.org|apt-archive.postgresql.org|' server/scripts/lib/setup-apt-repo
+          # semgrep==0.50.1 was removed from PyPI; it is a lint-only
+          # dependency and is not needed to run the API tests.
+          sed -i '/^semgrep==/,/^    # via/d' server/requirements/dev.txt
 
       - name: Install dependencies
         run: |
