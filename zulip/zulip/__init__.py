@@ -876,6 +876,71 @@ class Client:
         """
         return self.call_endpoint(url="user_uploads", files=[file])
 
+    def fetch_upload(self, url_or_path: str, timeout: Optional[float] = None) -> bytes:
+        """
+        Download an uploaded file, using API authentication.
+
+        Accepts a path (e.g. "/user_uploads/1/abc123/file.png", as it
+        appears in message content), a `/user_uploads/temporary/...`
+        token URL, or an absolute `http(s)` URL on this Zulip server.
+        A leading `/api/v1/` prefix is stripped:
+        `GET /api/v1/user_uploads/...` returns a JSON temporary-access
+        URL rather than the file, so downloads have to go to the
+        unprefixed path.
+
+        Absolute URLs on other origins are rejected, because the
+        authenticated session would otherwise send the bot's API key
+        to a third-party host.
+
+        `timeout` is the request timeout in seconds; defaults to 90,
+        like long-polling requests.
+
+        Returns the file contents as bytes. Raises UnrecoverableNetworkError
+        if the request cannot be made, and ZulipError if the server
+        returns an HTTP error status.
+        """
+        server_root = self.base_url.removesuffix("/api/")
+        server_origin = urllib.parse.urlsplit(server_root)
+        if url_or_path.startswith(("http://", "https://")):
+            parsed = urllib.parse.urlsplit(url_or_path)
+            if (parsed.scheme.lower(), parsed.netloc.lower()) != (
+                server_origin.scheme.lower(),
+                server_origin.netloc.lower(),
+            ):
+                raise ZulipError(
+                    f"fetch_upload() requires an absolute URL on {server_root!r}; refusing to send credentials elsewhere"
+                )
+            path = parsed.path
+            if path.startswith("/api/v1/"):
+                path = path[len("/api/v1"):]
+            url = urllib.parse.urlunsplit(
+                (parsed.scheme, parsed.netloc, path, parsed.query, "")
+            )
+        else:
+            # Path on this Zulip server (leading/trailing slashes and a
+            # mistaken /api/v1/ prefix are tolerated).
+            path = url_or_path.lstrip("/")
+            if path.startswith("api/v1/"):
+                path = path[len("api/v1/"):]
+            if not path.startswith("user_uploads/"):
+                raise ZulipError(
+                    f"fetch_upload() requires an absolute URL or a path under /user_uploads/, got {url_or_path!r}"
+                )
+            url = server_root + "/" + path
+        self.ensure_session()
+        assert self.session is not None
+        try:
+            res = self.session.get(url, timeout=timeout if timeout is not None else 90.0)
+        except requests.exceptions.ConnectionError as e:
+            raise UnrecoverableNetworkError(
+                "cannot connect to server " + self.base_url
+            ) from e
+        if res.status_code != 200:
+            raise ZulipError(
+                f"Failed to fetch upload {url_or_path!r}: server returned {res.status_code}"
+            )
+        return res.content
+
     def get_attachments(self) -> Dict[str, Any]:
         """
         Example usage:
